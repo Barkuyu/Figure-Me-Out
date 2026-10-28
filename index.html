@@ -137,7 +137,7 @@ body.mobile #warnBox{bottom:40%}
 body.mobile #photo canvas{width:300px;height:225px}
 
 #pauseBtn{display:none;position:absolute;border-radius:50%;background:rgba(0,0,0,.45);border:1.5px solid rgba(255,255,255,.7);color:#fff;font-size:15px;pointer-events:auto;padding:0}
-.numcol{position:absolute;top:calc(var(--vh)*17);height:calc(var(--vh)*13);width:calc(var(--vw)*46);display:flex;flex-direction:row;gap:calc(var(--vw)*.5);z-index:2}
+.numcol{position:absolute;top:48px;height:calc(var(--vh)*13);width:calc(var(--vw)*46);display:flex;flex-direction:row;gap:calc(var(--vw)*.5);z-index:2}
 #numL{left:0}#numR{right:0}
 .np{flex:1;min-height:0;border-radius:11px;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.55);color:#fff;font:400 clamp(22px,calc(var(--vh)*5),38px) var(--disp);display:flex;align-items:center;justify-content:center;pointer-events:auto}
 .tbtn.act,.np.act{background:rgba(255,255,255,.55)}
@@ -162,18 +162,19 @@ body.mobile #photo canvas{width:300px;height:225px}
 @keyframes fadeBg{from{opacity:0}to{opacity:1}}
 #fin.lose .finTxt{color:#a3a9b2;text-shadow:0 4px 0 #2a2d33,0 0 18px rgba(0,0,0,.6);animation:riseUp 1.5s .3s cubic-bezier(.2,.8,.3,1) both}
 @keyframes riseUp{from{transform:translateY(calc(var(--vh)*45));opacity:0}to{transform:translateY(0);opacity:1}}
-#bJump{left:87.9%;top:86%;width:clamp(56px,calc(var(--vw)*9.3),108px);height:clamp(56px,calc(var(--vw)*9.3),108px);font-size:16px;font-weight:700}
+#bJump{left:95.3%;top:89.9%;width:clamp(56px,calc(var(--vw)*9.3),108px);height:clamp(56px,calc(var(--vw)*9.3),108px);font-size:16px;font-weight:700}
 #bBino{left:11.5%;top:40.6%}
-#bRun{left:78.2%;top:86.3%;width:clamp(56px,calc(var(--vw)*9.1),106px);height:clamp(56px,calc(var(--vw)*9.1),106px);font-size:17px;font-weight:700}
-#bLeanL{left:81.2%;top:67.5%;font-size:20px}#bLeanR{left:88.4%;top:67.5%;font-size:20px}
+#bRun{left:85.6%;top:90.2%;width:clamp(56px,calc(var(--vw)*9.1),106px);height:clamp(56px,calc(var(--vw)*9.1),106px);font-size:17px;font-weight:700}
+#bLeanL{left:88.6%;top:71.4%;font-size:20px}#bLeanR{left:95.8%;top:71.4%;font-size:20px}#bBino2{left:95.8%;top:54%}
+#bBack{left:auto;right:0;top:calc(48px + calc(var(--vh)*13) + calc(var(--vh)*.8));transform:none;width:calc(var(--vw)*8.8);height:calc(var(--vh)*9);border-radius:8px;opacity:.6;font-size:20px}
 body.mobile #slots{position:absolute;inset:0;transform:none;display:block;pointer-events:none}
 body.mobile .slot{position:absolute;width:clamp(44px,calc(var(--vw)*6.4),66px);height:clamp(44px,calc(var(--vw)*6.4),66px);transform:translate(-50%,-50%);pointer-events:auto}
-body.mobile #slotF{left:72.8%;top:70.4%}body.mobile #slotG{left:69.2%;top:88.7%}body.mobile #slotS{left:62%;top:88.7%}
+body.mobile #slotF{left:80.2%;top:74.3%}body.mobile #slotG{left:76.6%;top:92.6%}body.mobile #slotS{left:69.4%;top:92.6%}
 body.mobile #pauseBtn{display:block;left:calc(50% + 92px);top:27px;transform:translate(-50%,-50%);width:clamp(34px,calc(var(--vw)*4.4),46px);height:clamp(34px,calc(var(--vw)*4.4),46px)}
 body.mobile #binwrap{left:74.8%;top:73%;right:auto;bottom:auto;transform:translateX(-50%)}
 body.mobile #binwrap .bar{width:clamp(50px,calc(var(--vw)*7),76px)}
 body.mobile #killfeed{right:calc(calc(var(--vw)*8.6) + 6px);top:6px;font-size:11px}
-@media (max-height:420px){.sc{font-size:20px}#timer{top:42px;font-size:13px}}
+@media (max-height:420px){.sc{font-size:20px}#timer{top:42px;font-size:13px}.numcol{top:42px}#bBack{top:calc(42px + calc(var(--vh)*13) + calc(var(--vh)*.8))}}
 @media (orientation:portrait){body.mobile #rotateMsg{display:flex}}
 #rotateMsg{display:none}
 @media (max-width:760px){.panel{width:calc(var(--vw)*100);background:rgba(24,16,10,.9)}.logo .l1,.logo .l2{font-size:34px}.cards{gap:6px}}
@@ -310,7 +311,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <div id="joyHint">移動</div>
     <div id="joyBase"><div id="joyKnob"></div></div>
     <div class="tbtn" id="bJump">跳躍</div>
-    <div class="tbtn" id="bBino">🔭</div>
+    <div class="tbtn" id="bBino">🔭</div><div class="tbtn" id="bBino2">🔭</div><div class="tbtn" id="bBack">🔙</div>
     <div class="tbtn" id="bRun">跑</div>
     <div class="tbtn" id="bLeanL">↖️</div><div class="tbtn" id="bLeanR">↗️</div>
     <div class="numcol" id="numL"><div class="np" data-k="1">1</div><div class="np" data-k="2">2</div><div class="np" data-k="3">3</div><div class="np" data-k="4">4</div><div class="np" data-k="5">5</div></div>
@@ -319,7 +320,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 1.9</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.0</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -3424,7 +3425,7 @@ const Input = {
     document.addEventListener('touchend', e => { if (!e.touches.length) { In.leanL = In.leanR = false; In.jump = false; } }, true); document.addEventListener('touchcancel', () => { In.leanL = In.leanR = false; In.jump = false; }, true);
     document.querySelectorAll('.np').forEach(b => press(b, () => typeDigit(b.dataset.k)));
     press($('bJump'), () => { In.jump = true; }, () => { In.jump = false; });
-    press($('bBino'), () => toggleBino());
+    press($('bBino'), () => toggleBino()); press($('bBino2'), () => toggleBino()); press($('bBack'), () => backspace());
     { const ss = $('slotS'); press(ss, () => castSkillPlayer()); ss.addEventListener('click', () => { if (!Device.mobile) castSkillPlayer(); }); }
     press($('bRun'), () => { In.sprintT = !In.sprintT; In.sprint = In.sprintT; $('bRun').classList.toggle('tog', In.sprintT); }, () => { });
     press($('bLeanL'), () => { In.leanL = true; }, () => { In.leanL = false; }); press($('bLeanR'), () => { In.leanR = true; }, () => { In.leanR = false; });
@@ -3503,11 +3504,11 @@ function tutHTML(mobile) {
 <div class="tcard"><b>🎒 道具</b><span class="kc">F</span> 道具 1（預設相機）<br><span class="kc">G</span> 道具 2（閃光／煙霧／干擾）<br>撿地圖上的橘色「?」箱補給</div>
 <div class="tcard"><b>👀 探頭</b>躲在掩體後按住 <span class="kc">Z</span>（左）／<span class="kc">C</span>（右）<br>探頭看一眼就縮回，別被讀到號碼</div>
 <div class="tcard"><b>⚠ 小心</b>紅色箭頭＝有人正在讀你的號碼<br>輸入錯誤會被定身 2 秒（視角也不能轉）<br><span class="kc">Esc</span> 暫停</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
-  const P = (l, t, w, cls, txt) => `<i class="${cls || ''}" style="left:${l}%;top:${t}%;${w ? 'width:' + w + '%;aspect-ratio:1;' : ''}">${txt}</i>`;
+  const P = (l, t, w, cls, txt, st) => `<i class="${cls || ''}" style="left:${l}%;top:${t}%;${w ? 'width:' + w + '%;aspect-ratio:1;' : ''}${st || ''}">${txt}</i>`;
   return `<h2>操作說明</h2><div class="tphone">
-${P(23, 23.5, 0, 'col', '1 2 3 4 5')}${P(77, 23.5, 0, 'col', '6 7 8 9 0')}
-${P(16.3, 78.4, 12, 'c', '移動')}${P(11.5, 40.6, 6.6, 'c', '🔭')}${P(72.8, 70.4, 6.2, 'c', 'F')}${P(69.2, 88.7, 6.2, 'c', 'G')}
-${P(81.2, 67.5, 6.6, 'c', '↖')}${P(88.4, 67.5, 6.6, 'c', '↗')}${P(78.2, 86.3, 9.1, 'c', '跑')}${P(87.9, 86, 9.3, 'c', '跳')}${P(59.6, 8, 3.8, 'c', '⏸')}
+${P(23, 19.5, 0, 'col', '1 2 3 4 5')}${P(77, 19.5, 0, 'col', '6 7 8 9 0')}${P(95.6, 34, 0, 'col', '🔙', 'width:8.8%;height:9%;top:33%')}
+${P(16.3, 78.4, 12, 'c', '移動')}${P(11.5, 40.6, 6.6, 'c', '🔭')}${P(80.2, 74.3, 6.2, 'c', 'F')}${P(76.6, 92.6, 6.2, 'c', 'G')}${P(69.4, 92.6, 6.2, 'c', 'R')}${P(95.8, 54, 6.6, 'c', '🔭')}
+${P(88.6, 71.4, 6.6, 'c', '↖')}${P(95.8, 71.4, 6.6, 'c', '↗')}${P(85.6, 90.2, 9.1, 'c', '跑')}${P(95.3, 89.9, 9.3, 'c', '跳')}${P(59.6, 8, 3.8, 'c', '⏸')}
 <div class="tx" style="left:16.3%;top:62%;width:20%">左側拖曳＝移動</div><div class="tx" style="left:11.5%;top:53%;width:14%">望遠鏡</div>
 <div class="tx" style="left:50%;top:48%;width:40%">右側空白處拖曳＝轉視角</div><div class="tx" style="left:50%;top:36%;width:60%">上方數字鍵輸入號碼（滿位數自動送出）</div>
 <div class="tx" style="left:46%;top:76%;width:34%;line-height:1.6">F／G＝道具　↖／↗＝探頭（按住）<br>跑＝點一下開關衝刺<br>跳＝跳躍，空中再按＝二段跳</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
@@ -3577,7 +3578,7 @@ function openDemoPick() {
   $('demoPick').classList.remove('hidden');
 }
 /* ---------- 設定視窗 / 按鍵配置 ---------- */
-const LAYOUT_IDS = ['bJump', 'bBino', 'bRun', 'bLeanL', 'bLeanR', 'slotF', 'slotG', 'slotS', 'pauseBtn', 'joyHint', 'numL', 'numR'];
+const LAYOUT_IDS = ['bJump', 'bBino', 'bBino2', 'bBack', 'bRun', 'bLeanL', 'bLeanR', 'slotF', 'slotG', 'slotS', 'pauseBtn', 'joyHint', 'numL', 'numR'];
 function lay(id) { return S.layout[id] || (S.layout[id] = { x: 0, y: 0, s: 1 }); }
 function applyLayout() {
   const on = Device.mobile || document.body.classList.contains('editing');
@@ -3601,7 +3602,7 @@ function closeSettings() {
   $('settings').classList.add('hidden');
   if (UI.setAuto) { UI.setAuto = false; setPause(false); if (!G.demo && !Device.mobile) Input.lock(); }
 }
-const NAMES_UI = { bRun: '跑步鍵', bLeanL: '向左探頭鍵', bLeanR: '向右探頭鍵', bJump: '跳躍鍵', bBino: '望遠鏡鍵', slotF: '道具 F（相機）', slotG: '道具 G', slotS: '角色技能 R', pauseBtn: '暫停鍵', joyHint: '移動搖桿', numL: '數字鍵 0–4', numR: '數字鍵 5–9' };
+const NAMES_UI = { bRun: '跑步鍵', bLeanL: '向左探頭鍵', bLeanR: '向右探頭鍵', bJump: '跳躍鍵', bBino: '望遠鏡鍵', bBino2: '望遠鏡鍵 2', bBack: '退回一個數字鍵', slotF: '道具 F（相機）', slotG: '道具 G', slotS: '角色技能 R', pauseBtn: '暫停鍵', joyHint: '移動搖桿', numL: '數字鍵 0–4', numR: '數字鍵 5–9' };
 let edSel = null, edDrag = null, edPrev = null;
 function edSelect(id) {
   edSel = id; LAYOUT_IDS.forEach(k => $(k).classList.toggle('sel', k === id));
