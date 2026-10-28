@@ -96,8 +96,8 @@ tr.me td{background:rgba(238,28,46,.35);font-weight:900}
 #menu{position:absolute;inset:0;display:flex;align-items:stretch;pointer-events:none}
 .panel{pointer-events:auto;width:min(540px,calc(var(--vw)*100));margin:0;padding:18px 20px 22px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;background:linear-gradient(90deg,rgba(24,16,10,.9),rgba(24,16,10,.78) 82%,rgba(24,16,10,0));scrollbar-width:thin}
 .logo{line-height:.9;margin-bottom:6px;transform:rotate(-2.5deg);transform-origin:left}
-.logo .l1,.logo .l2{display:inline-block;font:400 46px var(--disp);letter-spacing:.02em;background:var(--cream);color:#2c1a0d;padding:2px 10px 0;border-radius:6px;box-shadow:4px 4px 0 var(--red)}
-.logo .l2{margin-top:6px;background:var(--yel);margin-left:16px}
+.logo .l1,.logo .l2{display:inline-block;font:400 46px var(--disp);letter-spacing:.02em;background:none;color:#fff;-webkit-text-stroke:7px #3b2210;paint-order:stroke fill;padding:2px 8px 0;text-shadow:3px 4px 0 #3b2210}
+.logo .l2{margin-top:6px;margin-left:16px}
 .tag{font-size:12px;opacity:.85;margin:10px 0 4px}
 .panel h4{margin:14px 0 6px;font-size:13px;letter-spacing:.12em;color:var(--yel)}
 .chips{display:flex;flex-wrap:wrap;gap:7px}
@@ -137,7 +137,7 @@ body.mobile #warnBox{bottom:40%}
 body.mobile #photo canvas{width:300px;height:225px}
 
 #pauseBtn{display:none;position:absolute;border-radius:50%;background:rgba(0,0,0,.45);border:1.5px solid rgba(255,255,255,.7);color:#fff;font-size:15px;pointer-events:auto;padding:0}
-.numcol{position:absolute;top:0;bottom:0;width:max(44px,calc(var(--vw)*6.6));display:flex;flex-direction:column;gap:calc(var(--vh)*.7);z-index:2}
+.numcol{position:absolute;top:calc(var(--vh)*17);height:calc(var(--vh)*13);width:calc(var(--vw)*46);display:flex;flex-direction:row;gap:calc(var(--vw)*.5);z-index:2}
 #numL{left:0}#numR{right:0}
 .np{flex:1;min-height:0;border-radius:11px;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.55);color:#fff;font:400 clamp(22px,calc(var(--vh)*5),38px) var(--disp);display:flex;align-items:center;justify-content:center;pointer-events:auto}
 .tbtn.act,.np.act{background:rgba(255,255,255,.55)}
@@ -236,7 +236,7 @@ body.editing #touch *{pointer-events:none!important}
 body.mobile #cdNum{font-size:84px}
 #menu{justify-content:center}
 #menu .panel{text-align:center;margin:auto 0;max-height:100%;background:none!important;border:0;box-shadow:none}
-#menu .panel h4,#menu .panel .mpnote,#menu .panel #devbadge,#menu .panel .logo{text-shadow:0 1px 4px rgba(0,0,0,.9),0 0 10px rgba(0,0,0,.7)}
+#menu .panel h4,#menu .panel .mpnote,#menu .panel #devbadge{text-shadow:0 1px 4px rgba(0,0,0,.9),0 0 10px rgba(0,0,0,.7)}
 .ver{align-self:flex-end;margin-left:6px;font:900 15px var(--font);color:#fff;-webkit-text-stroke:3px #1b1b1b;paint-order:stroke fill;letter-spacing:.04em;transform:rotate(2deg)}
 body.rot{--vw:calc(var(--sh)/100);--vh:calc(var(--sw)/100)}
 body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh);height:var(--sw);transform-origin:0 0;transform:translateX(var(--sw)) rotate(90deg);overflow:hidden}
@@ -251,13 +251,18 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 .tphone{position:relative;width:min(94%,calc(calc(var(--vh)*72)*2.17));aspect-ratio:2.17/1;max-height:calc(var(--vh)*66);background:rgba(40,60,90,.35);border:2px solid rgba(255,255,255,.5);border-radius:16px}
 .tphone i{position:absolute;transform:translate(-50%,-50%);font-style:normal;text-align:center;font-size:clamp(9px,calc(var(--vw)*1.5),13px);line-height:1.15;display:flex;align-items:center;justify-content:center;color:#fff}
 .tphone .c{border:2px solid #fff;border-radius:50%;background:rgba(255,255,255,.14)}
-.tphone .col{border:2px solid #fff;border-radius:6px;background:rgba(255,255,255,.14);width:6.6%;height:96%;top:50%}
+.tphone .col{border:2px solid #fff;border-radius:6px;background:rgba(255,255,255,.14);width:46%;height:13%;top:23.5%;letter-spacing:.35em}
 .tphone .tx{position:absolute;transform:translate(-50%,-50%);font-size:clamp(9px,calc(var(--vw)*1.5),13px);color:#ffe58a;text-align:center;width:30%}
 #menu .panel .chips{justify-content:center}
 #menu .panel .logo{justify-content:center;transform:rotate(-2deg);transform-origin:center}
 #menu .panel h4{text-align:center}
 #menu .panel #mapDesc,#menu .panel .mpnote{text-align:center}
-.np{border-radius:8px}
+.np{border-radius:8px;opacity:.6}
+#gset{position:absolute;inset:0;z-index:59;background:rgba(10,8,6,.55);display:flex;align-items:center;justify-content:center;padding:12px}
+.gbox{text-align:center;width:min(600px,100%)}.gbox .chips{justify-content:center}.gbox h4{margin:12px 0 6px;font-size:13px;letter-spacing:.12em;color:var(--yel)}.gbox .btnrow{margin-top:16px;gap:16px}
+.btn.gray{background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.8),rgba(255,255,255,0) 100%) 50% 3%/92% 50% no-repeat,linear-gradient(180deg,#f1f2f5 0%,#cfd2d9 50%,#aeb2bb 100%);color:#2b2f38;text-shadow:0 1px 0 rgba(255,255,255,.7);box-shadow:inset 0 3px 4px rgba(255,255,255,.9),inset 0 -6px 9px rgba(70,75,90,.35),0 5px 0 #7d818c,0 9px 14px rgba(0,0,0,.4)}
+.mbtns{display:flex;flex-direction:column;gap:14px;margin-top:18px}
+.mbtns .btn{width:100%;margin:0;font-size:16px;padding:11px 8px}.mbtns #btnStart{font-size:22px;padding:13px 8px}
 </style>
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Figure Me Out">
@@ -307,23 +312,27 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 1.6</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 1.7</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
-      <h4>地圖</h4><div class="chips" id="chMap"></div><div id="mapDesc" class="mpnote" style="margin:2px 0 4px"></div>
-      <h4>遊戲模式</h4><div class="chips" id="chMode"></div>
-      <h4>人數</h4><div class="chips" id="chCount"></div>
-      <h4>號碼位數</h4><div class="chips" id="chCode"></div>
-      <h4>機器人難度</h4><div class="chips" id="chDiff"></div>
-      
-      <button class="btn" id="btnStart">🏆開始遊戲</button>
-      <button class="btn lite" id="btnMP" style="width:100%;margin-top:8px;font-size:17px;padding:10px">🌐 多人連線（用 4 位數密碼與好友同場）</button>
-      <button class="btn alt" id="btnDemo" style="width:100%;margin-top:8px;font-size:15px;padding:8px">🎬 電腦示範模式（全 AI 對戰・隨機視角觀戰）</button>
-      <button class="btn alt" id="btnHow" style="width:100%;margin-top:8px;font-size:15px;padding:8px">📖 玩法操作與說明</button>
-      <button class="btn alt" id="btnSet" style="width:100%;margin-top:8px;font-size:15px;padding:8px">⚙ 設定（裝置／畫質／全螢幕／按鍵配置）</button>
+      <div class="mbtns">
+        <button class="btn" id="btnStart">🏆開始遊戲</button>
+        <button class="btn lite" id="btnMP">🌐 多人連線（用 4 位數密碼與好友同場）</button>
+        <button class="btn alt" id="btnDemo">🎬 電腦示範模式（全 AI 對戰・隨機視角觀戰）</button>
+        <button class="btn alt" id="btnHow">📖 玩法操作與說明</button>
+        <button class="btn alt" id="btnSet">⚙ 設定（裝置／畫質／全螢幕／按鍵配置）</button>
+      </div>
     </div>
   </div>
 
+  <div id="gset" class="hidden"><div class="sbox gbox"><h2>🏆 遊戲設定</h2>
+    <h4>遊戲模式</h4><div class="chips" id="chMode"></div>
+    <h4>地圖</h4><div class="chips" id="chMap"></div><div id="mapDesc" class="mpnote" style="margin:2px 0 4px"></div>
+    <h4>人數</h4><div class="chips" id="chCount"></div>
+    <h4>難度</h4><div class="chips" id="chCode"></div>
+    <h4>機器人難度</h4><div class="chips" id="chDiff"></div>
+    <div class="btnrow"><button class="btn gray" id="gBack">🔙 回上一頁</button><button class="btn" id="gGo">🔥 進入遊戲</button></div>
+  </div></div>
   <div id="tut" class="hidden"></div>
   <div id="fin" class="hidden"></div>
   <div id="end" class="hidden"></div>
@@ -401,6 +410,8 @@ const mixc = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a
 function rng(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
 
 /* ================= 設定 / 裝置偵測 ================= */
+const CODE_OPTS = [3, 4, 5, 6, 'rand', 'mix'];
+const codeLabel = v => v === 'rand' ? '隨機' : v === 'mix' ? '大亂鬥' : v + ' 碼';
 const S = { mode: 'dm', count: 20, diff: 1, outfit: 0, input: 'auto', quality: 'auto', sens: 1, auto: true, fps: true, sound: true, countSet: false, codeLen: 4, demoMode: 'dm', map: 'hb', demoMap: 'hb', layout: {}, layoutV: 0, netBots: true, netName: '' };
 try { Object.assign(S, JSON.parse(localStorage.getItem('fmo2') || '{}')); } catch (e) { }
 if (S.layoutV < 2) { S.layout = {}; S.layoutV = 2; }
@@ -2059,7 +2070,7 @@ function newActor(name, outfit, isPlayer) {
   makePlate(a); return a;
 }
 function assignNumber(a) {
-  const L = G.codeLen || 4; let n; do { n = String(randi(Math.pow(10, L - 1), Math.pow(10, L) - 1)); } while (G.actors.some(o => o !== a && o.number === n));
+  const mix = !G.codeLen, L = G.codeLen || randi(3, 6); let n; do { n = String(randi(Math.pow(10, L - 1), Math.pow(10, L) - 1)); } while (G.actors.some(o => o !== a && (o.number === n || (mix && (o.number.startsWith(n) || n.startsWith(o.number))))));
   a.number = n; drawPlate(a);
 }
 function spawnActor(a, fixed) {
@@ -2305,13 +2316,14 @@ function leanClear(p, d) {
 const headX = o => Math.cos(o.yaw) * (o.lo || 0), headZ = o => -Math.sin(o.yaw) * (o.lo || 0);
 function typeDigit(d) {
   if (G.state !== 'playing' || G.countdown > 0 || !G.player || !G.player.alive || G.lock > 0) return;
-  const L = G.codeLen || 4; if (G.typed.length >= L) return; G.typed += d; Sfx.key(); UI.dirty = true;
-  if (G.typed.length === L && (S.auto || Device.mobile)) submitNumber();
+  const mix = !G.codeLen, L = G.codeLen || 6; if (G.typed.length >= L) return; G.typed += d; Sfx.key(); UI.dirty = true;
+  if (mix) { if (G.typed.length >= 3 && (G.typed.length >= 6 || G.actors.some(a => a.alive && a !== G.player && a.number === G.typed)) && (S.auto || Device.mobile)) submitNumber(); }
+  else if (G.typed.length === L && (S.auto || Device.mobile)) submitNumber();
 }
 function backspace() { if (G.state !== 'playing' || G.lock > 0) return; if (G.typed.length) { G.typed = G.typed.slice(0, -1); Sfx.del(); UI.dirty = true; } }
 function submitNumber() {
   const p = G.player; if (G.state !== 'playing' || G.countdown > 0 || !p || !p.alive || G.lock > 0) return;
-  if (G.typed.length < (G.codeLen || 4)) { UI.msg('請輸入完整的 ' + (G.codeLen || 4) + ' 位數字', 'bad'); return; }
+  if (G.typed.length < (G.codeLen || 3)) { UI.msg('請輸入完整的 ' + (G.codeLen || 3) + ' 位以上數字', 'bad'); return; }
   const code = G.typed, t = G.actors.find(a => a.alive && a.number === code && a !== p);
   if (t && (G.mode === 'dm' || t.team !== p.team)) {
     if (t.protect > 0) { UI.msg('對方有重生保護', 'bad'); G.typed = ''; UI.dirty = true; return; }
@@ -2353,7 +2365,7 @@ function updatePlayer(dt) {
     if (G.bino) { G.energy -= dt * .22; if (G.energy <= 0) { G.energy = 0; G.bino = false; } } else G.energy = Math.min(1, G.energy + dt * .12);
   } else { p.vx *= .9; p.vz *= .9; p.deadT += dt; p.respawnT -= dt; p.fall = Math.min(1, p.fall + dt * 2.5); }
   { const want = p.alive ? (In.leanL ? -1 : 0) + (In.leanR ? 1 : 0) : 0; let tgt = 0; if (want) { let k = 0; for (let s = 1; s <= 11; s++) { if (!leanClear(p, want * s * .05)) break; k = s * .05; } tgt = want * k; } p.lo += (tgt - p.lo) * Math.min(1, dt * 11); p.lean = want; }
-  p.fx = f[0]; p.fz = f[1];
+  p.fx = f[0]; p.fz = f[1]; if (!p.alive) { In.leanL = In.leanR = false; }
   G.binK += ((G.bino ? 1 : 0) - G.binK) * Math.min(1, dt * 9);
   G.lock = Math.max(0, G.lock - dt); G.itemCd = Math.max(0, G.itemCd - dt); G.flashT = Math.max(0, G.flashT - dt); if (G.flashT <= 0) G.flashMax = 1;
   G.fp.throwT = Math.max(0, G.fp.throwT - dt); G.fp.camT = Math.max(0, G.fp.camT - dt);
@@ -2376,7 +2388,7 @@ function updateCamera(dt) {
   G.fov += (fov - G.fov) * Math.min(1, dt * 14); c.fov = G.fov;
   let sx = 0, sy = 0; if (G.binK > .5) { sx = Math.sin(G.time * 1.7) * .0016 + Math.sin(G.time * 4.1) * .0007; sy = Math.cos(G.time * 1.3) * .0014; }
   c.x = p.x + Math.cos(p.yaw) * p.lo; c.z = p.z - Math.sin(p.yaw) * p.lo; c.y = (p.alive ? G.camY - Math.abs(p.lo) * .12 : Math.max(.35, G.camY - p.deadT * 2.2)) + bob;
-  c.yaw = p.yaw + sx; c.pitch = p.pitch + sy; c.roll = p.alive ? -p.lo * .4 : clamp(p.deadT * 2.2, 0, 1.2) * (p.id % 2 ? 1 : -1);
+  c.yaw = p.yaw + sx; c.pitch = p.pitch + sy; c.roll = p.alive ? -p.lo * .4 : clamp(p.deadT * 2.2, 0, .35) * (p.id % 2 ? 1 : -1);
   if (!p.alive) c.pitch = lerp(c.pitch, -.45, clamp(p.deadT * 2, 0, 1));
 }
 
@@ -2394,7 +2406,7 @@ function scanBot(b, dt) {
     if (d < seenD) { seenD = d; seen = o; }
     const face = -(o.fx * ux + o.fz * uz);
     if (face > .34 && o.protect <= 0) {
-      const need = df.base * (G.codeLen || 4) / 4 * (G.demo ? 1.25 : 1) * b.scaleBase * (.55 + d / 17) * (1 + o.sp * .45) * (G.mode === 'ctf' ? (o.carry ? 2.2 : 1.5) : 1);
+      const need = df.base * o.number.length / 4 * (G.demo ? 1.25 : 1) * b.scaleBase * (.55 + d / 17) * (1 + o.sp * .45) * (G.mode === 'ctf' ? (o.carry ? 2.2 : 1.5) : 1);
       p += dt / need; b.read[o.id] = Math.min(1, p); if (p > .3) { o.threatT = 1.3; o.reader = b; }
       if (p >= 1 && !b.typing) { b.typing = { target: o, num: o.number, t: df.type * (.8 + Math.random() * .5) }; b.read[o.id] = 0; }
     } else if (p > 0) b.read[o.id] = Math.max(0, p - dt * 1.0);
@@ -2599,12 +2611,12 @@ function updateDemoCam(dt) {
   if (!v) return;
   G.camY += (v.y + EYE - G.camY) * Math.min(1, dt * 12); G.camYaw += angDiff(G.camYaw, v.yaw) * Math.min(1, dt * 9);
   const bob = v.alive ? Math.sin(v.animT * 2) * .03 * v.sp : 0;
-  c.x = v.x; c.z = v.z; c.y = (v.alive ? G.camY : Math.max(.35, G.camY - v.deadT * 2.2)) + bob; c.yaw = G.camYaw; c.pitch = v.alive ? -.02 : -.4; c.roll = v.alive ? 0 : clamp(v.deadT * 2.2, 0, 1.2) * (v.id % 2 ? 1 : -1);
+  c.x = v.x; c.z = v.z; c.y = (v.alive ? G.camY : Math.max(.35, G.camY - v.deadT * 2.2)) + bob; c.yaw = G.camYaw; c.pitch = v.alive ? -.02 : -.4; c.roll = v.alive ? 0 : clamp(v.deadT * 2.2, 0, .35) * (v.id % 2 ? 1 : -1);
   const f = Device.mobile ? 1.19 : 1.28; G.fov += (f - G.fov) * Math.min(1, dt * 10); c.fov = G.fov; G.binK = 0;
 }
 function startMatch(demo, roster) {
   const mapId = roster ? (roster.map || S.map) : (demo ? (S.demoMap || S.map) : S.map); World.load(MAPS[mapId] ? mapId : 'hb'); G.map = World.id;
-  const mk = (demo && S.demoMode && MODES[S.demoMode]) ? S.demoMode : S.mode, m = MODES[mk]; G.mode = mk; G.codeLen = S.codeLen || 4; G.countdown = 3; G.freezeT = 0; G.tleft = m.time; G.limit = m.limit; G.scores = [0, 0]; G.grenades = []; G.smokes = []; G.lures = []; G.fx = []; G.feed = []; G.typed = ''; G.lock = 0; G.time = 0;
+  const mk = (demo && S.demoMode && MODES[S.demoMode]) ? S.demoMode : S.mode, m = MODES[mk]; G.mode = mk; G.codeLen = S.codeLen === 'rand' ? pick([3, 4, 5, 6]) : S.codeLen === 'mix' ? 0 : (S.codeLen | 0) || 4; G.countdown = 3; G.freezeT = 0; G.tleft = m.time; G.limit = m.limit; G.scores = [0, 0]; G.grenades = []; G.smokes = []; G.lures = []; G.fx = []; G.feed = []; G.typed = ''; G.lock = 0; G.time = 0;
   freeActors(G.actors); G.actors = []; _id = 0; G.slots = [null, null]; G.bino = false; G.binK = 0; G.energy = 1; G.stam = 1; G.flashT = 0; G.itemCd = 0; G.threat = null;
   G.netClient = false; const hum = roster ? roster.length : 1;
   const n = roster ? (S.netBots ? clamp(Math.max(S.count, hum), hum, 20) : hum) : clamp(S.count, 4, 20);
@@ -2764,9 +2776,10 @@ function drawPreview() {
   if (document.getElementById('charsel').classList.contains('hidden')) { drawOrbit(); return; }
   // 選單：旋轉的角色 + 環繞鏡頭
   const a = G.preview; if (!a) return; const c = R.cam, t = G.time * .35, pv = World.cur.preview || [4, 15], cx = pv[0], cz = pv[1];
-  a.yaw = t * .0 + .6 + Math.sin(G.time * .5) * .25; a.x = cx; a.z = cz; a.y = 0; a.sp = 0; a.team = -1; a.plateScale = 1.0;
-  const ang = .3 + Math.sin(G.time * .22) * .5, dist = 3.5;
-  c.x = cx - Math.sin(ang + .2) * dist; c.z = cz + Math.cos(ang + .2) * dist; c.y = 1.25; c.fov = .9; c.yaw = Math.atan2(-(cx - c.x), -(cz - c.z)); c.pitch = -.06; c.roll = 0;
+  a.x = cx; a.z = cz; a.y = 0; a.sp = 0; a.team = -1; a.plateScale = 1.0;
+  const ang = .3 + Math.sin(G.time * .45) * .55, dist = 3.5;
+  a.yaw = Math.atan2(Math.sin(ang + .2), -Math.cos(ang + .2)) + Math.sin(G.time * .9) * .3; // 角色始終朝向鏡頭附近，臉一直看得到
+  c.x = cx - Math.sin(ang + .2) * dist; c.z = cz + Math.cos(ang + .2) * dist; c.y = 1.05; c.fov = .9; c.yaw = Math.atan2(-(cx - c.x), -(cz - c.z)); c.pitch = -.06; c.roll = 0;
   R.begin(); drawSkyDome(c); World.draw();
   a.plateScale = 1; drawAvatar(a); R.polyOffset(true); a.blobS = 1.3; drawBlob(a); R.polyOffset(false);
   drawSkyFx(c, G.time);
@@ -2882,7 +2895,7 @@ function renderLobby() {
   members.forEach(m => { const d = document.createElement('div'); d.className = 'mem'; const o = OUTFITS[clamp(m[3] | 0, 0, 2)]; d.textContent = (m[2] ? '👑 ' : '') + m[1] + (m[0] === me ? '（你）' : '') + ' ・ ' + o.label; list.appendChild(d); });
   $('mpChar').textContent = '角色：' + OUTFITS[S.outfit].label + '　（點此更換）';
   $('mpHostCtl').classList.toggle('hidden', !host); $('mpStart').classList.toggle('hidden', !host);
-  $('mpGuestInfo').textContent = host ? '' : (NET.waiting ? '遊戲進行中，請等待下一場…' : cfg ? `地圖：${MAPS[cfg.mp] ? MAPS[cfg.mp].name : '熱血高校'}　模式：${MODES[cfg.m] ? MODES[cfg.m].name : cfg.m}　號碼：${cfg.cl || 4} 碼　總人數：${cfg.n}　難度：${DIFF[cfg.d].name}　機器人補位：${cfg.b ? '開' : '關'}　等待房主開始…` : '連線中…');
+  $('mpGuestInfo').textContent = host ? '' : (NET.waiting ? '遊戲進行中，請等待下一場…' : cfg ? `地圖：${MAPS[cfg.mp] ? MAPS[cfg.mp].name : '熱血高校'}　模式：${MODES[cfg.m] ? MODES[cfg.m].name : cfg.m}　號碼：${codeLabel(cfg.cl || 4)}　總人數：${cfg.n}　難度：${DIFF[cfg.d].name}　機器人補位：${cfg.b ? '開' : '關'}　等待房主開始…` : '連線中…');
   $('mpCount').textContent = members.length + ' 位真人';
 }
 function lobbyHint(t) { const h = $('mpHint'); h.textContent = t; clearTimeout(lobbyHint.t); lobbyHint.t = setTimeout(() => { h.textContent = ''; }, 4000); }
@@ -2892,7 +2905,7 @@ function initNetUI() {
   $('mpStart').onclick = hostStart;
   chips('chNMap', Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name })), () => S.map, v => { S.map = v; });
   chips('chNMode', Object.entries(MODES).map(([k, m]) => ({ v: k, l: m.name })), () => S.mode, v => S.mode = v);
-  chips('chNCode', [3, 4, 5].map(n => ({ v: n, l: n + ' 碼' })), () => S.codeLen, v => S.codeLen = v);
+  chips('chNCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
   $('mpChar').onclick = () => go(() => openCharSelect('mp'));
   chips('chNCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; });
   chips('chNDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => S.diff = v);
@@ -3006,7 +3019,7 @@ function clientPoll(dt) {
 function clientStartGame(s) {
   const me = myPeer(), idx = s.ac.findIndex(x => x[4] === me && x[3] === 2); if (idx < 0) return false;
   World.load(MAPS[s.mp] ? s.mp : 'hb'); G.map = World.id;
-  G.mode = s.m; G.codeLen = s.cl || 4; G.countdown = 3; G.freezeT = 0; NET.prevCd = 3; G.limit = MODES[s.m].limit; G.tleft = MODES[s.m].time; G.scores = [0, 0]; G.grenades = []; G.smokes = []; G.lures = []; G.fx = []; G.feed = []; G.feedVer = 1; G.typed = ''; G.lock = 0; G.time = 0; G.demo = false; G.view = null;
+  G.mode = s.m; G.codeLen = s.cl === 0 ? 0 : (s.cl || 4); G.countdown = 3; G.freezeT = 0; NET.prevCd = 3; G.limit = MODES[s.m].limit; G.tleft = MODES[s.m].time; G.scores = [0, 0]; G.grenades = []; G.smokes = []; G.lures = []; G.fx = []; G.feed = []; G.feedVer = 1; G.typed = ''; G.lock = 0; G.time = 0; G.demo = false; G.view = null;
   _id = 0; freeActors(G.actors); G.actors = [];
   s.ac.forEach((x, i) => { const a = newActor(x[0], x[1], i === idx); a.team = x[2]; a.alive = false; a.deadT = 99; a.number = '0000'; a.init = false; a.net = true; drawPlate(a); G.actors.push(a); });
   G.player = G.actors[idx]; G.player.deadT = 0; NET.myIdx = idx; G.netClient = true;
@@ -3153,7 +3166,7 @@ const UI = {
     if (G.mode === 'ctf') { const f0 = G.flags[0], f1 = G.flags[1]; e.flagR.textContent = f0 && f0.state !== 'home' ? '🚩' : ''; e.flagB.textContent = f1 && f1.state !== 'home' ? '🏴' : ''; } else { e.flagR.textContent = ''; e.flagB.textContent = ''; }
     // 輸入
     if (this.dirty || this.lastTyped !== G.typed) {
-      const t = G.typed + '_'.repeat(Math.max(0, (G.codeLen || 4) - G.typed.length)); e.typed.textContent = t; e.typed.className = G.typed.length ? '' : 'empty'; e.photoCap.textContent = t; this.lastTyped = G.typed;
+      const t = G.codeLen ? G.typed + '_'.repeat(Math.max(0, G.codeLen - G.typed.length)) : (G.typed.length ? G.typed : '＿＿＿') + (G.typed.length && G.typed.length < 6 ? '_' : ''); e.typed.textContent = t; e.typed.className = G.typed.length ? '' : 'empty'; e.photoCap.textContent = t; this.lastTyped = G.typed;
       this.slotHTML(e.slotF, G.slots[0]); this.slotHTML(e.slotG, G.slots[1]);
       this.dirty = false;
     }
@@ -3328,6 +3341,7 @@ const Input = {
     layer.addEventListener('touchend', end); layer.addEventListener('touchcancel', end);
     // 按鈕
     const press = (el, down, up) => { let lt = 0; el.addEventListener('touchstart', e => { lt = performance.now(); e.preventDefault(); e.stopPropagation(); Sfx.init(); Sfx.resume(); el.classList.add('act'); down(); if (navigator.vibrate) try { navigator.vibrate(8); } catch (x) { } }, { passive: false }); const u = e => { e.preventDefault(); el.classList.remove('act'); if (up) up(); }; el.addEventListener('touchend', u); el.addEventListener('touchcancel', u); el.addEventListener('mousedown', e => { if (Device.mobile && performance.now() - lt > 900) { e.stopPropagation(); down(); } }); };
+    document.addEventListener('touchend', e => { if (!e.touches.length) { In.leanL = In.leanR = false; In.jump = false; } }, true); document.addEventListener('touchcancel', () => { In.leanL = In.leanR = false; In.jump = false; }, true);
     document.querySelectorAll('.np').forEach(b => press(b, () => typeDigit(b.dataset.k)));
     press($('bJump'), () => { In.jump = true; }, () => { In.jump = false; });
     press($('bBino'), () => toggleBino());
@@ -3378,7 +3392,7 @@ function buildMenu() {
   const mapItems = Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), updMap = () => { $('mapDesc').textContent = MAPS[S.map].desc; };
   chips('chMap', mapItems, () => S.map, v => { S.map = v; updMap(); }); updMap();
   chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => S.mode = v);
-  chips('chCode', [3, 4, 5].map(n => ({ v: n, l: n + ' 碼' })), () => S.codeLen, v => S.codeLen = v);
+  chips('chCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
   chips('chCount', [8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; });
   chips('chDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => S.diff = v);
   chips('chInput', [{ v: 'auto', l: '自動偵測' }, { v: 'desktop', l: '🖥️ 電腦' }, { v: 'mobile', l: '📱 手機' }], () => S.input, v => { S.input = v; Device.update(); refreshBadge(); });
@@ -3408,11 +3422,11 @@ function tutHTML(mobile) {
 <div class="tcard"><b>⚠ 小心</b>紅色箭頭＝有人正在讀你的號碼<br>輸入錯誤會被定身 2 秒（視角也不能轉）<br><span class="kc">Esc</span> 暫停</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
   const P = (l, t, w, cls, txt) => `<i class="${cls || ''}" style="left:${l}%;top:${t}%;${w ? 'width:' + w + '%;aspect-ratio:1;' : ''}">${txt}</i>`;
   return `<h2>操作說明</h2><div class="tphone">
-${P(3.3, 50, 0, 'col', '1<br>2<br>3<br>4<br>5')}${P(96.7, 50, 0, 'col', '6<br>7<br>8<br>9<br>0')}
+${P(23, 23.5, 0, 'col', '1 2 3 4 5')}${P(77, 23.5, 0, 'col', '6 7 8 9 0')}
 ${P(16.3, 78.4, 12, 'c', '移動')}${P(11.5, 40.6, 6.6, 'c', '🔭')}${P(72.8, 70.4, 6.2, 'c', 'F')}${P(69.2, 88.7, 6.2, 'c', 'G')}
 ${P(81.2, 67.5, 6.6, 'c', '↖')}${P(88.4, 67.5, 6.6, 'c', '↗')}${P(78.2, 86.3, 9.1, 'c', '跑')}${P(87.9, 86, 9.3, 'c', '跳')}${P(59.6, 8, 3.8, 'c', '⏸')}
 <div class="tx" style="left:16.3%;top:62%;width:20%">左側拖曳＝移動</div><div class="tx" style="left:11.5%;top:53%;width:14%">望遠鏡</div>
-<div class="tx" style="left:50%;top:30%;width:40%">右側空白處拖曳＝轉視角</div><div class="tx" style="left:50%;top:46%;width:40%">兩側數字鍵輸入號碼（滿位數自動送出）</div>
+<div class="tx" style="left:50%;top:48%;width:40%">右側空白處拖曳＝轉視角</div><div class="tx" style="left:50%;top:36%;width:60%">上方數字鍵輸入號碼（滿位數自動送出）</div>
 <div class="tx" style="left:46%;top:76%;width:34%;line-height:1.6">F／G＝道具　↖／↗＝探頭（按住）<br>跑＝點一下開關衝刺<br>跳＝跳躍，空中再按＝二段跳</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
 }
 function showTut(freeze) {
@@ -3430,7 +3444,7 @@ function beginGame(demo, roster) {
   UI.els.menu.classList.add('hidden'); UI.els.hud.classList.remove('hidden'); document.body.classList.add('playing'); document.body.classList.toggle('demo', demo);
   UI.hideEnd(); In.sprintT = false; $('bRun').classList.remove('tog'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.els.demoTag.classList.add('hidden');
   $('btnResume').textContent = demo ? '繼續示範' : '繼續'; $('btnQuit').textContent = demo ? '退出示範模式' : NET.mode ? '離開房間' : '回主選單'; $('pauseTitle').textContent = demo ? '示範模式已暫停' : '已暫停';
-  startMatch(demo, roster); UI.els.modeName.textContent = (demo ? '示範 · ' : '') + MAPS[G.map].name + ' · ' + MODES[G.mode].name + ' · ' + G.codeLen + ' 碼 · ' + DIFF[S.diff].name; UI._cd = 0; UI.goT = 0; UI.lastFeed = -1; UI.dirty = true; UI.onRespawn(); Perf.profile(); Perf.apply(); updateRotate();
+  startMatch(demo, roster); UI.els.modeName.textContent = (demo ? '示範 · ' : '') + MAPS[G.map].name + ' · ' + MODES[G.mode].name + ' · ' + (G.codeLen ? G.codeLen + ' 碼' : '大亂鬥') + ' · ' + DIFF[S.diff].name; UI._cd = 0; UI.goT = 0; UI.lastFeed = -1; UI.dirty = true; UI.onRespawn(); Perf.profile(); Perf.apply(); updateRotate();
   UI.els.hints.style.display = Device.mobile ? 'none' : '';
   if (demo) { UI.msg('示範模式：全員為電腦，視角會自動切換', 'item'); }
   else if (!Device.mobile) { Input.lock(); UI.noLock = false; setTimeout(() => { if (!Input.pointerLocked() && G.state === 'playing' && !G.demo) UI.msg('點一下畫面以鎖定滑鼠（無法鎖定時可按住左鍵拖曳）', 'item'); }, 900); }
@@ -3441,7 +3455,7 @@ function beginGame(demo, roster) {
 function toMenu() { go(() => { netLeave(); resetToMenuUI(); }); }
 function stopGameUI() { resetToMenuUI(); UI.els.menu.classList.add('hidden'); }
 function resetToMenuUI() {
-  hideTut();
+  hideTut(); $('gset').classList.add('hidden');
   G.state = 'menu'; G.demo = false; G.view = null; document.body.classList.remove('playing', 'demo'); UI.els.hud.classList.add('hidden'); UI.els.menu.classList.remove('hidden'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.hideEnd(); UI.els.bino.style.display = 'none'; UI.els.flash.style.opacity = 0;
   $('settings').classList.add('hidden'); updateRotate(); if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
   { const ids = Object.keys(MAPS).filter(k => k !== World.id); World.load(pick(ids)); G.orbitSeed = Math.random() * 6.28; }
@@ -3467,7 +3481,7 @@ function openCharSelect(origin) {
   UI.csOrigin = origin; $('csOk').textContent = origin === 'mp' ? '確認' : '確認，開始遊戲'; buildCards(); setPreview();
   UI.els.menu.classList.add('hidden'); $('mp').classList.add('hidden'); $('charsel').classList.remove('hidden');
 }
-function closeCharSelect() { $('charsel').classList.add('hidden'); if (UI.csOrigin === 'mp') { $('mp').classList.remove('hidden'); renderLobby(); } else UI.els.menu.classList.remove('hidden'); }
+function closeCharSelect() { $('charsel').classList.add('hidden'); if (UI.csOrigin === 'mp') { $('mp').classList.remove('hidden'); renderLobby(); } else $('gset').classList.remove('hidden'); }
 function openDemoPick() {
   const list = Object.entries(MODES).filter(([k, m]) => m.demo !== false), bad = Object.entries(MODES).filter(([k, m]) => m.demo === false);
   if (!list.some(([k]) => k === S.demoMode)) S.demoMode = list.length ? list[0][0] : 'dm';
@@ -3576,7 +3590,9 @@ function boot() {
   window.addEventListener('orientationchange', () => setTimeout(() => { updateRotate(); Perf.apply(); sizeBinoculars(); }, 250));
   const fs = () => { try { const el = document.documentElement; if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) { const r = el.requestFullscreen(); if (r && r.catch) r.catch(() => UI.msg('此環境不允許全螢幕', 'bad')); } else UI.msg('此裝置不支援全螢幕', 'bad'); } catch (e) { } };
   $('btnFs').onclick = fs; $('btnFs2').onclick = fs;
-  $('btnStart').onclick = () => go(() => openCharSelect('start')); $('btnDemo').onclick = () => go(openDemoPick); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
+  $('btnStart').onclick = () => go(() => { UI.els.menu.classList.add('hidden'); $('gset').classList.remove('hidden'); });
+  $('gBack').onclick = () => go(() => { $('gset').classList.add('hidden'); UI.els.menu.classList.remove('hidden'); });
+  $('gGo').onclick = () => go(() => { $('gset').classList.add('hidden'); openCharSelect('start'); }); $('btnDemo').onclick = () => go(openDemoPick); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
   $('csBack').onclick = () => go(closeCharSelect);
   $('csOk').onclick = () => go(() => { $('charsel').classList.add('hidden'); if (UI.csOrigin === 'mp') { $('mp').classList.remove('hidden'); renderLobby(); } else beginGame(false); });
   $('dpBack').onclick = () => go(() => $('demoPick').classList.add('hidden')); $('dpOk').onclick = () => go(() => { $('demoPick').classList.add('hidden'); beginGame(true); });

@@ -87,8 +87,8 @@ tr.me td{background:rgba(238,28,46,.35);font-weight:900}
 #menu{position:absolute;inset:0;display:flex;align-items:stretch;pointer-events:none}
 .panel{pointer-events:auto;width:min(540px,100vw);margin:0;padding:18px 20px 22px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;background:linear-gradient(90deg,rgba(24,16,10,.9),rgba(24,16,10,.78) 82%,rgba(24,16,10,0));scrollbar-width:thin}
 .logo{line-height:.9;margin-bottom:6px;transform:rotate(-2.5deg);transform-origin:left}
-.logo .l1,.logo .l2{display:inline-block;font:400 46px var(--disp);letter-spacing:.02em;background:var(--cream);color:#2c1a0d;padding:2px 10px 0;border-radius:6px;box-shadow:4px 4px 0 var(--red)}
-.logo .l2{margin-top:6px;background:var(--yel);margin-left:16px}
+.logo .l1,.logo .l2{display:inline-block;font:400 46px var(--disp);letter-spacing:.02em;background:none;color:#fff;-webkit-text-stroke:7px #3b2210;paint-order:stroke fill;padding:2px 8px 0;text-shadow:3px 4px 0 #3b2210}
+.logo .l2{margin-top:6px;margin-left:16px}
 .tag{font-size:12px;opacity:.85;margin:10px 0 4px}
 .panel h4{margin:14px 0 6px;font-size:13px;letter-spacing:.12em;color:var(--yel)}
 .chips{display:flex;flex-wrap:wrap;gap:7px}
@@ -128,7 +128,7 @@ body.mobile #warnBox{bottom:40%}
 body.mobile #photo canvas{width:300px;height:225px}
 
 #pauseBtn{display:none;position:absolute;border-radius:50%;background:rgba(0,0,0,.45);border:1.5px solid rgba(255,255,255,.7);color:#fff;font-size:15px;pointer-events:auto;padding:0}
-.numcol{position:absolute;top:0;bottom:0;width:max(44px,6.6vw);display:flex;flex-direction:column;gap:.7vh;z-index:2}
+.numcol{position:absolute;top:17vh;height:13vh;width:46vw;display:flex;flex-direction:row;gap:.5vw;z-index:2}
 #numL{left:0}#numR{right:0}
 .np{flex:1;min-height:0;border-radius:11px;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.55);color:#fff;font:400 clamp(22px,5vh,38px) var(--disp);display:flex;align-items:center;justify-content:center;pointer-events:auto}
 .tbtn.act,.np.act{background:rgba(255,255,255,.55)}
@@ -227,7 +227,7 @@ body.editing #touch *{pointer-events:none!important}
 body.mobile #cdNum{font-size:84px}
 #menu{justify-content:center}
 #menu .panel{text-align:center;margin:auto 0;max-height:100%;background:none!important;border:0;box-shadow:none}
-#menu .panel h4,#menu .panel .mpnote,#menu .panel #devbadge,#menu .panel .logo{text-shadow:0 1px 4px rgba(0,0,0,.9),0 0 10px rgba(0,0,0,.7)}
+#menu .panel h4,#menu .panel .mpnote,#menu .panel #devbadge{text-shadow:0 1px 4px rgba(0,0,0,.9),0 0 10px rgba(0,0,0,.7)}
 .ver{align-self:flex-end;margin-left:6px;font:900 15px var(--font);color:#fff;-webkit-text-stroke:3px #1b1b1b;paint-order:stroke fill;letter-spacing:.04em;transform:rotate(2deg)}
 body.rot{--vw:calc(var(--sh)/100);--vh:calc(var(--sw)/100)}
 body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh);height:var(--sw);transform-origin:0 0;transform:translateX(var(--sw)) rotate(90deg);overflow:hidden}
@@ -242,13 +242,18 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 .tphone{position:relative;width:min(94%,calc(72vh*2.17));aspect-ratio:2.17/1;max-height:66vh;background:rgba(40,60,90,.35);border:2px solid rgba(255,255,255,.5);border-radius:16px}
 .tphone i{position:absolute;transform:translate(-50%,-50%);font-style:normal;text-align:center;font-size:clamp(9px,1.5vw,13px);line-height:1.15;display:flex;align-items:center;justify-content:center;color:#fff}
 .tphone .c{border:2px solid #fff;border-radius:50%;background:rgba(255,255,255,.14)}
-.tphone .col{border:2px solid #fff;border-radius:6px;background:rgba(255,255,255,.14);width:6.6%;height:96%;top:50%}
+.tphone .col{border:2px solid #fff;border-radius:6px;background:rgba(255,255,255,.14);width:46%;height:13%;top:23.5%;letter-spacing:.35em}
 .tphone .tx{position:absolute;transform:translate(-50%,-50%);font-size:clamp(9px,1.5vw,13px);color:#ffe58a;text-align:center;width:30%}
 #menu .panel .chips{justify-content:center}
 #menu .panel .logo{justify-content:center;transform:rotate(-2deg);transform-origin:center}
 #menu .panel h4{text-align:center}
 #menu .panel #mapDesc,#menu .panel .mpnote{text-align:center}
-.np{border-radius:8px}
+.np{border-radius:8px;opacity:.6}
+#gset{position:absolute;inset:0;z-index:59;background:rgba(10,8,6,.55);display:flex;align-items:center;justify-content:center;padding:12px}
+.gbox{text-align:center;width:min(600px,100%)}.gbox .chips{justify-content:center}.gbox h4{margin:12px 0 6px;font-size:13px;letter-spacing:.12em;color:var(--yel)}.gbox .btnrow{margin-top:16px;gap:16px}
+.btn.gray{background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.8),rgba(255,255,255,0) 100%) 50% 3%/92% 50% no-repeat,linear-gradient(180deg,#f1f2f5 0%,#cfd2d9 50%,#aeb2bb 100%);color:#2b2f38;text-shadow:0 1px 0 rgba(255,255,255,.7);box-shadow:inset 0 3px 4px rgba(255,255,255,.9),inset 0 -6px 9px rgba(70,75,90,.35),0 5px 0 #7d818c,0 9px 14px rgba(0,0,0,.4)}
+.mbtns{display:flex;flex-direction:column;gap:14px;margin-top:18px}
+.mbtns .btn{width:100%;margin:0;font-size:16px;padding:11px 8px}.mbtns #btnStart{font-size:22px;padding:13px 8px}
 </style>
 </head>
 <body>
@@ -296,20 +301,24 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
       <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; {{VER}}</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
-      <h4>地圖</h4><div class="chips" id="chMap"></div><div id="mapDesc" class="mpnote" style="margin:2px 0 4px"></div>
-      <h4>遊戲模式</h4><div class="chips" id="chMode"></div>
-      <h4>人數</h4><div class="chips" id="chCount"></div>
-      <h4>號碼位數</h4><div class="chips" id="chCode"></div>
-      <h4>機器人難度</h4><div class="chips" id="chDiff"></div>
-      
-      <button class="btn" id="btnStart">🏆開始遊戲</button>
-      <button class="btn lite" id="btnMP" style="width:100%;margin-top:8px;font-size:17px;padding:10px">🌐 多人連線（用 4 位數密碼與好友同場）</button>
-      <button class="btn alt" id="btnDemo" style="width:100%;margin-top:8px;font-size:15px;padding:8px">🎬 電腦示範模式（全 AI 對戰・隨機視角觀戰）</button>
-      <button class="btn alt" id="btnHow" style="width:100%;margin-top:8px;font-size:15px;padding:8px">📖 玩法操作與說明</button>
-      <button class="btn alt" id="btnSet" style="width:100%;margin-top:8px;font-size:15px;padding:8px">⚙ 設定（裝置／畫質／全螢幕／按鍵配置）</button>
+      <div class="mbtns">
+        <button class="btn" id="btnStart">🏆開始遊戲</button>
+        <button class="btn lite" id="btnMP">🌐 多人連線（用 4 位數密碼與好友同場）</button>
+        <button class="btn alt" id="btnDemo">🎬 電腦示範模式（全 AI 對戰・隨機視角觀戰）</button>
+        <button class="btn alt" id="btnHow">📖 玩法操作與說明</button>
+        <button class="btn alt" id="btnSet">⚙ 設定（裝置／畫質／全螢幕／按鍵配置）</button>
+      </div>
     </div>
   </div>
 
+  <div id="gset" class="hidden"><div class="sbox gbox"><h2>🏆 遊戲設定</h2>
+    <h4>遊戲模式</h4><div class="chips" id="chMode"></div>
+    <h4>地圖</h4><div class="chips" id="chMap"></div><div id="mapDesc" class="mpnote" style="margin:2px 0 4px"></div>
+    <h4>人數</h4><div class="chips" id="chCount"></div>
+    <h4>難度</h4><div class="chips" id="chCode"></div>
+    <h4>機器人難度</h4><div class="chips" id="chDiff"></div>
+    <div class="btnrow"><button class="btn gray" id="gBack">🔙 回上一頁</button><button class="btn" id="gGo">🔥 進入遊戲</button></div>
+  </div></div>
   <div id="tut" class="hidden"></div>
   <div id="fin" class="hidden"></div>
   <div id="end" class="hidden"></div>

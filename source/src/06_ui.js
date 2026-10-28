@@ -66,7 +66,7 @@ const UI = {
     if (G.mode === 'ctf') { const f0 = G.flags[0], f1 = G.flags[1]; e.flagR.textContent = f0 && f0.state !== 'home' ? '🚩' : ''; e.flagB.textContent = f1 && f1.state !== 'home' ? '🏴' : ''; } else { e.flagR.textContent = ''; e.flagB.textContent = ''; }
     // 輸入
     if (this.dirty || this.lastTyped !== G.typed) {
-      const t = G.typed + '_'.repeat(Math.max(0, (G.codeLen || 4) - G.typed.length)); e.typed.textContent = t; e.typed.className = G.typed.length ? '' : 'empty'; e.photoCap.textContent = t; this.lastTyped = G.typed;
+      const t = G.codeLen ? G.typed + '_'.repeat(Math.max(0, G.codeLen - G.typed.length)) : (G.typed.length ? G.typed : '＿＿＿') + (G.typed.length && G.typed.length < 6 ? '_' : ''); e.typed.textContent = t; e.typed.className = G.typed.length ? '' : 'empty'; e.photoCap.textContent = t; this.lastTyped = G.typed;
       this.slotHTML(e.slotF, G.slots[0]); this.slotHTML(e.slotG, G.slots[1]);
       this.dirty = false;
     }
@@ -241,6 +241,7 @@ const Input = {
     layer.addEventListener('touchend', end); layer.addEventListener('touchcancel', end);
     // 按鈕
     const press = (el, down, up) => { let lt = 0; el.addEventListener('touchstart', e => { lt = performance.now(); e.preventDefault(); e.stopPropagation(); Sfx.init(); Sfx.resume(); el.classList.add('act'); down(); if (navigator.vibrate) try { navigator.vibrate(8); } catch (x) { } }, { passive: false }); const u = e => { e.preventDefault(); el.classList.remove('act'); if (up) up(); }; el.addEventListener('touchend', u); el.addEventListener('touchcancel', u); el.addEventListener('mousedown', e => { if (Device.mobile && performance.now() - lt > 900) { e.stopPropagation(); down(); } }); };
+    document.addEventListener('touchend', e => { if (!e.touches.length) { In.leanL = In.leanR = false; In.jump = false; } }, true); document.addEventListener('touchcancel', () => { In.leanL = In.leanR = false; In.jump = false; }, true);
     document.querySelectorAll('.np').forEach(b => press(b, () => typeDigit(b.dataset.k)));
     press($('bJump'), () => { In.jump = true; }, () => { In.jump = false; });
     press($('bBino'), () => toggleBino());
@@ -291,7 +292,7 @@ function buildMenu() {
   const mapItems = Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), updMap = () => { $('mapDesc').textContent = MAPS[S.map].desc; };
   chips('chMap', mapItems, () => S.map, v => { S.map = v; updMap(); }); updMap();
   chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => S.mode = v);
-  chips('chCode', [3, 4, 5].map(n => ({ v: n, l: n + ' 碼' })), () => S.codeLen, v => S.codeLen = v);
+  chips('chCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
   chips('chCount', [8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; });
   chips('chDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => S.diff = v);
   chips('chInput', [{ v: 'auto', l: '自動偵測' }, { v: 'desktop', l: '🖥️ 電腦' }, { v: 'mobile', l: '📱 手機' }], () => S.input, v => { S.input = v; Device.update(); refreshBadge(); });
@@ -321,11 +322,11 @@ function tutHTML(mobile) {
 <div class="tcard"><b>⚠ 小心</b>紅色箭頭＝有人正在讀你的號碼<br>輸入錯誤會被定身 2 秒（視角也不能轉）<br><span class="kc">Esc</span> 暫停</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
   const P = (l, t, w, cls, txt) => `<i class="${cls || ''}" style="left:${l}%;top:${t}%;${w ? 'width:' + w + '%;aspect-ratio:1;' : ''}">${txt}</i>`;
   return `<h2>操作說明</h2><div class="tphone">
-${P(3.3, 50, 0, 'col', '1<br>2<br>3<br>4<br>5')}${P(96.7, 50, 0, 'col', '6<br>7<br>8<br>9<br>0')}
+${P(23, 23.5, 0, 'col', '1 2 3 4 5')}${P(77, 23.5, 0, 'col', '6 7 8 9 0')}
 ${P(16.3, 78.4, 12, 'c', '移動')}${P(11.5, 40.6, 6.6, 'c', '🔭')}${P(72.8, 70.4, 6.2, 'c', 'F')}${P(69.2, 88.7, 6.2, 'c', 'G')}
 ${P(81.2, 67.5, 6.6, 'c', '↖')}${P(88.4, 67.5, 6.6, 'c', '↗')}${P(78.2, 86.3, 9.1, 'c', '跑')}${P(87.9, 86, 9.3, 'c', '跳')}${P(59.6, 8, 3.8, 'c', '⏸')}
 <div class="tx" style="left:16.3%;top:62%;width:20%">左側拖曳＝移動</div><div class="tx" style="left:11.5%;top:53%;width:14%">望遠鏡</div>
-<div class="tx" style="left:50%;top:30%;width:40%">右側空白處拖曳＝轉視角</div><div class="tx" style="left:50%;top:46%;width:40%">兩側數字鍵輸入號碼（滿位數自動送出）</div>
+<div class="tx" style="left:50%;top:48%;width:40%">右側空白處拖曳＝轉視角</div><div class="tx" style="left:50%;top:36%;width:60%">上方數字鍵輸入號碼（滿位數自動送出）</div>
 <div class="tx" style="left:46%;top:76%;width:34%;line-height:1.6">F／G＝道具　↖／↗＝探頭（按住）<br>跑＝點一下開關衝刺<br>跳＝跳躍，空中再按＝二段跳</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
 }
 function showTut(freeze) {
@@ -343,7 +344,7 @@ function beginGame(demo, roster) {
   UI.els.menu.classList.add('hidden'); UI.els.hud.classList.remove('hidden'); document.body.classList.add('playing'); document.body.classList.toggle('demo', demo);
   UI.hideEnd(); In.sprintT = false; $('bRun').classList.remove('tog'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.els.demoTag.classList.add('hidden');
   $('btnResume').textContent = demo ? '繼續示範' : '繼續'; $('btnQuit').textContent = demo ? '退出示範模式' : NET.mode ? '離開房間' : '回主選單'; $('pauseTitle').textContent = demo ? '示範模式已暫停' : '已暫停';
-  startMatch(demo, roster); UI.els.modeName.textContent = (demo ? '示範 · ' : '') + MAPS[G.map].name + ' · ' + MODES[G.mode].name + ' · ' + G.codeLen + ' 碼 · ' + DIFF[S.diff].name; UI._cd = 0; UI.goT = 0; UI.lastFeed = -1; UI.dirty = true; UI.onRespawn(); Perf.profile(); Perf.apply(); updateRotate();
+  startMatch(demo, roster); UI.els.modeName.textContent = (demo ? '示範 · ' : '') + MAPS[G.map].name + ' · ' + MODES[G.mode].name + ' · ' + (G.codeLen ? G.codeLen + ' 碼' : '大亂鬥') + ' · ' + DIFF[S.diff].name; UI._cd = 0; UI.goT = 0; UI.lastFeed = -1; UI.dirty = true; UI.onRespawn(); Perf.profile(); Perf.apply(); updateRotate();
   UI.els.hints.style.display = Device.mobile ? 'none' : '';
   if (demo) { UI.msg('示範模式：全員為電腦，視角會自動切換', 'item'); }
   else if (!Device.mobile) { Input.lock(); UI.noLock = false; setTimeout(() => { if (!Input.pointerLocked() && G.state === 'playing' && !G.demo) UI.msg('點一下畫面以鎖定滑鼠（無法鎖定時可按住左鍵拖曳）', 'item'); }, 900); }
@@ -354,7 +355,7 @@ function beginGame(demo, roster) {
 function toMenu() { go(() => { netLeave(); resetToMenuUI(); }); }
 function stopGameUI() { resetToMenuUI(); UI.els.menu.classList.add('hidden'); }
 function resetToMenuUI() {
-  hideTut();
+  hideTut(); $('gset').classList.add('hidden');
   G.state = 'menu'; G.demo = false; G.view = null; document.body.classList.remove('playing', 'demo'); UI.els.hud.classList.add('hidden'); UI.els.menu.classList.remove('hidden'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.hideEnd(); UI.els.bino.style.display = 'none'; UI.els.flash.style.opacity = 0;
   $('settings').classList.add('hidden'); updateRotate(); if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
   { const ids = Object.keys(MAPS).filter(k => k !== World.id); World.load(pick(ids)); G.orbitSeed = Math.random() * 6.28; }
@@ -380,7 +381,7 @@ function openCharSelect(origin) {
   UI.csOrigin = origin; $('csOk').textContent = origin === 'mp' ? '確認' : '確認，開始遊戲'; buildCards(); setPreview();
   UI.els.menu.classList.add('hidden'); $('mp').classList.add('hidden'); $('charsel').classList.remove('hidden');
 }
-function closeCharSelect() { $('charsel').classList.add('hidden'); if (UI.csOrigin === 'mp') { $('mp').classList.remove('hidden'); renderLobby(); } else UI.els.menu.classList.remove('hidden'); }
+function closeCharSelect() { $('charsel').classList.add('hidden'); if (UI.csOrigin === 'mp') { $('mp').classList.remove('hidden'); renderLobby(); } else $('gset').classList.remove('hidden'); }
 function openDemoPick() {
   const list = Object.entries(MODES).filter(([k, m]) => m.demo !== false), bad = Object.entries(MODES).filter(([k, m]) => m.demo === false);
   if (!list.some(([k]) => k === S.demoMode)) S.demoMode = list.length ? list[0][0] : 'dm';
@@ -489,7 +490,9 @@ function boot() {
   window.addEventListener('orientationchange', () => setTimeout(() => { updateRotate(); Perf.apply(); sizeBinoculars(); }, 250));
   const fs = () => { try { const el = document.documentElement; if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) { const r = el.requestFullscreen(); if (r && r.catch) r.catch(() => UI.msg('此環境不允許全螢幕', 'bad')); } else UI.msg('此裝置不支援全螢幕', 'bad'); } catch (e) { } };
   $('btnFs').onclick = fs; $('btnFs2').onclick = fs;
-  $('btnStart').onclick = () => go(() => openCharSelect('start')); $('btnDemo').onclick = () => go(openDemoPick); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
+  $('btnStart').onclick = () => go(() => { UI.els.menu.classList.add('hidden'); $('gset').classList.remove('hidden'); });
+  $('gBack').onclick = () => go(() => { $('gset').classList.add('hidden'); UI.els.menu.classList.remove('hidden'); });
+  $('gGo').onclick = () => go(() => { $('gset').classList.add('hidden'); openCharSelect('start'); }); $('btnDemo').onclick = () => go(openDemoPick); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
   $('csBack').onclick = () => go(closeCharSelect);
   $('csOk').onclick = () => go(() => { $('charsel').classList.add('hidden'); if (UI.csOrigin === 'mp') { $('mp').classList.remove('hidden'); renderLobby(); } else beginGame(false); });
   $('dpBack').onclick = () => go(() => $('demoPick').classList.add('hidden')); $('dpOk').onclick = () => go(() => { $('demoPick').classList.add('hidden'); beginGame(true); });

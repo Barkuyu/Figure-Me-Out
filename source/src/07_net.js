@@ -108,7 +108,7 @@ function renderLobby() {
   members.forEach(m => { const d = document.createElement('div'); d.className = 'mem'; const o = OUTFITS[clamp(m[3] | 0, 0, 2)]; d.textContent = (m[2] ? '👑 ' : '') + m[1] + (m[0] === me ? '（你）' : '') + ' ・ ' + o.label; list.appendChild(d); });
   $('mpChar').textContent = '角色：' + OUTFITS[S.outfit].label + '　（點此更換）';
   $('mpHostCtl').classList.toggle('hidden', !host); $('mpStart').classList.toggle('hidden', !host);
-  $('mpGuestInfo').textContent = host ? '' : (NET.waiting ? '遊戲進行中，請等待下一場…' : cfg ? `地圖：${MAPS[cfg.mp] ? MAPS[cfg.mp].name : '熱血高校'}　模式：${MODES[cfg.m] ? MODES[cfg.m].name : cfg.m}　號碼：${cfg.cl || 4} 碼　總人數：${cfg.n}　難度：${DIFF[cfg.d].name}　機器人補位：${cfg.b ? '開' : '關'}　等待房主開始…` : '連線中…');
+  $('mpGuestInfo').textContent = host ? '' : (NET.waiting ? '遊戲進行中，請等待下一場…' : cfg ? `地圖：${MAPS[cfg.mp] ? MAPS[cfg.mp].name : '熱血高校'}　模式：${MODES[cfg.m] ? MODES[cfg.m].name : cfg.m}　號碼：${codeLabel(cfg.cl || 4)}　總人數：${cfg.n}　難度：${DIFF[cfg.d].name}　機器人補位：${cfg.b ? '開' : '關'}　等待房主開始…` : '連線中…');
   $('mpCount').textContent = members.length + ' 位真人';
 }
 function lobbyHint(t) { const h = $('mpHint'); h.textContent = t; clearTimeout(lobbyHint.t); lobbyHint.t = setTimeout(() => { h.textContent = ''; }, 4000); }
@@ -118,7 +118,7 @@ function initNetUI() {
   $('mpStart').onclick = hostStart;
   chips('chNMap', Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name })), () => S.map, v => { S.map = v; });
   chips('chNMode', Object.entries(MODES).map(([k, m]) => ({ v: k, l: m.name })), () => S.mode, v => S.mode = v);
-  chips('chNCode', [3, 4, 5].map(n => ({ v: n, l: n + ' 碼' })), () => S.codeLen, v => S.codeLen = v);
+  chips('chNCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
   $('mpChar').onclick = () => go(() => openCharSelect('mp'));
   chips('chNCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; });
   chips('chNDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => S.diff = v);
@@ -232,7 +232,7 @@ function clientPoll(dt) {
 function clientStartGame(s) {
   const me = myPeer(), idx = s.ac.findIndex(x => x[4] === me && x[3] === 2); if (idx < 0) return false;
   World.load(MAPS[s.mp] ? s.mp : 'hb'); G.map = World.id;
-  G.mode = s.m; G.codeLen = s.cl || 4; G.countdown = 3; G.freezeT = 0; NET.prevCd = 3; G.limit = MODES[s.m].limit; G.tleft = MODES[s.m].time; G.scores = [0, 0]; G.grenades = []; G.smokes = []; G.lures = []; G.fx = []; G.feed = []; G.feedVer = 1; G.typed = ''; G.lock = 0; G.time = 0; G.demo = false; G.view = null;
+  G.mode = s.m; G.codeLen = s.cl === 0 ? 0 : (s.cl || 4); G.countdown = 3; G.freezeT = 0; NET.prevCd = 3; G.limit = MODES[s.m].limit; G.tleft = MODES[s.m].time; G.scores = [0, 0]; G.grenades = []; G.smokes = []; G.lures = []; G.fx = []; G.feed = []; G.feedVer = 1; G.typed = ''; G.lock = 0; G.time = 0; G.demo = false; G.view = null;
   _id = 0; freeActors(G.actors); G.actors = [];
   s.ac.forEach((x, i) => { const a = newActor(x[0], x[1], i === idx); a.team = x[2]; a.alive = false; a.deadT = 99; a.number = '0000'; a.init = false; a.net = true; drawPlate(a); G.actors.push(a); });
   G.player = G.actors[idx]; G.player.deadT = 0; NET.myIdx = idx; G.netClient = true;

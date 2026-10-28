@@ -30,7 +30,7 @@ function newActor(name, outfit, isPlayer) {
   makePlate(a); return a;
 }
 function assignNumber(a) {
-  const L = G.codeLen || 4; let n; do { n = String(randi(Math.pow(10, L - 1), Math.pow(10, L) - 1)); } while (G.actors.some(o => o !== a && o.number === n));
+  const mix = !G.codeLen, L = G.codeLen || randi(3, 6); let n; do { n = String(randi(Math.pow(10, L - 1), Math.pow(10, L) - 1)); } while (G.actors.some(o => o !== a && (o.number === n || (mix && (o.number.startsWith(n) || n.startsWith(o.number))))));
   a.number = n; drawPlate(a);
 }
 function spawnActor(a, fixed) {
@@ -276,13 +276,14 @@ function leanClear(p, d) {
 const headX = o => Math.cos(o.yaw) * (o.lo || 0), headZ = o => -Math.sin(o.yaw) * (o.lo || 0);
 function typeDigit(d) {
   if (G.state !== 'playing' || G.countdown > 0 || !G.player || !G.player.alive || G.lock > 0) return;
-  const L = G.codeLen || 4; if (G.typed.length >= L) return; G.typed += d; Sfx.key(); UI.dirty = true;
-  if (G.typed.length === L && (S.auto || Device.mobile)) submitNumber();
+  const mix = !G.codeLen, L = G.codeLen || 6; if (G.typed.length >= L) return; G.typed += d; Sfx.key(); UI.dirty = true;
+  if (mix) { if (G.typed.length >= 3 && (G.typed.length >= 6 || G.actors.some(a => a.alive && a !== G.player && a.number === G.typed)) && (S.auto || Device.mobile)) submitNumber(); }
+  else if (G.typed.length === L && (S.auto || Device.mobile)) submitNumber();
 }
 function backspace() { if (G.state !== 'playing' || G.lock > 0) return; if (G.typed.length) { G.typed = G.typed.slice(0, -1); Sfx.del(); UI.dirty = true; } }
 function submitNumber() {
   const p = G.player; if (G.state !== 'playing' || G.countdown > 0 || !p || !p.alive || G.lock > 0) return;
-  if (G.typed.length < (G.codeLen || 4)) { UI.msg('請輸入完整的 ' + (G.codeLen || 4) + ' 位數字', 'bad'); return; }
+  if (G.typed.length < (G.codeLen || 3)) { UI.msg('請輸入完整的 ' + (G.codeLen || 3) + ' 位以上數字', 'bad'); return; }
   const code = G.typed, t = G.actors.find(a => a.alive && a.number === code && a !== p);
   if (t && (G.mode === 'dm' || t.team !== p.team)) {
     if (t.protect > 0) { UI.msg('對方有重生保護', 'bad'); G.typed = ''; UI.dirty = true; return; }
@@ -324,7 +325,7 @@ function updatePlayer(dt) {
     if (G.bino) { G.energy -= dt * .22; if (G.energy <= 0) { G.energy = 0; G.bino = false; } } else G.energy = Math.min(1, G.energy + dt * .12);
   } else { p.vx *= .9; p.vz *= .9; p.deadT += dt; p.respawnT -= dt; p.fall = Math.min(1, p.fall + dt * 2.5); }
   { const want = p.alive ? (In.leanL ? -1 : 0) + (In.leanR ? 1 : 0) : 0; let tgt = 0; if (want) { let k = 0; for (let s = 1; s <= 11; s++) { if (!leanClear(p, want * s * .05)) break; k = s * .05; } tgt = want * k; } p.lo += (tgt - p.lo) * Math.min(1, dt * 11); p.lean = want; }
-  p.fx = f[0]; p.fz = f[1];
+  p.fx = f[0]; p.fz = f[1]; if (!p.alive) { In.leanL = In.leanR = false; }
   G.binK += ((G.bino ? 1 : 0) - G.binK) * Math.min(1, dt * 9);
   G.lock = Math.max(0, G.lock - dt); G.itemCd = Math.max(0, G.itemCd - dt); G.flashT = Math.max(0, G.flashT - dt); if (G.flashT <= 0) G.flashMax = 1;
   G.fp.throwT = Math.max(0, G.fp.throwT - dt); G.fp.camT = Math.max(0, G.fp.camT - dt);
@@ -347,7 +348,7 @@ function updateCamera(dt) {
   G.fov += (fov - G.fov) * Math.min(1, dt * 14); c.fov = G.fov;
   let sx = 0, sy = 0; if (G.binK > .5) { sx = Math.sin(G.time * 1.7) * .0016 + Math.sin(G.time * 4.1) * .0007; sy = Math.cos(G.time * 1.3) * .0014; }
   c.x = p.x + Math.cos(p.yaw) * p.lo; c.z = p.z - Math.sin(p.yaw) * p.lo; c.y = (p.alive ? G.camY - Math.abs(p.lo) * .12 : Math.max(.35, G.camY - p.deadT * 2.2)) + bob;
-  c.yaw = p.yaw + sx; c.pitch = p.pitch + sy; c.roll = p.alive ? -p.lo * .4 : clamp(p.deadT * 2.2, 0, 1.2) * (p.id % 2 ? 1 : -1);
+  c.yaw = p.yaw + sx; c.pitch = p.pitch + sy; c.roll = p.alive ? -p.lo * .4 : clamp(p.deadT * 2.2, 0, .35) * (p.id % 2 ? 1 : -1);
   if (!p.alive) c.pitch = lerp(c.pitch, -.45, clamp(p.deadT * 2, 0, 1));
 }
 
@@ -365,7 +366,7 @@ function scanBot(b, dt) {
     if (d < seenD) { seenD = d; seen = o; }
     const face = -(o.fx * ux + o.fz * uz);
     if (face > .34 && o.protect <= 0) {
-      const need = df.base * (G.codeLen || 4) / 4 * (G.demo ? 1.25 : 1) * b.scaleBase * (.55 + d / 17) * (1 + o.sp * .45) * (G.mode === 'ctf' ? (o.carry ? 2.2 : 1.5) : 1);
+      const need = df.base * o.number.length / 4 * (G.demo ? 1.25 : 1) * b.scaleBase * (.55 + d / 17) * (1 + o.sp * .45) * (G.mode === 'ctf' ? (o.carry ? 2.2 : 1.5) : 1);
       p += dt / need; b.read[o.id] = Math.min(1, p); if (p > .3) { o.threatT = 1.3; o.reader = b; }
       if (p >= 1 && !b.typing) { b.typing = { target: o, num: o.number, t: df.type * (.8 + Math.random() * .5) }; b.read[o.id] = 0; }
     } else if (p > 0) b.read[o.id] = Math.max(0, p - dt * 1.0);
@@ -570,12 +571,12 @@ function updateDemoCam(dt) {
   if (!v) return;
   G.camY += (v.y + EYE - G.camY) * Math.min(1, dt * 12); G.camYaw += angDiff(G.camYaw, v.yaw) * Math.min(1, dt * 9);
   const bob = v.alive ? Math.sin(v.animT * 2) * .03 * v.sp : 0;
-  c.x = v.x; c.z = v.z; c.y = (v.alive ? G.camY : Math.max(.35, G.camY - v.deadT * 2.2)) + bob; c.yaw = G.camYaw; c.pitch = v.alive ? -.02 : -.4; c.roll = v.alive ? 0 : clamp(v.deadT * 2.2, 0, 1.2) * (v.id % 2 ? 1 : -1);
+  c.x = v.x; c.z = v.z; c.y = (v.alive ? G.camY : Math.max(.35, G.camY - v.deadT * 2.2)) + bob; c.yaw = G.camYaw; c.pitch = v.alive ? -.02 : -.4; c.roll = v.alive ? 0 : clamp(v.deadT * 2.2, 0, .35) * (v.id % 2 ? 1 : -1);
   const f = Device.mobile ? 1.19 : 1.28; G.fov += (f - G.fov) * Math.min(1, dt * 10); c.fov = G.fov; G.binK = 0;
 }
 function startMatch(demo, roster) {
   const mapId = roster ? (roster.map || S.map) : (demo ? (S.demoMap || S.map) : S.map); World.load(MAPS[mapId] ? mapId : 'hb'); G.map = World.id;
-  const mk = (demo && S.demoMode && MODES[S.demoMode]) ? S.demoMode : S.mode, m = MODES[mk]; G.mode = mk; G.codeLen = S.codeLen || 4; G.countdown = 3; G.freezeT = 0; G.tleft = m.time; G.limit = m.limit; G.scores = [0, 0]; G.grenades = []; G.smokes = []; G.lures = []; G.fx = []; G.feed = []; G.typed = ''; G.lock = 0; G.time = 0;
+  const mk = (demo && S.demoMode && MODES[S.demoMode]) ? S.demoMode : S.mode, m = MODES[mk]; G.mode = mk; G.codeLen = S.codeLen === 'rand' ? pick([3, 4, 5, 6]) : S.codeLen === 'mix' ? 0 : (S.codeLen | 0) || 4; G.countdown = 3; G.freezeT = 0; G.tleft = m.time; G.limit = m.limit; G.scores = [0, 0]; G.grenades = []; G.smokes = []; G.lures = []; G.fx = []; G.feed = []; G.typed = ''; G.lock = 0; G.time = 0;
   freeActors(G.actors); G.actors = []; _id = 0; G.slots = [null, null]; G.bino = false; G.binK = 0; G.energy = 1; G.stam = 1; G.flashT = 0; G.itemCd = 0; G.threat = null;
   G.netClient = false; const hum = roster ? roster.length : 1;
   const n = roster ? (S.netBots ? clamp(Math.max(S.count, hum), hum, 20) : hum) : clamp(S.count, 4, 20);
@@ -735,9 +736,10 @@ function drawPreview() {
   if (document.getElementById('charsel').classList.contains('hidden')) { drawOrbit(); return; }
   // 選單：旋轉的角色 + 環繞鏡頭
   const a = G.preview; if (!a) return; const c = R.cam, t = G.time * .35, pv = World.cur.preview || [4, 15], cx = pv[0], cz = pv[1];
-  a.yaw = t * .0 + .6 + Math.sin(G.time * .5) * .25; a.x = cx; a.z = cz; a.y = 0; a.sp = 0; a.team = -1; a.plateScale = 1.0;
-  const ang = .3 + Math.sin(G.time * .22) * .5, dist = 3.5;
-  c.x = cx - Math.sin(ang + .2) * dist; c.z = cz + Math.cos(ang + .2) * dist; c.y = 1.25; c.fov = .9; c.yaw = Math.atan2(-(cx - c.x), -(cz - c.z)); c.pitch = -.06; c.roll = 0;
+  a.x = cx; a.z = cz; a.y = 0; a.sp = 0; a.team = -1; a.plateScale = 1.0;
+  const ang = .3 + Math.sin(G.time * .45) * .55, dist = 3.5;
+  a.yaw = Math.atan2(Math.sin(ang + .2), -Math.cos(ang + .2)) + Math.sin(G.time * .9) * .3; // 角色始終朝向鏡頭附近，臉一直看得到
+  c.x = cx - Math.sin(ang + .2) * dist; c.z = cz + Math.cos(ang + .2) * dist; c.y = 1.05; c.fov = .9; c.yaw = Math.atan2(-(cx - c.x), -(cz - c.z)); c.pitch = -.06; c.roll = 0;
   R.begin(); drawSkyDome(c); World.draw();
   a.plateScale = 1; drawAvatar(a); R.polyOffset(true); a.blobS = 1.3; drawBlob(a); R.polyOffset(false);
   drawSkyFx(c, G.time);
