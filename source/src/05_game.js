@@ -280,6 +280,7 @@ function eliminate(k, v) {
   if (!v.alive || v.protect > 0) return;
   v.alive = false; v.deaths++; v.deadT = 0; v.respawnT = 3.2; v.killedBy = k; v.typing = null; v.lure = null;
   k.lastKillT = G.time;
+  if (k !== v) { assignNumber(k); for (const o of G.actors) { if (o.read) o.read[k.id] = 0; if (o.typing && o.typing.target === k) o.typing = null; } } // 擊殺成功：自己的號碼立即更新
   if (k !== v) { k.kills++; if (G.mode === 'tdm' && k.team >= 0) G.scores[k.team]++; }
   for (const f of G.flags) if (f.carrier === v) dropFlag(f, v);
   G.feed.push({ t: 6, k: k.name, v: v.name, me: k.isPlayer || v.isPlayer, kt: k.team, vt: v.team, seq: (G.feedSeq = (G.feedSeq || 0) + 1), ki: G.actors.indexOf(k), vi: G.actors.indexOf(v) }); if (G.feed.length > 5) G.feed.shift(); G.feedVer = (G.feedVer || 0) + 1;
