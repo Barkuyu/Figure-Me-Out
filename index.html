@@ -11,7 +11,6 @@ document.addEventListener('dblclick',p,s);
 addEventListener('wheel',function(e){if(e.ctrlKey)e.preventDefault()},s);
 addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&/^[=+\-0]$/.test(e.key))e.preventDefault()});})();</script>
 
-
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Figure Me Out</title>
@@ -68,8 +67,8 @@ button{font-family:inherit}
 #warnBox{position:absolute;left:50%;bottom:36%;transform:translateX(-50%);text-align:center;font:700 13px var(--font);width:190px}
 #warnBox .bar{width:100%;margin-top:4px;border-color:#ff9d9d}#warnBox .bar i{background:#ff3b3b}
 #carry{position:absolute;left:50%;top:92px;transform:translateX(-50%);font:700 14px var(--font);background:rgba(238,28,46,.9);padding:3px 12px;border-radius:8px}
-#photo{position:absolute;left:50%;top:20%;transform:translateX(-50%) rotate(-2deg);background:#f7f2e6;padding:8px 8px 6px;box-shadow:0 8px 22px rgba(0,0,0,.5);transition:opacity .5s,transform .3s;text-shadow:none}
-#photo canvas{display:block;width:260px;height:195px;background:#222}
+#photo{position:absolute;left:50%;top:14%;transform:translateX(-50%) rotate(-2deg);background:#f7f2e6;padding:8px 8px 6px;box-shadow:0 8px 22px rgba(0,0,0,.5);transition:opacity .5s,transform .3s;text-shadow:none}
+#photo canvas{display:block;width:420px;height:315px;background:#222}
 #photo .cap{font:400 30px/1.2 var(--disp);color:#222;text-align:center;letter-spacing:.14em;height:38px;padding-top:4px;padding-left:.14em}
 #photo.fade{opacity:0}
 #fps{position:absolute;left:10px;top:8px;font:500 11px/1.4 ui-monospace,Menlo,monospace;opacity:.85;background:rgba(0,0,0,.35);padding:2px 6px;border-radius:5px;pointer-events:none}
@@ -134,13 +133,34 @@ body.mobile #stamwrap .bar{width:clamp(44px,6vw,64px)}
 .tbtn{position:absolute;transform:translate(-50%,-50%);width:clamp(48px,6.6vw,72px);height:clamp(48px,6.6vw,72px);border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.6);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;pointer-events:auto}
 body.mobile #typed{bottom:30%;font-size:40px}
 body.mobile #warnBox{bottom:40%}
-body.mobile #photo canvas{width:200px;height:150px}
+body.mobile #photo canvas{width:300px;height:225px}
 
 #pauseBtn{display:none;position:absolute;border-radius:50%;background:rgba(0,0,0,.45);border:1.5px solid rgba(255,255,255,.7);color:#fff;font-size:15px;pointer-events:auto;padding:0}
-.numcol{position:absolute;top:9vh;height:89vh;width:max(46px,7.6vw);display:flex;flex-direction:column;gap:1.2vh;z-index:2}
+.numcol{position:absolute;top:20vh;height:66.75vh;width:max(56px,10vw);display:flex;flex-direction:column;gap:1.2vh;z-index:2}
 #numL{left:calc(.5vw + env(safe-area-inset-left))}#numR{right:calc(.5vw + env(safe-area-inset-right))}
 .np{flex:1;min-height:0;border-radius:11px;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.55);color:#fff;font:400 clamp(22px,5vh,38px) var(--disp);display:flex;align-items:center;justify-content:center;pointer-events:auto}
 .tbtn.act,.np.act{background:rgba(255,255,255,.55)}
+#bRun.tog{background:rgba(255,200,60,.8);border-color:#fff;box-shadow:0 0 14px rgba(255,200,60,.9)}
+#fin{position:absolute;inset:0;z-index:55;pointer-events:none;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#fin.flipout{animation:flipOut .38s ease-in forwards}
+@keyframes flipOut{to{transform:perspective(900px) rotateY(90deg);opacity:0}}
+#end.flipin{animation:flipIn .55s cubic-bezier(.2,.8,.3,1) both}
+@keyframes flipIn{from{transform:translate(-50%,-50%) perspective(900px) rotateY(-90deg);opacity:0}to{transform:translate(-50%,-50%) perspective(900px) rotateY(0);opacity:1}}
+#fin .finBg{position:absolute;inset:0}
+#fin.win .finBg{background:radial-gradient(circle at 50% 48%,rgba(255,244,170,.97),rgba(255,196,50,.6) 42%,rgba(70,40,0,.6) 100%);animation:goldFlash 1.6s ease-out forwards}
+@keyframes goldFlash{0%{opacity:0}10%{opacity:1}100%{opacity:.42}}
+#fin .finRays{position:absolute;width:170vmax;height:170vmax;left:50%;top:48%;margin:-85vmax 0 0 -85vmax;opacity:0}
+#fin.win .finRays{background:repeating-conic-gradient(from 0deg,rgba(255,240,170,.42) 0 7deg,transparent 7deg 18deg);-webkit-mask:radial-gradient(circle,#000 0,transparent 55%);mask:radial-gradient(circle,#000 0,transparent 55%);animation:spin 14s linear infinite,fadeInR .8s .2s forwards}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes fadeInR{to{opacity:1}}
+#fin .finTxt{position:relative;font:400 clamp(60px,17vmin,160px) var(--disp);letter-spacing:.04em}
+#fin.win .finTxt{background:linear-gradient(180deg,#fffbd0,#ffd53a 52%,#d98a00);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 5px 0 #7a4a00) drop-shadow(0 0 26px #ffd23a);animation:vpop .8s .35s cubic-bezier(.2,1.7,.4,1) both}
+@keyframes vpop{from{transform:scale(.1) rotate(-8deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+#fin i{position:absolute;color:#fff7c2;text-shadow:0 0 10px #ffd23a;opacity:0;animation:twk 1.2s ease-in-out infinite;font-style:normal}
+@keyframes twk{0%,100%{opacity:0;transform:scale(.3)}50%{opacity:1;transform:scale(1.1) rotate(25deg)}}
+#fin.lose .finBg{background:rgba(24,26,32,.5);-webkit-backdrop-filter:grayscale(1) brightness(.62);backdrop-filter:grayscale(1) brightness(.62);animation:fadeBg 1.2s both}
+@keyframes fadeBg{from{opacity:0}to{opacity:1}}
+#fin.lose .finTxt{color:#a3a9b2;text-shadow:0 4px 0 #2a2d33,0 0 18px rgba(0,0,0,.6);animation:riseUp 1.5s .3s cubic-bezier(.2,.8,.3,1) both}
+@keyframes riseUp{from{transform:translateY(45vh);opacity:0}to{transform:translateY(0);opacity:1}}
 #bJump{left:84.5%;top:85.8%;font-size:13px;font-weight:700}
 #bBino{left:74.8%;top:85.8%}
 #bRun{left:70.5%;top:66.5%;font-size:15px;font-weight:700}
@@ -148,7 +168,7 @@ body.mobile #photo canvas{width:200px;height:150px}
 body.mobile #slots{position:absolute;inset:0;transform:none;display:block;pointer-events:none}
 body.mobile .slot{position:absolute;width:clamp(44px,6.4vw,66px);height:clamp(44px,6.4vw,66px);transform:translate(-50%,-50%);pointer-events:auto}
 body.mobile #slotF{left:79.3%;top:67.5%}body.mobile #slotG{left:86.5%;top:62.8%}
-body.mobile #pauseBtn{display:block;left:87.7%;top:48.6%;transform:translate(-50%,-50%);width:clamp(34px,4.4vw,46px);height:clamp(34px,4.4vw,46px)}
+body.mobile #pauseBtn{display:block;left:calc(50% + 92px);top:27px;transform:translate(-50%,-50%);width:clamp(34px,4.4vw,46px);height:clamp(34px,4.4vw,46px)}
 body.mobile #binwrap{left:74.8%;top:73%;right:auto;bottom:auto;transform:translateX(-50%)}
 body.mobile #binwrap .bar{width:clamp(50px,7vw,76px)}
 body.mobile #killfeed{right:calc(8.6vw + 6px);top:6px;font-size:11px}
@@ -184,15 +204,15 @@ body.editing #touch *{pointer-events:none!important}
 .mpcode{font-size:20px}.mpcode b{font:400 34px var(--disp);letter-spacing:.2em;color:var(--yel)}
 
 /* 鮮紅果凍按鍵 */
-.btn{background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.04)) 50% 4%/88% 46% no-repeat,linear-gradient(180deg,#ff7d88 0%,#ee1c2e 45%,#c10d20 100%);border:0;border-radius:18px;box-shadow:inset 0 3px 4px rgba(255,255,255,.75),inset 0 -6px 9px rgba(110,0,14,.5),0 5px 0 #8f0b18,0 9px 14px rgba(0,0,0,.45);text-shadow:0 1px 2px rgba(90,0,12,.75);transition:transform .08s,box-shadow .08s}
-.btn.alt{background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.03)) 50% 4%/88% 46% no-repeat,linear-gradient(180deg,#9fb0d2 0%,#5b6a92 45%,#3f4c72 100%);box-shadow:inset 0 3px 4px rgba(255,255,255,.6),inset 0 -6px 9px rgba(20,28,60,.5),0 5px 0 #28314d,0 9px 14px rgba(0,0,0,.45);text-shadow:0 1px 2px rgba(10,16,40,.7)}
+.btn{background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.62),rgba(255,255,255,0) 100%) 50% 3%/92% 50% no-repeat,linear-gradient(180deg,#ff7d88 0%,#ee1c2e 45%,#c10d20 100%);border:0;border-radius:18px;box-shadow:inset 0 3px 4px rgba(255,255,255,.75),inset 0 -6px 9px rgba(110,0,14,.5),0 5px 0 #8f0b18,0 9px 14px rgba(0,0,0,.45);text-shadow:0 1px 2px rgba(90,0,12,.75);transition:transform .08s,box-shadow .08s}
+.btn.alt{background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.5),rgba(255,255,255,0) 100%) 50% 3%/92% 50% no-repeat,linear-gradient(180deg,#9fb0d2 0%,#5b6a92 45%,#3f4c72 100%);box-shadow:inset 0 3px 4px rgba(255,255,255,.6),inset 0 -6px 9px rgba(20,28,60,.5),0 5px 0 #28314d,0 9px 14px rgba(0,0,0,.45);text-shadow:0 1px 2px rgba(10,16,40,.7)}
 .btn:active{transform:translateY(4px);box-shadow:inset 0 3px 4px rgba(255,255,255,.7),inset 0 -4px 7px rgba(110,0,14,.5),0 1px 0 #8f0b18,0 3px 6px rgba(0,0,0,.4)}
 .btn.alt:active{box-shadow:inset 0 3px 4px rgba(255,255,255,.55),inset 0 -4px 7px rgba(20,28,60,.5),0 1px 0 #28314d,0 3px 6px rgba(0,0,0,.4)}
-.chip{background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,.03)) 50% 4%/88% 46% no-repeat,linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.06));border:1.5px solid rgba(255,255,255,.3);border-radius:14px;box-shadow:inset 0 2px 3px rgba(255,255,255,.35),inset 0 -4px 6px rgba(0,0,0,.25),0 3px 0 rgba(0,0,0,.4)}
-.chip.on{background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.04)) 50% 4%/88% 46% no-repeat,linear-gradient(180deg,#ff7d88,#ee1c2e 45%,#c10d20);border-color:#ffd6da;box-shadow:inset 0 2px 3px rgba(255,255,255,.75),inset 0 -5px 8px rgba(110,0,14,.5),0 3px 0 #8f0b18,0 6px 10px rgba(0,0,0,.4)}
+.chip{background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.28),rgba(255,255,255,0) 100%) 50% 3%/92% 50% no-repeat,linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.06));border:1.5px solid rgba(255,255,255,.3);border-radius:14px;box-shadow:inset 0 2px 3px rgba(255,255,255,.35),inset 0 -4px 6px rgba(0,0,0,.25),0 3px 0 rgba(0,0,0,.4)}
+.chip.on{background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.62),rgba(255,255,255,0) 100%) 50% 3%/92% 50% no-repeat,linear-gradient(180deg,#ff7d88,#ee1c2e 45%,#c10d20);border-color:#ffd6da;box-shadow:inset 0 2px 3px rgba(255,255,255,.75),inset 0 -5px 8px rgba(110,0,14,.5),0 3px 0 #8f0b18,0 6px 10px rgba(0,0,0,.4)}
 .chip:active{transform:translateY(2px)}
-.card{border-radius:16px;font-size:16px;padding:14px 8px;background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.03)) 50% 4%/88% 46% no-repeat,rgba(255,255,255,.08);box-shadow:inset 0 2px 3px rgba(255,255,255,.3),0 3px 0 rgba(0,0,0,.4)}
-.card.on{background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.04)) 50% 4%/88% 46% no-repeat,linear-gradient(180deg,#ff7d88,#ee1c2e 45%,#c10d20);border-color:#ffd6da;box-shadow:inset 0 2px 3px rgba(255,255,255,.75),inset 0 -5px 8px rgba(110,0,14,.5),0 3px 0 #8f0b18}
+.card{border-radius:16px;font-size:16px;padding:14px 8px;background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.2),rgba(255,255,255,0) 100%) 50% 3%/92% 50% no-repeat,rgba(255,255,255,.08);box-shadow:inset 0 2px 3px rgba(255,255,255,.3),0 3px 0 rgba(0,0,0,.4)}
+.card.on{background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.62),rgba(255,255,255,0) 100%) 50% 3%/92% 50% no-repeat,linear-gradient(180deg,#ff7d88,#ee1c2e 45%,#c10d20);border-color:#ffd6da;box-shadow:inset 0 2px 3px rgba(255,255,255,.75),inset 0 -5px 8px rgba(110,0,14,.5),0 3px 0 #8f0b18}
 
 #settings,#layoutEd,#demoPick,#howPick{position:absolute;inset:0;z-index:60}#howPick{background:rgba(10,8,6,.86);display:flex;align-items:center;justify-content:center;padding:12px}
 #demoPick{background:rgba(10,8,6,.86);display:flex;align-items:center;justify-content:center;padding:12px}
@@ -204,7 +224,7 @@ body.editing #touch *{pointer-events:none!important}
 .crow{display:flex;gap:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px}.crow:last-child{border:0}.crow b{min-width:68px;color:var(--yel)}
 .logo{display:flex;align-items:center;gap:18px}.logo .z{font-size:40px;font-weight:900}.logo .zh .l2{margin-left:10px}
 @media (max-width:760px){.logo .z{font-size:28px}.logo{gap:10px}}
-.btn.lite{background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.04)) 50% 4%/88% 46% no-repeat,linear-gradient(180deg,#ffb0b6 0%,#f4606c 45%,#d8394a 100%);box-shadow:inset 0 3px 4px rgba(255,255,255,.8),inset 0 -6px 9px rgba(140,10,30,.4),0 5px 0 #a82233,0 9px 14px rgba(0,0,0,.45)}
+.btn.lite{background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.62),rgba(255,255,255,0) 100%) 50% 3%/92% 50% no-repeat,linear-gradient(180deg,#ffb0b6 0%,#f4606c 45%,#d8394a 100%);box-shadow:inset 0 3px 4px rgba(255,255,255,.8),inset 0 -6px 9px rgba(140,10,30,.4),0 5px 0 #a82233,0 9px 14px rgba(0,0,0,.45)}
 #killfeed .vic{position:relative;display:inline-block;color:#ff4a4a;font-weight:900}
 #killfeed .vic::after{content:'';position:absolute;left:-2px;right:-2px;top:0;bottom:0;background:linear-gradient(to top right,transparent calc(50% - 1.3px),#ff4a4a calc(50% - 1.3px),#ff4a4a calc(50% + 1.3px),transparent calc(50% + 1.3px))}
 #killfeed .me{background:rgba(255,206,80,.22);border:1px solid rgba(255,224,130,.85)}
@@ -214,8 +234,6 @@ body.editing #touch *{pointer-events:none!important}
 @keyframes cdp{0%{transform:scale(1.7);opacity:0}25%{opacity:1}100%{transform:scale(1)}}
 body.mobile #cdNum{font-size:84px}
 </style>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Figure Me Out">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -258,8 +276,8 @@ body.mobile #cdNum{font-size:84px}
     <div class="tbtn" id="bBino">🔭</div>
     <div class="tbtn" id="bRun">跑</div>
     <div class="tbtn" id="bLeanL">↖️</div><div class="tbtn" id="bLeanR">↗️</div>
-    <div class="numcol" id="numL"><div class="np" data-k="0">0</div><div class="np" data-k="1">1</div><div class="np" data-k="2">2</div><div class="np" data-k="3">3</div><div class="np" data-k="4">4</div></div>
-    <div class="numcol" id="numR"><div class="np" data-k="5">5</div><div class="np" data-k="6">6</div><div class="np" data-k="7">7</div><div class="np" data-k="8">8</div><div class="np" data-k="9">9</div></div>
+    <div class="numcol" id="numL"><div class="np" data-k="1">1</div><div class="np" data-k="2">2</div><div class="np" data-k="3">3</div><div class="np" data-k="4">4</div><div class="np" data-k="5">5</div></div>
+    <div class="numcol" id="numR"><div class="np" data-k="6">6</div><div class="np" data-k="7">7</div><div class="np" data-k="8">8</div><div class="np" data-k="9">9</div><div class="np" data-k="0">0</div></div>
   </div>
 
   <div id="menu">
@@ -281,6 +299,7 @@ body.mobile #cdNum{font-size:84px}
     </div>
   </div>
 
+  <div id="fin" class="hidden"></div>
   <div id="end" class="hidden"></div>
   <div id="pause" class="hidden"><h2 id="pauseTitle">已暫停</h2><div id="pauseTxt" style="opacity:.85;font-size:14px"></div><div class="btnrow"><button class="btn" id="btnResume">繼續</button><button class="btn alt" id="btnFs2">⛶ 全螢幕</button><button class="btn alt" id="btnSet2">⚙ 設定</button><button class="btn alt" id="btnQuit">回主選單</button></div></div>
   <div id="mp" class="hidden"><div class="sbox"><h2>多人連線</h2>
@@ -434,7 +453,14 @@ const Sfx = {
   pick() { this.tone(520, .08, 'triangle', .15); this.tone(780, .12, 'triangle', .15, 0, .07); },
   flag() { this.tone(440, .12, 'triangle', .18); this.tone(660, .12, 'triangle', .18, 0, .1); this.tone(880, .2, 'triangle', .18, 0, .2); },
   step() { this.noise(.05, .06, 600); },
-  win() { [523, 659, 784, 1047].forEach((f, i) => this.tone(f, .25, 'triangle', .2, 0, i * .12)); }
+  win() { [523, 659, 784, 1047].forEach((f, i) => this.tone(f, .25, 'triangle', .2, 0, i * .12)); },
+  victory() { // 金色閃光 + 號角式勝利音
+    this.noise(.5, .25, 6000, 0, true); [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => { this.tone(f, .5, 'triangle', .2, 0, .1 + i * .11); this.tone(f * 2, .4, 'sine', .07, 0, .1 + i * .11); });
+    [[523, 659, 784], [587, 740, 880], [659, 784, 1047]].forEach((ch, j) => ch.forEach(f => this.tone(f, 1.0, 'sawtooth', .05, 0, .8 + j * .35))); this.tone(1047, 1.4, 'triangle', .22, 0, 1.9); this.tone(1568, 1.4, 'sine', .12, 0, 1.9);
+  },
+  defeat() { // 失敗：下行的悲傷音
+    [392, 370, 349, 294].forEach((f, i) => { this.tone(f, .6, 'triangle', .2, -14, i * .38); this.tone(f / 2, .6, 'sine', .12, 0, i * .38); }); this.tone(196, 1.4, 'sawtooth', .08, -30, 1.5);
+  }
 };
 
 /* ================= 矩陣 ================= */
@@ -1748,28 +1774,32 @@ function paintFace(o) {
   let q = g.createLinearGradient(260, 0, 764, 0); q.addColorStop(0, 'rgba(120,60,30,.30)'); q.addColorStop(.25, 'rgba(120,60,30,0)'); q.addColorStop(.75, 'rgba(120,60,30,0)'); q.addColorStop(1, 'rgba(120,60,30,.30)'); g.fillStyle = q; g.fillRect(260, 0, 504, Hh);
   q = g.createLinearGradient(0, 380, 0, Hh); q.addColorStop(0, 'rgba(100,50,30,0)'); q.addColorStop(1, 'rgba(100,50,30,.4)'); g.fillStyle = q; g.fillRect(0, 380, W, 132);
   const hair = o.hair;
-  // 眼睛
+  // 眼睛（Q 版大眼：大圓眼、深色虹膜、雙高光）
   for (const sgn of [-1, 1]) {
-    const ex = 512 + sgn * 74, ey = 236;
-    q = g.createRadialGradient(ex, ey - 12, 4, ex, ey - 12, 38); q.addColorStop(0, 'rgba(120,70,60,.22)'); q.addColorStop(1, 'rgba(120,70,60,0)'); g.fillStyle = q; g.fillRect(ex - 40, ey - 50, 80, 80);
-    g.fillStyle = '#f3efeb'; g.beginPath(); g.ellipse(ex, ey, 27, 14, 0, 0, TAU); g.fill();
-    g.fillStyle = '#35201a'; g.beginPath(); g.arc(ex + sgn * -1, ey, 12.5, 0, TAU); g.fill(); g.fillStyle = '#0b0605'; g.beginPath(); g.arc(ex + sgn * -1, ey, 6.5, 0, TAU); g.fill();
-    g.fillStyle = 'rgba(255,255,255,.9)'; g.beginPath(); g.arc(ex - 4, ey - 5, 3.2, 0, TAU); g.fill();
-    g.strokeStyle = '#150c09'; g.lineWidth = f ? 6 : 5; g.lineCap = 'round'; g.beginPath(); g.ellipse(ex, ey, 28, 15, 0, PI * 1.08, PI * 1.92); g.stroke();
-    if (f) { g.lineWidth = 3; for (let k = 0; k < 5; k++) { const a = PI * (1.2 + k * .15); g.beginPath(); g.moveTo(ex + Math.cos(a) * 28, ey + Math.sin(a) * 15); g.lineTo(ex + Math.cos(a) * 36, ey + Math.sin(a) * 22); g.stroke(); } }
-    g.strokeStyle = 'rgba(90,40,30,.35)'; g.lineWidth = 2.5; g.beginPath(); g.ellipse(ex, ey + 1, 26, 14, 0, .15 * PI, .85 * PI); g.stroke();
+    const ex = 512 + sgn * 86, ey = 250;
+    g.fillStyle = '#fbf8f4'; g.beginPath(); g.ellipse(ex, ey, 50, 56, 0, 0, TAU); g.fill();
+    g.save(); g.beginPath(); g.ellipse(ex, ey, 50, 56, 0, 0, TAU); g.clip();
+    const ir = g.createRadialGradient(ex, ey - 8, 6, ex, ey + 4, 46); ir.addColorStop(0, o.female ? '#7a4a38' : '#5a3a2a'); ir.addColorStop(.55, '#2c1812'); ir.addColorStop(1, '#120a07');
+    g.fillStyle = ir; g.beginPath(); g.ellipse(ex - sgn * 2, ey + 6, 38, 44, 0, 0, TAU); g.fill();
+    g.fillStyle = '#050303'; g.beginPath(); g.ellipse(ex - sgn * 2, ey + 8, 19, 24, 0, 0, TAU); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.95)'; g.beginPath(); g.arc(ex - 14, ey - 16, 13, 0, TAU); g.fill(); g.beginPath(); g.arc(ex + 13, ey + 22, 6.5, 0, TAU); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.4)'; g.beginPath(); g.arc(ex + 16, ey - 4, 4, 0, TAU); g.fill();
+    g.restore();
+    g.strokeStyle = '#160b08'; g.lineCap = 'round'; g.lineWidth = f ? 8 : 7; g.beginPath(); g.ellipse(ex, ey, 51, 57, 0, PI * 1.02, PI * 1.98); g.stroke();
+    if (f) { g.lineWidth = 4; for (let k = 0; k < 3; k++) { const a2 = PI * (1.78 + k * .1 + (sgn > 0 ? 0 : -.0)); g.beginPath(); g.moveTo(ex + sgn * Math.cos(PI * (1.05 + k * .12)) * -50, ey + Math.sin(PI * (1.1 + k * .12)) * 56); g.lineTo(ex + sgn * (52 + k * 5), ey - 40 - k * 6); g.stroke(); } }
     // 眉毛
-    g.strokeStyle = hair; g.globalAlpha = .92; g.lineWidth = f ? 7 : 12; g.beginPath(); g.moveTo(512 + sgn * 38, 196); g.quadraticCurveTo(512 + sgn * 78, 176 - (f ? 0 : 3), 512 + sgn * 112, 194); g.stroke(); g.globalAlpha = 1;
-    if (f) { const b = g.createRadialGradient(512 + sgn * 98, 300, 3, 512 + sgn * 98, 300, 52); b.addColorStop(0, 'rgba(235,110,110,.32)'); b.addColorStop(1, 'rgba(235,110,110,0)'); g.fillStyle = b; g.fillRect(512 + sgn * 98 - 55, 245, 110, 110); }
+    g.strokeStyle = hair; g.globalAlpha = .9; g.lineWidth = f ? 7 : 11; g.beginPath(); g.moveTo(512 + sgn * 52, 168); g.quadraticCurveTo(512 + sgn * 92, 150, 512 + sgn * 128, 170); g.stroke(); g.globalAlpha = 1;
+    // 腮紅
+    const b = g.createRadialGradient(512 + sgn * 128, 338, 3, 512 + sgn * 128, 338, 56); b.addColorStop(0, 'rgba(240,110,110,.42)'); b.addColorStop(1, 'rgba(240,110,110,0)'); g.fillStyle = b; g.fillRect(512 + sgn * 128 - 60, 280, 120, 120);
   }
   // 鼻
   q = g.createLinearGradient(486, 0, 538, 0); q.addColorStop(0, 'rgba(120,64,44,.0)'); q.addColorStop(.18, 'rgba(120,64,44,.2)'); q.addColorStop(.5, 'rgba(255,230,210,.07)'); q.addColorStop(.82, 'rgba(120,64,44,.2)'); q.addColorStop(1, 'rgba(120,64,44,0)'); g.fillStyle = q; g.fillRect(486, 222, 52, 105);
-  g.fillStyle = 'rgba(60,25,20,.5)'; for (const s of [-1, 1]) { g.beginPath(); g.ellipse(512 + s * 15, 322, 7, 5, 0, 0, TAU); g.fill(); }
-  // 嘴
+  g.fillStyle = 'rgba(60,25,20,.5)'; for (const s of [-1, 1]) { g.beginPath(); g.ellipse(512 + s * 10, 334, 4.5, 3.2, 0, 0, TAU); g.fill(); }
+  // 嘴（開心的小笑口）
   const my = 392;
-  g.fillStyle = f ? '#c96470' : '#a8645a'; g.beginPath(); g.moveTo(512 - 40, my); g.quadraticCurveTo(512 - 18, my - 17, 512, my - 10); g.quadraticCurveTo(512 + 18, my - 17, 512 + 40, my); g.quadraticCurveTo(512, my + 3, 512 - 40, my); g.fill();
-  g.fillStyle = f ? '#dc7d86' : '#b87468'; g.beginPath(); g.moveTo(512 - 40, my); g.quadraticCurveTo(512, my + 4, 512 + 40, my); g.quadraticCurveTo(512 + 22, my + 24, 512, my + 24); g.quadraticCurveTo(512 - 22, my + 24, 512 - 40, my); g.fill();
-  g.strokeStyle = '#6b2a2e'; g.lineWidth = 3; g.beginPath(); g.moveTo(512 - 40, my); g.quadraticCurveTo(512, my + 5, 512 + 40, my); g.stroke();
+  g.fillStyle = '#7a2a30'; g.beginPath(); g.moveTo(512 - 26, my - 4); g.quadraticCurveTo(512, my + 4, 512 + 26, my - 4); g.quadraticCurveTo(512 + 20, my + 34, 512, my + 34); g.quadraticCurveTo(512 - 20, my + 34, 512 - 26, my - 4); g.fill();
+  g.fillStyle = '#ee7d86'; g.beginPath(); g.ellipse(512, my + 24, 12, 7, 0, 0, TAU); g.fill();
+  g.strokeStyle = '#5a1f24'; g.lineWidth = 4; g.lineCap = 'round'; g.beginPath(); g.moveTo(512 - 28, my - 5); g.quadraticCurveTo(512, my + 6, 512 + 28, my - 5); g.stroke();
   if (!f) { // 鬍渣
     g.fillStyle = '#1a1210'; g.globalAlpha = .22; for (let i = 0; i < 1400; i++) { const x = 512 + (Math.random() - .5) * 300, y = 340 + Math.random() * 150; g.fillRect(x, y, 1.6, 1.6); } g.globalAlpha = 1;
   }
@@ -2227,11 +2257,11 @@ function checkWin() {
   if (G.mode === 'dm') { const best = G.actors.reduce((m, a) => a.kills > m.kills ? a : m, G.actors[0]); if (best.kills >= G.limit) { over = true; win = best.name; } }
   else { for (const t of [0, 1]) if (G.scores[t] >= G.limit) { over = true; win = t; } }
   if (G.tleft <= 0) { over = true; if (G.mode === 'dm') { win = G.actors.reduce((m, a) => a.kills > m.kills ? a : m, G.actors[0]).name; } else win = G.scores[0] === G.scores[1] ? -1 : (G.scores[0] > G.scores[1] ? 0 : 1); }
-  if (over) { G.state = 'ended'; G.winner = win; G.endT = 0; Sfx.win(); UI.onEnd(); }
+  if (over) { G.state = 'ended'; G.winner = win; G.endT = 0; UI.onEnd(); }
 }
 
 /* ---------- 玩家 ---------- */
-const In = { mx: 0, my: 0, jump: false, sprint: false, lookX: 0, lookY: 0, leanL: false, leanR: false };
+const In = { mx: 0, my: 0, jump: false, sprint: false, lookX: 0, lookY: 0, leanL: false, leanR: false, sprintT: false };
 const LEANMAX = .55;
 /* 探頭：從眼睛高度沿視線右方位移 d 公尺，是否會撞進牆/物體 */
 function leanClear(p, d) {
@@ -2259,6 +2289,8 @@ function submitNumber() {
 }
 function updatePlayer(dt) {
   const p = G.player;
+  if (Device.mobile) In.sprint = In.sprintT;
+  if (In.sprintT && G.stam <= .02) { In.sprintT = false; In.sprint = false; const rb = document.getElementById('bRun'); if (rb) rb.classList.remove('tog'); }
   p.yaw += In.lookX; p.pitch = clamp(p.pitch + In.lookY, -1.45, 1.45); In.lookX = In.lookY = 0;
   const f = FWD(p.yaw), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
   if (p.alive) {
@@ -2466,10 +2498,10 @@ function updateGame(dt) {
     updateGrenades(dt); updateFlags(dt);
     for (let i = G.feed.length - 1; i >= 0; i--) { G.feed[i].t -= dt; if (G.feed[i].t <= 0) { G.feed.splice(i, 1); G.feedVer = (G.feedVer || 0) + 1; } }
   } else if (G.state === 'ended') {
-    G.endT += dt; if (G.player) updatePlayer(dt); for (const a of G.actors) if (!a.isPlayer && a.alive) { a.vx *= .9; a.vz *= .9; moveActor(a, dt); a.sp *= .9; }
-    updateGrenades(dt);
+    G.endT += dt; // 結算：全場動作暫停
   }
-  for (const a of G.actors) { const f = FWD(a.yaw); a.fx = f[0]; a.fz = f[1]; }
+  if (G.state !== 'ended') for (const a of G.actors) { const f = FWD(a.yaw); a.fx = f[0]; a.fz = f[1]; }
+  if (G.state === 'ended') { In.lookX = In.lookY = 0; if (G.player) updateCamera(0); return; }
   if (G.player) updateCamera(dt); else if (G.demo) updateDemoCam(dt);
 }
 
@@ -2951,7 +2983,7 @@ function applySnap(s) {
   for (const f of s.fd) if (f[0] > NET.feedSeen) { NET.feedSeen = f[0]; const k = A[f[1]], v = A[f[2]]; if (k && v) { G.feed.push({ t: 6, k: k.name, v: v.name, me: k === me || v === me, seq: f[0] }); if (G.feed.length > 5) G.feed.shift(); G.feedVer++; } }
   if (NET.msgSeen < 0) NET.msgSeen = s.ms.length ? s.ms[s.ms.length - 1][0] : 0;
   for (const m of s.ms) if (m[0] > NET.msgSeen) { NET.msgSeen = m[0]; UI.msg(m[1], m[2]); }
-  if (s.st === 1 && G.state === 'playing') { G.state = 'ended'; G.winner = s.w; Sfx.win(); UI.onEnd(); }
+  if (s.st === 1 && G.state === 'playing') { G.state = 'ended'; G.winner = s.w; UI.onEnd(); }
 }
 function updateClientGame(dt) {
   G.time += dt; if (G.state === 'playing' && G.countdown <= 0) G.tleft = Math.max(0, G.tleft - dt);
@@ -2998,7 +3030,22 @@ const UI = {
     const e = this.els.deadMsg; e.innerHTML = `你被 <span style="color:#ffd36b">${k.name}</span> 淘汰了<small>他讀到了你額頭上的 ${G.player.number}</small>`; e.classList.remove('hidden'); this.els.deadv.style.opacity = 1;
   },
   onRespawn() { this.els.deadMsg.classList.add('hidden'); this.els.deadv.style.opacity = 0; this.dirty = true; },
+  hideEnd() { this.els.end.classList.add('hidden', 'flipin'); const f = $('fin'); if (f) f.classList.add('hidden'); this.endTok = (this.endTok || 0) + 1; },
+  /* 結算流程：全場暫停 → 勝利(金光)/落敗(灰暗) 過場 3 秒 → 翻牌顯示結算表 */
   onEnd() {
+    const p = G.player, tok = this.endTok = (this.endTok || 0) + 1; let res = null;
+    if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
+    if (p && !G.demo) { if (G.mode === 'dm') res = G.winner === p.name ? 'win' : 'lose'; else res = G.winner === -1 ? 'draw' : (G.winner === p.team ? 'win' : 'lose'); }
+    if (!res) { this.showEnd(false); return; }
+    const f = $('fin'); f.className = res === 'win' ? 'win' : 'lose'; f.innerHTML = '<div class="finBg"></div><div class="finRays"></div><div class="finTxt">' + (res === 'win' ? 'Victory' : res === 'draw' ? 'Draw' : 'Defeat') + '</div>';
+    if (res === 'win') { for (let k = 0; k < 18; k++) { const i = document.createElement('i'); i.textContent = '✦'; i.style.left = (Math.random() * 96) + '%'; i.style.top = (Math.random() * 90) + '%'; i.style.fontSize = (14 + Math.random() * 26) + 'px'; i.style.animationDelay = (.2 + Math.random() * 1.6) + 's'; f.appendChild(i); } Sfx.victory(); } else Sfx.defeat();
+    const wait = res === 'win' ? 4300 : 4900;
+    setTimeout(() => {
+      if (tok !== this.endTok || G.state !== 'ended') return; f.classList.add('flipout');
+      setTimeout(() => { if (tok !== this.endTok || G.state !== 'ended') return; f.classList.add('hidden'); f.classList.remove('flipout'); this.showEnd(true); }, 380);
+    }, wait);
+  },
+  showEnd(flip) {
     const sorted = G.actors.slice().sort((a, b) => b.kills - a.kills || a.deaths - b.deaths), p = G.player || {};
     let title = '', col = '#fff';
     if (G.mode === 'dm') { title = G.winner === p.name ? '🏆 你贏了！' : `${G.winner} 獲勝`; }
@@ -3006,10 +3053,10 @@ const UI = {
     let rows = sorted.map((a, i) => `<tr class="${a.isPlayer ? 'me' : ''}"><td class="n">${i + 1}</td><td><span class="dot" style="background:${a.team === 0 ? '#d93a3a' : a.team === 1 ? '#3a6fd9' : '#999'}"></span>${a.name}</td><td class="n">${a.kills}</td><td class="n">${a.deaths}</td></tr>`).join('');
     const sc = G.mode === 'dm' ? '' : `<div style="font-size:20px;margin-bottom:6px"><span style="color:#ff7a7a">紅 ${G.scores[0]}</span>　-　<span style="color:#7aa5ff">${G.scores[1]} 藍</span></div>`;
     this.els.end.innerHTML = `<h2 style="color:${col}">${title}</h2>${sc}<table><tr><th class="n">#</th><th>玩家</th><th class="n">淘汰</th><th class="n">被淘汰</th></tr>${rows}</table><div class="btnrow"><button class="btn" id="btnAgain">再來一場</button><button class="btn alt" id="btnMenu">回主選單</button></div>`;
-    this.els.end.classList.remove('hidden');
-    $('btnAgain').onclick = () => { const d = G.demo; this.els.end.classList.add('hidden'); beginGame(d); };
-    $('btnMenu').onclick = () => { this.els.end.classList.add('hidden'); toMenu(); };
-    if (NET.mode) { if (NET.mode === 'host') NET.phase = 'end'; $('btnAgain').textContent = '回到大廳'; $('btnAgain').onclick = () => { this.els.end.classList.add('hidden'); if (NET.mode === 'host') hostToLobby(); else clientToLobby(false); }; $('btnMenu').textContent = '離開房間'; }
+    this.els.end.classList.remove('hidden', 'flipin'); if (flip) { void this.els.end.offsetWidth; this.els.end.classList.add('flipin'); }
+    $('btnAgain').onclick = () => { const d = G.demo; this.hideEnd(); beginGame(d); };
+    $('btnMenu').onclick = () => { this.hideEnd(); toMenu(); };
+    if (NET.mode) { if (NET.mode === 'host') NET.phase = 'end'; $('btnAgain').textContent = '回到大廳'; $('btnAgain').onclick = () => { this.hideEnd(); if (NET.mode === 'host') hostToLobby(); else clientToLobby(false); }; $('btnMenu').textContent = '離開房間'; }
     if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
   },
   capturePhoto() {
@@ -3156,7 +3203,7 @@ const Input = {
       keys[e.code] = true; if (/^(Space|ArrowUp|ArrowDown|Tab)$/.test(e.code)) e.preventDefault();
     });
     window.addEventListener('keyup', e => { keys[e.code] = false; });
-    window.addEventListener('blur', () => { for (const k in keys) keys[k] = false; In.sprint = false; In.leanL = In.leanR = false; });
+    window.addEventListener('blur', () => { for (const k in keys) keys[k] = false; In.leanL = In.leanR = false; });
     document.addEventListener('pointerdown', e => { const t = e.target.closest && e.target.closest('button,.btn,.chip,.card,.tbtn,.slot'); if (t && !t.classList.contains('np')) { Sfx.init(); Sfx.resume(); Sfx.click(); } }, true);
     const cvs = $('gl');
     document.addEventListener('mousemove', e => {
@@ -3213,7 +3260,7 @@ const Input = {
     document.querySelectorAll('.np').forEach(b => press(b, () => typeDigit(b.dataset.k)));
     press($('bJump'), () => { In.jump = true; }, () => { In.jump = false; });
     press($('bBino'), () => toggleBino());
-    press($('bRun'), () => { In.sprint = true; }, () => { In.sprint = false; });
+    press($('bRun'), () => { In.sprintT = !In.sprintT; In.sprint = In.sprintT; $('bRun').classList.toggle('tog', In.sprintT); }, () => { });
     press($('bLeanL'), () => { In.leanL = true; }, () => { In.leanL = false; }); press($('bLeanR'), () => { In.leanR = true; }, () => { In.leanR = false; });
     for (const [id, i] of [['slotF', 0], ['slotG', 1]]) { const el = $(id); press(el, () => useItem(i)); el.addEventListener('click', () => { if (!Device.mobile) useItem(i); }); }
     press($('pauseBtn'), () => setPause(true));
@@ -3281,7 +3328,7 @@ function beginGame(demo, roster) {
   demo = demo === true;
   Sfx.init(); Sfx.resume(); if (!S.countSet) S.count = defaultCount();
   UI.els.menu.classList.add('hidden'); UI.els.hud.classList.remove('hidden'); document.body.classList.add('playing'); document.body.classList.toggle('demo', demo);
-  UI.els.end.classList.add('hidden'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.els.demoTag.classList.add('hidden');
+  UI.hideEnd(); In.sprintT = false; $('bRun').classList.remove('tog'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.els.demoTag.classList.add('hidden');
   $('btnResume').textContent = demo ? '繼續示範' : '繼續'; $('btnQuit').textContent = demo ? '退出示範模式' : NET.mode ? '離開房間' : '回主選單'; $('pauseTitle').textContent = demo ? '示範模式已暫停' : '已暫停';
   startMatch(demo, roster); UI.els.modeName.textContent = (demo ? '示範 · ' : '') + MAPS[G.map].name + ' · ' + MODES[G.mode].name + ' · ' + G.codeLen + ' 碼 · ' + DIFF[S.diff].name; UI._cd = 0; UI.goT = 0; UI.lastFeed = -1; UI.dirty = true; UI.onRespawn(); Perf.profile(); Perf.apply(); updateRotate();
   UI.els.hints.style.display = Device.mobile ? 'none' : '';
@@ -3293,14 +3340,14 @@ function beginGame(demo, roster) {
 function toMenu() { go(() => { netLeave(); resetToMenuUI(); }); }
 function stopGameUI() { resetToMenuUI(); UI.els.menu.classList.add('hidden'); }
 function resetToMenuUI() {
-  G.state = 'menu'; G.demo = false; G.view = null; document.body.classList.remove('playing', 'demo'); UI.els.hud.classList.add('hidden'); UI.els.menu.classList.remove('hidden'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.els.end.classList.add('hidden'); UI.els.bino.style.display = 'none'; UI.els.flash.style.opacity = 0;
+  G.state = 'menu'; G.demo = false; G.view = null; document.body.classList.remove('playing', 'demo'); UI.els.hud.classList.add('hidden'); UI.els.menu.classList.remove('hidden'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.hideEnd(); UI.els.bino.style.display = 'none'; UI.els.flash.style.opacity = 0;
   $('settings').classList.add('hidden'); updateRotate(); if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
   { const ids = Object.keys(MAPS).filter(k => k !== World.id); World.load(pick(ids)); G.orbitSeed = Math.random() * 6.28; }
   G.player = null; freeActors(G.actors); G.actors = []; G.bino = false; G.binK = 0; G.flashT = 0; G.smokes = []; G.grenades = []; G.lures = []; G.fx = [];
 }
 function beginNetClientUI() {
   UI.els.menu.classList.add('hidden'); $('mp').classList.add('hidden'); UI.els.hud.classList.remove('hidden'); document.body.classList.add('playing'); document.body.classList.remove('demo');
-  UI.els.modeName.textContent = '連線 · ' + MODES[G.mode].name; UI.els.end.classList.add('hidden'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.menuOpen = false; UI.els.demoTag.classList.add('hidden');
+  UI.els.modeName.textContent = '連線 · ' + MODES[G.mode].name; UI.hideEnd(); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.menuOpen = false; UI.els.demoTag.classList.add('hidden');
   $('btnResume').textContent = '繼續'; $('btnQuit').textContent = '離開房間'; $('pauseTitle').textContent = '選單（遊戲持續進行中）';
   UI.lastFeed = -1; UI.dirty = true; UI.onRespawn(); Perf.profile(); Perf.apply(); updateRotate(); UI.els.hints.style.display = Device.mobile ? 'none' : '';
   if (!Device.mobile) { UI.noLock = false; UI.msg('點一下畫面以鎖定滑鼠（無法鎖定時可按住左鍵拖曳）', 'item'); }

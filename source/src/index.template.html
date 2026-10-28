@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Figure Me Out</title>
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#f6e7c8;--orange:#ee1c2e;--red:#d93a3a;--blue:#3a6fd9;--teal:#2a8c8c;--yel:#f2b632;--ink:#241a14;--font:'Noto Sans TC','PingFang TC','Microsoft JhengHei',system-ui,sans-serif;--disp:'Lilita One','Noto Sans TC',Impact,sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html{color-scheme:dark}
+button:focus-visible,.chip:focus-visible{outline:3px solid #fff;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+html,body{margin:0;height:100%;overflow:hidden;background:#0f1418;font-family:var(--font);color:#fff;overscroll-behavior:none;touch-action:none}
+#app{position:fixed;inset:0;overflow:hidden}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block;background:#cfe0ee}
+.hidden{display:none!important}
+button{font-family:inherit}
+/* ---------- HUD ---------- */
+#hud{position:absolute;inset:0;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.7)}
+#scorebar{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;align-items:center}
+.sc{min-width:46px;padding:1px 10px;border-radius:7px;font:400 24px/1.25 var(--disp);text-align:center;border:2px solid rgba(255,255,255,.85);box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.sc.red{background:var(--red)}.sc.blue{background:var(--blue)}.sc.dm{background:#3a3a3a}
+.sep{opacity:.9;font:400 20px var(--disp)}
+.flagic{font-size:18px;opacity:.9;min-width:18px}
+#timer{position:absolute;top:48px;left:50%;transform:translateX(-50%);font:700 15px var(--font);letter-spacing:.06em;opacity:.95}
+#modeName{position:absolute;top:68px;left:50%;transform:translateX(-50%);font:500 11px var(--font);opacity:.7}
+#killfeed{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:4px;align-items:flex-end;font-size:13px;font-weight:700}
+#killfeed div{background:rgba(0,0,0,.42);padding:3px 9px;border-radius:6px;animation:fin .25s ease-out}
+#killfeed .me{background:rgba(238,28,46,.85)}
+@keyframes fin{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+#crosshair{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:rgba(255,255,255,.85);box-shadow:0 0 0 1.5px rgba(0,0,0,.55)}
+#msg{position:absolute;left:50%;top:62%;transform:translateX(-50%);font:700 17px var(--font);padding:4px 12px;border-radius:8px;background:rgba(0,0,0,.45);opacity:0;transition:opacity .25s;white-space:nowrap}
+#msg.show{opacity:1}#msg.good{background:rgba(46,160,90,.85)}#msg.bad{background:rgba(200,60,60,.85)}#msg.flag{background:rgba(238,28,46,.9)}#msg.item{background:rgba(60,110,200,.85)}
+#typed{position:absolute;left:50%;bottom:21%;transform:translateX(-50%);font:400 54px/1 var(--disp);letter-spacing:.14em;text-shadow:0 3px 8px rgba(0,0,0,.65),0 0 2px #000;white-space:nowrap;padding-left:.14em}
+#typed.empty{opacity:.28}#typed.shake{animation:shk .35s}#typed.ok{color:#8dff9c}
+@keyframes shk{0%,100%{transform:translateX(-50%)}20%{transform:translateX(calc(-50% - 10px))}40%{transform:translateX(calc(-50% + 10px))}60%{transform:translateX(calc(-50% - 7px))}80%{transform:translateX(calc(-50% + 7px))}}
+#hints{position:absolute;right:14px;top:50%;transform:translateY(-10%);font-size:11px;display:flex;flex-direction:column;gap:4px;align-items:flex-end;opacity:.9}
+#hints div{display:flex;gap:7px;align-items:center}
+#hints b{background:rgba(255,255,255,.9);color:#222;border-radius:4px;padding:1px 6px;font-size:9.5px;text-shadow:none}
+#stamwrap{position:absolute;left:16px;bottom:16px;display:flex;align-items:center;gap:6px}
+#stamwrap .ic{color:var(--yel);font-size:15px}
+.bar{width:132px;height:9px;background:rgba(0,0,0,.45);border:1.5px solid rgba(255,255,255,.85);border-radius:5px;overflow:hidden;position:relative}
+.bar i{position:absolute;inset:0;transform-origin:left;background:linear-gradient(#ffe27a,#f2b632)}
+#binwrap{position:absolute;right:16px;bottom:16px;display:flex;align-items:center;gap:6px}
+#binwrap .bar i{background:linear-gradient(#9fe8ff,#4fb5e8)}
+#slots{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:10px;pointer-events:auto}
+.slot{position:relative;width:54px;height:54px;border-radius:9px;background:rgba(110,70,40,.62);border:2px solid rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;font-size:25px;cursor:pointer}
+.slot.has{background:rgba(70,45,25,.8);border-color:#fff}
+.slot em{position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);font-style:normal;font:700 10px var(--font);background:#fff;color:#222;border-radius:4px;padding:0 6px;text-shadow:none}
+.slot small{position:absolute;top:1px;right:4px;font-size:11px;font-weight:900}
+.slot.cd{opacity:.6}
+#warn{position:absolute;left:50%;top:50%;width:0;height:0}
+#warnArrow{position:absolute;left:-17px;top:-17px;width:34px;height:34px;color:#ff3b3b;filter:drop-shadow(0 0 5px rgba(255,0,0,.8))}
+#warnBox{position:absolute;left:50%;bottom:36%;transform:translateX(-50%);text-align:center;font:700 13px var(--font);width:190px}
+#warnBox .bar{width:100%;margin-top:4px;border-color:#ff9d9d}#warnBox .bar i{background:#ff3b3b}
+#carry{position:absolute;left:50%;top:92px;transform:translateX(-50%);font:700 14px var(--font);background:rgba(238,28,46,.9);padding:3px 12px;border-radius:8px}
+#photo{position:absolute;left:50%;top:14%;transform:translateX(-50%) rotate(-2deg);background:#f7f2e6;padding:8px 8px 6px;box-shadow:0 8px 22px rgba(0,0,0,.5);transition:opacity .5s,transform .3s;text-shadow:none}
+#photo canvas{display:block;width:420px;height:315px;background:#222}
+#photo .cap{font:400 30px/1.2 var(--disp);color:#222;text-align:center;letter-spacing:.14em;height:38px;padding-top:4px;padding-left:.14em}
+#photo.fade{opacity:0}
+#fps{position:absolute;left:10px;top:8px;font:500 11px/1.4 ui-monospace,Menlo,monospace;opacity:.85;background:rgba(0,0,0,.35);padding:2px 6px;border-radius:5px;pointer-events:none}
+#bino{position:absolute;inset:0;pointer-events:none;display:none}
+#bino svg{width:100%;height:100%;display:block}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+#vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,0,0,.32) 100%)}
+#deadv{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,rgba(120,0,0,0) 30%,rgba(120,0,0,.55) 100%);opacity:0;transition:opacity .4s}
+#deadMsg{position:absolute;left:50%;top:38%;transform:translateX(-50%);text-align:center;font:700 22px var(--font);pointer-events:none}
+#deadMsg small{display:block;font-size:14px;font-weight:500;opacity:.9;margin-top:6px}
+/* ---------- 記分板 / 結束 ---------- */
+#end{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,94vw);max-height:84vh;overflow:auto;background:rgba(20,16,12,.88);border:2px solid rgba(255,255,255,.25);border-radius:14px;padding:14px 16px;pointer-events:none}
+#end{pointer-events:auto;text-align:center}
+#end table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:4px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,.1)}
+td.n,th.n{text-align:center;width:56px}
+tr.me td{background:rgba(238,28,46,.35);font-weight:900}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+#end h2{font:400 34px var(--disp);margin:2px 0 8px;letter-spacing:.04em}
+.btnrow{display:flex;gap:10px;justify-content:center;margin-top:12px}
+.btn{background:var(--orange);color:#fff;border:0;border-bottom:4px solid #8f0b18;border-radius:11px;padding:10px 22px;font:700 17px var(--font);cursor:pointer}
+.btn.alt{background:#556;border-bottom-color:#334}.btn:active{transform:translateY(2px);border-bottom-width:2px}
+/* ---------- 選單 ---------- */
+#menu{position:absolute;inset:0;display:flex;align-items:stretch;pointer-events:none}
+.panel{pointer-events:auto;width:min(540px,100vw);margin:0;padding:18px 20px 22px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;background:linear-gradient(90deg,rgba(24,16,10,.9),rgba(24,16,10,.78) 82%,rgba(24,16,10,0));scrollbar-width:thin}
+.logo{line-height:.9;margin-bottom:6px;transform:rotate(-2.5deg);transform-origin:left}
+.logo .l1,.logo .l2{display:inline-block;font:400 46px var(--disp);letter-spacing:.02em;background:var(--cream);color:#2c1a0d;padding:2px 10px 0;border-radius:6px;box-shadow:4px 4px 0 var(--red)}
+.logo .l2{margin-top:6px;background:var(--yel);margin-left:16px}
+.tag{font-size:12px;opacity:.85;margin:10px 0 4px}
+.panel h4{margin:14px 0 6px;font-size:13px;letter-spacing:.12em;color:var(--yel)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.25);border-radius:10px;padding:7px 13px;font:700 14px var(--font);color:#fff;cursor:pointer}
+.chip.on{background:var(--orange);border-color:#fff}
+.chip small{display:block;font-weight:500;font-size:10.5px;opacity:.85}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.card{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.2);border-radius:12px;padding:9px 8px;cursor:pointer;text-align:center;font-size:12.5px;font-weight:700;line-height:1.3}
+.card.on{background:rgba(238,28,46,.85);border-color:#fff}
+.card small{display:block;font-weight:500;font-size:10.5px;opacity:.85;margin-top:3px}
+.card .sw{display:flex;gap:3px;justify-content:center;margin-bottom:6px}.card .sw i{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(255,255,255,.7)}
+#devbadge{display:inline-block;background:rgba(42,140,140,.85);padding:5px 11px;border-radius:9px;font-size:13px;font-weight:700;margin:6px 0 2px}
+details{margin-top:12px;background:rgba(255,255,255,.06);border-radius:10px;padding:8px 12px}
+summary{cursor:pointer;font-weight:700;font-size:14px}
+.row{display:flex;align-items:center;gap:10px;margin:9px 0;font-size:13.5px;flex-wrap:wrap}
+.row label{min-width:78px;opacity:.9}.row input[type=range]{flex:1;min-width:120px;touch-action:pan-x}
+.howto{font-size:12.5px;line-height:1.65;opacity:.95}.howto b{color:var(--yel)}
+.howto kbd{background:#fff;color:#222;border-radius:4px;padding:0 5px;font:700 11px var(--font)}
+#btnStart{width:100%;margin-top:16px;font-size:22px;padding:13px}
+.err{background:#7a1f1f;padding:12px;border-radius:10px;margin:10px 0;font-size:14px}
+/* ---------- 暫停 / 旋轉 ---------- */
+#pause,#rotate{position:absolute;inset:0;background:rgba(10,8,6,.72);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:20px}
+#pause h2,#rotate h2{font:400 34px var(--disp);margin:0}
+#rotate{background:rgba(10,8,6,.92);z-index:50}
+/* ---------- 觸控介面 ---------- */
+#touch{position:absolute;inset:0;display:none;pointer-events:none}
+body.mobile.playing #touch{display:block}
+body.mobile #hints,body.mobile #crosshair+#x{display:none}
+body.mobile #stamwrap{display:flex;position:absolute;left:70.5%;top:54%;transform:translateX(-50%)}
+body.mobile #stamwrap .bar{width:clamp(44px,6vw,64px)}
+#joyBase{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);display:none}
+#joyKnob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:rgba(255,255,255,.45);border:2px solid rgba(255,255,255,.8)}
+#joyHint{position:absolute;left:calc(8.6vw + 14px);bottom:8vh;width:120px;height:120px;border-radius:50%;border:2px dashed rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-size:11px;opacity:.7}
+.tbtn{position:absolute;transform:translate(-50%,-50%);width:clamp(48px,6.6vw,72px);height:clamp(48px,6.6vw,72px);border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.6);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;pointer-events:auto}
+body.mobile #typed{bottom:30%;font-size:40px}
+body.mobile #warnBox{bottom:40%}
+body.mobile #photo canvas{width:300px;height:225px}
+
+#pauseBtn{display:none;position:absolute;border-radius:50%;background:rgba(0,0,0,.45);border:1.5px solid rgba(255,255,255,.7);color:#fff;font-size:15px;pointer-events:auto;padding:0}
+.numcol{position:absolute;top:20vh;height:66.75vh;width:max(56px,10vw);display:flex;flex-direction:column;gap:1.2vh;z-index:2}
+#numL{left:calc(.5vw + env(safe-area-inset-left))}#numR{right:calc(.5vw + env(safe-area-inset-right))}
+.np{flex:1;min-height:0;border-radius:11px;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.55);color:#fff;font:400 clamp(22px,5vh,38px) var(--disp);display:flex;align-items:center;justify-content:center;pointer-events:auto}
+.tbtn.act,.np.act{background:rgba(255,255,255,.55)}
+#bRun.tog{background:rgba(255,200,60,.8);border-color:#fff;box-shadow:0 0 14px rgba(255,200,60,.9)}
+#fin{position:absolute;inset:0;z-index:55;pointer-events:none;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#fin.flipout{animation:flipOut .38s ease-in forwards}
+@keyframes flipOut{to{transform:perspective(900px) rotateY(90deg);opacity:0}}
+#end.flipin{animation:flipIn .55s cubic-bezier(.2,.8,.3,1) both}
+@keyframes flipIn{from{transform:translate(-50%,-50%) perspective(900px) rotateY(-90deg);opacity:0}to{transform:translate(-50%,-50%) perspective(900px) rotateY(0);opacity:1}}
+#fin .finBg{position:absolute;inset:0}
+#fin.win .finBg{background:radial-gradient(circle at 50% 48%,rgba(255,244,170,.97),rgba(255,196,50,.6) 42%,rgba(70,40,0,.6) 100%);animation:goldFlash 1.6s ease-out forwards}
+@keyframes goldFlash{0%{opacity:0}10%{opacity:1}100%{opacity:.42}}
+#fin .finRays{position:absolute;width:170vmax;height:170vmax;left:50%;top:48%;margin:-85vmax 0 0 -85vmax;opacity:0}
+#fin.win .finRays{background:repeating-conic-gradient(from 0deg,rgba(255,240,170,.42) 0 7deg,transparent 7deg 18deg);-webkit-mask:radial-gradient(circle,#000 0,transparent 55%);mask:radial-gradient(circle,#000 0,transparent 55%);animation:spin 14s linear infinite,fadeInR .8s .2s forwards}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes fadeInR{to{opacity:1}}
+#fin .finTxt{position:relative;font:400 clamp(60px,17vmin,160px) var(--disp);letter-spacing:.04em}
+#fin.win .finTxt{background:linear-gradient(180deg,#fffbd0,#ffd53a 52%,#d98a00);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 5px 0 #7a4a00) drop-shadow(0 0 26px #ffd23a);animation:vpop .8s .35s cubic-bezier(.2,1.7,.4,1) both}
+@keyframes vpop{from{transform:scale(.1) rotate(-8deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+#fin i{position:absolute;color:#fff7c2;text-shadow:0 0 10px #ffd23a;opacity:0;animation:twk 1.2s ease-in-out infinite;font-style:normal}
+@keyframes twk{0%,100%{opacity:0;transform:scale(.3)}50%{opacity:1;transform:scale(1.1) rotate(25deg)}}
+#fin.lose .finBg{background:rgba(24,26,32,.5);-webkit-backdrop-filter:grayscale(1) brightness(.62);backdrop-filter:grayscale(1) brightness(.62);animation:fadeBg 1.2s both}
+@keyframes fadeBg{from{opacity:0}to{opacity:1}}
+#fin.lose .finTxt{color:#a3a9b2;text-shadow:0 4px 0 #2a2d33,0 0 18px rgba(0,0,0,.6);animation:riseUp 1.5s .3s cubic-bezier(.2,.8,.3,1) both}
+@keyframes riseUp{from{transform:translateY(45vh);opacity:0}to{transform:translateY(0);opacity:1}}
+#bJump{left:84.5%;top:85.8%;font-size:13px;font-weight:700}
+#bBino{left:74.8%;top:85.8%}
+#bRun{left:70.5%;top:66.5%;font-size:15px;font-weight:700}
+#bLeanL{left:63.2%;top:85.8%;font-size:20px}#bLeanR{left:63.2%;top:66.5%;font-size:20px}
+body.mobile #slots{position:absolute;inset:0;transform:none;display:block;pointer-events:none}
+body.mobile .slot{position:absolute;width:clamp(44px,6.4vw,66px);height:clamp(44px,6.4vw,66px);transform:translate(-50%,-50%);pointer-events:auto}
+body.mobile #slotF{left:79.3%;top:67.5%}body.mobile #slotG{left:86.5%;top:62.8%}
+body.mobile #pauseBtn{display:block;left:calc(50% + 92px);top:27px;transform:translate(-50%,-50%);width:clamp(34px,4.4vw,46px);height:clamp(34px,4.4vw,46px)}
+body.mobile #binwrap{left:74.8%;top:73%;right:auto;bottom:auto;transform:translateX(-50%)}
+body.mobile #binwrap .bar{width:clamp(50px,7vw,76px)}
+body.mobile #killfeed{right:calc(8.6vw + 6px);top:6px;font-size:11px}
+@media (max-height:420px){.sc{font-size:20px}#timer{top:42px;font-size:13px}}
+@media (orientation:portrait){body.mobile #rotateMsg{display:flex}}
+#rotateMsg{display:none}
+@media (max-width:760px){.panel{width:100vw;background:rgba(24,16,10,.9)}.logo .l1,.logo .l2{font-size:34px}.cards{gap:6px}}
+
+#settings,#layoutEd{position:absolute;inset:0;z-index:60}
+#settings{background:rgba(10,8,6,.86);display:flex;align-items:center;justify-content:center;padding:12px}
+.sbox{width:min(560px,100%);max-height:94%;overflow-y:auto;touch-action:pan-y;background:rgba(32,24,18,.96);border:2px solid rgba(255,255,255,.25);border-radius:14px;padding:14px 18px}
+.sbox h2{font:400 28px var(--disp);margin:0 0 6px}
+#layoutEd{z-index:70;touch-action:none;background:rgba(0,0,0,.25)}
+#edBar{position:absolute;left:50%;top:8px;transform:translateX(-50%);background:rgba(20,16,12,.92);border:2px solid rgba(255,255,255,.35);border-radius:12px;padding:8px 14px;text-align:center;font-size:13px;width:min(420px,94vw)}
+.edrow{display:flex;align-items:center;gap:8px;justify-content:center;margin-top:6px}.edrow input{flex:1;touch-action:pan-x}
+.sel{outline:3px dashed #ffe27a!important;outline-offset:4px}
+#demoTag{position:absolute;top:88px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.5);padding:3px 12px;border-radius:8px;font:700 13px var(--font);white-space:nowrap}
+#demoBar{display:none;position:absolute;bottom:14px;left:50%;transform:translateX(-50%);gap:10px;pointer-events:auto}
+#demoBar .btn{font-size:14px;padding:7px 14px}
+body.demo #demoBar{display:flex}
+body.demo #typed,body.demo #slots,body.demo #stamwrap,body.demo #binwrap,body.demo #hints,body.demo #crosshair,body.demo #warn,body.demo #warnBox,body.demo #carry,body.demo #photo,body.demo #touch,body.demo #sbBtn,body.demo #pauseBtn{display:none!important}
+body.editing #menu,body.editing #pause,body.editing #settings,body.editing #end,body.editing #demoBar,body.editing #rotate{visibility:hidden!important}
+body.editing #hud>*:not(#slots):not(#pauseBtn){display:none!important}
+body.editing #touch{display:block!important}
+body.editing #slots{display:block!important}
+body.editing #pauseBtn,body.editing #sbBtn{display:block!important}
+body.editing #touch *{pointer-events:none!important}
+#mp{position:absolute;inset:0;z-index:58;background:rgba(10,8,6,.86);display:flex;align-items:center;justify-content:center;padding:12px}
+#mp input{flex:1;min-width:120px;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.3);border-radius:10px;color:#fff;font:700 18px var(--font);padding:8px 12px;-webkit-user-select:text;user-select:text;touch-action:auto}
+.mem{background:rgba(255,255,255,.08);border-radius:9px;padding:6px 10px;margin:4px 0;font-size:14px;font-weight:700}
+.mpmsg{min-height:20px;color:#ffb27a;font-size:13px;font-weight:700;margin-top:6px}
+.mpnote{font-size:12px;opacity:.8;line-height:1.6;margin-top:8px}
+.mpcode{font-size:20px}.mpcode b{font:400 34px var(--disp);letter-spacing:.2em;color:var(--yel)}
+
+/* 鮮紅果凍按鍵 */
+.btn{background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.62),rgba(255,255,255,0) 100%) 50% 3%/92% 50% no-repeat,linear-gradient(180deg,#ff7d88 0%,#ee1c2e 45%,#c10d20 100%);border:0;border-radius:18px;box-shadow:inset 0 3px 4px rgba(255,255,255,.75),inset 0 -6px 9px rgba(110,0,14,.5),0 5px 0 #8f0b18,0 9px 14px rgba(0,0,0,.45);text-shadow:0 1px 2px rgba(90,0,12,.75);transition:transform .08s,box-shadow .08s}
+.btn.alt{background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.5),rgba(255,255,255,0) 100%) 50% 3%/92% 50% no-repeat,linear-gradient(180deg,#9fb0d2 0%,#5b6a92 45%,#3f4c72 100%);box-shadow:inset 0 3px 4px rgba(255,255,255,.6),inset 0 -6px 9px rgba(20,28,60,.5),0 5px 0 #28314d,0 9px 14px rgba(0,0,0,.45);text-shadow:0 1px 2px rgba(10,16,40,.7)}
+.btn:active{transform:translateY(4px);box-shadow:inset 0 3px 4px rgba(255,255,255,.7),inset 0 -4px 7px rgba(110,0,14,.5),0 1px 0 #8f0b18,0 3px 6px rgba(0,0,0,.4)}
+.btn.alt:active{box-shadow:inset 0 3px 4px rgba(255,255,255,.55),inset 0 -4px 7px rgba(20,28,60,.5),0 1px 0 #28314d,0 3px 6px rgba(0,0,0,.4)}
+.chip{background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.28),rgba(255,255,255,0) 100%) 50% 3%/92% 50% no-repeat,linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.06));border:1.5px solid rgba(255,255,255,.3);border-radius:14px;box-shadow:inset 0 2px 3px rgba(255,255,255,.35),inset 0 -4px 6px rgba(0,0,0,.25),0 3px 0 rgba(0,0,0,.4)}
+.chip.on{background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.62),rgba(255,255,255,0) 100%) 50% 3%/92% 50% no-repeat,linear-gradient(180deg,#ff7d88,#ee1c2e 45%,#c10d20);border-color:#ffd6da;box-shadow:inset 0 2px 3px rgba(255,255,255,.75),inset 0 -5px 8px rgba(110,0,14,.5),0 3px 0 #8f0b18,0 6px 10px rgba(0,0,0,.4)}
+.chip:active{transform:translateY(2px)}
+.card{border-radius:16px;font-size:16px;padding:14px 8px;background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.2),rgba(255,255,255,0) 100%) 50% 3%/92% 50% no-repeat,rgba(255,255,255,.08);box-shadow:inset 0 2px 3px rgba(255,255,255,.3),0 3px 0 rgba(0,0,0,.4)}
+.card.on{background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.62),rgba(255,255,255,0) 100%) 50% 3%/92% 50% no-repeat,linear-gradient(180deg,#ff7d88,#ee1c2e 45%,#c10d20);border-color:#ffd6da;box-shadow:inset 0 2px 3px rgba(255,255,255,.75),inset 0 -5px 8px rgba(110,0,14,.5),0 3px 0 #8f0b18}
+
+#settings,#layoutEd,#demoPick,#howPick{position:absolute;inset:0;z-index:60}#howPick{background:rgba(10,8,6,.86);display:flex;align-items:center;justify-content:center;padding:12px}
+#demoPick{background:rgba(10,8,6,.86);display:flex;align-items:center;justify-content:center;padding:12px}
+#fade{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:999;transition:opacity .15s linear}
+#fps{display:none!important}
+#charsel{position:absolute;inset:0;z-index:57;display:flex;pointer-events:none}
+#charsel .panel{pointer-events:auto}
+.cinfo{margin:14px 0 6px;background:rgba(255,255,255,.07);border-radius:12px;padding:8px 12px}
+.crow{display:flex;gap:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px}.crow:last-child{border:0}.crow b{min-width:68px;color:var(--yel)}
+.logo{display:flex;align-items:center;gap:18px}.logo .z{font-size:40px;font-weight:900}.logo .zh .l2{margin-left:10px}
+@media (max-width:760px){.logo .z{font-size:28px}.logo{gap:10px}}
+.btn.lite{background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.62),rgba(255,255,255,0) 100%) 50% 3%/92% 50% no-repeat,linear-gradient(180deg,#ffb0b6 0%,#f4606c 45%,#d8394a 100%);box-shadow:inset 0 3px 4px rgba(255,255,255,.8),inset 0 -6px 9px rgba(140,10,30,.4),0 5px 0 #a82233,0 9px 14px rgba(0,0,0,.45)}
+#killfeed .vic{position:relative;display:inline-block;color:#ff4a4a;font-weight:900}
+#killfeed .vic::after{content:'';position:absolute;left:-2px;right:-2px;top:0;bottom:0;background:linear-gradient(to top right,transparent calc(50% - 1.3px),#ff4a4a calc(50% - 1.3px),#ff4a4a calc(50% + 1.3px),transparent calc(50% + 1.3px))}
+#killfeed .me{background:rgba(255,206,80,.22);border:1px solid rgba(255,224,130,.85)}
+#countdown{position:absolute;left:50%;top:26%;transform:translateX(-50%);text-align:center;pointer-events:none;z-index:5}
+#cdTxt{font:700 20px var(--font);background:rgba(0,0,0,.5);padding:4px 16px;border-radius:10px;display:inline-block}
+#cdNum{font:400 120px/1.05 var(--disp);color:#fff;text-shadow:0 6px 20px rgba(0,0,0,.65);animation:cdp .95s ease-out}
+@keyframes cdp{0%{transform:scale(1.7);opacity:0}25%{opacity:1}100%{transform:scale(1)}}
+body.mobile #cdNum{font-size:84px}
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="gl"></canvas>
+
+  <div id="hud" class="hidden">
+    <div id="scorebar"><span class="flagic" id="flagR"></span><div class="sc red" id="scR">0</div><span class="sep">-</span><div class="sc blue" id="scB">0</div><span class="flagic" id="flagB"></span></div>
+    <div id="timer">5:00</div>
+    <div id="countdown" class="hidden"><div id="cdTxt"></div><div id="cdNum"></div></div><div id="modeName"></div>
+    <div id="killfeed"></div>
+    <div id="crosshair"></div>
+    <div id="msg"></div>
+    <div id="carry" class="hidden">🚩 你正帶著旗幟，快回基地！</div>
+    <div id="warn" class="hidden"><svg id="warnArrow" viewBox="0 0 24 24"><path d="M12 2 L22 21 L12 16 L2 21 Z" fill="currentColor"/></svg></div>
+    <div id="warnBox" class="hidden"><div id="warnTxt">⚠ 有人正在讀你的號碼！</div><div class="bar"><i id="warnFill"></i></div></div>
+    <div id="typed" class="empty">____</div>
+    <div id="hints"><div>輸入數字 <b>0-9</b></div><div>送出 <b>ENTER</b></div><div>刪除 <b>BACKSPACE</b></div><div>望遠鏡 <b>Q / 右鍵</b></div><div>探頭 <b>Z / C</b></div></div>
+    <div id="stamwrap"><span class="ic">⚡</span><div class="bar"><i id="stamFill"></i></div></div>
+    <div id="binwrap"><span class="ic" style="font-size:15px">🔭</span><div class="bar"><i id="binFill"></i></div></div>
+    <div id="slots"><div class="slot" id="slotF"><span class="ico"></span><em>F</em><small></small></div><div class="slot" id="slotG"><span class="ico"></span><em>G</em><small></small></div></div>
+    <div id="photo" class="hidden"><canvas id="photoCv" width="520" height="390"></canvas><div class="cap" id="photoCap">____</div></div>
+    <div id="fps"></div>
+    <button id="pauseBtn">⏸</button>
+    <div id="demoTag" class="hidden"></div><div id="demoBar"><button class="btn alt" id="dbPause">⏸ 選單／退出</button><button class="btn alt" id="dbSet">⚙ 設定</button></div><div id="vig"></div><div id="deadv"></div>
+    <div id="deadMsg" class="hidden"></div>
+  </div>
+
+  <div id="bino"><svg id="binSvg"><defs><mask id="binMask"><rect id="bmR" fill="#fff"/><circle id="bmC1" fill="#000"/><circle id="bmC2" fill="#000"/></mask></defs><rect id="bmFill" fill="#000" mask="url(#binMask)"/><circle id="bmS1" fill="none" stroke="#0b0b0b" stroke-width="8"/><circle id="bmS2" fill="none" stroke="#0b0b0b" stroke-width="8"/></svg></div>
+  <div id="flash"></div>
+
+  <div id="touch">
+    <div id="joyHint">移動</div>
+    <div id="joyBase"><div id="joyKnob"></div></div>
+    <div class="tbtn" id="bJump">跳躍</div>
+    <div class="tbtn" id="bBino">🔭</div>
+    <div class="tbtn" id="bRun">跑</div>
+    <div class="tbtn" id="bLeanL">↖️</div><div class="tbtn" id="bLeanR">↗️</div>
+    <div class="numcol" id="numL"><div class="np" data-k="1">1</div><div class="np" data-k="2">2</div><div class="np" data-k="3">3</div><div class="np" data-k="4">4</div><div class="np" data-k="5">5</div></div>
+    <div class="numcol" id="numR"><div class="np" data-k="6">6</div><div class="np" data-k="7">7</div><div class="np" data-k="8">8</div><div class="np" data-k="9">9</div><div class="np" data-k="0">0</div></div>
+  </div>
+
+  <div id="menu">
+    <div class="panel" id="panel">
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div></div>
+            <div id="devbadge"></div>
+      <div id="errBox"></div>
+      <h4>地圖</h4><div class="chips" id="chMap"></div><div id="mapDesc" class="mpnote" style="margin:2px 0 4px"></div>
+      <h4>遊戲模式</h4><div class="chips" id="chMode"></div>
+      <h4>人數</h4><div class="chips" id="chCount"></div>
+      <h4>號碼位數</h4><div class="chips" id="chCode"></div>
+      <h4>機器人難度</h4><div class="chips" id="chDiff"></div>
+      
+      <button class="btn" id="btnStart">🏆開始遊戲</button>
+      <button class="btn lite" id="btnMP" style="width:100%;margin-top:8px;font-size:17px;padding:10px">🌐 多人連線（用 4 位數密碼與好友同場）</button>
+      <button class="btn alt" id="btnDemo" style="width:100%;margin-top:8px;font-size:15px;padding:8px">🎬 電腦示範模式（全 AI 對戰・隨機視角觀戰）</button>
+      <button class="btn alt" id="btnHow" style="width:100%;margin-top:8px;font-size:15px;padding:8px">📖 玩法操作與說明</button>
+      <button class="btn alt" id="btnSet" style="width:100%;margin-top:8px;font-size:15px;padding:8px">⚙ 設定（裝置／畫質／全螢幕／按鍵配置）</button>
+    </div>
+  </div>
+
+  <div id="fin" class="hidden"></div>
+  <div id="end" class="hidden"></div>
+  <div id="pause" class="hidden"><h2 id="pauseTitle">已暫停</h2><div id="pauseTxt" style="opacity:.85;font-size:14px"></div><div class="btnrow"><button class="btn" id="btnResume">繼續</button><button class="btn alt" id="btnFs2">⛶ 全螢幕</button><button class="btn alt" id="btnSet2">⚙ 設定</button><button class="btn alt" id="btnQuit">回主選單</button></div></div>
+  <div id="mp" class="hidden"><div class="sbox"><h2>多人連線</h2>
+    <div id="mpEntry">
+      <div class="row"><label for="mpName">暱稱</label><input id="mpName" maxlength="10" autocomplete="off" placeholder="最多 10 字"></div>
+      <div class="row"><label for="mpCode">房間密碼</label><input id="mpCode" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="4 位數字"></div>
+      <div class="btnrow"><button class="btn" id="mpHost">建立房間</button><button class="btn alt" id="mpJoin">加入房間</button></div>
+      <div id="mpMsg" class="mpmsg"></div>
+      <div class="mpnote">房主建立房間後，把頁面分享給好友（對方需登入 Claude），再告知同一組 4 位數密碼即可加入。房主的電腦負責運算全場（含機器人），好友只傳送自己的移動與動作。</div>
+      <div class="btnrow"><button class="btn alt" id="mpBack">返回</button></div>
+    </div>
+    <div id="mpLobby" class="hidden">
+      <div class="mpcode">房間 <b id="mpLbCode"></b> <span id="mpKind" style="opacity:.7;font-size:12px"></span></div>
+      <div id="mpCount" style="opacity:.8;font-size:13px;margin:4px 0"></div>
+      <div id="mpMembers"></div>
+      <div class="row"><label>角色</label><button class="chip" id="mpChar"></button></div>
+      <div id="mpHostCtl">
+        <div class="row"><label>地圖</label><div class="chips" id="chNMap"></div></div>
+        <div class="row"><label>模式</label><div class="chips" id="chNMode"></div></div>
+        <div class="row"><label>總人數</label><div class="chips" id="chNCount"></div></div>
+        <div class="row"><label>號碼位數</label><div class="chips" id="chNCode"></div></div>
+        <div class="row"><label>難度</label><div class="chips" id="chNDiff"></div></div>
+        <div class="row"><label>補位</label><div class="chips" id="chNBots"></div></div>
+      </div>
+      <div id="mpGuestInfo" class="mpnote"></div>
+      <div id="mpHint" class="mpmsg"></div>
+      <div class="btnrow"><button class="btn" id="mpStart">開始遊戲</button><button class="btn alt" id="mpLeave">離開房間</button></div>
+    </div>
+  </div></div>
+  <div id="charsel" class="hidden"><div class="panel">
+    <h2 style="font:400 30px var(--disp);margin:0 0 10px">選擇角色</h2>
+    <div class="cards" id="cards"></div>
+    <div class="cinfo"><div class="crow"><b>角色</b><span id="cName"></span></div><div class="crow"><b>角色說明</b><span id="cDesc">無</span></div><div class="crow"><b>被動技能</b><span id="cPass">無</span></div></div>
+    <div class="btnrow" style="justify-content:flex-start"><button class="btn" id="csOk">確認，開始遊戲</button><button class="btn alt" id="csBack">返回</button></div>
+  </div></div>
+  <div id="howPick" class="hidden"><div class="sbox" style="max-height:86vh;overflow:auto"><h2>玩法操作與說明</h2><div class="howto" id="howto"></div><div class="btnrow"><button class="btn alt" id="howBack">關閉</button></div></div></div>
+  <div id="demoPick" class="hidden"><div class="sbox"><h2>電腦示範模式</h2>
+    <div class="mpnote" style="margin:0 0 8px">先選擇要讓電腦示範的遊戲模式。人數、號碼位數與難度沿用主畫面的設定。</div>
+    <div class="mpnote" style="margin:0 0 4px">地圖</div><div class="chips" id="chDemoMap"></div><div id="demoMapDesc" class="mpnote"></div>
+    <div class="mpnote" style="margin:6px 0 4px">遊戲模式</div><div class="chips" id="chDemoMode"></div><div id="demoDesc" class="mpnote"></div><div id="demoNote" class="mpnote" style="color:#ffb27a"></div>
+    <div class="btnrow"><button class="btn" id="dpOk">開始示範</button><button class="btn alt" id="dpBack">返回</button></div>
+  </div></div>
+  <div id="fade"></div>
+  <div id="settings" class="hidden"><div class="sbox"><h2>設定</h2>
+<div class="row"><label>控制模式</label><div class="chips" id="chInput"></div></div>
+        <div class="row"><label>畫質</label><div class="chips" id="chQual"></div></div>
+        <div class="row"><label>視角靈敏度</label><input type="range" id="sens" min="0.4" max="2.5" step="0.05"><span id="sensV"></span></div>
+        <div class="row"><label>自動送出</label><div class="chips" id="chAuto"></div></div>
+        <div class="row"><label>全螢幕</label><div class="chips"><button class="chip" id="btnFs">⛶ 切換全螢幕（手機建議開啟）</button></div></div>
+        <div class="row"><label>音效</label><div class="chips" id="chSnd"></div></div>
+      
+    <div class="row"><label>觸控按鍵</label><div class="chips"><button class="chip" id="btnLayout">調整按鍵大小與位置</button><button class="chip" id="btnLayoutReset">重設配置</button></div></div>
+    <div style="font-size:12px;opacity:.75;margin:-2px 0 6px">按鍵配置供手機觸控使用，電腦上也可預覽調整。</div>
+    <div class="btnrow"><button class="btn" id="btnSetClose">完成</button></div></div></div>
+  <div id="layoutEd" class="hidden"><div id="edBar"><div id="edTip">拖曳按鍵移動位置；點選後用滑桿調整大小</div><div class="edrow"><span id="edName">未選取</span><input type="range" id="edScale" min="0.5" max="2" step="0.05" value="1" disabled><span id="edVal">1.00×</span></div><div class="btnrow" style="margin-top:6px"><button class="btn alt" id="edReset">重設</button><button class="btn" id="edDone">完成</button></div></div></div>
+  <div id="rotate" class="hidden"><h2>請橫向持機 📱↔️</h2><div style="opacity:.85">橫向畫面才有完整的搖桿與數字鍵盤</div></div>
+</div>
+<script>
+/*GAMEJS*/
+</script>
+</body>
+</html>
