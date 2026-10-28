@@ -136,8 +136,8 @@ body.mobile #warnBox{bottom:40%}
 body.mobile #photo canvas{width:300px;height:225px}
 
 #pauseBtn{display:none;position:absolute;border-radius:50%;background:rgba(0,0,0,.45);border:1.5px solid rgba(255,255,255,.7);color:#fff;font-size:15px;pointer-events:auto;padding:0}
-.numcol{position:absolute;top:20vh;height:66.75vh;width:max(56px,10vw);display:flex;flex-direction:column;gap:1.2vh;z-index:2}
-#numL{left:calc(.5vw + env(safe-area-inset-left))}#numR{right:calc(.5vw + env(safe-area-inset-right))}
+.numcol{position:absolute;top:0;bottom:0;width:max(44px,6.6vw);display:flex;flex-direction:column;gap:.7vh;z-index:2}
+#numL{left:0}#numR{right:0}
 .np{flex:1;min-height:0;border-radius:11px;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.55);color:#fff;font:400 clamp(22px,5vh,38px) var(--disp);display:flex;align-items:center;justify-content:center;pointer-events:auto}
 .tbtn.act,.np.act{background:rgba(255,255,255,.55)}
 #bRun.tog{background:rgba(255,200,60,.8);border-color:#fff;box-shadow:0 0 14px rgba(255,200,60,.9)}
@@ -233,6 +233,13 @@ body.editing #touch *{pointer-events:none!important}
 #cdNum{font:400 120px/1.05 var(--disp);color:#fff;text-shadow:0 6px 20px rgba(0,0,0,.65);animation:cdp .95s ease-out}
 @keyframes cdp{0%{transform:scale(1.7);opacity:0}25%{opacity:1}100%{transform:scale(1)}}
 body.mobile #cdNum{font-size:84px}
+#menu{justify-content:center}
+#menu .panel{text-align:center;border-radius:18px;margin:auto 0;max-height:100%;background:rgba(24,16,10,.82)}
+#menu .panel .chips{justify-content:center}
+#menu .panel .logo{justify-content:center;transform:rotate(-2deg);transform-origin:center}
+#menu .panel h4{text-align:center}
+#menu .panel #mapDesc,#menu .panel .mpnote{text-align:center}
+.np{border-radius:8px}
 </style>
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Figure Me Out">
@@ -355,7 +362,7 @@ body.mobile #cdNum{font-size:84px}
     <div style="font-size:12px;opacity:.75;margin:-2px 0 6px">按鍵配置供手機觸控使用，電腦上也可預覽調整。</div>
     <div class="btnrow"><button class="btn" id="btnSetClose">完成</button></div></div></div>
   <div id="layoutEd" class="hidden"><div id="edBar"><div id="edTip">拖曳按鍵移動位置；點選後用滑桿調整大小</div><div class="edrow"><span id="edName">未選取</span><input type="range" id="edScale" min="0.5" max="2" step="0.05" value="1" disabled><span id="edVal">1.00×</span></div><div class="btnrow" style="margin-top:6px"><button class="btn alt" id="edReset">重設</button><button class="btn" id="edDone">完成</button></div></div></div>
-  <div id="rotate" class="hidden"><h2>請橫向持機 📱↔️</h2><div style="opacity:.85">橫向畫面才有完整的搖桿與數字鍵盤</div></div>
+  <div id="rotate" class="hidden"><h2>請將手機轉為橫向 📱↔️</h2><div style="opacity:.85">本遊戲僅支援橫向畫面（若已開啟旋轉鎖定，請先解除）</div></div>
 </div>
 <script>
 (function(){
@@ -434,7 +441,7 @@ const Sfx = {
     g.gain.setValueAtTime(v || .3, t); g.gain.exponentialRampToValueAtTime(.0001, t + d);
     s.connect(f); f.connect(g); g.connect(this.master); s.start(t, Math.random() * .5); s.stop(t + d + .02);
   },
-  click() { this.noise(.03, .12, 3500, 0, true); this.tone(1500, .035, 'square', .05, -500); },
+  click() { this.noise(.012, .06, 2400, 0, true); this.tone(2100, .028, 'sine', .04, -600); this.tone(880, .07, 'triangle', .035, -180, .004); },
   tick() { this.tone(660, .08, 'sine', .12); },
   bell() { // 擂台賽叮叮叮
     for (let k = 0; k < 3; k++) { const d = k * .26; [[1, .22], [2.76, .1], [5.4, .06], [8.9, .035]].forEach(([m, v]) => this.tone(820 * m, .95, 'sine', v, 0, d)); this.noise(.04, .18, 5000, d, true); }
@@ -1999,7 +2006,7 @@ const STEP = .45, RAD = .22, GRAV = 22, EYE = 1.62;
 const NAMES = ['Honda', '小明', '阿杰', 'Mia', 'Ken', 'Luna', 'Jay', 'Yuki', '小美', 'Leo', '阿宏', 'Nina', 'Ray', '小雨', 'Zoe', 'Max', '阿德', 'Coco', 'Tom', 'Eli'];
 /* 新增模式只要在這裡加一筆；demo:false 代表電腦無法示範（需真人操作），示範選單會自動排除並提示 */
 const MODES = {
-  dm: { name: '個人死鬥', sub: '人人為敵', desc: '所有人互相淘汰，最先達到 15 次淘汰者獲勝', time: 300, limit: 15 },
+  dm: { name: '個人死鬥', sub: '人人為敵', desc: '所有人互相淘汰，最先達到 15 次淘汰者獲勝（限時 3 分 30 秒）', time: 210, limit: 15 },
   tdm: { name: '團隊死鬥', sub: '紅 vs 藍', desc: '紅藍兩隊對戰，隊伍先累積 30 次淘汰者獲勝', time: 360, limit: 30 },
   ctf: { name: '奪旗', sub: '搶旗帶回基地', desc: '搶走敵方旗幟帶回己方基地得分，先得 3 分獲勝', time: 480, limit: 3 }
 };
@@ -2336,7 +2343,7 @@ function updateCamera(dt) {
   if (Math.abs(target - G.camY) > .02) G.camY += (target - G.camY) * Math.min(1, dt * 16); else G.camY = target;
   const bob = p.alive && !G.bino ? Math.sin(G.camBob * 2.4) * .028 * Math.min(1, Math.hypot(p.vx, p.vz) / 4) : 0;
   const base = Device.mobile ? 1.19 : 1.28; // 弧度 ≈ 68° / 73°
-  const zoom = .30; // 望遠鏡 ≈ 17°
+  const zoom = .15; // 望遠鏡 ≈ 8.6°（倍率為先前的 2 倍）
   const sp = p.sprinting && !G.bino ? .06 : 0;
   const fov = lerp(base + sp, zoom, G.binK);
   G.fov += (fov - G.fov) * Math.min(1, dt * 14); c.fov = G.fov;
@@ -3227,9 +3234,9 @@ const Input = {
     window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') { Device.lastTouch = performance.now(); if (S.input === 'auto' && !Device.mobile) { Device.auto = true; Device.update(); } } }, true);
     // ---- 觸控 ----
     const layer = $('app'), joyBase = $('joyBase'), joyKnob = $('joyKnob'), joyHint = $('joyHint');
-    const inCtl = t => t.target.closest && t.target.closest('.np,.tbtn,.slot,#pauseBtn,.btn,.panel,#end,#pause');
+    const inCtl = t => t.target.closest && t.target.closest('.np,.tbtn,.slot,#pauseBtn,.btn,.chip,.card,.panel,.sbox,#settings,#mp,#howPick,#demoPick,#charsel,#layoutEd,#end,#pause');
     layer.addEventListener('touchstart', e => {
-      Sfx.init(); Sfx.resume(); if (!Device.mobile || G.state === 'menu' || G.demo || UI.menuOpen) return;
+      Sfx.init(); Sfx.resume(); if (!Device.mobile || G.state === 'menu' || G.demo || UI.menuOpen || UI.paused) return;
       for (const t of e.changedTouches) {
         if (inCtl(t)) continue; e.preventDefault();
         if (inJoyZone(t.clientX, t.clientY) && this.joy.id === null) { this.joy.id = t.identifier; const o = joyOrigin(t.clientX, t.clientY); this.joy.ox = o[0]; this.joy.oy = o[1]; this.joy.s = o[2]; joyBase.style.display = 'block'; joyHint.style.opacity = 0; joyBase.style.left = this.joy.ox + 'px'; joyBase.style.top = this.joy.oy + 'px'; joyBase.style.scale = this.joy.s; joyKnob.style.transform = 'translate(0,0)'; }
@@ -3322,7 +3329,9 @@ function defaultCount() { return Device.mobile ? 12 : 20; }
 window.onDeviceChange = () => { applyLayout(); if (UI.els.menu) { refreshBadge(); updateRotate(); } if (G.state === 'menu' && !S.countSet) { S.count = defaultCount(); buildMenuCounts(); } if (R.gl) { Perf.profile(); Perf.apply(); } };
 function buildMenuCounts() { chips('chCount', [8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; }); }
 function setPreview() { G.preview = { x: 0, y: 0, z: 0, yaw: 0, animT: 0, sp: 0, av: createAvatar(S.outfit), team: -1, number: '4827', plateScale: 1 }; makePlate(G.preview); }
-function updateRotate() { const portrait = innerHeight > innerWidth; UI.els.rotate.classList.toggle('hidden', !(Device.mobile && portrait && G.state !== 'menu')); }
+function tryLandscape() { try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => { }); } catch (e) { } }
+function updateRotate() { const portrait = innerHeight > innerWidth; if (Device.mobile) tryLandscape(); UI.els.rotate.classList.toggle('hidden', !(Device.mobile && portrait)); }
+document.addEventListener('pointerdown', () => { if (Device.mobile) tryLandscape(); }, true);
 
 function beginGame(demo, roster) {
   demo = demo === true;

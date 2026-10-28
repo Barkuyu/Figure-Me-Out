@@ -128,8 +128,8 @@ body.mobile #warnBox{bottom:40%}
 body.mobile #photo canvas{width:300px;height:225px}
 
 #pauseBtn{display:none;position:absolute;border-radius:50%;background:rgba(0,0,0,.45);border:1.5px solid rgba(255,255,255,.7);color:#fff;font-size:15px;pointer-events:auto;padding:0}
-.numcol{position:absolute;top:20vh;height:66.75vh;width:max(56px,10vw);display:flex;flex-direction:column;gap:1.2vh;z-index:2}
-#numL{left:calc(.5vw + env(safe-area-inset-left))}#numR{right:calc(.5vw + env(safe-area-inset-right))}
+.numcol{position:absolute;top:0;bottom:0;width:max(44px,6.6vw);display:flex;flex-direction:column;gap:.7vh;z-index:2}
+#numL{left:0}#numR{right:0}
 .np{flex:1;min-height:0;border-radius:11px;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.55);color:#fff;font:400 clamp(22px,5vh,38px) var(--disp);display:flex;align-items:center;justify-content:center;pointer-events:auto}
 .tbtn.act,.np.act{background:rgba(255,255,255,.55)}
 #bRun.tog{background:rgba(255,200,60,.8);border-color:#fff;box-shadow:0 0 14px rgba(255,200,60,.9)}
@@ -225,6 +225,13 @@ body.editing #touch *{pointer-events:none!important}
 #cdNum{font:400 120px/1.05 var(--disp);color:#fff;text-shadow:0 6px 20px rgba(0,0,0,.65);animation:cdp .95s ease-out}
 @keyframes cdp{0%{transform:scale(1.7);opacity:0}25%{opacity:1}100%{transform:scale(1)}}
 body.mobile #cdNum{font-size:84px}
+#menu{justify-content:center}
+#menu .panel{text-align:center;border-radius:18px;margin:auto 0;max-height:100%;background:rgba(24,16,10,.82)}
+#menu .panel .chips{justify-content:center}
+#menu .panel .logo{justify-content:center;transform:rotate(-2deg);transform-origin:center}
+#menu .panel h4{text-align:center}
+#menu .panel #mapDesc,#menu .panel .mpnote{text-align:center}
+.np{border-radius:8px}
 </style>
 </head>
 <body>
@@ -342,7 +349,7 @@ body.mobile #cdNum{font-size:84px}
     <div style="font-size:12px;opacity:.75;margin:-2px 0 6px">按鍵配置供手機觸控使用，電腦上也可預覽調整。</div>
     <div class="btnrow"><button class="btn" id="btnSetClose">完成</button></div></div></div>
   <div id="layoutEd" class="hidden"><div id="edBar"><div id="edTip">拖曳按鍵移動位置；點選後用滑桿調整大小</div><div class="edrow"><span id="edName">未選取</span><input type="range" id="edScale" min="0.5" max="2" step="0.05" value="1" disabled><span id="edVal">1.00×</span></div><div class="btnrow" style="margin-top:6px"><button class="btn alt" id="edReset">重設</button><button class="btn" id="edDone">完成</button></div></div></div>
-  <div id="rotate" class="hidden"><h2>請橫向持機 📱↔️</h2><div style="opacity:.85">橫向畫面才有完整的搖桿與數字鍵盤</div></div>
+  <div id="rotate" class="hidden"><h2>請將手機轉為橫向 📱↔️</h2><div style="opacity:.85">本遊戲僅支援橫向畫面（若已開啟旋轉鎖定，請先解除）</div></div>
 </div>
 <script>
 /*GAMEJS*/

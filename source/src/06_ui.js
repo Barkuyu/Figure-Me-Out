@@ -210,9 +210,9 @@ const Input = {
     window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') { Device.lastTouch = performance.now(); if (S.input === 'auto' && !Device.mobile) { Device.auto = true; Device.update(); } } }, true);
     // ---- 觸控 ----
     const layer = $('app'), joyBase = $('joyBase'), joyKnob = $('joyKnob'), joyHint = $('joyHint');
-    const inCtl = t => t.target.closest && t.target.closest('.np,.tbtn,.slot,#pauseBtn,.btn,.panel,#end,#pause');
+    const inCtl = t => t.target.closest && t.target.closest('.np,.tbtn,.slot,#pauseBtn,.btn,.chip,.card,.panel,.sbox,#settings,#mp,#howPick,#demoPick,#charsel,#layoutEd,#end,#pause');
     layer.addEventListener('touchstart', e => {
-      Sfx.init(); Sfx.resume(); if (!Device.mobile || G.state === 'menu' || G.demo || UI.menuOpen) return;
+      Sfx.init(); Sfx.resume(); if (!Device.mobile || G.state === 'menu' || G.demo || UI.menuOpen || UI.paused) return;
       for (const t of e.changedTouches) {
         if (inCtl(t)) continue; e.preventDefault();
         if (inJoyZone(t.clientX, t.clientY) && this.joy.id === null) { this.joy.id = t.identifier; const o = joyOrigin(t.clientX, t.clientY); this.joy.ox = o[0]; this.joy.oy = o[1]; this.joy.s = o[2]; joyBase.style.display = 'block'; joyHint.style.opacity = 0; joyBase.style.left = this.joy.ox + 'px'; joyBase.style.top = this.joy.oy + 'px'; joyBase.style.scale = this.joy.s; joyKnob.style.transform = 'translate(0,0)'; }
@@ -305,7 +305,9 @@ function defaultCount() { return Device.mobile ? 12 : 20; }
 window.onDeviceChange = () => { applyLayout(); if (UI.els.menu) { refreshBadge(); updateRotate(); } if (G.state === 'menu' && !S.countSet) { S.count = defaultCount(); buildMenuCounts(); } if (R.gl) { Perf.profile(); Perf.apply(); } };
 function buildMenuCounts() { chips('chCount', [8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; }); }
 function setPreview() { G.preview = { x: 0, y: 0, z: 0, yaw: 0, animT: 0, sp: 0, av: createAvatar(S.outfit), team: -1, number: '4827', plateScale: 1 }; makePlate(G.preview); }
-function updateRotate() { const portrait = innerHeight > innerWidth; UI.els.rotate.classList.toggle('hidden', !(Device.mobile && portrait && G.state !== 'menu')); }
+function tryLandscape() { try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => { }); } catch (e) { } }
+function updateRotate() { const portrait = innerHeight > innerWidth; if (Device.mobile) tryLandscape(); UI.els.rotate.classList.toggle('hidden', !(Device.mobile && portrait)); }
+document.addEventListener('pointerdown', () => { if (Device.mobile) tryLandscape(); }, true);
 
 function beginGame(demo, roster) {
   demo = demo === true;

@@ -3,7 +3,7 @@ const STEP = .45, RAD = .22, GRAV = 22, EYE = 1.62;
 const NAMES = ['Honda', '小明', '阿杰', 'Mia', 'Ken', 'Luna', 'Jay', 'Yuki', '小美', 'Leo', '阿宏', 'Nina', 'Ray', '小雨', 'Zoe', 'Max', '阿德', 'Coco', 'Tom', 'Eli'];
 /* 新增模式只要在這裡加一筆；demo:false 代表電腦無法示範（需真人操作），示範選單會自動排除並提示 */
 const MODES = {
-  dm: { name: '個人死鬥', sub: '人人為敵', desc: '所有人互相淘汰，最先達到 15 次淘汰者獲勝', time: 300, limit: 15 },
+  dm: { name: '個人死鬥', sub: '人人為敵', desc: '所有人互相淘汰，最先達到 15 次淘汰者獲勝（限時 3 分 30 秒）', time: 210, limit: 15 },
   tdm: { name: '團隊死鬥', sub: '紅 vs 藍', desc: '紅藍兩隊對戰，隊伍先累積 30 次淘汰者獲勝', time: 360, limit: 30 },
   ctf: { name: '奪旗', sub: '搶旗帶回基地', desc: '搶走敵方旗幟帶回己方基地得分，先得 3 分獲勝', time: 480, limit: 3 }
 };
@@ -340,7 +340,7 @@ function updateCamera(dt) {
   if (Math.abs(target - G.camY) > .02) G.camY += (target - G.camY) * Math.min(1, dt * 16); else G.camY = target;
   const bob = p.alive && !G.bino ? Math.sin(G.camBob * 2.4) * .028 * Math.min(1, Math.hypot(p.vx, p.vz) / 4) : 0;
   const base = Device.mobile ? 1.19 : 1.28; // 弧度 ≈ 68° / 73°
-  const zoom = .30; // 望遠鏡 ≈ 17°
+  const zoom = .15; // 望遠鏡 ≈ 8.6°（倍率為先前的 2 倍）
   const sp = p.sprinting && !G.bino ? .06 : 0;
   const fov = lerp(base + sp, zoom, G.binK);
   G.fov += (fov - G.fov) * Math.min(1, dt * 14); c.fov = G.fov;

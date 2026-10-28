@@ -73,7 +73,7 @@ const Sfx = {
     g.gain.setValueAtTime(v || .3, t); g.gain.exponentialRampToValueAtTime(.0001, t + d);
     s.connect(f); f.connect(g); g.connect(this.master); s.start(t, Math.random() * .5); s.stop(t + d + .02);
   },
-  click() { this.noise(.03, .12, 3500, 0, true); this.tone(1500, .035, 'square', .05, -500); },
+  click() { this.noise(.012, .06, 2400, 0, true); this.tone(2100, .028, 'sine', .04, -600); this.tone(880, .07, 'triangle', .035, -180, .004); },
   tick() { this.tone(660, .08, 'sine', .12); },
   bell() { // 擂台賽叮叮叮
     for (let k = 0; k < 3; k++) { const d = k * .26; [[1, .22], [2.76, .1], [5.4, .06], [8.9, .035]].forEach(([m, v]) => this.tone(820 * m, .95, 'sine', v, 0, d)); this.noise(.04, .18, 5000, d, true); }
