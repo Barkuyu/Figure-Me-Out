@@ -3,9 +3,9 @@ const STEP = .45, RAD = .22, GRAV = 22, EYE = 1.62;
 const NAMES = ['Honda', '小明', '阿杰', 'Mia', 'Ken', 'Luna', 'Jay', 'Yuki', '小美', 'Leo', '阿宏', 'Nina', 'Ray', '小雨', 'Zoe', 'Max', '阿德', 'Coco', 'Tom', 'Eli'];
 /* 新增模式只要在這裡加一筆；demo:false 代表電腦無法示範（需真人操作），示範選單會自動排除並提示 */
 const MODES = {
-  dm: { name: '個人死鬥', sub: '人人為敵', desc: '所有人互相淘汰，最先達到 15 次淘汰者獲勝（限時 3 分 30 秒）', time: 210, limit: 15 },
-  tdm: { name: '團隊死鬥', sub: '紅 vs 藍', desc: '紅藍兩隊對戰，隊伍先累積 30 次淘汰者獲勝', time: 360, limit: 30 },
-  ctf: { name: '奪旗', sub: '搶旗帶回基地', desc: '搶走敵方旗幟帶回己方基地得分，先得 3 分獲勝', time: 480, limit: 3 }
+  dm: { name: '個人死鬥', sub: '人人為敵', desc: '所有人互相淘汰，最先達到 15 次淘汰者獲勝（限時 3 分 30 秒）', time: 210, limit: 15, short: '人人為敵，先淘汰 15 人者獲勝（限時 3:30）' },
+  tdm: { name: '團隊死鬥', sub: '紅 vs 藍', desc: '紅藍兩隊對戰，隊伍先累積 30 次淘汰者獲勝', time: 360, limit: 30, short: '紅藍對戰，隊伍先累積 30 次淘汰者獲勝' },
+  ctf: { name: '奪旗', sub: '搶旗帶回基地', desc: '搶走敵方旗幟帶回己方基地得分，先得 3 分獲勝', time: 480, limit: 3, short: '搶走敵方旗幟帶回己方基地，先得 3 分獲勝' }
 };
 const ITEMS = { cam: { ico: '📷', name: '相機' }, flash: { ico: '💥', name: '閃光彈' }, smoke: { ico: '🌫️', name: '煙霧彈' }, lure: { ico: '📣', name: '干擾彈' } };
 const DIFF = [{ base: 1.9, type: 1.5, name: '輕鬆' }, { base: 1.25, type: 1.0, name: '普通' }, { base: .85, type: .7, name: '困難' }, { base: 1.25, type: 1.0, name: '干擾者', troll: true }];
@@ -25,7 +25,7 @@ function newActor(name, outfit, isPlayer) {
     id: _id++, name, isPlayer, outfit, av: createAvatar(outfit), team: -1, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, yaw: 0, pitch: 0, alive: false, onGround: true, number: '0000', kills: 0, deaths: 0,
     animT: Math.random() * 6, sp: 0, fall: 0, deadT: 0, respawnT: 0, protect: 0, blind: 0, fx: 0, fz: -1, gy: 0, carry: null, armUp: 0,
     read: {}, typing: null, tgt: null, tgtT: 0, path: [], pi: 0, goal: null, goalT: 0, scanAcc: 0, scanInt: .15, stuckT: 0, lx: 0, lz: 0, item: null, cd: 3 + Math.random() * 5, lure: null, role: 0, strafe: 1, strafeT: 0, repT: 0,
-    remote: false, peer: '', slots: null, rsC: 0, net: null, lastSeq: 0, missT: 0, speed: (4.0 + Math.random() * .7) * 1.3, smart: false, mode: 'roam', modeT: 0, evadeCd: 0, threatT: 0, reader: null, ambushFace: null, lastKillT: -99, range: 36, scaleBase: 1, killedBy: null, nameTex: null, lo: 0, lean: 0
+    remote: false, peer: '', slots: null, rsC: 0, net: null, lastSeq: 0, missT: 0, speed: (4.0 + Math.random() * .7) * 1.3, smart: false, mode: 'roam', modeT: 0, evadeCd: 0, threatT: 0, reader: null, ambushFace: null, lastKillT: -99, range: 36, scaleBase: 1, killedBy: null, nameTex: null, lo: 0, lean: 0, skCd: 0, shieldT: 0, say: null
   };
   makePlate(a); return a;
 }
@@ -80,6 +80,38 @@ function spawnAll() {
     if (!bad) break;
   }
   for (let i = 0; i < n; i++) spawnActor(A[i], [pts[i][0], pts[i][1], yawFor(i)[0], pts[i][2] | 0]);
+}
+/* ---------- 角色技能 ---------- */
+const SKILL_OF = ['rev', 'shield', 'scr']; // 對應 OUTFITS：蘇蘇／艾迪／艾伯特
+const SKILLS = { rev: { name: '顛倒乾坤', cd: 40, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 40, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 60, ico: '⚡' } };
+const SCR_FLASH = 3.0, SCR_TOTAL = 8.0; // 預警閃光 3 秒（4 次短閃 + 1.8 秒長閃）+ 錯亂 5 秒
+const skillOf = a => SKILLS[SKILL_OF[a.av.outfitIdx] || 'rev'];
+const revActive = a => G.sk.rev.t > 0 && G.sk.rev.by !== a;
+const scrPhase2 = a => G.sk.scr.t >= SCR_FLASH && G.sk.scr.by !== a;
+function skReset() { G.sk = { rev: { t: 0, by: null }, scr: { t: -1, by: null } }; for (const a of G.actors) { a.skCd = 0; a.shieldT = 0; a.say = null; } }
+function skMsg(a, t) { const m = a.name + ' ' + t; UI.msg(m, 'item'); netMsg(m, 'item'); }
+function castSkill(a) {
+  if (!a || !a.alive || (a.skCd || 0) > 0 || G.state !== 'playing' || G.countdown > 0) return false;
+  const k = SKILL_OF[a.av.outfitIdx] || 'rev'; a.skCd = SKILLS[k].cd;
+  if (k === 'rev') { G.sk.rev = { t: 5, by: a }; skMsg(a, '發動【顛倒乾坤】！其他人的移動方向反轉 5 秒'); }
+  else if (k === 'scr') { G.sk.scr = { t: 0, by: a }; skMsg(a, '發動【紫電干擾】！數字鍵即將錯亂'); }
+  else { a.shieldT = 3; if (a.isPlayer) UI.msg('護盾展開！3 秒內擋下一次攻擊', 'item'); }
+  if (a.isPlayer || a === G.view) Sfx.skill(); return true;
+}
+function castSkillPlayer() { const p = G.player; if (!p || G.demo || G.state !== 'playing') return; if (G.netClient) { if ((p.skCd || 0) <= 0 && p.alive) { netAct(['s']); p.skCd = 0.01; } return; } castSkill(p); UI.dirty = true; }
+function skTick(dt) {
+  for (const a of G.actors) { a.skCd = Math.max(0, (a.skCd || 0) - dt); a.shieldT = Math.max(0, (a.shieldT || 0) - dt); if (a.say) { a.say.t -= dt; if (a.say.t <= 0) a.say = null; } }
+  if (G.sk.rev.t > 0) G.sk.rev.t -= dt; if (G.sk.scr.t >= 0) { G.sk.scr.t += dt; if (G.sk.scr.t >= SCR_TOTAL) G.sk.scr.t = -1; }
+}
+function blockHit(att, t) {
+  t.shieldT = 0; t.say = { txt: pick(['哼，沒那麼容易！', '擋住囉～換新號碼！', '想讀我？再練練吧！', '嘿嘿，這就換掉！']), t: 1.5 };
+  assignNumber(t); t.protect = Math.max(t.protect, .4); t.read = {};
+  for (const o of G.actors) { if (o.read) o.read[t.id] = 0; if (o.typing && o.typing.target === t) o.typing = null; }
+  const m = t.name + ' 的護盾擋下了 ' + att.name + ' 的攻擊！'; UI.msg(m, att.isPlayer ? 'bad' : 'item'); netMsg(m, 'item'); if (att.isPlayer) Sfx.wrong();
+}
+function botSkill(b, dt) {
+  if (!b.alive || (b.skCd || 0) > 0 || G.countdown > 0 || G.state !== 'playing') return; const k = SKILL_OF[b.av.outfitIdx];
+  if (k === 'shield') { if (b.threatT > 0 && Math.random() < dt * 2.5) castSkill(b); } else if (Math.random() < dt * .035) castSkill(b);
 }
 function enemyOf(a, o) { return o !== a && o.alive && (G.mode === 'dm' || o.team !== a.team); }
 
@@ -244,6 +276,7 @@ function updateFlags(dt) {
 
 /* ---------- 淘汰 / 勝負 ---------- */
 function eliminate(k, v) {
+  if (k !== v && v.alive && v.shieldT > 0) { blockHit(k, v); return; }
   if (!v.alive || v.protect > 0) return;
   v.alive = false; v.deaths++; v.deadT = 0; v.respawnT = 3.2; v.killedBy = k; v.typing = null; v.lure = null;
   k.lastKillT = G.time;
@@ -276,6 +309,7 @@ function leanClear(p, d) {
 const headX = o => Math.cos(o.yaw) * (o.lo || 0), headZ = o => -Math.sin(o.yaw) * (o.lo || 0);
 function typeDigit(d) {
   if (G.state !== 'playing' || G.countdown > 0 || !G.player || !G.player.alive || G.lock > 0) return;
+  if (!Device.mobile && scrPhase2(G.player) && G.keyMap) d = G.keyMap[d] || d;
   const mix = !G.codeLen, L = G.codeLen || 6; if (G.typed.length >= L) return; G.typed += d; Sfx.key(); UI.dirty = true;
   if (mix) { if (G.typed.length >= 3 && (G.typed.length >= 6 || G.actors.some(a => a.alive && a !== G.player && a.number === G.typed)) && (S.auto || Device.mobile)) submitNumber(); }
   else if (G.typed.length === L && (S.auto || Device.mobile)) submitNumber();
@@ -301,6 +335,7 @@ function updatePlayer(dt) {
   const f = FWD(p.yaw), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
   if (p.alive) {
     let mx = In.mx, my = In.my; if (G.freezeT > 0) { mx = my = 0; G.freezeT -= dt; p.redT = Math.max(0, G.freezeT); }
+    if (revActive(p)) { mx = -mx; my = -my; }
     const ml = Math.hypot(mx, my); if (ml > 1) { mx /= ml; my /= ml; }
     const moving = ml > .08;
     let spd = 5.85; const wantSprint = In.sprint && my > .2 && moving;
@@ -445,6 +480,7 @@ function updateTroll(b, dt) {
   if (b.pi < b.path.length) { const w = b.path[b.pi], dx = w[0] - b.x, dz = w[1] - b.z, d = Math.hypot(dx, dz); if (d < .9) b.pi++; else { wx = dx / d; wz = dz / d; } }
   for (const o of G.actors) { if (o === b || !o.alive) continue; const dx = b.x - o.x, dz = b.z - o.z, d2 = dx * dx + dz * dz; if (d2 < 36 && d2 > 1e-4) { const d = Math.sqrt(d2), f = (1 - d / 6) * 1.4; wx += dx / d * f; wz += dz / d * f; } } // 不群聚
   const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; }
+  if (revActive(b)) { wx = -wx; wz = -wz; }
   const k = Math.min(1, dt * 9); b.vx += (wx * spd - b.vx) * k; b.vz += (wz * spd - b.vz) * k;
   if (b.onGround && wl > .3 && Math.random() < dt * .35) b.vy = 7.0;
   b.stuckT += dt; if (b.stuckT > 1.2) { if (Math.hypot(b.x - b.lx, b.z - b.lz) < .5 && wl > .2) { b.path = []; b.goal = null; if (b.onGround) b.vy = 6.8; } b.lx = b.x; b.lz = b.z; b.stuckT = 0; }
@@ -464,13 +500,14 @@ function updateTroll(b, dt) {
 }
 function updateBot(b, dt) {
   if (DIFF[S.diff].troll && !G.demo) { updateTroll(b, dt); return; }
+  botSkill(b, dt);
   b.threatT = Math.max(0, b.threatT - dt); if (b.smart) smartThink(b, dt);
   b.protect = Math.max(0, b.protect - dt); b.blind = Math.max(0, b.blind - dt); b.cd -= dt; b.tgtT -= dt; if (b.tgtT <= 0) b.tgt = null;
   if (b.lure) { b.lure.t -= dt; if (b.lure.t <= 0) b.lure = null; }
   b.scanAcc += dt; if (b.scanAcc >= b.scanInt) { if (b.blind <= 0 && !b.lure) scanBot(b, b.scanAcc); b.scanAcc = 0; b.scanInt = .11 + Math.random() * .06; }
   if (b.typing) {
     b.typing.t -= dt; if (b.blind > 0) b.typing = null;
-    else if (b.typing.t <= 0) { const t = b.typing.target; if (t.alive && t.number === b.typing.num && t.protect <= 0 && (G.mode === 'dm' || t.team !== b.team)) eliminate(b, t); b.typing = null; }
+    else if (b.typing.t <= 0) { const t = b.typing.target; if (scrPhase2(b) && Math.random() < .6) { b.blind = 1.5; b.redT = 2; } else if (t.alive && t.number === b.typing.num && t.protect <= 0 && (G.mode === 'dm' || t.team !== b.team)) eliminate(b, t); b.typing = null; }
   }
   tryPickup(b);
   // 目標 / 路徑
@@ -495,6 +532,7 @@ function updateBot(b, dt) {
   // 分離
   for (const o of G.actors) { if (o === b || !o.alive) continue; const dx = b.x - o.x, dz = b.z - o.z, d2 = dx * dx + dz * dz; if (d2 < .8 && d2 > 1e-4) { const d = Math.sqrt(d2); wx += dx / d * .6; wz += dz / d * .6; } }
   const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; }
+  if (revActive(b)) { wx = -wx; wz = -wz; }
   const k = Math.min(1, dt * 9); b.vx += (wx * spd - b.vx) * k; b.vz += (wz * spd - b.vz) * k;
   // 卡住偵測
   b.stuckT += dt; if (b.stuckT > 1.2) { if (Math.hypot(b.x - b.lx, b.z - b.lz) < .5 && wl > .2) { b.path = []; b.goal = null; if (b.onGround) b.vy = 6.8; } b.lx = b.x; b.lz = b.z; b.stuckT = 0; }
@@ -531,6 +569,7 @@ function updateGame(dt) {
   }
   if (G.state === 'playing') {
     G.tleft -= dt; if (G.tleft <= 0) { G.tleft = 0; checkWin(); }
+    skTick(dt);
     for (const a of G.actors) {
       if (a.isPlayer) { updatePlayer(dt); if (!a.alive && a.respawnT <= 0) { spawnActor(a); UI.onRespawn(); } continue; }
       if (a.remote) { updateRemote(a, dt); continue; }
@@ -587,7 +626,7 @@ function startMatch(demo, roster) {
   for (let i = demo ? 0 : G.actors.length; i < n; i++) { const b = newActor(names[(demo ? i : i - hum)], randi(0, 2), false); b.role = i % 4 === 0 ? 1 : 0; b.smart = !!demo; if (demo) b.speed *= 1.08; b.scaleBase = .85 + Math.random() * .4; b.range = Math.random() < .15 ? 58 : 34; if (b.range > 50) b.scaleBase *= 1.3; G.actors.push(b); }
   G.actors.forEach((a, i) => { a.team = G.mode === 'dm' ? -1 : (i % 2); });
   G.actors.forEach(a => { drawPlate(a); });
-  spawnAll();
+  skReset(); spawnAll();
   if (!demo) { giveItem(0, 'cam'); giveItem(1, pick(['flash', 'smoke', 'lure'])); }
   for (const a of G.actors) if (a.remote) a.slots = [{ type: 'cam', n: 4 }, { type: pick(['flash', 'smoke', 'lure']), n: 1 }];
   G.pickups = World.pickSpots.map(p => ({ x: p[0], z: p[1], y: p[2] ? World.mezz.h : 0, l: p[2] | 0, on: true, t: 0 }));
@@ -628,6 +667,14 @@ function nameTexFor(a) {
   if (a.nameTex) return a.nameTex;
   const c = cv(256, 64), g = c.getContext('2d'); g.font = '700 34px "Noto Sans TC","Microsoft JhengHei",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = 6; g.strokeStyle = 'rgba(0,0,0,.75)'; g.strokeText(a.name, 128, 34); g.fillStyle = '#fff'; g.fillText(a.name, 128, 34);
   a.nameTex = R.tex(c, { nomip: true }); return a.nameTex;
+}
+const _sayC = {};
+function sayTex(txt) {
+  if (_sayC[txt]) return _sayC[txt]; const c = cv(512, 134), g = c.getContext('2d');
+  g.fillStyle = '#fff'; g.strokeStyle = '#2a2018'; g.lineWidth = 6; g.beginPath(); g.roundRect ? g.roundRect(6, 6, 500, 96, 26) : g.rect(6, 6, 500, 96); g.fill(); g.stroke();
+  g.beginPath(); g.moveTo(226, 100); g.lineTo(256, 130); g.lineTo(286, 100); g.closePath(); g.fillStyle = '#fff'; g.fill(); g.stroke(); g.fillRect(232, 96, 48, 8);
+  g.fillStyle = '#2a2018'; g.font = '700 46px "Noto Sans TC","Microsoft JhengHei",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(txt, 256, 56);
+  return (_sayC[txt] = R.tex(c, { nomip: true }));
 }
 function drawSkyDome(c) { const n = World.cur && World.cur.night; M4.trs(SPR.skyM, c.x, c.y, c.z, 0, 0, 0, 520, 520, 520); R.draw(n ? SPR.skyNight : SPR.sky, SPR.skyM, n ? SPR.skyNightMat : SPR.skyMat); }
 function drawSkyFx(c, t) {
@@ -686,6 +733,7 @@ function drawWorldFrame() {
   for (const a of G.actors) { if (!(a.redT > 0) || a === pl || !a.alive) continue; list.push({ x: a.x, y: a.y + 1.0, z: a.z, w: 2.8, a: .5 + .25 * Math.sin(G.time * 14), k: 5, d: (a.x - c.x) ** 2 + (a.z - c.z) ** 2 }); }
   for (const l of G.lures) { const on = Math.sin(l.t * 14) > 0; list.push({ x: l.x, y: l.y + .2, z: l.z, w: on ? .7 : .3, a: 1, k: 2, d: (l.x - c.x) ** 2 + (l.z - c.z) ** 2 }); }
   if (World.cur.night) horrorFx(list, c, t);
+  for (const a of G.actors) { if (!a.alive || a === pl) continue; const dd = (a.x - c.x) ** 2 + (a.z - c.z) ** 2; if (a.shieldT > 0) list.push({ x: a.x, y: a.y + .75, z: a.z, w: 2.3, a: .5 + .2 * Math.sin(G.time * 8), k: 12, d: dd }); if (a.say) list.push({ x: a.x, y: a.y + 1.95, z: a.z, w: 2.0, a: clamp(a.say.t / .25, 0, 1), k: 11, a_: a, d: dd }); }
   for (const f of G.fx) if (f.k === 'flash') { const q = f.t / f.d; list.push({ x: f.x, y: f.y, z: f.z, w: 5 + q * 8, a: 1 - q, k: 3, d: (f.x - c.x) ** 2 + (f.z - c.z) ** 2 }); }
   if (G.mode !== 'dm' && pl) for (const a of G.actors) { if (a === pl || !a.alive || a.team !== pl.team) continue; const d2 = (a.x - c.x) ** 2 + (a.z - c.z) ** 2; if (d2 > 3600) continue; list.push({ x: a.x, y: a.y + 1.8, z: a.z, w: 1.5, a: 1, k: 1, a_: a, d: d2 }); }
   list.sort((p, q) => q.d - p.d);
@@ -694,6 +742,8 @@ function drawWorldFrame() {
     else if (s.k === 1) { const w = 1.5; drawSprite(nameTexFor(s.a_), s.x, s.y, s.z, w, w * .25, pl.team === 0 ? [1, .8, .8] : [.8, .88, 1], .95); }
     else if (s.k === 5) drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w * 1.25, [1, .08, .08], s.a);
     else if (s.k === 2) drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w, [1, .3, .2], s.a);
+    else if (s.k === 11) drawSprite(sayTex(s.a_.say.txt), s.x, s.y, s.z, s.w, s.w * .26, [1, 1, 1], s.a);
+    else if (s.k === 12) drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w * 1.3, [.4, .75, 1], s.a);
     else if (s.k === 6) drawSprite(World.spriteTex.ghost, s.x, s.y, s.z, s.w, s.h, [.86, .95, 1], s.a);
     else if (s.k === 7) drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w, s.col, s.a);
     else if (s.k === 8) { drawSprite(SPR.glow, s.x - .09, s.y, s.z, .22, .16, [1, .05, .04], s.a); drawSprite(SPR.glow, s.x + .09, s.y, s.z, .22, .16, [1, .05, .04], s.a); }

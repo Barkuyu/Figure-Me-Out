@@ -54,6 +54,21 @@ const UI = {
     if (!s) { ico.textContent = ''; n.textContent = ''; el.classList.remove('has'); return; }
     ico.textContent = ITEMS[s.type].ico; n.textContent = s.type === 'cam' ? s.n : ''; el.classList.add('has');
   },
+  /* 角色技能鍵：圓形倒數環 + 秒數；艾伯特技能的預警閃光與按鍵錯亂 */
+  skillHUD(dt, p) {
+    const s = $('slotS'), sk = skillOf(p), cd = p.skCd || 0;
+    if (this._skIco !== sk.ico) { this._skIco = sk.ico; s.querySelector('.ico').textContent = sk.ico; }
+    s.classList.toggle('cd', cd > 0); s.classList.toggle('on', (p.shieldT || 0) > 0); s.style.setProperty('--p', (cd / sk.cd * 360).toFixed(1) + 'deg');
+    const sec = cd > 0 ? String(Math.ceil(cd)) : ''; if (this._skSec !== sec) { this._skSec = sec; s.querySelector('.cdn').textContent = sec; }
+    const sc = G.sk.scr, t = sc.t; let on = false; if (t >= 0 && t < SCR_FLASH) on = t < 1.2 ? (t % .3) < .15 : true;
+    if (on && !this._pf) Sfx.warn(); this._pf = on; $('numL').classList.toggle('purple', on); $('numR').classList.toggle('purple', on); $('pflash').classList.toggle('on', on);
+    const ph2 = scrPhase2(p); if (ph2 && !this._ph2) this.startScramble(); if (!ph2 && this._ph2) this.endScramble(); this._ph2 = ph2;
+  },
+  startScramble() {
+    if (Device.mobile) { const bs = [...document.querySelectorAll('.np')].sort(() => Math.random() - .5), L = $('numL'), R = $('numR'); bs.forEach((b, i) => (i < 5 ? L : R).appendChild(b)); }
+    else { let m; do { m = '0123456789'.split('').sort(() => Math.random() - .5); } while (m.some((v, i) => v === String(i))); G.keyMap = {}; for (let i = 0; i < 10; i++) G.keyMap[String(i)] = m[i]; }
+  },
+  endScramble() { G.keyMap = null; const bs = [...document.querySelectorAll('.np')].sort((a, b) => ((+a.dataset.k + 9) % 10) - ((+b.dataset.k + 9) % 10)); bs.forEach((b, i) => (i < 5 ? $('numL') : $('numR')).appendChild(b)); },
   updateHUD(dt) {
     const e = this.els, p = G.player;
     if (!p && G.demo) { this.cdUpdate(dt); this.demoHUD(dt); return; }
@@ -70,6 +85,7 @@ const UI = {
       this.slotHTML(e.slotF, G.slots[0]); this.slotHTML(e.slotG, G.slots[1]);
       this.dirty = false;
     }
+    this.skillHUD(dt, p);
     e.slotF.classList.toggle('cd', G.itemCd > 0); e.slotG.classList.toggle('cd', G.itemCd > 0);
     if (Math.abs(G.stam - (this._st ?? -1)) > .004) { this._st = G.stam; e.stamFill.style.transform = `scaleX(${G.stam.toFixed(3)})`; }
     if (Math.abs(G.energy - (this._en ?? -1)) > .004) { this._en = G.energy; e.binFill.style.transform = `scaleX(${G.energy.toFixed(3)})`; }
@@ -178,6 +194,7 @@ const Input = {
         if (e.code === 'Enter' || e.code === 'NumpadEnter') { submitNumber(); e.preventDefault(); return; }
         if (e.code === 'KeyF') { useItem(0); return; }
         if (e.code === 'KeyG') { useItem(1); return; }
+        if (e.code === 'KeyR') { castSkillPlayer(); return; }
         if (e.code === 'KeyQ') { toggleBino(); return; }
         if (e.code === 'Escape') { if (!this.pointerLocked()) togglePause(); return; }
         if (e.code === 'KeyP') { togglePause(); return; }
@@ -245,6 +262,7 @@ const Input = {
     document.querySelectorAll('.np').forEach(b => press(b, () => typeDigit(b.dataset.k)));
     press($('bJump'), () => { In.jump = true; }, () => { In.jump = false; });
     press($('bBino'), () => toggleBino());
+    { const ss = $('slotS'); press(ss, () => castSkillPlayer()); ss.addEventListener('click', () => { if (!Device.mobile) castSkillPlayer(); }); }
     press($('bRun'), () => { In.sprintT = !In.sprintT; In.sprint = In.sprintT; $('bRun').classList.toggle('tog', In.sprintT); }, () => { });
     press($('bLeanL'), () => { In.leanL = true; }, () => { In.leanL = false; }); press($('bLeanR'), () => { In.leanR = true; }, () => { In.leanR = false; });
     for (const [id, i] of [['slotF', 0], ['slotG', 1]]) { const el = $(id); press(el, () => useItem(i)); el.addEventListener('click', () => { if (!Device.mobile) useItem(i); }); }
@@ -280,6 +298,7 @@ const MENU_HOWTO = `<p><b>目標：</b>每個人額頭都戴著一組數字牌�
 <p><b>道具：</b>📷 相機（拍照後照片留在畫面上數秒，可慢慢看清數字）　💥 閃光彈（讓人暫時讀不到你）　🌫️ 煙霧彈（阻斷視線）　📣 干擾彈（吸引注意力、打斷記憶）　🔭 望遠鏡（遠距離讀碼）。地圖上的 <b>?</b> 箱會補給道具。</p>
 <p><b>地圖：</b>熱血高校（白天校園，標準面積）／詭譎學苑（黑夜版，遠處會沒入黑暗、要靠近才看得到對手）／追逃商城（1.4 倍大，兩座電扶梯通往二樓，可從欄杆直接跳下一樓、不會摔傷）。</p>
 <p><b>人數：</b>含你在內最多 20 人，不足的人數由電腦補上；手機預設 12 人較順。<b>號碼位數：</b>頭上數字的位數（3～5 碼），位數越多讀得越久、也越難記。</p>
+<p><b>角色技能：</b>按 <kbd>R</kbd>（手機為 G 左邊的技能鍵）施放，圓環與秒數顯示冷卻。蘇蘇【顛倒乾坤】反轉其他人移動 5 秒；艾迪【銅牆鐵壁】3 秒內擋下一次輸入攻擊並刷新號碼；艾伯特【紫電干擾】數字鍵閃光預警後錯亂 5 秒。</p>
 <p><b>探頭：</b>躲在掩體後可按住 <kbd>Z</kbd>（左）／<kbd>C</kbd>（右）將上半身探出去看（手機為右側 ↖／↗ 鍵）；探出去時你的頭也會露出來，可能被對手讀到。</p>
 <p><b>模式：</b>個人死鬥（15 淘汰）／團隊死鬥（30 淘汰）／奪旗（3 次）。團隊模式的隊友額頭牌邊框與臂章為同色，無法淘汰。</p>
 <p><b>提示：</b>畫面中央的紅色箭頭代表「有人正在讀你的號碼」，進度條滿了就會被淘汰——快移動、轉身或躲到掩體後。輸錯號碼會被鎖定輸入約 1 秒。</p>`;
@@ -290,8 +309,9 @@ function chips(id, items, get, set, fmt) {
 function buildMenu() {
   $('howto').innerHTML = MENU_HOWTO; if (!MAPS[S.map]) S.map = 'hb';
   const mapItems = Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), updMap = () => { $('mapDesc').textContent = MAPS[S.map].desc; };
-  chips('chMap', mapItems, () => S.map, v => { S.map = v; updMap(); }); updMap();
-  chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => S.mode = v);
+  chips('chMap', mapItems, () => S.map, v => { S.map = v; updMap(); World.load(v); }); updMap();
+  const updMode = () => { $('modeDescG').textContent = MODES[S.mode] ? MODES[S.mode].short : ''; };
+  chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => { S.mode = v; updMode(); }); updMode();
   chips('chCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
   chips('chCount', [8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; });
   chips('chDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => S.diff = v);
@@ -348,7 +368,7 @@ function beginGame(demo, roster) {
   UI.els.hints.style.display = Device.mobile ? 'none' : '';
   if (demo) { UI.msg('示範模式：全員為電腦，視角會自動切換', 'item'); }
   else if (!Device.mobile) { Input.lock(); UI.noLock = false; setTimeout(() => { if (!Input.pointerLocked() && G.state === 'playing' && !G.demo) UI.msg('點一下畫面以鎖定滑鼠（無法鎖定時可按住左鍵拖曳）', 'item'); }, 900); }
-  else UI.msg('左側拖曳移動・中間拖曳轉視角・兩側數字鍵輸入', 'item');
+  else UI.msg('左側拖曳移動・中間拖曳轉視角・上方數字鍵輸入', 'item');
   UI._wasLocked = false;
   if (!demo) showTut(!NET.mode); else hideTut();
 }
@@ -371,7 +391,7 @@ function beginNetClientUI() {
   showTut(false);
 }
 /* ---------- 角色選擇 / 示範模式選單 ---------- */
-function showCharInfo() { const o = OUTFITS[S.outfit]; $('cName').textContent = o.label; $('cDesc').textContent = o.desc || '無'; $('cPass').textContent = o.passive || '無'; }
+function showCharInfo() { const o = OUTFITS[S.outfit]; $('cName').textContent = o.label; $('cPass').textContent = '【' + o.skill.name + '】' + o.skill.desc; }
 function buildCards() {
   const cards = $('cards'); cards.innerHTML = '';
   OUTFITS.forEach((o, i) => { const c = document.createElement('div'); c.className = 'card' + (S.outfit === i ? ' on' : ''); c.textContent = o.label; c.onclick = () => { S.outfit = i; saveS(); [...cards.children].forEach((k, j) => k.classList.toggle('on', j === i)); setPreview(); showCharInfo(); }; cards.appendChild(c); });
@@ -394,7 +414,7 @@ function openDemoPick() {
   $('demoPick').classList.remove('hidden');
 }
 /* ---------- 設定視窗 / 按鍵配置 ---------- */
-const LAYOUT_IDS = ['bJump', 'bBino', 'bRun', 'bLeanL', 'bLeanR', 'slotF', 'slotG', 'pauseBtn', 'joyHint', 'numL', 'numR'];
+const LAYOUT_IDS = ['bJump', 'bBino', 'bRun', 'bLeanL', 'bLeanR', 'slotF', 'slotG', 'slotS', 'pauseBtn', 'joyHint', 'numL', 'numR'];
 function lay(id) { return S.layout[id] || (S.layout[id] = { x: 0, y: 0, s: 1 }); }
 function applyLayout() {
   const on = Device.mobile || document.body.classList.contains('editing');
@@ -418,7 +438,7 @@ function closeSettings() {
   $('settings').classList.add('hidden');
   if (UI.setAuto) { UI.setAuto = false; setPause(false); if (!G.demo && !Device.mobile) Input.lock(); }
 }
-const NAMES_UI = { bRun: '跑步鍵', bLeanL: '向左探頭鍵', bLeanR: '向右探頭鍵', bJump: '跳躍鍵', bBino: '望遠鏡鍵', slotF: '道具 F（相機）', slotG: '道具 G', pauseBtn: '暫停鍵', joyHint: '移動搖桿', numL: '數字鍵 0–4', numR: '數字鍵 5–9' };
+const NAMES_UI = { bRun: '跑步鍵', bLeanL: '向左探頭鍵', bLeanR: '向右探頭鍵', bJump: '跳躍鍵', bBino: '望遠鏡鍵', slotF: '道具 F（相機）', slotG: '道具 G', slotS: '角色技能 R', pauseBtn: '暫停鍵', joyHint: '移動搖桿', numL: '數字鍵 0–4', numR: '數字鍵 5–9' };
 let edSel = null, edDrag = null, edPrev = null;
 function edSelect(id) {
   edSel = id; LAYOUT_IDS.forEach(k => $(k).classList.toggle('sel', k === id));
@@ -505,5 +525,5 @@ function boot() {
   updateRotate(); requestAnimationFrame(frame);
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
-window.__G = { MAPS, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+window.__G = { MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
