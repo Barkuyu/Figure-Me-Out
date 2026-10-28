@@ -8,7 +8,7 @@ const MODES = {
   ctf: { name: '奪旗', sub: '搶旗帶回基地', desc: '搶走敵方旗幟帶回己方基地得分，先得 3 分獲勝', time: 480, limit: 3 }
 };
 const ITEMS = { cam: { ico: '📷', name: '相機' }, flash: { ico: '💥', name: '閃光彈' }, smoke: { ico: '🌫️', name: '煙霧彈' }, lure: { ico: '📣', name: '干擾彈' } };
-const DIFF = [{ base: 1.9, type: 1.5, name: '輕鬆' }, { base: 1.25, type: 1.0, name: '普通' }, { base: .85, type: .7, name: '困難' }];
+const DIFF = [{ base: 1.9, type: 1.5, name: '輕鬆' }, { base: 1.25, type: 1.0, name: '普通' }, { base: .85, type: .7, name: '困難' }, { base: 1.25, type: 1.0, name: '干擾者', troll: true }];
 
 const G = {
   state: 'menu', mode: 'dm', time: 0, tleft: 300, limit: 15, actors: [], player: null, scores: [0, 0], grenades: [], smokes: [], lures: [], pickups: [], flags: [], fx: [], feed: [],
@@ -42,7 +42,7 @@ function spawnActor(a, fixed) {
   assignNumber(a);
   if (!a.isPlayer && !a.remote) {
     a.slots = [null, null]; a.mode = 'roam'; a.threatT = 0; a.reader = null;
-    const n0 = G.demo ? 2 : (Math.random() < .6 ? 1 : 0), pool = G.demo ? ['flash', 'smoke', 'lure', 'cam'] : ['flash', 'smoke', 'lure'];
+    const troll = DIFF[S.diff].troll && !G.demo, n0 = (G.demo || troll) ? 2 : (Math.random() < .6 ? 1 : 0), pool = G.demo ? ['flash', 'smoke', 'lure', 'cam'] : ['flash', 'smoke', 'lure'];
     for (let i = 0; i < n0; i++) { const t = pick(pool); a.slots[i] = { type: t, n: t === 'cam' ? 3 : 1 }; }
   }
 }
@@ -295,6 +295,7 @@ function updatePlayer(dt) {
   const p = G.player;
   if (Device.mobile) In.sprint = In.sprintT;
   if (In.sprintT && G.stam <= .02) { In.sprintT = false; In.sprint = false; const rb = document.getElementById('bRun'); if (rb) rb.classList.remove('tog'); }
+  if (G.freezeT > 0) In.lookX = In.lookY = 0; // 定身時連視角也不能轉
   p.yaw += In.lookX; p.pitch = clamp(p.pitch + In.lookY, -1.45, 1.45); In.lookX = In.lookY = 0;
   const f = FWD(p.yaw), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
   if (p.alive) {
@@ -426,7 +427,42 @@ function smartThink(b, dt) {
     } else { const fi = b.slots.findIndex(x => x && x.type === 'flash'); if (fi >= 0 && d > 8 && d < 22 && Math.random() < dt * .5) { botUse(b, fi); botThrowAt(b, 'flash', t.x, t.z); b.cd = 3; } }
   }
 }
+/* ---- 干擾者機器人：不讀碼、不殺人，只在全場亂跑、亂轉頭、丟道具搗亂 ---- */
+function trollGoal(b) {
+  if ((!b.slots[0] || !b.slots[1]) && Math.random() < .65) { let bp = null, bd = 1e9; for (const p of G.pickups) { if (!p.on) continue; const d = Math.hypot(p.x - b.x, p.z - b.z) + Math.random() * 12; if (d < bd) { bd = d; bp = p; } } if (bp) return [bp.x, bp.z, bp.l]; }
+  let best = null, bs = -1;
+  for (let k = 0; k < 14; k++) { const c = pick(World.walkCells); let md = 1e9; for (const o of G.actors) { if (o === b || !o.alive) continue; md = Math.min(md, Math.hypot(o.x - c[0], o.z - c[1])); } const far = Math.hypot(c[0] - b.x, c[1] - b.z), sc = Math.min(md, 14) + Math.min(far, 40) * .5 + Math.random() * 6; if (sc > bs) { bs = sc; best = c; } }
+  return [best[0], best[1], best[2]];
+}
+function updateTroll(b, dt) {
+  b.protect = Math.max(0, b.protect - dt); b.blind = Math.max(0, b.blind - dt); b.cd -= dt; b.typing = null; b.read = {}; b.tgt = null; b.threatT = 0;
+  tryPickup(b);
+  b.goalT -= dt; b.repT -= dt;
+  if (!b.goal || b.goalT <= 0 || (b.path.length && b.pi >= b.path.length)) { b.goal = trollGoal(b); b.path = []; b.pi = 0; b.goalT = 5 + Math.random() * 5; }
+  if (!b.path.length) { b.path = World.path(b.x, b.z, b.goal[0], b.goal[1], World.layerOf(b.y), b.goal[2] | 0); b.pi = 0; }
+  let wx = 0, wz = 0; const spd = b.speed * 1.22;
+  if (b.pi < b.path.length) { const w = b.path[b.pi], dx = w[0] - b.x, dz = w[1] - b.z, d = Math.hypot(dx, dz); if (d < .9) b.pi++; else { wx = dx / d; wz = dz / d; } }
+  for (const o of G.actors) { if (o === b || !o.alive) continue; const dx = b.x - o.x, dz = b.z - o.z, d2 = dx * dx + dz * dz; if (d2 < 36 && d2 > 1e-4) { const d = Math.sqrt(d2), f = (1 - d / 6) * 1.4; wx += dx / d * f; wz += dz / d * f; } } // 不群聚
+  const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; }
+  const k = Math.min(1, dt * 9); b.vx += (wx * spd - b.vx) * k; b.vz += (wz * spd - b.vz) * k;
+  if (b.onGround && wl > .3 && Math.random() < dt * .35) b.vy = 7.0;
+  b.stuckT += dt; if (b.stuckT > 1.2) { if (Math.hypot(b.x - b.lx, b.z - b.lz) < .5 && wl > .2) { b.path = []; b.goal = null; if (b.onGround) b.vy = 6.8; } b.lx = b.x; b.lz = b.z; b.stuckT = 0; }
+  moveActor(b, dt);
+  const sp = Math.hypot(b.vx, b.vz); b.sp = clamp(sp / 8.4, 0, 1); b.animT += dt * (5 + b.sp * 9) * (sp > .3 ? 1 : 0);
+  b.lookT = (b.lookT || 0) - dt; if (b.lookT <= 0) { b.lookOff = rand(-2.2, 2.2); b.lookT = rand(.5, 1.6); }
+  const want = (sp > .5 ? Math.atan2(-b.vx, -b.vz) : b.yaw) + (b.lookOff || 0) * (sp > .5 ? .9 : 1);
+  b.yaw += clamp(angDiff(b.yaw, want), -6 * dt, 6 * dt); const f = FWD(b.yaw); b.fx = f[0]; b.fz = f[1];
+  // 搗亂：對附近的人（優先真人）丟閃光／煙霧／干擾彈
+  if (b.cd <= 0 && b.blind <= 0 && b.slots && (b.slots[0] || b.slots[1])) {
+    let tg = null, td = 30; for (const o of G.actors) { if (o === b || !o.alive) continue; const d = Math.hypot(o.x - b.x, o.z - b.z) - ((o.isPlayer || o.remote) ? 8 : 0); if (d < td && d > 4) { td = d; tg = o; } }
+    if (tg) {
+      const i = b.slots.findIndex(x => x && x.type !== 'cam'); if (i >= 0) { const type = b.slots[i].type; botUse(b, i); if (type === 'lure') botThrowAt(b, 'lure', tg.x + rand(-9, 9), tg.z + rand(-9, 9)); else if (type === 'smoke') botThrowAt(b, 'smoke', tg.x + rand(-2, 2), tg.z + rand(-2, 2)); else botThrowAt(b, 'flash', tg.x, tg.z); }
+      b.cd = 2.5 + Math.random() * 4;
+    } else b.cd = 1;
+  }
+}
 function updateBot(b, dt) {
+  if (DIFF[S.diff].troll && !G.demo) { updateTroll(b, dt); return; }
   b.threatT = Math.max(0, b.threatT - dt); if (b.smart) smartThink(b, dt);
   b.protect = Math.max(0, b.protect - dt); b.blind = Math.max(0, b.blind - dt); b.cd -= dt; b.tgtT -= dt; if (b.tgtT <= 0) b.tgt = null;
   if (b.lure) { b.lure.t -= dt; if (b.lure.t <= 0) b.lure = null; }
@@ -483,6 +519,7 @@ function updateDead(a, dt) {
 
 /* ---------- 主更新 ---------- */
 function updateGame(dt) {
+  if (G.tut) return; // 操作說明顯示中：先不開始
   if (G.netClient) { updateClientGame(dt); return; }
   G.time += dt;
   if (G.countdown > 0 && G.state === 'playing') {

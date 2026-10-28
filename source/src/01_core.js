@@ -19,6 +19,13 @@ try { Object.assign(S, JSON.parse(localStorage.getItem('fmo2') || '{}')); } catc
 if (S.layoutV < 2) { S.layout = {}; S.layoutV = 2; }
 const saveS = () => { try { localStorage.setItem('fmo2', JSON.stringify(S)); } catch (e) { } };
 
+const VP = { // 手機直拿時以 CSS 旋轉 90° 呈現橫向畫面；這裡負責座標換算
+  rot: false,
+  get W() { return this.rot ? innerHeight : innerWidth; }, get H() { return this.rot ? innerWidth : innerHeight; },
+  px(x, y) { return this.rot ? y : x; }, py(x, y) { return this.rot ? innerWidth - x : y; },
+  rect(el) { const r = el.getBoundingClientRect(); if (!this.rot) return r; const W = innerWidth, l = r.top, rt = r.bottom, t = W - r.right, b = W - r.left; return { left: l, right: rt, top: t, bottom: b, width: rt - l, height: b - t }; },
+  update() { this.rot = !!Device.mobile && innerHeight > innerWidth; document.body.classList.toggle('rot', this.rot); const st = document.documentElement.style; st.setProperty('--sw', innerWidth + 'px'); st.setProperty('--sh', innerHeight + 'px'); }
+};
 const Device = {
   mobile: false, auto: false, lowEnd: false, refresh: 60, lastTouch: 0,
   detectMobile() {

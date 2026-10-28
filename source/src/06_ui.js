@@ -136,7 +136,7 @@ const Perf = {
     this.pr = clamp(this.start, this.min, this.max); this.hist = []; this.good = 0;
     this.shadowWanted = tier === 'high'; if (this.shadowWanted && !R.shadowReady()) { try { R.initShadow(2048); } catch (e) { } } R.setShadow(this.shadowWanted && !this.shadowOff);
   },
-  apply() { R.resize(innerWidth, innerHeight, this.pr); },
+  apply() { R.resize(VP.W, VP.H, this.pr); },
   tick(ms, playing) {
     if (ms > 250) return; // 切換分頁
     this.frames++; this.acc += ms; this.fpsT += ms;
@@ -210,24 +210,25 @@ const Input = {
     window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') { Device.lastTouch = performance.now(); if (S.input === 'auto' && !Device.mobile) { Device.auto = true; Device.update(); } } }, true);
     // ---- 觸控 ----
     const layer = $('app'), joyBase = $('joyBase'), joyKnob = $('joyKnob'), joyHint = $('joyHint');
-    const inCtl = t => t.target.closest && t.target.closest('.np,.tbtn,.slot,#pauseBtn,.btn,.chip,.card,.panel,.sbox,#settings,#mp,#howPick,#demoPick,#charsel,#layoutEd,#end,#pause');
+    const TX = t => VP.px(t.clientX, t.clientY), TY = t => VP.py(t.clientX, t.clientY);
+    const inCtl = t => t.target.closest && t.target.closest('#tut,.np,.tbtn,.slot,#pauseBtn,.btn,.chip,.card,.panel,.sbox,#settings,#mp,#howPick,#demoPick,#charsel,#layoutEd,#end,#pause');
     layer.addEventListener('touchstart', e => {
       Sfx.init(); Sfx.resume(); if (!Device.mobile || G.state === 'menu' || G.demo || UI.menuOpen || UI.paused) return;
       for (const t of e.changedTouches) {
         if (inCtl(t)) continue; e.preventDefault();
-        if (inJoyZone(t.clientX, t.clientY) && this.joy.id === null) { this.joy.id = t.identifier; const o = joyOrigin(t.clientX, t.clientY); this.joy.ox = o[0]; this.joy.oy = o[1]; this.joy.s = o[2]; joyBase.style.display = 'block'; joyHint.style.opacity = 0; joyBase.style.left = this.joy.ox + 'px'; joyBase.style.top = this.joy.oy + 'px'; joyBase.style.scale = this.joy.s; joyKnob.style.transform = 'translate(0,0)'; }
-        else if (this.look.id === null) { this.look.id = t.identifier; this.look.lx = t.clientX; this.look.ly = t.clientY; }
+        if (inJoyZone(TX(t), TY(t)) && this.joy.id === null) { this.joy.id = t.identifier; const o = joyOrigin(TX(t), TY(t)); this.joy.ox = o[0]; this.joy.oy = o[1]; this.joy.s = o[2]; joyBase.style.display = 'block'; joyHint.style.opacity = 0; joyBase.style.left = this.joy.ox + 'px'; joyBase.style.top = this.joy.oy + 'px'; joyBase.style.scale = this.joy.s; joyKnob.style.transform = 'translate(0,0)'; }
+        else if (this.look.id === null) { this.look.id = t.identifier; this.look.lx = TX(t); this.look.ly = TY(t); }
       }
     }, { passive: false });
     layer.addEventListener('touchmove', e => {
       if (!Device.mobile) return;
       for (const t of e.changedTouches) {
         if (t.identifier === this.joy.id) {
-          let dx = t.clientX - this.joy.ox, dy = t.clientY - this.joy.oy; const js = this.joy.s || 1, R0 = 52 * js, l = Math.hypot(dx, dy); if (l > R0) { dx = dx / l * R0; dy = dy / l * R0; }
+          let dx = TX(t) - this.joy.ox, dy = TY(t) - this.joy.oy; const js = this.joy.s || 1, R0 = 52 * js, l = Math.hypot(dx, dy); if (l > R0) { dx = dx / l * R0; dy = dy / l * R0; }
           joyKnob.style.transform = `translate(${dx / js}px,${dy / js}px)`; In.mx = dx / R0; In.my = -dy / R0;
-          this.joy.ox += (t.clientX - this.joy.ox - dx) * .02 * 0; e.preventDefault();
+          this.joy.ox += (TX(t) - this.joy.ox - dx) * .02 * 0; e.preventDefault();
         } else if (t.identifier === this.look.id) {
-          const s = .0046 * S.sens * lookScale(); In.lookX -= (t.clientX - this.look.lx) * s; In.lookY -= (t.clientY - this.look.ly) * s; this.look.lx = t.clientX; this.look.ly = t.clientY; e.preventDefault();
+          const s = .0046 * S.sens * lookScale(); In.lookX -= (TX(t) - this.look.lx) * s; In.lookY -= (TY(t) - this.look.ly) * s; this.look.lx = TX(t); this.look.ly = TY(t); e.preventDefault();
         }
       }
     }, { passive: false });
@@ -306,9 +307,36 @@ window.onDeviceChange = () => { applyLayout(); if (UI.els.menu) { refreshBadge()
 function buildMenuCounts() { chips('chCount', [8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; }); }
 function setPreview() { G.preview = { x: 0, y: 0, z: 0, yaw: 0, animT: 0, sp: 0, av: createAvatar(S.outfit), team: -1, number: '4827', plateScale: 1 }; makePlate(G.preview); }
 function tryLandscape() { try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => { }); } catch (e) { } }
-function updateRotate() { const portrait = innerHeight > innerWidth; if (Device.mobile) tryLandscape(); UI.els.rotate.classList.toggle('hidden', !(Device.mobile && portrait)); }
+function updateRotate() { VP.update(); if (Device.mobile) tryLandscape(); UI.els.rotate.classList.add('hidden'); }
 document.addEventListener('pointerdown', () => { if (Device.mobile) tryLandscape(); }, true);
 
+/* ---------- 進戰場前的圖解操作說明 ---------- */
+function tutHTML(mobile) {
+  if (!mobile) return `<h2>操作說明</h2><div class="tgrid">
+<div class="tcard"><b>🚶 移動</b><span class="kc">W</span><span class="kc">A</span><span class="kc">S</span><span class="kc">D</span> 走路<br><span class="kc">Shift</span> 按住衝刺（耗體力）<br><span class="kc">Space</span> 跳躍，空中再按＝二段跳</div>
+<div class="tcard"><b>🖱 視角</b>滑鼠移動＝轉視角（先點一下畫面鎖定）<br>右鍵／<span class="kc">Q</span> 望遠鏡（放大、移動變慢）</div>
+<div class="tcard"><b>🔢 輸入號碼</b>看清對手額頭的數字後：<br><span class="kc">0</span>–<span class="kc">9</span> 輸入　<span class="kc">Enter</span> 送出<br><span class="kc">Backspace</span> 刪除（輸入滿位數可自動送出）</div>
+<div class="tcard"><b>🎒 道具</b><span class="kc">F</span> 道具 1（預設相機）<br><span class="kc">G</span> 道具 2（閃光／煙霧／干擾）<br>撿地圖上的橘色「?」箱補給</div>
+<div class="tcard"><b>👀 探頭</b>躲在掩體後按住 <span class="kc">Z</span>（左）／<span class="kc">C</span>（右）<br>探頭看一眼就縮回，別被讀到號碼</div>
+<div class="tcard"><b>⚠ 小心</b>紅色箭頭＝有人正在讀你的號碼<br>輸入錯誤會被定身 2 秒（視角也不能轉）<br><span class="kc">Esc</span> 暫停</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
+  const P = (l, t, w, cls, txt) => `<i class="${cls || ''}" style="left:${l}%;top:${t}%;${w ? 'width:' + w + '%;aspect-ratio:1;' : ''}">${txt}</i>`;
+  return `<h2>操作說明</h2><div class="tphone">
+${P(3.3, 50, 0, 'col', '1<br>2<br>3<br>4<br>5')}${P(96.7, 50, 0, 'col', '6<br>7<br>8<br>9<br>0')}
+${P(16.3, 78.4, 12, 'c', '移動')}${P(11.5, 40.6, 6.6, 'c', '🔭')}${P(72.8, 70.4, 6.2, 'c', 'F')}${P(69.2, 88.7, 6.2, 'c', 'G')}
+${P(81.2, 67.5, 6.6, 'c', '↖')}${P(88.4, 67.5, 6.6, 'c', '↗')}${P(78.2, 86.3, 9.1, 'c', '跑')}${P(87.9, 86, 9.3, 'c', '跳')}${P(59.6, 8, 3.8, 'c', '⏸')}
+<div class="tx" style="left:16.3%;top:62%;width:20%">左側拖曳＝移動</div><div class="tx" style="left:11.5%;top:53%;width:14%">望遠鏡</div>
+<div class="tx" style="left:50%;top:30%;width:40%">右側空白處拖曳＝轉視角</div><div class="tx" style="left:50%;top:46%;width:40%">兩側數字鍵輸入號碼（滿位數自動送出）</div>
+<div class="tx" style="left:46%;top:76%;width:34%;line-height:1.6">F／G＝道具　↖／↗＝探頭（按住）<br>跑＝點一下開關衝刺<br>跳＝跳躍，空中再按＝二段跳</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
+}
+function showTut(freeze) {
+  const t = $('tut'); t.innerHTML = tutHTML(Device.mobile); t.classList.remove('hidden'); G.tut = !!freeze; UI.tutOpen = true; const t0 = performance.now();
+  const done = (e) => {
+    if (!UI.tutOpen || performance.now() - t0 < 350) return; UI.tutOpen = false; G.tut = false; t.classList.add('hidden'); window.removeEventListener('keydown', kd, true);
+    if (e) { e.preventDefault(); e.stopPropagation(); } if (!Device.mobile && !G.demo && freeze) Input.lock();
+  };
+  const kd = e => done(e); t.onpointerdown = done; window.addEventListener('keydown', kd, true);
+}
+function hideTut() { const t = $('tut'); if (t) t.classList.add('hidden'); UI.tutOpen = false; G.tut = false; }
 function beginGame(demo, roster) {
   demo = demo === true;
   Sfx.init(); Sfx.resume(); if (!S.countSet) S.count = defaultCount();
@@ -321,10 +349,12 @@ function beginGame(demo, roster) {
   else if (!Device.mobile) { Input.lock(); UI.noLock = false; setTimeout(() => { if (!Input.pointerLocked() && G.state === 'playing' && !G.demo) UI.msg('點一下畫面以鎖定滑鼠（無法鎖定時可按住左鍵拖曳）', 'item'); }, 900); }
   else UI.msg('左側拖曳移動・中間拖曳轉視角・兩側數字鍵輸入', 'item');
   UI._wasLocked = false;
+  if (!demo) showTut(!NET.mode); else hideTut();
 }
 function toMenu() { go(() => { netLeave(); resetToMenuUI(); }); }
 function stopGameUI() { resetToMenuUI(); UI.els.menu.classList.add('hidden'); }
 function resetToMenuUI() {
+  hideTut();
   G.state = 'menu'; G.demo = false; G.view = null; document.body.classList.remove('playing', 'demo'); UI.els.hud.classList.add('hidden'); UI.els.menu.classList.remove('hidden'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.hideEnd(); UI.els.bino.style.display = 'none'; UI.els.flash.style.opacity = 0;
   $('settings').classList.add('hidden'); updateRotate(); if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
   { const ids = Object.keys(MAPS).filter(k => k !== World.id); World.load(pick(ids)); G.orbitSeed = Math.random() * 6.28; }
@@ -337,6 +367,7 @@ function beginNetClientUI() {
   UI.lastFeed = -1; UI.dirty = true; UI.onRespawn(); Perf.profile(); Perf.apply(); updateRotate(); UI.els.hints.style.display = Device.mobile ? 'none' : '';
   if (!Device.mobile) { UI.noLock = false; UI.msg('點一下畫面以鎖定滑鼠（無法鎖定時可按住左鍵拖曳）', 'item'); }
   UI._wasLocked = false;
+  showTut(false);
 }
 /* ---------- 角色選擇 / 示範模式選單 ---------- */
 function showCharInfo() { const o = OUTFITS[S.outfit]; $('cName').textContent = o.label; $('cDesc').textContent = o.desc || '無'; $('cPass').textContent = o.passive || '無'; }
@@ -369,13 +400,13 @@ function applyLayout() {
   for (const id of LAYOUT_IDS) { const el = $(id); if (!el) continue; const l = on ? S.layout[id] : null; if (l) { el.style.translate = l.x + 'px ' + l.y + 'px'; el.style.scale = l.s || 1; } else { el.style.translate = ''; el.style.scale = ''; } }
 }
 function inJoyZone(x, y) {
-  if (x < innerWidth * .4 && y > innerHeight * .25) return true;
-  const l = S.layout.joyHint; if (l && (l.x || l.y)) { const r = $('joyHint').getBoundingClientRect(); return Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2)) < r.width * .9; }
+  if (x < VP.W * .4 && y > VP.H * .25) return true;
+  const l = S.layout.joyHint; if (l && (l.x || l.y)) { const r = VP.rect($('joyHint')); return Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2)) < r.width * .9; }
   return false;
 }
 function joyOrigin(x, y) {
   const l = S.layout.joyHint, s = l && l.s || 1;
-  if (l && (l.x || l.y)) { const r = $('joyHint').getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2; if (Math.hypot(x - cx, y - cy) < r.width * .9) return [cx, cy, s]; }
+  if (l && (l.x || l.y)) { const r = VP.rect($('joyHint')), cx = r.left + r.width / 2, cy = r.top + r.height / 2; if (Math.hypot(x - cx, y - cy) < r.width * .9) return [cx, cy, s]; }
   return [x, y, s];
 }
 function openSettings() {
@@ -405,13 +436,13 @@ function closeLayoutEditor() {
 function initLayoutEditor() {
   const ed = $('layoutEd');
   ed.addEventListener('pointerdown', e => {
-    if (e.target.closest('#edBar')) return; e.preventDefault(); const x = e.clientX, y = e.clientY; let hit = null;
-    for (const id of LAYOUT_IDS) { const r = $(id).getBoundingClientRect(); if (r.width && x >= r.left - 6 && x <= r.right + 6 && y >= r.top - 6 && y <= r.bottom + 6) { hit = id; break; } }
+    if (e.target.closest('#edBar')) return; e.preventDefault(); const x = VP.px(e.clientX, e.clientY), y = VP.py(e.clientX, e.clientY); let hit = null;
+    for (const id of LAYOUT_IDS) { const r = VP.rect($(id)); if (r.width && x >= r.left - 6 && x <= r.right + 6 && y >= r.top - 6 && y <= r.bottom + 6) { hit = id; break; } }
     edSelect(hit); if (hit) { edDrag = { x, y, id: hit }; try { ed.setPointerCapture(e.pointerId); } catch (x2) { } }
   });
   ed.addEventListener('pointermove', e => {
-    if (!edDrag) return; const l = lay(edDrag.id); l.x += e.clientX - edDrag.x; l.y += e.clientY - edDrag.y; edDrag.x = e.clientX; edDrag.y = e.clientY; applyLayout();
-    const r = $(edDrag.id).getBoundingClientRect(); if (r.left < 0) l.x -= r.left; if (r.top < 0) l.y -= r.top; if (r.right > innerWidth) l.x -= r.right - innerWidth; if (r.bottom > innerHeight) l.y -= r.bottom - innerHeight; applyLayout();
+    if (!edDrag) return; const l = lay(edDrag.id); const ex = VP.px(e.clientX, e.clientY), ey = VP.py(e.clientX, e.clientY); l.x += ex - edDrag.x; l.y += ey - edDrag.y; edDrag.x = ex; edDrag.y = ey; applyLayout();
+    const r = VP.rect($(edDrag.id)); if (r.left < 0) l.x -= r.left; if (r.top < 0) l.y -= r.top; if (r.right > VP.W) l.x -= r.right - VP.W; if (r.bottom > VP.H) l.y -= r.bottom - VP.H; applyLayout();
   });
   const up = () => { if (edDrag) { edDrag = null; saveS(); } }; ed.addEventListener('pointerup', up); ed.addEventListener('pointercancel', up);
   $('edScale').addEventListener('input', () => { if (!edSel) return; lay(edSel).s = +$('edScale').value; $('edVal').textContent = (+$('edScale').value).toFixed(2) + '×'; applyLayout(); });
@@ -436,14 +467,14 @@ function frame(ts) {
   UI.updateHUD(dt);
 }
 function sizeBinoculars() {
-  const w = innerWidth, h = innerHeight, r = Math.min(h * .42, w * .26), cx = w / 2, cy = h / 2, off = r * .62, svg = $('binSvg');
+  const w = VP.W, h = VP.H, r = Math.min(h * .42, w * .26), cx = w / 2, cy = h / 2, off = r * .62, svg = $('binSvg');
   svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
   for (const id of ['bmR', 'bmFill']) { const e = $(id); e.setAttribute('width', w); e.setAttribute('height', h); }
   $('bmC1').setAttribute('cx', cx - off); $('bmC1').setAttribute('cy', cy); $('bmC1').setAttribute('r', r); $('bmC2').setAttribute('cx', cx + off); $('bmC2').setAttribute('cy', cy); $('bmC2').setAttribute('r', r);
   $('bmS1').setAttribute('cx', cx - off); $('bmS1').setAttribute('cy', cy); $('bmS1').setAttribute('r', r); $('bmS2').setAttribute('cx', cx + off); $('bmS2').setAttribute('cy', cy); $('bmS2').setAttribute('r', r);
 }
 function boot() {
-  UI.init(); Device.init();
+  UI.init(); Device.init(); VP.update();
   try {
     R.init($('gl'), !Device.mobile);
   } catch (e) {
@@ -454,8 +485,8 @@ function boot() {
     World.initMats(); initAvatarShared(); initRenderAssets(); World.load(pick(Object.keys(MAPS))); G.orbitSeed = Math.random() * 6.28;
   } catch (e) { console.error(e); $('errBox').innerHTML = `<div class="err">⚠ 載入失敗：${e.message}</div>`; return; }
   buildMenu(); setPreview(); Input.init(); Perf.apply(); sizeBinoculars();
-  window.addEventListener('resize', () => { Perf.apply(); sizeBinoculars(); updateRotate(); });
-  window.addEventListener('orientationchange', () => setTimeout(() => { Perf.apply(); sizeBinoculars(); updateRotate(); }, 250));
+  window.addEventListener('resize', () => { updateRotate(); Perf.apply(); sizeBinoculars(); });
+  window.addEventListener('orientationchange', () => setTimeout(() => { updateRotate(); Perf.apply(); sizeBinoculars(); }, 250));
   const fs = () => { try { const el = document.documentElement; if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) { const r = el.requestFullscreen(); if (r && r.catch) r.catch(() => UI.msg('此環境不允許全螢幕', 'bad')); } else UI.msg('此裝置不支援全螢幕', 'bad'); } catch (e) { } };
   $('btnFs').onclick = fs; $('btnFs2').onclick = fs;
   $('btnStart').onclick = () => go(() => openCharSelect('start')); $('btnDemo').onclick = () => go(openDemoPick); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;

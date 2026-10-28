@@ -18,6 +18,7 @@ addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&/^[=+\-0]$/.te
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
 <style>
+:root{--vw:1vw;--vh:1vh}
 :root{--cream:#f6e7c8;--orange:#ee1c2e;--red:#d93a3a;--blue:#3a6fd9;--teal:#2a8c8c;--yel:#f2b632;--ink:#241a14;--font:'Noto Sans TC','PingFang TC','Microsoft JhengHei',system-ui,sans-serif;--disp:'Lilita One','Noto Sans TC',Impact,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 html{color-scheme:dark}
@@ -57,7 +58,7 @@ button{font-family:inherit}
 #binwrap{position:absolute;right:16px;bottom:16px;display:flex;align-items:center;gap:6px}
 #binwrap .bar i{background:linear-gradient(#9fe8ff,#4fb5e8)}
 #slots{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:10px;pointer-events:auto}
-.slot{position:relative;width:54px;height:54px;border-radius:9px;background:rgba(110,70,40,.62);border:2px solid rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;font-size:25px;cursor:pointer}
+.slot{position:relative;width:54px;height:54px;border-radius:50%;background:rgba(110,70,40,.62);border:2px solid rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;font-size:25px;cursor:pointer}
 .slot.has{background:rgba(70,45,25,.8);border-color:#fff}
 .slot em{position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);font-style:normal;font:700 10px var(--font);background:#fff;color:#222;border-radius:4px;padding:0 6px;text-shadow:none}
 .slot small{position:absolute;top:1px;right:4px;font-size:11px;font-weight:900}
@@ -80,7 +81,7 @@ button{font-family:inherit}
 #deadMsg{position:absolute;left:50%;top:38%;transform:translateX(-50%);text-align:center;font:700 22px var(--font);pointer-events:none}
 #deadMsg small{display:block;font-size:14px;font-weight:500;opacity:.9;margin-top:6px}
 /* ---------- 記分板 / 結束 ---------- */
-#end{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,94vw);max-height:84vh;overflow:auto;background:rgba(20,16,12,.88);border:2px solid rgba(255,255,255,.25);border-radius:14px;padding:14px 16px;pointer-events:none}
+#end{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,calc(var(--vw)*94));max-height:calc(var(--vh)*84);overflow:auto;background:rgba(20,16,12,.88);border:2px solid rgba(255,255,255,.25);border-radius:14px;padding:14px 16px;pointer-events:none}
 #end{pointer-events:auto;text-align:center}
 #end table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{padding:4px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,.1)}
@@ -93,7 +94,7 @@ tr.me td{background:rgba(238,28,46,.35);font-weight:900}
 .btn.alt{background:#556;border-bottom-color:#334}.btn:active{transform:translateY(2px);border-bottom-width:2px}
 /* ---------- 選單 ---------- */
 #menu{position:absolute;inset:0;display:flex;align-items:stretch;pointer-events:none}
-.panel{pointer-events:auto;width:min(540px,100vw);margin:0;padding:18px 20px 22px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;background:linear-gradient(90deg,rgba(24,16,10,.9),rgba(24,16,10,.78) 82%,rgba(24,16,10,0));scrollbar-width:thin}
+.panel{pointer-events:auto;width:min(540px,calc(var(--vw)*100));margin:0;padding:18px 20px 22px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;background:linear-gradient(90deg,rgba(24,16,10,.9),rgba(24,16,10,.78) 82%,rgba(24,16,10,0));scrollbar-width:thin}
 .logo{line-height:.9;margin-bottom:6px;transform:rotate(-2.5deg);transform-origin:left}
 .logo .l1,.logo .l2{display:inline-block;font:400 46px var(--disp);letter-spacing:.02em;background:var(--cream);color:#2c1a0d;padding:2px 10px 0;border-radius:6px;box-shadow:4px 4px 0 var(--red)}
 .logo .l2{margin-top:6px;background:var(--yel);margin-left:16px}
@@ -126,19 +127,19 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
 body.mobile.playing #touch{display:block}
 body.mobile #hints,body.mobile #crosshair+#x{display:none}
 body.mobile #stamwrap{display:flex;position:absolute;left:70.5%;top:54%;transform:translateX(-50%)}
-body.mobile #stamwrap .bar{width:clamp(44px,6vw,64px)}
+body.mobile #stamwrap .bar{width:clamp(44px,calc(var(--vw)*6),64px)}
 #joyBase{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);display:none}
 #joyKnob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:rgba(255,255,255,.45);border:2px solid rgba(255,255,255,.8)}
-#joyHint{position:absolute;left:calc(8.6vw + 14px);bottom:8vh;width:120px;height:120px;border-radius:50%;border:2px dashed rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-size:11px;opacity:.7}
-.tbtn{position:absolute;transform:translate(-50%,-50%);width:clamp(48px,6.6vw,72px);height:clamp(48px,6.6vw,72px);border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.6);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;pointer-events:auto}
+#joyHint{position:absolute;left:16.3%;top:78.4%;margin:-60px 0 0 -60px;width:120px;height:120px;border-radius:50%;border:2px dashed rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-size:11px;opacity:.7}
+.tbtn{position:absolute;transform:translate(-50%,-50%);width:clamp(48px,calc(var(--vw)*6.6),72px);height:clamp(48px,calc(var(--vw)*6.6),72px);border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.6);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;pointer-events:auto}
 body.mobile #typed{bottom:30%;font-size:40px}
 body.mobile #warnBox{bottom:40%}
 body.mobile #photo canvas{width:300px;height:225px}
 
 #pauseBtn{display:none;position:absolute;border-radius:50%;background:rgba(0,0,0,.45);border:1.5px solid rgba(255,255,255,.7);color:#fff;font-size:15px;pointer-events:auto;padding:0}
-.numcol{position:absolute;top:0;bottom:0;width:max(44px,6.6vw);display:flex;flex-direction:column;gap:.7vh;z-index:2}
+.numcol{position:absolute;top:0;bottom:0;width:max(44px,calc(var(--vw)*6.6));display:flex;flex-direction:column;gap:calc(var(--vh)*.7);z-index:2}
 #numL{left:0}#numR{right:0}
-.np{flex:1;min-height:0;border-radius:11px;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.55);color:#fff;font:400 clamp(22px,5vh,38px) var(--disp);display:flex;align-items:center;justify-content:center;pointer-events:auto}
+.np{flex:1;min-height:0;border-radius:11px;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.55);color:#fff;font:400 clamp(22px,calc(var(--vh)*5),38px) var(--disp);display:flex;align-items:center;justify-content:center;pointer-events:auto}
 .tbtn.act,.np.act{background:rgba(255,255,255,.55)}
 #bRun.tog{background:rgba(255,200,60,.8);border-color:#fff;box-shadow:0 0 14px rgba(255,200,60,.9)}
 #fin{position:absolute;inset:0;z-index:55;pointer-events:none;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -160,29 +161,29 @@ body.mobile #photo canvas{width:300px;height:225px}
 #fin.lose .finBg{background:rgba(24,26,32,.5);-webkit-backdrop-filter:grayscale(1) brightness(.62);backdrop-filter:grayscale(1) brightness(.62);animation:fadeBg 1.2s both}
 @keyframes fadeBg{from{opacity:0}to{opacity:1}}
 #fin.lose .finTxt{color:#a3a9b2;text-shadow:0 4px 0 #2a2d33,0 0 18px rgba(0,0,0,.6);animation:riseUp 1.5s .3s cubic-bezier(.2,.8,.3,1) both}
-@keyframes riseUp{from{transform:translateY(45vh);opacity:0}to{transform:translateY(0);opacity:1}}
-#bJump{left:84.5%;top:85.8%;font-size:13px;font-weight:700}
-#bBino{left:74.8%;top:85.8%}
-#bRun{left:70.5%;top:66.5%;font-size:15px;font-weight:700}
-#bLeanL{left:63.2%;top:85.8%;font-size:20px}#bLeanR{left:63.2%;top:66.5%;font-size:20px}
+@keyframes riseUp{from{transform:translateY(calc(var(--vh)*45));opacity:0}to{transform:translateY(0);opacity:1}}
+#bJump{left:87.9%;top:86%;width:clamp(56px,calc(var(--vw)*9.3),108px);height:clamp(56px,calc(var(--vw)*9.3),108px);font-size:16px;font-weight:700}
+#bBino{left:11.5%;top:40.6%}
+#bRun{left:78.2%;top:86.3%;width:clamp(56px,calc(var(--vw)*9.1),106px);height:clamp(56px,calc(var(--vw)*9.1),106px);font-size:17px;font-weight:700}
+#bLeanL{left:81.2%;top:67.5%;font-size:20px}#bLeanR{left:88.4%;top:67.5%;font-size:20px}
 body.mobile #slots{position:absolute;inset:0;transform:none;display:block;pointer-events:none}
-body.mobile .slot{position:absolute;width:clamp(44px,6.4vw,66px);height:clamp(44px,6.4vw,66px);transform:translate(-50%,-50%);pointer-events:auto}
-body.mobile #slotF{left:79.3%;top:67.5%}body.mobile #slotG{left:86.5%;top:62.8%}
-body.mobile #pauseBtn{display:block;left:calc(50% + 92px);top:27px;transform:translate(-50%,-50%);width:clamp(34px,4.4vw,46px);height:clamp(34px,4.4vw,46px)}
+body.mobile .slot{position:absolute;width:clamp(44px,calc(var(--vw)*6.4),66px);height:clamp(44px,calc(var(--vw)*6.4),66px);transform:translate(-50%,-50%);pointer-events:auto}
+body.mobile #slotF{left:72.8%;top:70.4%}body.mobile #slotG{left:69.2%;top:88.7%}
+body.mobile #pauseBtn{display:block;left:calc(50% + 92px);top:27px;transform:translate(-50%,-50%);width:clamp(34px,calc(var(--vw)*4.4),46px);height:clamp(34px,calc(var(--vw)*4.4),46px)}
 body.mobile #binwrap{left:74.8%;top:73%;right:auto;bottom:auto;transform:translateX(-50%)}
-body.mobile #binwrap .bar{width:clamp(50px,7vw,76px)}
-body.mobile #killfeed{right:calc(8.6vw + 6px);top:6px;font-size:11px}
+body.mobile #binwrap .bar{width:clamp(50px,calc(var(--vw)*7),76px)}
+body.mobile #killfeed{right:calc(calc(var(--vw)*8.6) + 6px);top:6px;font-size:11px}
 @media (max-height:420px){.sc{font-size:20px}#timer{top:42px;font-size:13px}}
 @media (orientation:portrait){body.mobile #rotateMsg{display:flex}}
 #rotateMsg{display:none}
-@media (max-width:760px){.panel{width:100vw;background:rgba(24,16,10,.9)}.logo .l1,.logo .l2{font-size:34px}.cards{gap:6px}}
+@media (max-width:760px){.panel{width:calc(var(--vw)*100);background:rgba(24,16,10,.9)}.logo .l1,.logo .l2{font-size:34px}.cards{gap:6px}}
 
 #settings,#layoutEd{position:absolute;inset:0;z-index:60}
 #settings{background:rgba(10,8,6,.86);display:flex;align-items:center;justify-content:center;padding:12px}
 .sbox{width:min(560px,100%);max-height:94%;overflow-y:auto;touch-action:pan-y;background:rgba(32,24,18,.96);border:2px solid rgba(255,255,255,.25);border-radius:14px;padding:14px 18px}
 .sbox h2{font:400 28px var(--disp);margin:0 0 6px}
 #layoutEd{z-index:70;touch-action:none;background:rgba(0,0,0,.25)}
-#edBar{position:absolute;left:50%;top:8px;transform:translateX(-50%);background:rgba(20,16,12,.92);border:2px solid rgba(255,255,255,.35);border-radius:12px;padding:8px 14px;text-align:center;font-size:13px;width:min(420px,94vw)}
+#edBar{position:absolute;left:50%;top:8px;transform:translateX(-50%);background:rgba(20,16,12,.92);border:2px solid rgba(255,255,255,.35);border-radius:12px;padding:8px 14px;text-align:center;font-size:13px;width:min(420px,calc(var(--vw)*94))}
 .edrow{display:flex;align-items:center;gap:8px;justify-content:center;margin-top:6px}.edrow input{flex:1;touch-action:pan-x}
 .sel{outline:3px dashed #ffe27a!important;outline-offset:4px}
 #demoTag{position:absolute;top:88px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.5);padding:3px 12px;border-radius:8px;font:700 13px var(--font);white-space:nowrap}
@@ -234,7 +235,24 @@ body.editing #touch *{pointer-events:none!important}
 @keyframes cdp{0%{transform:scale(1.7);opacity:0}25%{opacity:1}100%{transform:scale(1)}}
 body.mobile #cdNum{font-size:84px}
 #menu{justify-content:center}
-#menu .panel{text-align:center;border-radius:18px;margin:auto 0;max-height:100%;background:rgba(24,16,10,.82)}
+#menu .panel{text-align:center;margin:auto 0;max-height:100%;background:none!important;border:0;box-shadow:none}
+#menu .panel h4,#menu .panel .mpnote,#menu .panel #devbadge,#menu .panel .logo{text-shadow:0 1px 4px rgba(0,0,0,.9),0 0 10px rgba(0,0,0,.7)}
+.ver{align-self:flex-end;margin-left:6px;font:900 15px var(--font);color:#fff;-webkit-text-stroke:3px #1b1b1b;paint-order:stroke fill;letter-spacing:.04em;transform:rotate(2deg)}
+body.rot{--vw:calc(var(--sh)/100);--vh:calc(var(--sw)/100)}
+body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh);height:var(--sw);transform-origin:0 0;transform:translateX(var(--sw)) rotate(90deg);overflow:hidden}
+#tut{position:absolute;inset:0;z-index:80;background:rgba(8,6,4,.86);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 14px 36px;cursor:pointer}
+#tut h2{font:400 clamp(20px,calc(var(--vh)*5),30px) var(--disp);margin:0 0 8px;letter-spacing:.06em}
+#tut .tskip{position:absolute;left:0;right:0;bottom:10px;text-align:center;font-size:13px;color:#fff;animation:blinkT 1.1s ease-in-out infinite}
+@keyframes blinkT{0%,100%{opacity:.25}50%{opacity:1}}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;width:min(920px,100%)}
+.tcard{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.22);border-radius:12px;padding:8px 10px;font-size:12.5px;line-height:1.5}
+.tcard b{color:var(--yel);display:block;margin-bottom:4px;font-size:13px}
+.kc{display:inline-block;min-width:24px;text-align:center;background:#f4efe6;color:#222;border-radius:5px;border-bottom:3px solid #a9a090;padding:1px 6px;margin:1px 2px;font:700 12px var(--font)}
+.tphone{position:relative;width:min(94%,calc(calc(var(--vh)*72)*2.17));aspect-ratio:2.17/1;max-height:calc(var(--vh)*66);background:rgba(40,60,90,.35);border:2px solid rgba(255,255,255,.5);border-radius:16px}
+.tphone i{position:absolute;transform:translate(-50%,-50%);font-style:normal;text-align:center;font-size:clamp(9px,calc(var(--vw)*1.5),13px);line-height:1.15;display:flex;align-items:center;justify-content:center;color:#fff}
+.tphone .c{border:2px solid #fff;border-radius:50%;background:rgba(255,255,255,.14)}
+.tphone .col{border:2px solid #fff;border-radius:6px;background:rgba(255,255,255,.14);width:6.6%;height:96%;top:50%}
+.tphone .tx{position:absolute;transform:translate(-50%,-50%);font-size:clamp(9px,calc(var(--vw)*1.5),13px);color:#ffe58a;text-align:center;width:30%}
 #menu .panel .chips{justify-content:center}
 #menu .panel .logo{justify-content:center;transform:rotate(-2deg);transform-origin:center}
 #menu .panel h4{text-align:center}
@@ -289,7 +307,7 @@ body.mobile #cdNum{font-size:84px}
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 1.6</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <h4>地圖</h4><div class="chips" id="chMap"></div><div id="mapDesc" class="mpnote" style="margin:2px 0 4px"></div>
@@ -306,6 +324,7 @@ body.mobile #cdNum{font-size:84px}
     </div>
   </div>
 
+  <div id="tut" class="hidden"></div>
   <div id="fin" class="hidden"></div>
   <div id="end" class="hidden"></div>
   <div id="pause" class="hidden"><h2 id="pauseTitle">已暫停</h2><div id="pauseTxt" style="opacity:.85;font-size:14px"></div><div class="btnrow"><button class="btn" id="btnResume">繼續</button><button class="btn alt" id="btnFs2">⛶ 全螢幕</button><button class="btn alt" id="btnSet2">⚙ 設定</button><button class="btn alt" id="btnQuit">回主選單</button></div></div>
@@ -342,7 +361,7 @@ body.mobile #cdNum{font-size:84px}
     <div class="cinfo"><div class="crow"><b>角色</b><span id="cName"></span></div><div class="crow"><b>角色說明</b><span id="cDesc">無</span></div><div class="crow"><b>被動技能</b><span id="cPass">無</span></div></div>
     <div class="btnrow" style="justify-content:flex-start"><button class="btn" id="csOk">確認，開始遊戲</button><button class="btn alt" id="csBack">返回</button></div>
   </div></div>
-  <div id="howPick" class="hidden"><div class="sbox" style="max-height:86vh;overflow:auto"><h2>玩法操作與說明</h2><div class="howto" id="howto"></div><div class="btnrow"><button class="btn alt" id="howBack">關閉</button></div></div></div>
+  <div id="howPick" class="hidden"><div class="sbox" style="max-height:calc(var(--vh)*86);overflow:auto"><h2>玩法操作與說明</h2><div class="howto" id="howto"></div><div class="btnrow"><button class="btn alt" id="howBack">關閉</button></div></div></div>
   <div id="demoPick" class="hidden"><div class="sbox"><h2>電腦示範模式</h2>
     <div class="mpnote" style="margin:0 0 8px">先選擇要讓電腦示範的遊戲模式。人數、號碼位數與難度沿用主畫面的設定。</div>
     <div class="mpnote" style="margin:0 0 4px">地圖</div><div class="chips" id="chDemoMap"></div><div id="demoMapDesc" class="mpnote"></div>
@@ -387,6 +406,13 @@ try { Object.assign(S, JSON.parse(localStorage.getItem('fmo2') || '{}')); } catc
 if (S.layoutV < 2) { S.layout = {}; S.layoutV = 2; }
 const saveS = () => { try { localStorage.setItem('fmo2', JSON.stringify(S)); } catch (e) { } };
 
+const VP = { // 手機直拿時以 CSS 旋轉 90° 呈現橫向畫面；這裡負責座標換算
+  rot: false,
+  get W() { return this.rot ? innerHeight : innerWidth; }, get H() { return this.rot ? innerWidth : innerHeight; },
+  px(x, y) { return this.rot ? y : x; }, py(x, y) { return this.rot ? innerWidth - x : y; },
+  rect(el) { const r = el.getBoundingClientRect(); if (!this.rot) return r; const W = innerWidth, l = r.top, rt = r.bottom, t = W - r.right, b = W - r.left; return { left: l, right: rt, top: t, bottom: b, width: rt - l, height: b - t }; },
+  update() { this.rot = !!Device.mobile && innerHeight > innerWidth; document.body.classList.toggle('rot', this.rot); const st = document.documentElement.style; st.setProperty('--sw', innerWidth + 'px'); st.setProperty('--sh', innerHeight + 'px'); }
+};
 const Device = {
   mobile: false, auto: false, lowEnd: false, refresh: 60, lastTouch: 0,
   detectMobile() {
@@ -2011,7 +2037,7 @@ const MODES = {
   ctf: { name: '奪旗', sub: '搶旗帶回基地', desc: '搶走敵方旗幟帶回己方基地得分，先得 3 分獲勝', time: 480, limit: 3 }
 };
 const ITEMS = { cam: { ico: '📷', name: '相機' }, flash: { ico: '💥', name: '閃光彈' }, smoke: { ico: '🌫️', name: '煙霧彈' }, lure: { ico: '📣', name: '干擾彈' } };
-const DIFF = [{ base: 1.9, type: 1.5, name: '輕鬆' }, { base: 1.25, type: 1.0, name: '普通' }, { base: .85, type: .7, name: '困難' }];
+const DIFF = [{ base: 1.9, type: 1.5, name: '輕鬆' }, { base: 1.25, type: 1.0, name: '普通' }, { base: .85, type: .7, name: '困難' }, { base: 1.25, type: 1.0, name: '干擾者', troll: true }];
 
 const G = {
   state: 'menu', mode: 'dm', time: 0, tleft: 300, limit: 15, actors: [], player: null, scores: [0, 0], grenades: [], smokes: [], lures: [], pickups: [], flags: [], fx: [], feed: [],
@@ -2045,7 +2071,7 @@ function spawnActor(a, fixed) {
   assignNumber(a);
   if (!a.isPlayer && !a.remote) {
     a.slots = [null, null]; a.mode = 'roam'; a.threatT = 0; a.reader = null;
-    const n0 = G.demo ? 2 : (Math.random() < .6 ? 1 : 0), pool = G.demo ? ['flash', 'smoke', 'lure', 'cam'] : ['flash', 'smoke', 'lure'];
+    const troll = DIFF[S.diff].troll && !G.demo, n0 = (G.demo || troll) ? 2 : (Math.random() < .6 ? 1 : 0), pool = G.demo ? ['flash', 'smoke', 'lure', 'cam'] : ['flash', 'smoke', 'lure'];
     for (let i = 0; i < n0; i++) { const t = pick(pool); a.slots[i] = { type: t, n: t === 'cam' ? 3 : 1 }; }
   }
 }
@@ -2298,6 +2324,7 @@ function updatePlayer(dt) {
   const p = G.player;
   if (Device.mobile) In.sprint = In.sprintT;
   if (In.sprintT && G.stam <= .02) { In.sprintT = false; In.sprint = false; const rb = document.getElementById('bRun'); if (rb) rb.classList.remove('tog'); }
+  if (G.freezeT > 0) In.lookX = In.lookY = 0; // 定身時連視角也不能轉
   p.yaw += In.lookX; p.pitch = clamp(p.pitch + In.lookY, -1.45, 1.45); In.lookX = In.lookY = 0;
   const f = FWD(p.yaw), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
   if (p.alive) {
@@ -2429,7 +2456,42 @@ function smartThink(b, dt) {
     } else { const fi = b.slots.findIndex(x => x && x.type === 'flash'); if (fi >= 0 && d > 8 && d < 22 && Math.random() < dt * .5) { botUse(b, fi); botThrowAt(b, 'flash', t.x, t.z); b.cd = 3; } }
   }
 }
+/* ---- 干擾者機器人：不讀碼、不殺人，只在全場亂跑、亂轉頭、丟道具搗亂 ---- */
+function trollGoal(b) {
+  if ((!b.slots[0] || !b.slots[1]) && Math.random() < .65) { let bp = null, bd = 1e9; for (const p of G.pickups) { if (!p.on) continue; const d = Math.hypot(p.x - b.x, p.z - b.z) + Math.random() * 12; if (d < bd) { bd = d; bp = p; } } if (bp) return [bp.x, bp.z, bp.l]; }
+  let best = null, bs = -1;
+  for (let k = 0; k < 14; k++) { const c = pick(World.walkCells); let md = 1e9; for (const o of G.actors) { if (o === b || !o.alive) continue; md = Math.min(md, Math.hypot(o.x - c[0], o.z - c[1])); } const far = Math.hypot(c[0] - b.x, c[1] - b.z), sc = Math.min(md, 14) + Math.min(far, 40) * .5 + Math.random() * 6; if (sc > bs) { bs = sc; best = c; } }
+  return [best[0], best[1], best[2]];
+}
+function updateTroll(b, dt) {
+  b.protect = Math.max(0, b.protect - dt); b.blind = Math.max(0, b.blind - dt); b.cd -= dt; b.typing = null; b.read = {}; b.tgt = null; b.threatT = 0;
+  tryPickup(b);
+  b.goalT -= dt; b.repT -= dt;
+  if (!b.goal || b.goalT <= 0 || (b.path.length && b.pi >= b.path.length)) { b.goal = trollGoal(b); b.path = []; b.pi = 0; b.goalT = 5 + Math.random() * 5; }
+  if (!b.path.length) { b.path = World.path(b.x, b.z, b.goal[0], b.goal[1], World.layerOf(b.y), b.goal[2] | 0); b.pi = 0; }
+  let wx = 0, wz = 0; const spd = b.speed * 1.22;
+  if (b.pi < b.path.length) { const w = b.path[b.pi], dx = w[0] - b.x, dz = w[1] - b.z, d = Math.hypot(dx, dz); if (d < .9) b.pi++; else { wx = dx / d; wz = dz / d; } }
+  for (const o of G.actors) { if (o === b || !o.alive) continue; const dx = b.x - o.x, dz = b.z - o.z, d2 = dx * dx + dz * dz; if (d2 < 36 && d2 > 1e-4) { const d = Math.sqrt(d2), f = (1 - d / 6) * 1.4; wx += dx / d * f; wz += dz / d * f; } } // 不群聚
+  const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; }
+  const k = Math.min(1, dt * 9); b.vx += (wx * spd - b.vx) * k; b.vz += (wz * spd - b.vz) * k;
+  if (b.onGround && wl > .3 && Math.random() < dt * .35) b.vy = 7.0;
+  b.stuckT += dt; if (b.stuckT > 1.2) { if (Math.hypot(b.x - b.lx, b.z - b.lz) < .5 && wl > .2) { b.path = []; b.goal = null; if (b.onGround) b.vy = 6.8; } b.lx = b.x; b.lz = b.z; b.stuckT = 0; }
+  moveActor(b, dt);
+  const sp = Math.hypot(b.vx, b.vz); b.sp = clamp(sp / 8.4, 0, 1); b.animT += dt * (5 + b.sp * 9) * (sp > .3 ? 1 : 0);
+  b.lookT = (b.lookT || 0) - dt; if (b.lookT <= 0) { b.lookOff = rand(-2.2, 2.2); b.lookT = rand(.5, 1.6); }
+  const want = (sp > .5 ? Math.atan2(-b.vx, -b.vz) : b.yaw) + (b.lookOff || 0) * (sp > .5 ? .9 : 1);
+  b.yaw += clamp(angDiff(b.yaw, want), -6 * dt, 6 * dt); const f = FWD(b.yaw); b.fx = f[0]; b.fz = f[1];
+  // 搗亂：對附近的人（優先真人）丟閃光／煙霧／干擾彈
+  if (b.cd <= 0 && b.blind <= 0 && b.slots && (b.slots[0] || b.slots[1])) {
+    let tg = null, td = 30; for (const o of G.actors) { if (o === b || !o.alive) continue; const d = Math.hypot(o.x - b.x, o.z - b.z) - ((o.isPlayer || o.remote) ? 8 : 0); if (d < td && d > 4) { td = d; tg = o; } }
+    if (tg) {
+      const i = b.slots.findIndex(x => x && x.type !== 'cam'); if (i >= 0) { const type = b.slots[i].type; botUse(b, i); if (type === 'lure') botThrowAt(b, 'lure', tg.x + rand(-9, 9), tg.z + rand(-9, 9)); else if (type === 'smoke') botThrowAt(b, 'smoke', tg.x + rand(-2, 2), tg.z + rand(-2, 2)); else botThrowAt(b, 'flash', tg.x, tg.z); }
+      b.cd = 2.5 + Math.random() * 4;
+    } else b.cd = 1;
+  }
+}
 function updateBot(b, dt) {
+  if (DIFF[S.diff].troll && !G.demo) { updateTroll(b, dt); return; }
   b.threatT = Math.max(0, b.threatT - dt); if (b.smart) smartThink(b, dt);
   b.protect = Math.max(0, b.protect - dt); b.blind = Math.max(0, b.blind - dt); b.cd -= dt; b.tgtT -= dt; if (b.tgtT <= 0) b.tgt = null;
   if (b.lure) { b.lure.t -= dt; if (b.lure.t <= 0) b.lure = null; }
@@ -2486,6 +2548,7 @@ function updateDead(a, dt) {
 
 /* ---------- 主更新 ---------- */
 function updateGame(dt) {
+  if (G.tut) return; // 操作說明顯示中：先不開始
   if (G.netClient) { updateClientGame(dt); return; }
   G.time += dt;
   if (G.countdown > 0 && G.state === 'playing') {
@@ -3160,7 +3223,7 @@ const Perf = {
     this.pr = clamp(this.start, this.min, this.max); this.hist = []; this.good = 0;
     this.shadowWanted = tier === 'high'; if (this.shadowWanted && !R.shadowReady()) { try { R.initShadow(2048); } catch (e) { } } R.setShadow(this.shadowWanted && !this.shadowOff);
   },
-  apply() { R.resize(innerWidth, innerHeight, this.pr); },
+  apply() { R.resize(VP.W, VP.H, this.pr); },
   tick(ms, playing) {
     if (ms > 250) return; // 切換分頁
     this.frames++; this.acc += ms; this.fpsT += ms;
@@ -3234,24 +3297,25 @@ const Input = {
     window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') { Device.lastTouch = performance.now(); if (S.input === 'auto' && !Device.mobile) { Device.auto = true; Device.update(); } } }, true);
     // ---- 觸控 ----
     const layer = $('app'), joyBase = $('joyBase'), joyKnob = $('joyKnob'), joyHint = $('joyHint');
-    const inCtl = t => t.target.closest && t.target.closest('.np,.tbtn,.slot,#pauseBtn,.btn,.chip,.card,.panel,.sbox,#settings,#mp,#howPick,#demoPick,#charsel,#layoutEd,#end,#pause');
+    const TX = t => VP.px(t.clientX, t.clientY), TY = t => VP.py(t.clientX, t.clientY);
+    const inCtl = t => t.target.closest && t.target.closest('#tut,.np,.tbtn,.slot,#pauseBtn,.btn,.chip,.card,.panel,.sbox,#settings,#mp,#howPick,#demoPick,#charsel,#layoutEd,#end,#pause');
     layer.addEventListener('touchstart', e => {
       Sfx.init(); Sfx.resume(); if (!Device.mobile || G.state === 'menu' || G.demo || UI.menuOpen || UI.paused) return;
       for (const t of e.changedTouches) {
         if (inCtl(t)) continue; e.preventDefault();
-        if (inJoyZone(t.clientX, t.clientY) && this.joy.id === null) { this.joy.id = t.identifier; const o = joyOrigin(t.clientX, t.clientY); this.joy.ox = o[0]; this.joy.oy = o[1]; this.joy.s = o[2]; joyBase.style.display = 'block'; joyHint.style.opacity = 0; joyBase.style.left = this.joy.ox + 'px'; joyBase.style.top = this.joy.oy + 'px'; joyBase.style.scale = this.joy.s; joyKnob.style.transform = 'translate(0,0)'; }
-        else if (this.look.id === null) { this.look.id = t.identifier; this.look.lx = t.clientX; this.look.ly = t.clientY; }
+        if (inJoyZone(TX(t), TY(t)) && this.joy.id === null) { this.joy.id = t.identifier; const o = joyOrigin(TX(t), TY(t)); this.joy.ox = o[0]; this.joy.oy = o[1]; this.joy.s = o[2]; joyBase.style.display = 'block'; joyHint.style.opacity = 0; joyBase.style.left = this.joy.ox + 'px'; joyBase.style.top = this.joy.oy + 'px'; joyBase.style.scale = this.joy.s; joyKnob.style.transform = 'translate(0,0)'; }
+        else if (this.look.id === null) { this.look.id = t.identifier; this.look.lx = TX(t); this.look.ly = TY(t); }
       }
     }, { passive: false });
     layer.addEventListener('touchmove', e => {
       if (!Device.mobile) return;
       for (const t of e.changedTouches) {
         if (t.identifier === this.joy.id) {
-          let dx = t.clientX - this.joy.ox, dy = t.clientY - this.joy.oy; const js = this.joy.s || 1, R0 = 52 * js, l = Math.hypot(dx, dy); if (l > R0) { dx = dx / l * R0; dy = dy / l * R0; }
+          let dx = TX(t) - this.joy.ox, dy = TY(t) - this.joy.oy; const js = this.joy.s || 1, R0 = 52 * js, l = Math.hypot(dx, dy); if (l > R0) { dx = dx / l * R0; dy = dy / l * R0; }
           joyKnob.style.transform = `translate(${dx / js}px,${dy / js}px)`; In.mx = dx / R0; In.my = -dy / R0;
-          this.joy.ox += (t.clientX - this.joy.ox - dx) * .02 * 0; e.preventDefault();
+          this.joy.ox += (TX(t) - this.joy.ox - dx) * .02 * 0; e.preventDefault();
         } else if (t.identifier === this.look.id) {
-          const s = .0046 * S.sens * lookScale(); In.lookX -= (t.clientX - this.look.lx) * s; In.lookY -= (t.clientY - this.look.ly) * s; this.look.lx = t.clientX; this.look.ly = t.clientY; e.preventDefault();
+          const s = .0046 * S.sens * lookScale(); In.lookX -= (TX(t) - this.look.lx) * s; In.lookY -= (TY(t) - this.look.ly) * s; this.look.lx = TX(t); this.look.ly = TY(t); e.preventDefault();
         }
       }
     }, { passive: false });
@@ -3330,9 +3394,36 @@ window.onDeviceChange = () => { applyLayout(); if (UI.els.menu) { refreshBadge()
 function buildMenuCounts() { chips('chCount', [8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; }); }
 function setPreview() { G.preview = { x: 0, y: 0, z: 0, yaw: 0, animT: 0, sp: 0, av: createAvatar(S.outfit), team: -1, number: '4827', plateScale: 1 }; makePlate(G.preview); }
 function tryLandscape() { try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => { }); } catch (e) { } }
-function updateRotate() { const portrait = innerHeight > innerWidth; if (Device.mobile) tryLandscape(); UI.els.rotate.classList.toggle('hidden', !(Device.mobile && portrait)); }
+function updateRotate() { VP.update(); if (Device.mobile) tryLandscape(); UI.els.rotate.classList.add('hidden'); }
 document.addEventListener('pointerdown', () => { if (Device.mobile) tryLandscape(); }, true);
 
+/* ---------- 進戰場前的圖解操作說明 ---------- */
+function tutHTML(mobile) {
+  if (!mobile) return `<h2>操作說明</h2><div class="tgrid">
+<div class="tcard"><b>🚶 移動</b><span class="kc">W</span><span class="kc">A</span><span class="kc">S</span><span class="kc">D</span> 走路<br><span class="kc">Shift</span> 按住衝刺（耗體力）<br><span class="kc">Space</span> 跳躍，空中再按＝二段跳</div>
+<div class="tcard"><b>🖱 視角</b>滑鼠移動＝轉視角（先點一下畫面鎖定）<br>右鍵／<span class="kc">Q</span> 望遠鏡（放大、移動變慢）</div>
+<div class="tcard"><b>🔢 輸入號碼</b>看清對手額頭的數字後：<br><span class="kc">0</span>–<span class="kc">9</span> 輸入　<span class="kc">Enter</span> 送出<br><span class="kc">Backspace</span> 刪除（輸入滿位數可自動送出）</div>
+<div class="tcard"><b>🎒 道具</b><span class="kc">F</span> 道具 1（預設相機）<br><span class="kc">G</span> 道具 2（閃光／煙霧／干擾）<br>撿地圖上的橘色「?」箱補給</div>
+<div class="tcard"><b>👀 探頭</b>躲在掩體後按住 <span class="kc">Z</span>（左）／<span class="kc">C</span>（右）<br>探頭看一眼就縮回，別被讀到號碼</div>
+<div class="tcard"><b>⚠ 小心</b>紅色箭頭＝有人正在讀你的號碼<br>輸入錯誤會被定身 2 秒（視角也不能轉）<br><span class="kc">Esc</span> 暫停</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
+  const P = (l, t, w, cls, txt) => `<i class="${cls || ''}" style="left:${l}%;top:${t}%;${w ? 'width:' + w + '%;aspect-ratio:1;' : ''}">${txt}</i>`;
+  return `<h2>操作說明</h2><div class="tphone">
+${P(3.3, 50, 0, 'col', '1<br>2<br>3<br>4<br>5')}${P(96.7, 50, 0, 'col', '6<br>7<br>8<br>9<br>0')}
+${P(16.3, 78.4, 12, 'c', '移動')}${P(11.5, 40.6, 6.6, 'c', '🔭')}${P(72.8, 70.4, 6.2, 'c', 'F')}${P(69.2, 88.7, 6.2, 'c', 'G')}
+${P(81.2, 67.5, 6.6, 'c', '↖')}${P(88.4, 67.5, 6.6, 'c', '↗')}${P(78.2, 86.3, 9.1, 'c', '跑')}${P(87.9, 86, 9.3, 'c', '跳')}${P(59.6, 8, 3.8, 'c', '⏸')}
+<div class="tx" style="left:16.3%;top:62%;width:20%">左側拖曳＝移動</div><div class="tx" style="left:11.5%;top:53%;width:14%">望遠鏡</div>
+<div class="tx" style="left:50%;top:30%;width:40%">右側空白處拖曳＝轉視角</div><div class="tx" style="left:50%;top:46%;width:40%">兩側數字鍵輸入號碼（滿位數自動送出）</div>
+<div class="tx" style="left:46%;top:76%;width:34%;line-height:1.6">F／G＝道具　↖／↗＝探頭（按住）<br>跑＝點一下開關衝刺<br>跳＝跳躍，空中再按＝二段跳</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
+}
+function showTut(freeze) {
+  const t = $('tut'); t.innerHTML = tutHTML(Device.mobile); t.classList.remove('hidden'); G.tut = !!freeze; UI.tutOpen = true; const t0 = performance.now();
+  const done = (e) => {
+    if (!UI.tutOpen || performance.now() - t0 < 350) return; UI.tutOpen = false; G.tut = false; t.classList.add('hidden'); window.removeEventListener('keydown', kd, true);
+    if (e) { e.preventDefault(); e.stopPropagation(); } if (!Device.mobile && !G.demo && freeze) Input.lock();
+  };
+  const kd = e => done(e); t.onpointerdown = done; window.addEventListener('keydown', kd, true);
+}
+function hideTut() { const t = $('tut'); if (t) t.classList.add('hidden'); UI.tutOpen = false; G.tut = false; }
 function beginGame(demo, roster) {
   demo = demo === true;
   Sfx.init(); Sfx.resume(); if (!S.countSet) S.count = defaultCount();
@@ -3345,10 +3436,12 @@ function beginGame(demo, roster) {
   else if (!Device.mobile) { Input.lock(); UI.noLock = false; setTimeout(() => { if (!Input.pointerLocked() && G.state === 'playing' && !G.demo) UI.msg('點一下畫面以鎖定滑鼠（無法鎖定時可按住左鍵拖曳）', 'item'); }, 900); }
   else UI.msg('左側拖曳移動・中間拖曳轉視角・兩側數字鍵輸入', 'item');
   UI._wasLocked = false;
+  if (!demo) showTut(!NET.mode); else hideTut();
 }
 function toMenu() { go(() => { netLeave(); resetToMenuUI(); }); }
 function stopGameUI() { resetToMenuUI(); UI.els.menu.classList.add('hidden'); }
 function resetToMenuUI() {
+  hideTut();
   G.state = 'menu'; G.demo = false; G.view = null; document.body.classList.remove('playing', 'demo'); UI.els.hud.classList.add('hidden'); UI.els.menu.classList.remove('hidden'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.hideEnd(); UI.els.bino.style.display = 'none'; UI.els.flash.style.opacity = 0;
   $('settings').classList.add('hidden'); updateRotate(); if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
   { const ids = Object.keys(MAPS).filter(k => k !== World.id); World.load(pick(ids)); G.orbitSeed = Math.random() * 6.28; }
@@ -3361,6 +3454,7 @@ function beginNetClientUI() {
   UI.lastFeed = -1; UI.dirty = true; UI.onRespawn(); Perf.profile(); Perf.apply(); updateRotate(); UI.els.hints.style.display = Device.mobile ? 'none' : '';
   if (!Device.mobile) { UI.noLock = false; UI.msg('點一下畫面以鎖定滑鼠（無法鎖定時可按住左鍵拖曳）', 'item'); }
   UI._wasLocked = false;
+  showTut(false);
 }
 /* ---------- 角色選擇 / 示範模式選單 ---------- */
 function showCharInfo() { const o = OUTFITS[S.outfit]; $('cName').textContent = o.label; $('cDesc').textContent = o.desc || '無'; $('cPass').textContent = o.passive || '無'; }
@@ -3393,13 +3487,13 @@ function applyLayout() {
   for (const id of LAYOUT_IDS) { const el = $(id); if (!el) continue; const l = on ? S.layout[id] : null; if (l) { el.style.translate = l.x + 'px ' + l.y + 'px'; el.style.scale = l.s || 1; } else { el.style.translate = ''; el.style.scale = ''; } }
 }
 function inJoyZone(x, y) {
-  if (x < innerWidth * .4 && y > innerHeight * .25) return true;
-  const l = S.layout.joyHint; if (l && (l.x || l.y)) { const r = $('joyHint').getBoundingClientRect(); return Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2)) < r.width * .9; }
+  if (x < VP.W * .4 && y > VP.H * .25) return true;
+  const l = S.layout.joyHint; if (l && (l.x || l.y)) { const r = VP.rect($('joyHint')); return Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2)) < r.width * .9; }
   return false;
 }
 function joyOrigin(x, y) {
   const l = S.layout.joyHint, s = l && l.s || 1;
-  if (l && (l.x || l.y)) { const r = $('joyHint').getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2; if (Math.hypot(x - cx, y - cy) < r.width * .9) return [cx, cy, s]; }
+  if (l && (l.x || l.y)) { const r = VP.rect($('joyHint')), cx = r.left + r.width / 2, cy = r.top + r.height / 2; if (Math.hypot(x - cx, y - cy) < r.width * .9) return [cx, cy, s]; }
   return [x, y, s];
 }
 function openSettings() {
@@ -3429,13 +3523,13 @@ function closeLayoutEditor() {
 function initLayoutEditor() {
   const ed = $('layoutEd');
   ed.addEventListener('pointerdown', e => {
-    if (e.target.closest('#edBar')) return; e.preventDefault(); const x = e.clientX, y = e.clientY; let hit = null;
-    for (const id of LAYOUT_IDS) { const r = $(id).getBoundingClientRect(); if (r.width && x >= r.left - 6 && x <= r.right + 6 && y >= r.top - 6 && y <= r.bottom + 6) { hit = id; break; } }
+    if (e.target.closest('#edBar')) return; e.preventDefault(); const x = VP.px(e.clientX, e.clientY), y = VP.py(e.clientX, e.clientY); let hit = null;
+    for (const id of LAYOUT_IDS) { const r = VP.rect($(id)); if (r.width && x >= r.left - 6 && x <= r.right + 6 && y >= r.top - 6 && y <= r.bottom + 6) { hit = id; break; } }
     edSelect(hit); if (hit) { edDrag = { x, y, id: hit }; try { ed.setPointerCapture(e.pointerId); } catch (x2) { } }
   });
   ed.addEventListener('pointermove', e => {
-    if (!edDrag) return; const l = lay(edDrag.id); l.x += e.clientX - edDrag.x; l.y += e.clientY - edDrag.y; edDrag.x = e.clientX; edDrag.y = e.clientY; applyLayout();
-    const r = $(edDrag.id).getBoundingClientRect(); if (r.left < 0) l.x -= r.left; if (r.top < 0) l.y -= r.top; if (r.right > innerWidth) l.x -= r.right - innerWidth; if (r.bottom > innerHeight) l.y -= r.bottom - innerHeight; applyLayout();
+    if (!edDrag) return; const l = lay(edDrag.id); const ex = VP.px(e.clientX, e.clientY), ey = VP.py(e.clientX, e.clientY); l.x += ex - edDrag.x; l.y += ey - edDrag.y; edDrag.x = ex; edDrag.y = ey; applyLayout();
+    const r = VP.rect($(edDrag.id)); if (r.left < 0) l.x -= r.left; if (r.top < 0) l.y -= r.top; if (r.right > VP.W) l.x -= r.right - VP.W; if (r.bottom > VP.H) l.y -= r.bottom - VP.H; applyLayout();
   });
   const up = () => { if (edDrag) { edDrag = null; saveS(); } }; ed.addEventListener('pointerup', up); ed.addEventListener('pointercancel', up);
   $('edScale').addEventListener('input', () => { if (!edSel) return; lay(edSel).s = +$('edScale').value; $('edVal').textContent = (+$('edScale').value).toFixed(2) + '×'; applyLayout(); });
@@ -3460,14 +3554,14 @@ function frame(ts) {
   UI.updateHUD(dt);
 }
 function sizeBinoculars() {
-  const w = innerWidth, h = innerHeight, r = Math.min(h * .42, w * .26), cx = w / 2, cy = h / 2, off = r * .62, svg = $('binSvg');
+  const w = VP.W, h = VP.H, r = Math.min(h * .42, w * .26), cx = w / 2, cy = h / 2, off = r * .62, svg = $('binSvg');
   svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
   for (const id of ['bmR', 'bmFill']) { const e = $(id); e.setAttribute('width', w); e.setAttribute('height', h); }
   $('bmC1').setAttribute('cx', cx - off); $('bmC1').setAttribute('cy', cy); $('bmC1').setAttribute('r', r); $('bmC2').setAttribute('cx', cx + off); $('bmC2').setAttribute('cy', cy); $('bmC2').setAttribute('r', r);
   $('bmS1').setAttribute('cx', cx - off); $('bmS1').setAttribute('cy', cy); $('bmS1').setAttribute('r', r); $('bmS2').setAttribute('cx', cx + off); $('bmS2').setAttribute('cy', cy); $('bmS2').setAttribute('r', r);
 }
 function boot() {
-  UI.init(); Device.init();
+  UI.init(); Device.init(); VP.update();
   try {
     R.init($('gl'), !Device.mobile);
   } catch (e) {
@@ -3478,8 +3572,8 @@ function boot() {
     World.initMats(); initAvatarShared(); initRenderAssets(); World.load(pick(Object.keys(MAPS))); G.orbitSeed = Math.random() * 6.28;
   } catch (e) { console.error(e); $('errBox').innerHTML = `<div class="err">⚠ 載入失敗：${e.message}</div>`; return; }
   buildMenu(); setPreview(); Input.init(); Perf.apply(); sizeBinoculars();
-  window.addEventListener('resize', () => { Perf.apply(); sizeBinoculars(); updateRotate(); });
-  window.addEventListener('orientationchange', () => setTimeout(() => { Perf.apply(); sizeBinoculars(); updateRotate(); }, 250));
+  window.addEventListener('resize', () => { updateRotate(); Perf.apply(); sizeBinoculars(); });
+  window.addEventListener('orientationchange', () => setTimeout(() => { updateRotate(); Perf.apply(); sizeBinoculars(); }, 250));
   const fs = () => { try { const el = document.documentElement; if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) { const r = el.requestFullscreen(); if (r && r.catch) r.catch(() => UI.msg('此環境不允許全螢幕', 'bad')); } else UI.msg('此裝置不支援全螢幕', 'bad'); } catch (e) { } };
   $('btnFs').onclick = fs; $('btnFs2').onclick = fs;
   $('btnStart').onclick = () => go(() => openCharSelect('start')); $('btnDemo').onclick = () => go(openDemoPick); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
