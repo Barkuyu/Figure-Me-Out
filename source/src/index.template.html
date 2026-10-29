@@ -42,11 +42,11 @@ button{font-family:inherit}
 #hints{position:absolute;right:14px;top:50%;transform:translateY(-10%);font-size:11px;display:flex;flex-direction:column;gap:4px;align-items:flex-end;opacity:.9}
 #hints div{display:flex;gap:7px;align-items:center}
 #hints b{background:rgba(255,255,255,.9);color:#222;border-radius:4px;padding:1px 6px;font-size:9.5px;text-shadow:none}
-#stamwrap{position:absolute;left:16px;bottom:16px;display:flex;align-items:center;gap:6px}
+#stamwrap{position:absolute;right:calc(50% + 104px);top:14px;display:flex;align-items:center;gap:6px}
 #stamwrap .ic{color:var(--yel);font-size:15px}
 .bar{width:132px;height:9px;background:rgba(0,0,0,.45);border:1.5px solid rgba(255,255,255,.85);border-radius:5px;overflow:hidden;position:relative}
 .bar i{position:absolute;inset:0;transform-origin:left;background:linear-gradient(#ffe27a,#f2b632)}
-#binwrap{position:absolute;right:16px;bottom:16px;display:flex;align-items:center;gap:6px}
+#binwrap{position:absolute;left:calc(50% + 104px);top:14px;display:flex;align-items:center;gap:6px}
 #binwrap .bar i{background:linear-gradient(#9fe8ff,#4fb5e8)}
 #slots{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:10px;pointer-events:auto}
 .slot{position:relative;width:54px;height:54px;border-radius:50%;background:rgba(110,70,40,.62);border:2px solid rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;font-size:25px;cursor:pointer}
@@ -117,7 +117,7 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
 #touch{position:absolute;inset:0;display:none;pointer-events:none}
 body.mobile.playing #touch{display:block}
 body.mobile #hints,body.mobile #crosshair+#x{display:none}
-body.mobile #stamwrap{display:flex;position:absolute;left:70.5%;top:54%;transform:translateX(-50%)}
+body.mobile #stamwrap{display:flex;position:absolute;right:calc(50% + 104px);left:auto;top:14px;transform:none}
 body.mobile #stamwrap .bar{width:clamp(44px,6vw,64px)}
 #joyBase{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);display:none}
 #joyKnob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:rgba(255,255,255,.45);border:2px solid rgba(255,255,255,.8)}
@@ -162,7 +162,7 @@ body.mobile #slots{position:absolute;inset:0;transform:none;display:block;pointe
 body.mobile .slot{position:absolute;width:clamp(44px,6.4vw,66px);height:clamp(44px,6.4vw,66px);transform:translate(-50%,-50%);pointer-events:auto}
 body.mobile #slotF{left:80.2%;top:74.3%}body.mobile #slotG{left:76.6%;top:92.6%}body.mobile #slotS{left:69.4%;top:92.6%}
 body.mobile #pauseBtn{display:block;left:calc(50% + 92px);top:27px;transform:translate(-50%,-50%);width:clamp(34px,4.4vw,46px);height:clamp(34px,4.4vw,46px)}
-body.mobile #binwrap{left:74.8%;top:73%;right:auto;bottom:auto;transform:translateX(-50%)}
+body.mobile #binwrap{left:calc(50% + 128px);top:14px;right:auto;bottom:auto;transform:none}
 body.mobile #binwrap .bar{width:clamp(50px,7vw,76px)}
 body.mobile #killfeed{right:calc(8.6vw + 6px);top:6px;font-size:11px}
 @media (max-height:420px){.sc{font-size:20px}#timer{top:42px;font-size:13px}.numcol{top:42px}#bBack{top:calc(42px + 13vh + .8vh)}}
@@ -272,6 +272,15 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 #keysov b{display:flex;align-items:center;justify-content:center;height:24px;border-radius:5px;background:rgba(0,0,0,.45);border:1.5px solid rgba(255,255,255,.4);color:#fff;font-weight:700}
 #keysov b.w2{grid-column:span 2}#keysov b.w3{grid-column:span 3}#keysov b.sp{visibility:hidden}
 #keysov b.on{background:#ffd21a;color:#222;border-color:#fff;box-shadow:0 0 10px #ffd21a}
+#intro{position:fixed;inset:0;background:#000;z-index:2000;display:flex;align-items:center;justify-content:center}
+#intro img{max-width:min(88vw,88vh);max-height:88vh;opacity:0}
+#intro.go img{animation:introA 6s linear forwards}
+@keyframes introA{0%{opacity:0}33.33%{opacity:1}66.66%{opacity:1}100%{opacity:0}}
+#intro.done{display:none}
+#menu.fadein{animation:menuIn 1s ease-out}
+@keyframes menuIn{from{opacity:0}to{opacity:1}}
+.card .av,.ico2{display:block}
+.cav{width:30px;height:30px;border-radius:50%;vertical-align:middle;margin-right:6px;border:2px solid rgba(255,255,255,.85);background:#333;object-fit:cover}
 .gnote{font-size:12px;color:#fff;margin:4px 0 0;min-height:16px}
 .slot .cdn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:900 clamp(16px,2.6vw,22px) var(--font);color:#fff;text-shadow:0 0 5px #000,0 0 3px #000;pointer-events:none}
 .slot .ring{position:absolute;inset:-5px;border-radius:50%;pointer-events:none;opacity:0;background:conic-gradient(#ffd84a var(--p,0deg),rgba(255,255,255,.12) 0);-webkit-mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px));mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px))}
@@ -281,6 +290,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 </style>
 </head>
 <body>
+<div id="intro"><img id="introImg" src="data:image/jpeg;base64,{{LOGO}}" alt=""></div>
 <div id="app">
   <canvas id="gl"></canvas>
 

@@ -13,6 +13,7 @@ def conv(m):
     return css
 t=conv(re.match(r"(?s).*",t))
 t=t.replace("<style>","<style>\n:root{--vw:1vw;--vh:1vh}",1)
+t=t.replace("{{LOGO}}",open(f"{d}/src/logo.b64").read().strip())
 out=t.replace("/*GAMEJS*/",js.replace("</script>","<\\/script>"))
 os.makedirs(f"{d}/out",exist_ok=True)
 open(f"{d}/out/index.html","w",encoding='utf-8').write(out)

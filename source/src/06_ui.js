@@ -423,7 +423,7 @@ function beginNetClientUI() {
 function showCharInfo() { const o = OUTFITS[S.outfit]; $('cName').textContent = o.label; $('cPass').textContent = '【' + o.skill.name + '】' + o.skill.desc; if (G.preview) G.preview.fake = null; }
 function buildCards() {
   const cards = $('cards'); cards.innerHTML = '';
-  OUTFITS.forEach((o, i) => { if (o.hidden) return; const c = document.createElement('div'); c.className = 'card' + (S.outfit === i ? ' on' : ''); c.textContent = o.label; c.onclick = () => { S.outfit = i; saveS(); [...cards.children].forEach((k, j) => k.classList.toggle('on', j === i)); setPreview(); showCharInfo(); }; cards.appendChild(c); });
+  OUTFITS.forEach((o, i) => { if (o.hidden) return; const c = document.createElement('div'); c.className = 'card' + (S.outfit === i ? ' on' : ''); c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + o.label; c.onclick = () => { S.outfit = i; saveS(); [...cards.children].forEach((k, j) => k.classList.toggle('on', j === i)); setPreview(); showCharInfo(); }; cards.appendChild(c); });
   showCharInfo();
 }
 function openCharSelect(origin) {
@@ -531,6 +531,20 @@ function makeInk() {
   const hl = g.createRadialGradient(200, 200, 5, 200, 200, 150); hl.addColorStop(0, 'rgba(120,90,170,.25)'); hl.addColorStop(1, 'rgba(120,90,170,0)'); g.fillStyle = hl; g.fillRect(0, 0, 512, 512);
   $('ink').style.backgroundImage = 'url(' + c.toDataURL() + ')';
 }
+function startIntro() {
+  const it = $('intro'), t0 = performance.now(); let fin = false;
+  const end = () => { if (fin) return; fin = true; it.style.transition = 'opacity .25s'; it.style.opacity = 0; setTimeout(() => { it.classList.add('done'); $('menu').classList.add('fadein'); setTimeout(() => $('menu').classList.remove('fadein'), 1100); }, 260); };
+  void it.offsetWidth; it.classList.add('go'); setTimeout(end, 6000);
+  const skip = () => { if (performance.now() - t0 > 1000) end(); }; it.addEventListener('pointerdown', skip); window.addEventListener('keydown', skip);
+}
+function outfitIcon(i) {
+  const O = OUTFITS[i]; if (O._icon) return O._icon;
+  const c = cv(96, 96), g = c.getContext('2d'), f = paintFace(O), hc = O.gen ? O.gen.hair : O.hair;
+  g.fillStyle = hc; g.beginPath(); g.arc(48, 48, 48, 0, TAU); g.fill();
+  g.save(); g.beginPath(); g.arc(48, 52, 40, 0, TAU); g.clip(); g.drawImage(f, 232, 40, 560, 430, 4, 10, 88, 86); g.restore();
+  g.fillStyle = hc; g.beginPath(); g.ellipse(48, 22, 38, 17, 0, PI, TAU); g.fill();
+  return (O._icon = c.toDataURL());
+}
 function boot() {
   UI.init(); Device.init(); VP.update(); makeInk();
   try {
@@ -559,7 +573,7 @@ function boot() {
   $('pause').addEventListener('click', e => { if (e.target.id === 'pause') resumeGame(); });
   document.addEventListener('visibilitychange', () => { if (document.hidden && G.state === 'playing' && !UI.paused && !NET.mode) setPause(true); });
   window.onGLLost = () => { UI.msg('圖形裝置中斷，請重新整理頁面', 'bad'); };
-  updateRotate(); requestAnimationFrame(frame);
+  updateRotate(); requestAnimationFrame(frame); startIntro();
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
 window.__G = { MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };

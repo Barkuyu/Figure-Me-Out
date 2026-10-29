@@ -110,7 +110,7 @@ function castSkill(a) {
   else if (k === 'ink') { G.sk.ink = { t: 5, by: a, id: ++G.skId }; for (const o of G.actors) if (o !== a && o.alive && !o.isPlayer && !o.remote) { o.blind = Math.max(o.blind, 5); o.typing = null; } skMsg(a, '發動【烏賊戲法】！其他人的視野被墨汁遮住'); }
   else if (k === 'eagle') { G.sk.eagle = { t: 7, by: a }; skMsg(a, '發動【靶靶命中】！所有號碼牌轉向放大'); }
   else if (k === 'lydia') { puffFx(a); a.cloak = true; a.cloakE = 0; if (a.isPlayer) UI.msg('隱身 5 秒（擊殺可延長，輸錯號碼會現形）', 'item'); }
-  else if (k === 'mind') { let n = 0; for (const o of G.actors) { if (o === a || !o.alive) continue; if (Math.hypot(o.x - a.x, o.z - a.z) <= 2.5) { o.ctrlT = 2.5; o.ctrlBy = a; o.typing = null; n++; } } skMsg(a, '發動【心靈控制】！' + (n ? n + ' 人被控制' : '範圍內無人')); }
+  else if (k === 'mind') { let n = 0; for (const o of G.actors) { if (o === a || !o.alive) continue; if (Math.hypot(o.x - a.x, o.z - a.z) <= 5) { o.ctrlT = 2.5; o.ctrlBy = a; o.typing = null; n++; } } skMsg(a, '發動【心靈控制】！' + (n ? n + ' 人被控制' : '範圍內無人')); }
   else if (k === 'cloak') {
     puffFx(a); let best = null, bd = 1e9; const fx = FWD(a.yaw);
     for (const o of G.actors) { if (o === a || !o.alive || o.fake) continue; const dx = o.x - a.x, dz = o.z - a.z, d = Math.hypot(dx, dz) || 1, front = (dx * fx[0] + dz * fx[1]) / d; const sc = d + (front > .3 && los(a.x, a.y + 1.6, a.z, o.x, o.y + 1.65, o.z) ? 0 : 40); if (sc < bd) { bd = sc; best = o; } }
