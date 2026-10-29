@@ -24,8 +24,8 @@ OUTFITS.push(
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'lydia', label: '貓女Lydia', sub: '', skill: { name: '幻影蹤跡', desc: '噴白煙後隱身 5 秒，每 1.5 秒現形 0.1 秒。冷卻 40 秒。' }, H: 1.64, skin: '#efcbb0', hipX: .095, shX: .19, tz: .54, hair: '#222', hair2: '#444', female: true, gen: { top: '#17151c', top2: '#c93a8a', pants: '#17151c', shoe: '#17151c', hair: '#3b1f5a', style: 'long', acc: ['catears'], accC: '#17151c' },
     torso: [[.001, -.16], [.2, -.16], [.19, -.08], [.16, .05], [.15, .17], [.152, .28], [.17, .38], [.18, .46], [.17, .51], [.12, .545], [.056, .56], [.05, .595], [.001, .595]] },
-  { key: 'lin', label: '王心靈Lin', sub: '', skill: { name: '心靈控制', desc: '周圍 5 公尺內的人會背對你走開 2.5 秒。冷卻 40 秒。' }, H: 1.68, skin: '#f0d2b6', hipX: .095, shX: .19, tz: .54, hair: '#222', hair2: '#444', female: true, gen: { top: '#f4efe0', top2: '#d9a93a', pants: '#e3dccb', shoe: '#8a6a2a', hair: '#15151a', style: 'long', acc: ['headband'], accC: '#d9a93a' },
-    torso: [[.001, -.16], [.2, -.16], [.19, -.08], [.16, .05], [.15, .17], [.152, .28], [.17, .38], [.18, .46], [.17, .51], [.12, .545], [.056, .56], [.05, .595], [.001, .595]] },
+  { key: 'lin', label: '王心靈Lin', sub: '', skill: { name: '心靈控制', desc: '周圍 5 公尺內的人會背對你走開 2.5 秒。冷卻 40 秒。' }, H: 1.76, skin: '#f0d2b6', hipX: .095, shX: .235, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#f4efe0', top2: '#d9a93a', pants: '#e3dccb', shoe: '#8a6a2a', hair: '#15151a', style: 'short', acc: ['headband'], accC: '#d9a93a' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'lessie', label: '蕾西亞Lessie', sub: '', skill: { name: '淨化之光', desc: '每 2.5 秒綻放光芒，解除自身所有負面狀態。' }, H: 1.65, skin: '#f3d6bd', hipX: .095, shX: .19, tz: .54, hair: '#222', hair2: '#444', female: true, gen: { top: '#8fd6a8', top2: '#fff6c8', pants: '#f2f0e4', shoe: '#c9a050', hair: '#e8cd7a', style: 'ponytail', acc: ['flower'], accC: '#ff8fb0' },
     torso: [[.001, -.16], [.2, -.16], [.19, -.08], [.16, .05], [.15, .17], [.152, .28], [.17, .38], [.18, .46], [.17, .51], [.12, .545], [.056, .56], [.05, .595], [.001, .595]] },
   { key: 'bolt', label: '柏Bolt', sub: '', skill: { name: '長跑高手', desc: '跑步時不消耗體力。' }, H: 1.8, skin: '#b9825a', hipX: .095, shX: .235, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#ff9d1c', top2: '#fff', pants: '#222831', shoe: '#ffee58', hair: '#15110e', style: 'short', acc: ['headband'], accC: '#e02828' },
@@ -415,11 +415,26 @@ function initAvatarShared() {
   AV.blobMat = R.mat({ tex: R.tex(TG.blob(), { nomip: true }), unlit: 1, blend: 1, noDepth: 1, fog: 0, tint: [1, 1, 1, 1] });
 }
 /* 額頭號碼牌 */
+function nvPlate(a) { // 夜視：整張牌暗、數字發亮（紅／橘／黃）
+  if (!a.nvCv) { a.nvCv = cv(512, 128); a.nvTex = R.tex(a.nvCv, { aniso: 4 }); a.nvMat = R.mat({ tex: a.nvTex, unlit: 1, fog: 1, tint: [1, 1, 1, 1] }); a.nvVer = -1; }
+  if (a.nvVer !== a.plateVer) {
+    const g = a.nvCv.getContext('2d'), txt = a.fake || a.number || '', col = ['#ff3a1a', '#ff9a1a', '#ffe23a'][a.id % 3];
+    g.fillStyle = '#120a06'; g.fillRect(0, 0, 512, 128); g.font = '900 96px "Arial Black",Impact,Arial,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    const w = g.measureText(txt).width, sc = Math.min(1, 220 / (w || 1)); g.save(); g.translate(128, 68); g.scale(sc, 1); g.shadowColor = col; g.shadowBlur = 26; g.fillStyle = col; g.fillText(txt, 0, 0); g.fillText(txt, 0, 0); g.fillStyle = '#fff6d8'; g.shadowBlur = 0; g.globalAlpha = .55; g.fillText(txt, 0, 0); g.restore();
+    g.fillStyle = '#0c0805'; g.fillRect(256, 0, 256, 128); R.updateTex(a.nvTex); a.nvVer = a.plateVer;
+  }
+  return a.nvMat;
+}
+function plateMatFor(a) {
+  if (applyNightEnv.nv && a !== (G.player || G.view)) return nvPlate(a);
+  const k = G.plateK || 1, t = a.plateMat.tint; t[0] = t[1] = t[2] = k; return a.plateMat;
+}
 function makePlate(a) {
   const c = cv(512, 128); a.plateCv = c; a.plateTex = R.tex(c, { aniso: 8 }); a.plateMat = R.mat({ tex: a.plateTex, unlit: 1, fog: 1, tint: [1, 1, 1, 1] });
   drawPlate(a);
 }
 function drawPlate(a) {
+  a.plateVer = (a.plateVer || 0) + 1;
   const c = a.plateCv, g = c.getContext('2d'), team = a.team;
   const border = team === 0 ? '#d93a3a' : team === 1 ? '#3a6fd9' : '#2a2018';
   g.fillStyle = '#f4c64e'; g.fillRect(0, 0, 256, 128); g.fillStyle = border; g.fillRect(0, 0, 256, 10); g.fillRect(0, 118, 256, 10); g.fillRect(0, 0, 10, 128); g.fillRect(246, 0, 10, 128);
@@ -463,8 +478,8 @@ function drawAvatar(a, opt) {
   // 號碼牌（略向後仰，戴在額頭上）
   if (a.number === '' && !a.fake) return;
   const sc = (a.plateScale || 1) * (G.bountyId === a ? 1 + Math.min(a.kills - 1, 8) * .14 : 1), k = C.head, eg = G.sk && G.sk.eagle.t > 0 && G.sk.eagle.by;
-  if (eg) { const yy = a.y + hipN + chinN + (O.plateY - d.chinY) * k + .12, ps = sc * 2.2; M4.trs(M, a.x, yy, a.z, 0, Math.atan2(eg.x - a.x, eg.z - a.z), 0, .40 * ps * 1.1, .19 * ps * 1.1, 1); R.draw(AV.plateMesh, M, a.plateMat); return; }
-  placeM(M, U, 0, chinN + (O.plateY - d.chinY) * k + .04 * (sc - 1), O.plateZ * k, -.14, 0, .40 * sc * 1.1, .19 * sc * 1.1, 1); R.draw(AV.plateMesh, M, a.plateMat);
+  if (eg) { const yy = a.y + hipN + chinN + (O.plateY - d.chinY) * k + .12, ps = sc * 2.2; M4.trs(M, a.x, yy, a.z, 0, Math.atan2(eg.x - a.x, eg.z - a.z), 0, .40 * ps * 1.1, .19 * ps * 1.1, 1); R.draw(AV.plateMesh, M, plateMatFor(a)); return; }
+  placeM(M, U, 0, chinN + (O.plateY - d.chinY) * k + .04 * (sc - 1), O.plateZ * k, -.14, 0, .40 * sc * 1.1, .19 * sc * 1.1, 1); R.draw(AV.plateMesh, M, plateMatFor(a));
 }
 function drawBlob(a, tint) {
   const T = AV.tmp, s = a.blobS || 1.1;

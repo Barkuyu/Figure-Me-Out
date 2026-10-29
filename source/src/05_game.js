@@ -566,7 +566,7 @@ function updateBot(b, dt) {
   b.threatT = Math.max(0, b.threatT - dt); if (b.smart) smartThink(b, dt);
   b.protect = Math.max(0, b.protect - dt); b.blind = Math.max(0, b.blind - dt); b.cd -= dt; b.tgtT -= dt; if (b.tgtT <= 0) b.tgt = null;
   if (b.lure) { b.lure.t -= dt; if (b.lure.t <= 0) b.lure = null; }
-  b.scanAcc += dt; if (b.scanAcc >= b.scanInt) { if (b.blind <= 0 && !b.lure && !G.actors.some(o => o !== b && o.alive && o.dackE >= 1 && Math.hypot(o.x - b.x, o.z - b.z) < 8)) scanBot(b, b.scanAcc); b.scanAcc = 0; b.scanInt = .11 + Math.random() * .06; }
+  b.scanAcc += dt; if (b.scanAcc >= b.scanInt) { if (b.blind <= 0 && !b.lure && !G.actors.some(o => o !== b && o.alive && o.dackE >= 1 && Math.hypot(o.x - b.x, o.z - b.z) < 12)) scanBot(b, b.scanAcc); b.scanAcc = 0; b.scanInt = .11 + Math.random() * .06; }
   if (b.typing) {
     b.typing.t -= dt; if (b.blind > 0) b.typing = null;
     else if (b.typing.t <= 0) { const t = G.actors.find(a => a.alive && a.number === b.typing.num); if (scrPhase2(b) && Math.random() < .6) { b.blind = 1.5; b.redT = 2; } else if (t && t !== b && t.protect <= 0 && (G.mode === 'dm' || t.team !== b.team)) { if (b.typing.target.fake === b.typing.num) uncloak(b.typing.target, true); eliminate(b, t); } b.typing = null; }
@@ -755,10 +755,15 @@ function horrorFx(list, c, t) {
   for (const m of W.mist || []) { const x = m.x + Math.sin(t * .1 + m.ph) * 3, z = m.z + Math.cos(t * .08 + m.ph) * 3, d = d2(x, z); if (d > 4900) continue; list.push({ x, y: .55, z, w: m.s * 1.3, h: m.s * .38, a: .15, k: 9, d }); }
 }
 function applyNightEnv(viewer) {
-  const b = World.baseEnv; if (!b || !G.sk) return; let k = 1; const nt = G.sk.night;
-  if (nt.by && nt.e >= 1.5 && viewer !== nt.by) { k = lerp(1, .2, clamp((nt.e - 1.5) / .8, 0, 1)); const rem = 31.5 - nt.e; if (rem < .5) k = lerp(1, k, rem / .5); }
-  if (k !== applyNightEnv.k || World.id !== applyNightEnv.w) { for (const key of ['sunCol', 'sky', 'gnd', 'fog']) R.env[key] = b[key].map(v => v * k); SPR.skyMat.tint[0] = SPR.skyMat.tint[1] = SPR.skyMat.tint[2] = k; SPR.skyNightMat.tint[0] = SPR.skyNightMat.tint[1] = SPR.skyNightMat.tint[2] = k; applyNightEnv.k = k; applyNightEnv.w = World.id; }
-  const nv = !!(nt.by && nt.by === viewer && nt.e >= 2.5); if (nv !== applyNightEnv.nv) { applyNightEnv.nv = nv; document.getElementById('gl').classList.toggle('nv', nv); document.getElementById('nvov').classList.toggle('on', nv); }
+  const b = World.baseEnv; if (!b) return; const nt = (G.sk && G.sk.night) || { by: null, e: 0 }; let k = 1, tint = [1, 1, 1], nv = false;
+  if (nt.by && nt.e >= 1.5) {
+    if (viewer !== nt.by) { k = lerp(1, .2, clamp((nt.e - 1.5) / .8, 0, 1)); } else if (nt.e >= 2.5) { nv = true; k = .3; tint = [.35, 1, .4]; }
+    const rem = 31.5 - nt.e; if (rem < .5) k = lerp(1, k, clamp(rem / .5, 0, 1));
+  }
+  G.plateK = (nt.by && viewer !== nt.by && nt.e >= 1.5) ? Math.max(.12, k * .8) : 1;
+  const key = k + '|' + tint.join() + '|' + World.id;
+  if (key !== applyNightEnv.key) { for (const kk of ['sunCol', 'sky', 'gnd', 'fog']) R.env[kk] = b[kk].map((v, i) => v * k * tint[i]); for (const m of [SPR.skyMat, SPR.skyNightMat]) for (let q = 0; q < 3; q++) m.tint[q] = k * tint[q]; applyNightEnv.key = key; }
+  if (nv !== applyNightEnv.nv) { applyNightEnv.nv = nv; document.getElementById('nvov').classList.toggle('on', nv); }
 }
 function drawWorldFrame() {
   const c = R.cam, pl = G.player || (G.demo ? G.view : null); applyNightEnv(pl);
@@ -805,7 +810,7 @@ function drawWorldFrame() {
   if (World.cur.night) horrorFx(list, c, t);
   for (const a of G.actors) {
     if (!a.alive || a === pl) continue; const dd2 = (a.x - c.x) ** 2 + (a.z - c.z) ** 2;
-    if (a.dackE >= 1) for (let q = 0; q < 6; q++) { const an = t * .8 + q * 1.05, rr = 1.1 + (q % 3) * .35; list.push({ x: a.x + Math.cos(an) * rr, y: a.y + .5 + (q % 4) * .45, z: a.z + Math.sin(an) * rr, w: 2.6, a: .38, k: 0, d: dd2 }); }
+    if (a.dackE >= 1) for (let q = 0; q < 12; q++) { const an = t * .8 + q * .9, rr = 1.0 + (q % 4) * .4; list.push({ x: a.x + Math.cos(an) * rr, y: a.y + .4 + (q % 5) * .4, z: a.z + Math.sin(an) * rr, w: 3.2, a: .76, k: 0, d: dd2 }); }
     if (applyNightEnv.nv && !a.invis) { const cc = [[1, .2, .1], [1, .55, .12], [1, .9, .25]][a.id % 3]; list.push({ x: a.x, y: a.y + 1.2, z: a.z, w: 1.9, a: .9, k: 15, col: cc, d: dd2 }); }
     if (G.bountyId === a && !a.invis) list.push({ x: a.x, y: a.y + 1.2, z: a.z, w: 1.6 + Math.min(a.kills, 10) * .22, a: .35 + Math.min(a.kills, 10) * .05, k: 15, col: [1, .82, .2], d: dd2 });
   }

@@ -272,7 +272,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 @keyframes stk{0%{opacity:0;transform:translateX(-50%) scale(.3)}12%{opacity:1;transform:translateX(-50%) scale(1.25)}25%{transform:translateX(-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-18px) scale(1)}}
 .chip.dis{opacity:.35;pointer-events:none;filter:grayscale(1)}
 .chip small{max-width:none}
-#ink{position:absolute;left:50%;top:50%;width:calc(var(--vw)*60);height:calc(var(--vh)*60);transform:translate(-50%,-50%) scale(0);pointer-events:none;z-index:7;opacity:0;background:center/100% 100% no-repeat}
+#ink{position:absolute;left:50%;top:50%;width:calc(var(--vw)*100);height:calc(var(--vh)*100);transform:translate(-50%,-50%) scale(0);pointer-events:none;z-index:7;opacity:0;background:center/100% 100% no-repeat}
 #ink.on{opacity:1;transform:translate(-50%,-50%) scale(1);transition:transform .45s cubic-bezier(.2,.9,.3,1),opacity .4s}
 #cleanse{position:absolute;inset:0;pointer-events:none;z-index:4;opacity:0;background:radial-gradient(circle at 50% 62%,rgba(150,255,190,.55),rgba(150,255,190,0) 55%)}#cleanse.on{animation:cln .7s ease-out}
 @keyframes cln{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
@@ -291,6 +291,8 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 .card .av,.ico2{display:block}
 .cav{width:30px;height:30px;border-radius:50%;vertical-align:middle;margin-right:6px;border:2px solid rgba(255,255,255,.85);background:#333;object-fit:cover}
 .np.purple{}
+#dself{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;transition:opacity .4s;background:radial-gradient(ellipse at 20% 80%,rgba(255,255,255,.9),transparent 45%),radial-gradient(ellipse at 80% 70%,rgba(255,255,255,.8),transparent 40%),radial-gradient(ellipse at 50% 15%,rgba(255,255,255,.7),transparent 45%);animation:dsw 5s ease-in-out infinite alternate}
+@keyframes dsw{to{transform:scale(1.08) translateX(10px)}}
 #dfog{position:absolute;inset:0;pointer-events:none;z-index:6;opacity:0;background:radial-gradient(circle at 50% 50%,rgba(245,248,250,.78),rgba(235,240,245,.97));transition:opacity .25s}
 #gl.nv{filter:grayscale(1) sepia(1) hue-rotate(58deg) saturate(3.2) brightness(1.5) contrast(1.15)}
 #nvov{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;background:radial-gradient(circle,rgba(0,0,0,0) 45%,rgba(0,25,0,.75) 100%),repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 4px)}#nvov.on{opacity:1}
@@ -332,7 +334,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <div id="photo" class="hidden"><canvas id="photoCv" width="520" height="390"></canvas><div class="cap" id="photoCap">____</div></div>
     <div id="fps"></div>
     <button id="pauseBtn">⏸</button>
-    <div id="demoTag" class="hidden"></div><div id="demoBar"><button class="btn alt" id="dbPause">⏸ 選單／退出</button><button class="btn alt" id="dbSet">⚙ 設定</button></div><div id="vig"></div><div id="pflash"></div><div id="ink"></div><div id="dfog"></div><div id="nvov"></div><div id="cleanse"></div><div id="keysov" class="hidden"></div><div id="deadv"></div>
+    <div id="demoTag" class="hidden"></div><div id="demoBar"><button class="btn alt" id="dbPause">⏸ 選單／退出</button><button class="btn alt" id="dbSet">⚙ 設定</button></div><div id="vig"></div><div id="pflash"></div><div id="ink"></div><div id="dfog"></div><div id="dself"></div><div id="nvov"></div><div id="cleanse"></div><div id="keysov" class="hidden"></div><div id="deadv"></div>
     <div id="deadMsg" class="hidden"></div>
   </div>
 
@@ -352,7 +354,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.6</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.7</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -1826,8 +1828,8 @@ OUTFITS.push(
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'lydia', label: '貓女Lydia', sub: '', skill: { name: '幻影蹤跡', desc: '噴白煙後隱身 5 秒，每 1.5 秒現形 0.1 秒。冷卻 40 秒。' }, H: 1.64, skin: '#efcbb0', hipX: .095, shX: .19, tz: .54, hair: '#222', hair2: '#444', female: true, gen: { top: '#17151c', top2: '#c93a8a', pants: '#17151c', shoe: '#17151c', hair: '#3b1f5a', style: 'long', acc: ['catears'], accC: '#17151c' },
     torso: [[.001, -.16], [.2, -.16], [.19, -.08], [.16, .05], [.15, .17], [.152, .28], [.17, .38], [.18, .46], [.17, .51], [.12, .545], [.056, .56], [.05, .595], [.001, .595]] },
-  { key: 'lin', label: '王心靈Lin', sub: '', skill: { name: '心靈控制', desc: '周圍 5 公尺內的人會背對你走開 2.5 秒。冷卻 40 秒。' }, H: 1.68, skin: '#f0d2b6', hipX: .095, shX: .19, tz: .54, hair: '#222', hair2: '#444', female: true, gen: { top: '#f4efe0', top2: '#d9a93a', pants: '#e3dccb', shoe: '#8a6a2a', hair: '#15151a', style: 'long', acc: ['headband'], accC: '#d9a93a' },
-    torso: [[.001, -.16], [.2, -.16], [.19, -.08], [.16, .05], [.15, .17], [.152, .28], [.17, .38], [.18, .46], [.17, .51], [.12, .545], [.056, .56], [.05, .595], [.001, .595]] },
+  { key: 'lin', label: '王心靈Lin', sub: '', skill: { name: '心靈控制', desc: '周圍 5 公尺內的人會背對你走開 2.5 秒。冷卻 40 秒。' }, H: 1.76, skin: '#f0d2b6', hipX: .095, shX: .235, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#f4efe0', top2: '#d9a93a', pants: '#e3dccb', shoe: '#8a6a2a', hair: '#15151a', style: 'short', acc: ['headband'], accC: '#d9a93a' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'lessie', label: '蕾西亞Lessie', sub: '', skill: { name: '淨化之光', desc: '每 2.5 秒綻放光芒，解除自身所有負面狀態。' }, H: 1.65, skin: '#f3d6bd', hipX: .095, shX: .19, tz: .54, hair: '#222', hair2: '#444', female: true, gen: { top: '#8fd6a8', top2: '#fff6c8', pants: '#f2f0e4', shoe: '#c9a050', hair: '#e8cd7a', style: 'ponytail', acc: ['flower'], accC: '#ff8fb0' },
     torso: [[.001, -.16], [.2, -.16], [.19, -.08], [.16, .05], [.15, .17], [.152, .28], [.17, .38], [.18, .46], [.17, .51], [.12, .545], [.056, .56], [.05, .595], [.001, .595]] },
   { key: 'bolt', label: '柏Bolt', sub: '', skill: { name: '長跑高手', desc: '跑步時不消耗體力。' }, H: 1.8, skin: '#b9825a', hipX: .095, shX: .235, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#ff9d1c', top2: '#fff', pants: '#222831', shoe: '#ffee58', hair: '#15110e', style: 'short', acc: ['headband'], accC: '#e02828' },
@@ -2217,11 +2219,26 @@ function initAvatarShared() {
   AV.blobMat = R.mat({ tex: R.tex(TG.blob(), { nomip: true }), unlit: 1, blend: 1, noDepth: 1, fog: 0, tint: [1, 1, 1, 1] });
 }
 /* 額頭號碼牌 */
+function nvPlate(a) { // 夜視：整張牌暗、數字發亮（紅／橘／黃）
+  if (!a.nvCv) { a.nvCv = cv(512, 128); a.nvTex = R.tex(a.nvCv, { aniso: 4 }); a.nvMat = R.mat({ tex: a.nvTex, unlit: 1, fog: 1, tint: [1, 1, 1, 1] }); a.nvVer = -1; }
+  if (a.nvVer !== a.plateVer) {
+    const g = a.nvCv.getContext('2d'), txt = a.fake || a.number || '', col = ['#ff3a1a', '#ff9a1a', '#ffe23a'][a.id % 3];
+    g.fillStyle = '#120a06'; g.fillRect(0, 0, 512, 128); g.font = '900 96px "Arial Black",Impact,Arial,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    const w = g.measureText(txt).width, sc = Math.min(1, 220 / (w || 1)); g.save(); g.translate(128, 68); g.scale(sc, 1); g.shadowColor = col; g.shadowBlur = 26; g.fillStyle = col; g.fillText(txt, 0, 0); g.fillText(txt, 0, 0); g.fillStyle = '#fff6d8'; g.shadowBlur = 0; g.globalAlpha = .55; g.fillText(txt, 0, 0); g.restore();
+    g.fillStyle = '#0c0805'; g.fillRect(256, 0, 256, 128); R.updateTex(a.nvTex); a.nvVer = a.plateVer;
+  }
+  return a.nvMat;
+}
+function plateMatFor(a) {
+  if (applyNightEnv.nv && a !== (G.player || G.view)) return nvPlate(a);
+  const k = G.plateK || 1, t = a.plateMat.tint; t[0] = t[1] = t[2] = k; return a.plateMat;
+}
 function makePlate(a) {
   const c = cv(512, 128); a.plateCv = c; a.plateTex = R.tex(c, { aniso: 8 }); a.plateMat = R.mat({ tex: a.plateTex, unlit: 1, fog: 1, tint: [1, 1, 1, 1] });
   drawPlate(a);
 }
 function drawPlate(a) {
+  a.plateVer = (a.plateVer || 0) + 1;
   const c = a.plateCv, g = c.getContext('2d'), team = a.team;
   const border = team === 0 ? '#d93a3a' : team === 1 ? '#3a6fd9' : '#2a2018';
   g.fillStyle = '#f4c64e'; g.fillRect(0, 0, 256, 128); g.fillStyle = border; g.fillRect(0, 0, 256, 10); g.fillRect(0, 118, 256, 10); g.fillRect(0, 0, 10, 128); g.fillRect(246, 0, 10, 128);
@@ -2265,8 +2282,8 @@ function drawAvatar(a, opt) {
   // 號碼牌（略向後仰，戴在額頭上）
   if (a.number === '' && !a.fake) return;
   const sc = (a.plateScale || 1) * (G.bountyId === a ? 1 + Math.min(a.kills - 1, 8) * .14 : 1), k = C.head, eg = G.sk && G.sk.eagle.t > 0 && G.sk.eagle.by;
-  if (eg) { const yy = a.y + hipN + chinN + (O.plateY - d.chinY) * k + .12, ps = sc * 2.2; M4.trs(M, a.x, yy, a.z, 0, Math.atan2(eg.x - a.x, eg.z - a.z), 0, .40 * ps * 1.1, .19 * ps * 1.1, 1); R.draw(AV.plateMesh, M, a.plateMat); return; }
-  placeM(M, U, 0, chinN + (O.plateY - d.chinY) * k + .04 * (sc - 1), O.plateZ * k, -.14, 0, .40 * sc * 1.1, .19 * sc * 1.1, 1); R.draw(AV.plateMesh, M, a.plateMat);
+  if (eg) { const yy = a.y + hipN + chinN + (O.plateY - d.chinY) * k + .12, ps = sc * 2.2; M4.trs(M, a.x, yy, a.z, 0, Math.atan2(eg.x - a.x, eg.z - a.z), 0, .40 * ps * 1.1, .19 * ps * 1.1, 1); R.draw(AV.plateMesh, M, plateMatFor(a)); return; }
+  placeM(M, U, 0, chinN + (O.plateY - d.chinY) * k + .04 * (sc - 1), O.plateZ * k, -.14, 0, .40 * sc * 1.1, .19 * sc * 1.1, 1); R.draw(AV.plateMesh, M, plateMatFor(a));
 }
 function drawBlob(a, tint) {
   const T = AV.tmp, s = a.blobS || 1.1;
@@ -2841,7 +2858,7 @@ function updateBot(b, dt) {
   b.threatT = Math.max(0, b.threatT - dt); if (b.smart) smartThink(b, dt);
   b.protect = Math.max(0, b.protect - dt); b.blind = Math.max(0, b.blind - dt); b.cd -= dt; b.tgtT -= dt; if (b.tgtT <= 0) b.tgt = null;
   if (b.lure) { b.lure.t -= dt; if (b.lure.t <= 0) b.lure = null; }
-  b.scanAcc += dt; if (b.scanAcc >= b.scanInt) { if (b.blind <= 0 && !b.lure && !G.actors.some(o => o !== b && o.alive && o.dackE >= 1 && Math.hypot(o.x - b.x, o.z - b.z) < 8)) scanBot(b, b.scanAcc); b.scanAcc = 0; b.scanInt = .11 + Math.random() * .06; }
+  b.scanAcc += dt; if (b.scanAcc >= b.scanInt) { if (b.blind <= 0 && !b.lure && !G.actors.some(o => o !== b && o.alive && o.dackE >= 1 && Math.hypot(o.x - b.x, o.z - b.z) < 12)) scanBot(b, b.scanAcc); b.scanAcc = 0; b.scanInt = .11 + Math.random() * .06; }
   if (b.typing) {
     b.typing.t -= dt; if (b.blind > 0) b.typing = null;
     else if (b.typing.t <= 0) { const t = G.actors.find(a => a.alive && a.number === b.typing.num); if (scrPhase2(b) && Math.random() < .6) { b.blind = 1.5; b.redT = 2; } else if (t && t !== b && t.protect <= 0 && (G.mode === 'dm' || t.team !== b.team)) { if (b.typing.target.fake === b.typing.num) uncloak(b.typing.target, true); eliminate(b, t); } b.typing = null; }
@@ -3030,10 +3047,15 @@ function horrorFx(list, c, t) {
   for (const m of W.mist || []) { const x = m.x + Math.sin(t * .1 + m.ph) * 3, z = m.z + Math.cos(t * .08 + m.ph) * 3, d = d2(x, z); if (d > 4900) continue; list.push({ x, y: .55, z, w: m.s * 1.3, h: m.s * .38, a: .15, k: 9, d }); }
 }
 function applyNightEnv(viewer) {
-  const b = World.baseEnv; if (!b || !G.sk) return; let k = 1; const nt = G.sk.night;
-  if (nt.by && nt.e >= 1.5 && viewer !== nt.by) { k = lerp(1, .2, clamp((nt.e - 1.5) / .8, 0, 1)); const rem = 31.5 - nt.e; if (rem < .5) k = lerp(1, k, rem / .5); }
-  if (k !== applyNightEnv.k || World.id !== applyNightEnv.w) { for (const key of ['sunCol', 'sky', 'gnd', 'fog']) R.env[key] = b[key].map(v => v * k); SPR.skyMat.tint[0] = SPR.skyMat.tint[1] = SPR.skyMat.tint[2] = k; SPR.skyNightMat.tint[0] = SPR.skyNightMat.tint[1] = SPR.skyNightMat.tint[2] = k; applyNightEnv.k = k; applyNightEnv.w = World.id; }
-  const nv = !!(nt.by && nt.by === viewer && nt.e >= 2.5); if (nv !== applyNightEnv.nv) { applyNightEnv.nv = nv; document.getElementById('gl').classList.toggle('nv', nv); document.getElementById('nvov').classList.toggle('on', nv); }
+  const b = World.baseEnv; if (!b) return; const nt = (G.sk && G.sk.night) || { by: null, e: 0 }; let k = 1, tint = [1, 1, 1], nv = false;
+  if (nt.by && nt.e >= 1.5) {
+    if (viewer !== nt.by) { k = lerp(1, .2, clamp((nt.e - 1.5) / .8, 0, 1)); } else if (nt.e >= 2.5) { nv = true; k = .3; tint = [.35, 1, .4]; }
+    const rem = 31.5 - nt.e; if (rem < .5) k = lerp(1, k, clamp(rem / .5, 0, 1));
+  }
+  G.plateK = (nt.by && viewer !== nt.by && nt.e >= 1.5) ? Math.max(.12, k * .8) : 1;
+  const key = k + '|' + tint.join() + '|' + World.id;
+  if (key !== applyNightEnv.key) { for (const kk of ['sunCol', 'sky', 'gnd', 'fog']) R.env[kk] = b[kk].map((v, i) => v * k * tint[i]); for (const m of [SPR.skyMat, SPR.skyNightMat]) for (let q = 0; q < 3; q++) m.tint[q] = k * tint[q]; applyNightEnv.key = key; }
+  if (nv !== applyNightEnv.nv) { applyNightEnv.nv = nv; document.getElementById('nvov').classList.toggle('on', nv); }
 }
 function drawWorldFrame() {
   const c = R.cam, pl = G.player || (G.demo ? G.view : null); applyNightEnv(pl);
@@ -3080,7 +3102,7 @@ function drawWorldFrame() {
   if (World.cur.night) horrorFx(list, c, t);
   for (const a of G.actors) {
     if (!a.alive || a === pl) continue; const dd2 = (a.x - c.x) ** 2 + (a.z - c.z) ** 2;
-    if (a.dackE >= 1) for (let q = 0; q < 6; q++) { const an = t * .8 + q * 1.05, rr = 1.1 + (q % 3) * .35; list.push({ x: a.x + Math.cos(an) * rr, y: a.y + .5 + (q % 4) * .45, z: a.z + Math.sin(an) * rr, w: 2.6, a: .38, k: 0, d: dd2 }); }
+    if (a.dackE >= 1) for (let q = 0; q < 12; q++) { const an = t * .8 + q * .9, rr = 1.0 + (q % 4) * .4; list.push({ x: a.x + Math.cos(an) * rr, y: a.y + .4 + (q % 5) * .4, z: a.z + Math.sin(an) * rr, w: 3.2, a: .76, k: 0, d: dd2 }); }
     if (applyNightEnv.nv && !a.invis) { const cc = [[1, .2, .1], [1, .55, .12], [1, .9, .25]][a.id % 3]; list.push({ x: a.x, y: a.y + 1.2, z: a.z, w: 1.9, a: .9, k: 15, col: cc, d: dd2 }); }
     if (G.bountyId === a && !a.invis) list.push({ x: a.x, y: a.y + 1.2, z: a.z, w: 1.6 + Math.min(a.kills, 10) * .22, a: .35 + Math.min(a.kills, 10) * .05, k: 15, col: [1, .82, .2], d: dd2 });
   }
@@ -3537,7 +3559,7 @@ const UI = {
   /* 角色技能鍵：圓形倒數環 + 秒數；艾伯特技能的預警閃光與按鍵錯亂 */
   skillHUD(dt, p) {
     const s = $('slotS'), sk = skillOf(p), cd = p.skCd || 0, show = !!sk && skOn(); s.style.display = show ? '' : 'none'; s.classList.toggle('boost', !!p.boost && cd > 0);
-    { let f = 0; for (const o of G.actors) if (o !== p && o.alive && o.dackE >= 1) { const d = Math.hypot(o.x - p.x, o.z - p.z); if (d < 8) f = Math.max(f, .4 + .55 * (1 - d / 8)); } const df = $('dfog'); if (Math.abs((this._df || 0) - f) > .02) { this._df = f; df.style.opacity = f; } }
+    { let f = 0; for (const o of G.actors) if (o !== p && o.alive && o.dackE >= 1) { const d = Math.hypot(o.x - p.x, o.z - p.z); if (d < 12) f = Math.max(f, .8 + .2 * (1 - d / 12)); } const df = $('dfog'); $('dself').style.opacity = (p.dackE >= 1) ? .2 : 0; if (Math.abs((this._df || 0) - f) > .02) { this._df = f; df.style.opacity = f; } }
     $('stamwrap').style.visibility = isOut(p, 12) ? 'hidden' : ''; $('binwrap').style.visibility = isOut(p, 13) ? 'hidden' : '';
     { const ik = $('ink'), on = inkActive(p); if (on !== this._ink) { this._ink = on; ik.classList.toggle('on', on); } if (on && G.sk.ink.t < .5) ik.style.opacity = G.sk.ink.t * 2; else if (on) ik.style.opacity = 1; }
     const dash = isSumi(p) && p.dashReady && !p.onGround, jb = $('bJump'); if (jb) { const tx = dash ? '突進' : '跳躍'; if (jb.textContent !== tx) jb.textContent = tx; }
@@ -3887,7 +3909,7 @@ function beginGame(demo, roster) {
 function toMenu() { go(() => { netLeave(); resetToMenuUI(); }); }
 function stopGameUI() { resetToMenuUI(); UI.els.menu.classList.add('hidden'); }
 function resetToMenuUI() {
-  hideTut(); $('gset').classList.add('hidden');
+  hideTut(); if (G.sk) { G.sk.night = { e: 0, by: null }; G.sk.ink.t = 0; G.sk.rev.t = 0; G.sk.quake.t = 0; G.sk.eagle.t = 0; } G.scopeOn = false; applyNightEnv(null); $('dfog').style.opacity = 0; $('dself').style.opacity = 0; $('ink').classList.remove('on'); $('gset').classList.add('hidden');
   G.state = 'menu'; G.demo = false; G.view = null; document.body.classList.remove('playing', 'demo'); UI.els.hud.classList.add('hidden'); UI.els.menu.classList.remove('hidden'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.hideEnd(); UI.els.bino.style.display = 'none'; UI.els.flash.style.opacity = 0;
   $('settings').classList.add('hidden'); updateRotate(); if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
   { const ids = Object.keys(MAPS).filter(k => k !== World.id); World.load(pick(ids)); G.orbitSeed = Math.random() * 6.28; }
@@ -3906,7 +3928,7 @@ function beginNetClientUI() {
 function showCharInfo() { const o = OUTFITS[S.outfit]; $('cName').textContent = o.label; $('cPass').textContent = '【' + o.skill.name + '】' + o.skill.desc; if (G.preview) G.preview.fake = null; }
 function buildCards() {
   const cards = $('cards'); cards.innerHTML = '';
-  OUTFITS.forEach((o, i) => { if (o.hidden) return; const c = document.createElement('div'); c.className = 'card' + (S.outfit === i ? ' on' : ''); c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + o.label; c.onclick = () => { S.outfit = i; saveS(); [...cards.children].forEach((k, j) => k.classList.toggle('on', j === i)); setPreview(); showCharInfo(); }; cards.appendChild(c); });
+  OUTFITS.forEach((o, i) => { if (o.hidden) return; const c = document.createElement('div'); c.dataset.i = i; c.className = 'card' + (S.outfit === i ? ' on' : ''); c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + o.label; c.onclick = () => { S.outfit = i; saveS(); [...cards.children].forEach(k => k.classList.toggle('on', +k.dataset.i === i)); setPreview(); showCharInfo(); }; cards.appendChild(c); });
   showCharInfo();
 }
 function openCharSelect(origin) {
@@ -4007,12 +4029,14 @@ function sizeBinoculars() {
   $('bmS1').setAttribute('cx', cx - off); $('bmS1').setAttribute('cy', cy); $('bmS1').setAttribute('r', r); $('bmS2').setAttribute('cx', cx + off); $('bmS2').setAttribute('cy', cy); $('bmS2').setAttribute('r', r);
 }
 function makeInk() {
-  const c = cv(512, 512), g = c.getContext('2d'), r = rng(5); g.fillStyle = '#0b0710'; g.beginPath();
-  const N = 64; for (let i = 0; i <= N; i++) { const a = i / N * TAU, rr = 200 + Math.sin(a * 3 + 1) * 40 + Math.sin(a * 7) * 25 + (r() - .5) * 40 + (i % 8 === 0 ? 38 : 0); const x = 256 + Math.cos(a) * rr * 1.2, y = 256 + Math.sin(a) * rr; i ? g.lineTo(x, y) : g.moveTo(x, y); } g.closePath(); g.fill();
-  for (let k = 0; k < 40; k++) { const a = r() * TAU, d = 190 + r() * 60, s = 3 + r() * 14; g.beginPath(); g.arc(256 + Math.cos(a) * d * 1.18, 256 + Math.sin(a) * d, s, 0, TAU); g.fill(); }
-  for (let k = 0; k < 14; k++) { const a = r() * TAU; g.lineWidth = 4 + r() * 10; g.strokeStyle = '#0b0710'; g.lineCap = 'round'; g.beginPath(); g.moveTo(256 + Math.cos(a) * 160, 256 + Math.sin(a) * 140); g.lineTo(256 + Math.cos(a) * (210 + r() * 40), 256 + Math.sin(a) * (200 + r() * 40)); g.stroke(); }
-  const hl = g.createRadialGradient(200, 200, 5, 200, 200, 150); hl.addColorStop(0, 'rgba(120,90,170,.25)'); hl.addColorStop(1, 'rgba(120,90,170,0)'); g.fillStyle = hl; g.fillRect(0, 0, 512, 512);
+  let S0 = 1.0, c; for (let it = 0; it < 7; it++) { c = drawInk(S0); const d = c.getContext('2d').getImageData(0, 0, 512, 512).data; let n = 0; for (let q = 3; q < d.length; q += 4) if (d[q] > 128) n++; const fr = n / (512 * 512); if (Math.abs(fr - .6) < .02) break; S0 *= Math.sqrt(.6 / Math.max(fr, .05)); }
   $('ink').style.backgroundImage = 'url(' + c.toDataURL() + ')';
+}
+function drawInk(S0) {
+  const c = cv(512, 512), g = c.getContext('2d'), r = rng(5); g.fillStyle = '#0b0710'; g.beginPath();
+  const N = 64; for (let i = 0; i <= N; i++) { const a = i / N * TAU, rr = S0 * (200 + Math.sin(a * 3 + 1) * 40 + Math.sin(a * 7) * 25 + (r() - .5) * 40 + (i % 8 === 0 ? 38 : 0)), x = 256 + Math.cos(a) * rr * 1.2, y = 256 + Math.sin(a) * rr; i ? g.lineTo(x, y) : g.moveTo(x, y); } g.closePath(); g.fill();
+  for (let k = 0; k < 40; k++) { const a = r() * TAU, d = S0 * (190 + r() * 60), s = 3 + r() * 14; g.beginPath(); g.arc(256 + Math.cos(a) * d * 1.18, 256 + Math.sin(a) * d, s, 0, TAU); g.fill(); }
+  return c;
 }
 function startIntro() {
   const it = $('intro'), t0 = performance.now(); let fin = false;

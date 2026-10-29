@@ -60,7 +60,7 @@ const UI = {
   /* 角色技能鍵：圓形倒數環 + 秒數；艾伯特技能的預警閃光與按鍵錯亂 */
   skillHUD(dt, p) {
     const s = $('slotS'), sk = skillOf(p), cd = p.skCd || 0, show = !!sk && skOn(); s.style.display = show ? '' : 'none'; s.classList.toggle('boost', !!p.boost && cd > 0);
-    { let f = 0; for (const o of G.actors) if (o !== p && o.alive && o.dackE >= 1) { const d = Math.hypot(o.x - p.x, o.z - p.z); if (d < 8) f = Math.max(f, .4 + .55 * (1 - d / 8)); } const df = $('dfog'); if (Math.abs((this._df || 0) - f) > .02) { this._df = f; df.style.opacity = f; } }
+    { let f = 0; for (const o of G.actors) if (o !== p && o.alive && o.dackE >= 1) { const d = Math.hypot(o.x - p.x, o.z - p.z); if (d < 12) f = Math.max(f, .8 + .2 * (1 - d / 12)); } const df = $('dfog'); $('dself').style.opacity = (p.dackE >= 1) ? .2 : 0; if (Math.abs((this._df || 0) - f) > .02) { this._df = f; df.style.opacity = f; } }
     $('stamwrap').style.visibility = isOut(p, 12) ? 'hidden' : ''; $('binwrap').style.visibility = isOut(p, 13) ? 'hidden' : '';
     { const ik = $('ink'), on = inkActive(p); if (on !== this._ink) { this._ink = on; ik.classList.toggle('on', on); } if (on && G.sk.ink.t < .5) ik.style.opacity = G.sk.ink.t * 2; else if (on) ik.style.opacity = 1; }
     const dash = isSumi(p) && p.dashReady && !p.onGround, jb = $('bJump'); if (jb) { const tx = dash ? '突進' : '跳躍'; if (jb.textContent !== tx) jb.textContent = tx; }
@@ -410,7 +410,7 @@ function beginGame(demo, roster) {
 function toMenu() { go(() => { netLeave(); resetToMenuUI(); }); }
 function stopGameUI() { resetToMenuUI(); UI.els.menu.classList.add('hidden'); }
 function resetToMenuUI() {
-  hideTut(); $('gset').classList.add('hidden');
+  hideTut(); if (G.sk) { G.sk.night = { e: 0, by: null }; G.sk.ink.t = 0; G.sk.rev.t = 0; G.sk.quake.t = 0; G.sk.eagle.t = 0; } G.scopeOn = false; applyNightEnv(null); $('dfog').style.opacity = 0; $('dself').style.opacity = 0; $('ink').classList.remove('on'); $('gset').classList.add('hidden');
   G.state = 'menu'; G.demo = false; G.view = null; document.body.classList.remove('playing', 'demo'); UI.els.hud.classList.add('hidden'); UI.els.menu.classList.remove('hidden'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.hideEnd(); UI.els.bino.style.display = 'none'; UI.els.flash.style.opacity = 0;
   $('settings').classList.add('hidden'); updateRotate(); if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
   { const ids = Object.keys(MAPS).filter(k => k !== World.id); World.load(pick(ids)); G.orbitSeed = Math.random() * 6.28; }
@@ -429,7 +429,7 @@ function beginNetClientUI() {
 function showCharInfo() { const o = OUTFITS[S.outfit]; $('cName').textContent = o.label; $('cPass').textContent = '【' + o.skill.name + '】' + o.skill.desc; if (G.preview) G.preview.fake = null; }
 function buildCards() {
   const cards = $('cards'); cards.innerHTML = '';
-  OUTFITS.forEach((o, i) => { if (o.hidden) return; const c = document.createElement('div'); c.className = 'card' + (S.outfit === i ? ' on' : ''); c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + o.label; c.onclick = () => { S.outfit = i; saveS(); [...cards.children].forEach((k, j) => k.classList.toggle('on', j === i)); setPreview(); showCharInfo(); }; cards.appendChild(c); });
+  OUTFITS.forEach((o, i) => { if (o.hidden) return; const c = document.createElement('div'); c.dataset.i = i; c.className = 'card' + (S.outfit === i ? ' on' : ''); c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + o.label; c.onclick = () => { S.outfit = i; saveS(); [...cards.children].forEach(k => k.classList.toggle('on', +k.dataset.i === i)); setPreview(); showCharInfo(); }; cards.appendChild(c); });
   showCharInfo();
 }
 function openCharSelect(origin) {
@@ -530,12 +530,14 @@ function sizeBinoculars() {
   $('bmS1').setAttribute('cx', cx - off); $('bmS1').setAttribute('cy', cy); $('bmS1').setAttribute('r', r); $('bmS2').setAttribute('cx', cx + off); $('bmS2').setAttribute('cy', cy); $('bmS2').setAttribute('r', r);
 }
 function makeInk() {
-  const c = cv(512, 512), g = c.getContext('2d'), r = rng(5); g.fillStyle = '#0b0710'; g.beginPath();
-  const N = 64; for (let i = 0; i <= N; i++) { const a = i / N * TAU, rr = 200 + Math.sin(a * 3 + 1) * 40 + Math.sin(a * 7) * 25 + (r() - .5) * 40 + (i % 8 === 0 ? 38 : 0); const x = 256 + Math.cos(a) * rr * 1.2, y = 256 + Math.sin(a) * rr; i ? g.lineTo(x, y) : g.moveTo(x, y); } g.closePath(); g.fill();
-  for (let k = 0; k < 40; k++) { const a = r() * TAU, d = 190 + r() * 60, s = 3 + r() * 14; g.beginPath(); g.arc(256 + Math.cos(a) * d * 1.18, 256 + Math.sin(a) * d, s, 0, TAU); g.fill(); }
-  for (let k = 0; k < 14; k++) { const a = r() * TAU; g.lineWidth = 4 + r() * 10; g.strokeStyle = '#0b0710'; g.lineCap = 'round'; g.beginPath(); g.moveTo(256 + Math.cos(a) * 160, 256 + Math.sin(a) * 140); g.lineTo(256 + Math.cos(a) * (210 + r() * 40), 256 + Math.sin(a) * (200 + r() * 40)); g.stroke(); }
-  const hl = g.createRadialGradient(200, 200, 5, 200, 200, 150); hl.addColorStop(0, 'rgba(120,90,170,.25)'); hl.addColorStop(1, 'rgba(120,90,170,0)'); g.fillStyle = hl; g.fillRect(0, 0, 512, 512);
+  let S0 = 1.0, c; for (let it = 0; it < 7; it++) { c = drawInk(S0); const d = c.getContext('2d').getImageData(0, 0, 512, 512).data; let n = 0; for (let q = 3; q < d.length; q += 4) if (d[q] > 128) n++; const fr = n / (512 * 512); if (Math.abs(fr - .6) < .02) break; S0 *= Math.sqrt(.6 / Math.max(fr, .05)); }
   $('ink').style.backgroundImage = 'url(' + c.toDataURL() + ')';
+}
+function drawInk(S0) {
+  const c = cv(512, 512), g = c.getContext('2d'), r = rng(5); g.fillStyle = '#0b0710'; g.beginPath();
+  const N = 64; for (let i = 0; i <= N; i++) { const a = i / N * TAU, rr = S0 * (200 + Math.sin(a * 3 + 1) * 40 + Math.sin(a * 7) * 25 + (r() - .5) * 40 + (i % 8 === 0 ? 38 : 0)), x = 256 + Math.cos(a) * rr * 1.2, y = 256 + Math.sin(a) * rr; i ? g.lineTo(x, y) : g.moveTo(x, y); } g.closePath(); g.fill();
+  for (let k = 0; k < 40; k++) { const a = r() * TAU, d = S0 * (190 + r() * 60), s = 3 + r() * 14; g.beginPath(); g.arc(256 + Math.cos(a) * d * 1.18, 256 + Math.sin(a) * d, s, 0, TAU); g.fill(); }
+  return c;
 }
 function startIntro() {
   const it = $('intro'), t0 = performance.now(); let fin = false;
