@@ -256,6 +256,12 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 .mbtns{display:flex;flex-direction:column;gap:14px;margin-top:18px}
 .mbtns .btn{width:100%;margin:0;font-size:16px;padding:11px 8px}.mbtns #btnStart{font-size:22px;padding:13px 8px}
 
+.stk{color:#ffd24a;margin-left:4px}
+#streak{position:absolute;left:50%;top:24%;transform:translateX(-50%);font:400 clamp(34px,9vh,64px) var(--disp);color:#ffd24a;-webkit-text-stroke:5px #7a2a00;paint-order:stroke fill;text-align:center;pointer-events:none;opacity:0;white-space:nowrap;z-index:6}
+#streak small{display:block;font-size:.4em;-webkit-text-stroke:3px #7a2a00}
+#streak.show{animation:stk 1.8s ease-out forwards}
+@keyframes stk{0%{opacity:0;transform:translateX(-50%) scale(.3)}12%{opacity:1;transform:translateX(-50%) scale(1.25)}25%{transform:translateX(-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-18px) scale(1)}}
+.chip.dis{opacity:.35;pointer-events:none;filter:grayscale(1)}
 .gnote{font-size:12px;color:#fff;margin:4px 0 0;min-height:16px}
 .slot .cdn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:900 clamp(16px,2.6vw,22px) var(--font);color:#fff;text-shadow:0 0 5px #000,0 0 3px #000;pointer-events:none}
 .slot .ring{position:absolute;inset:-5px;border-radius:50%;pointer-events:none;opacity:0;background:conic-gradient(#ffd84a var(--p,0deg),rgba(255,255,255,.12) 0);-webkit-mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px));mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px))}
@@ -274,7 +280,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <div id="countdown" class="hidden"><div id="cdTxt"></div><div id="cdNum"></div></div><div id="modeName"></div>
     <div id="killfeed"></div>
     <div id="crosshair"></div>
-    <div id="msg"></div>
+    <div id="msg"></div><div id="streak"></div>
     <div id="carry" class="hidden">🚩 你正帶著旗幟，快回基地！</div>
     <div id="warn" class="hidden"><svg id="warnArrow" viewBox="0 0 24 24"><path d="M12 2 L22 21 L12 16 L2 21 Z" fill="currentColor"/></svg></div>
     <div id="warnBox" class="hidden"><div id="warnTxt">⚠ 有人正在讀你的號碼！</div><div class="bar"><i id="warnFill"></i></div></div>

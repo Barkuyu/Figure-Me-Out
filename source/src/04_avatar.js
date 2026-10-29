@@ -4,7 +4,7 @@ const OUTFITS = [
     torso: [[.001, -.16], [.205, -.16], [.195, -.08], [.162, .05], [.15, .17], [.152, .28], [.17, .38], [.182, .46], [.172, .51], [.12, .545], [.056, .56], [.05, .595], [.001, .595]] },
   { key: 'm1', label: '艾迪Eddie', sub: '', skill: { name: '銅牆鐵壁', desc: '展開護盾 3 秒，擋下一次輸入攻擊並刷新號碼。冷卻 40 秒。' }, H: 1.78, skin: '#d8a883', hipX: .1, shX: .245, tz: .52, hair: '#0f0f12',
     torso: [[.001, -.09], [.197, -.09], [.2, .0], [.186, .1], [.19, .22], [.224, .36], [.25, .46], [.246, .53], [.176, .57], [.07, .595], [.058, .63], [.001, .63]] },
-  { key: 'm2', label: '艾伯特Albert', sub: '', skill: { name: '紫電干擾', desc: '數字鍵閃光預警後，其他玩家的按鍵錯亂 5 秒。冷卻 60 秒。' }, H: 1.76, skin: '#c99a76', hipX: .098, shX: .228, tz: .52, hair: '#0d0d10',
+  { key: 'm2', label: '艾伯特Albert', sub: '', skill: { name: '紫電干擾', desc: '讓其他玩家的數字鍵錯亂 5 秒。冷卻 60 秒。' }, H: 1.76, skin: '#c99a76', hipX: .098, shX: .228, tz: .52, hair: '#0d0d10',
     torso: [[.001, -.10], [.222, -.10], [.227, -.02], [.212, .1], [.217, .22], [.238, .36], [.257, .46], [.252, .53], [.19, .57], [.13, .60], [.118, .645], [.001, .645]] }
 ];
 OUTFITS.push(
@@ -379,6 +379,7 @@ function drawAvatar(a, opt) {
   if (R.shadowPass) return;
   if (a.team >= 0) { M4.trs(T, 0, -.09, 0, 0, 0, 0, 1, 1, 1); M4.mul(M, Ar, T); R.draw(AV.bandMesh, M, AV.bandMat[a.team]); }
   // 號碼牌（略向後仰，戴在額頭上）
+  if (a.number === '' && !a.fake) return;
   const sc = a.plateScale || 1, k = C.head;
   placeM(M, U, 0, chinN + (O.plateY - d.chinY) * k + .04 * (sc - 1), O.plateZ * k, -.14, 0, .40 * sc * 1.1, .19 * sc * 1.1, 1); R.draw(AV.plateMesh, M, a.plateMat);
 }

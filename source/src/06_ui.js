@@ -7,6 +7,7 @@ const UI = {
   },
   msg(t, k) { const e = this.els.msg; e.textContent = t; e.className = 'show ' + (k || ''); this.msgT = 2.2; },
   flashWhite(a) { this.flashW = Math.max(this.flashW, a); },
+  streak(n, pts) { if (n < 2) { this.msg('+' + pts + ' 分', 'good'); return; } const t = STREAK_TXT[Math.min(n, 5) - 1], el = $('streak'); el.innerHTML = t + '<small>+' + pts + ' 分</small>'; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show'); Sfx.kill(); },
   killFlash() { this.killF = .25; },
   shake() { const e = this.els.typed; e.classList.remove('shake'); void e.offsetWidth; e.classList.add('shake'); },
   onDeath(k) {
@@ -19,7 +20,7 @@ const UI = {
     const p = G.player, tok = this.endTok = (this.endTok || 0) + 1; let res = null;
     if (G.sk) { G.sk.rev.t = 0; G.sk.scr.t = -1; } this.endScramble(); this._ph2 = false; this._pf = false; $('numL').classList.remove('purple'); $('numR').classList.remove('purple'); $('pflash').classList.remove('on');
     if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
-    if (p && !G.demo) { if (G.mode === 'dm') res = G.winner === p.name ? 'win' : 'lose'; else res = G.winner === -1 ? 'draw' : (G.winner === p.team ? 'win' : 'lose'); }
+    if (p && !G.demo) { if (isDM()) res = G.winner === p.name ? 'win' : 'lose'; else res = G.winner === -1 ? 'draw' : (G.winner === p.team ? 'win' : 'lose'); }
     if (!res) { this.showEnd(false); return; }
     const f = $('fin'); f.className = res === 'win' ? 'win' : 'lose'; f.innerHTML = '<div class="finBg"></div><div class="finRays"></div><div class="finTxt">' + (res === 'win' ? 'Victory' : res === 'draw' ? 'Draw' : 'Defeat') + '</div>';
     if (res === 'win') { for (let k = 0; k < 18; k++) { const i = document.createElement('i'); i.textContent = '✦'; i.style.left = (Math.random() * 96) + '%'; i.style.top = (Math.random() * 90) + '%'; i.style.fontSize = (14 + Math.random() * 26) + 'px'; i.style.animationDelay = (.2 + Math.random() * 1.6) + 's'; f.appendChild(i); } Sfx.victory(); } else Sfx.defeat();
@@ -30,13 +31,13 @@ const UI = {
     }, wait);
   },
   showEnd(flip) {
-    const sorted = G.actors.slice().sort((a, b) => b.kills - a.kills || a.deaths - b.deaths), p = G.player || {};
+    const hunt = G.mode === 'hunt', sorted = (hunt ? G.actors.filter(a => a.isPlayer || a.remote) : G.actors).slice().sort((a, b) => hunt ? (b.score || 0) - (a.score || 0) : b.kills - a.kills || a.deaths - b.deaths), p = G.player || {};
     let title = '', col = '#fff';
-    if (G.mode === 'dm') { title = G.winner === p.name ? '🏆 你贏了！' : `${G.winner} 獲勝`; }
+    if (isDM()) { title = G.winner === p.name ? '🏆 你贏了！' : `${G.winner} 獲勝`; }
     else { const w = G.winner; if (w === -1) title = '平手'; else { title = (w === p.team ? '🏆 你的隊伍獲勝！' : '對手隊伍獲勝'); col = w === 0 ? '#ff7a7a' : '#7aa5ff'; } }
-    let rows = sorted.map((a, i) => `<tr class="${a.isPlayer ? 'me' : ''}"><td class="n">${i + 1}</td><td><span class="dot" style="background:${a.team === 0 ? '#d93a3a' : a.team === 1 ? '#3a6fd9' : '#999'}"></span>${a.name}</td><td class="n">${a.kills}</td><td class="n">${a.deaths}</td></tr>`).join('');
-    const sc = G.mode === 'dm' ? '' : `<div style="font-size:20px;margin-bottom:6px"><span style="color:#ff7a7a">紅 ${G.scores[0]}</span>　-　<span style="color:#7aa5ff">${G.scores[1]} 藍</span></div>`;
-    this.els.end.innerHTML = `<h2 style="color:${col}">${title}</h2>${sc}<table><tr><th class="n">#</th><th>玩家</th><th class="n">淘汰</th><th class="n">被淘汰</th></tr>${rows}</table><div class="btnrow"><button class="btn" id="btnAgain">再來一場</button><button class="btn alt" id="btnMenu">回主選單</button></div>`;
+    let rows = sorted.map((a, i) => `<tr class="${a.isPlayer ? 'me' : ''}"><td class="n">${i + 1}</td><td><span class="dot" style="background:${a.team === 0 ? '#d93a3a' : a.team === 1 ? '#3a6fd9' : '#999'}"></span>${a.name}</td><td class="n">${a.kills}</td><td class="n">${hunt ? (a.score || 0) : a.deaths}</td></tr>`).join('');
+    const sc = isDM() ? '' : `<div style="font-size:20px;margin-bottom:6px"><span style="color:#ff7a7a">紅 ${G.scores[0]}</span>　-　<span style="color:#7aa5ff">${G.scores[1]} 藍</span></div>`;
+    this.els.end.innerHTML = `<h2 style="color:${col}">${title}</h2>${sc}<table><tr><th class="n">#</th><th>玩家</th><th class="n">淘汰</th><th class="n">${hunt ? '積分' : '被淘汰'}</th></tr>${rows}</table><div class="btnrow"><button class="btn" id="btnAgain">再來一場</button><button class="btn alt" id="btnMenu">回主選單</button></div>`;
     this.els.end.classList.remove('hidden', 'flipin'); if (flip) { void this.els.end.offsetWidth; this.els.end.classList.add('flipin'); }
     $('btnAgain').onclick = () => { const d = G.demo; this.hideEnd(); beginGame(d); };
     $('btnMenu').onclick = () => { this.hideEnd(); toMenu(); };
@@ -63,8 +64,8 @@ const UI = {
     if (this._skIco !== sk.ico) { this._skIco = sk.ico; s.querySelector('.ico').textContent = sk.ico; }
     s.classList.toggle('cd', cd > 0); s.classList.toggle('on', (p.shieldT || 0) > 0); s.style.setProperty('--p', (cd / sk.cd * 360).toFixed(1) + 'deg');
     const sec = cd > 0 ? String(Math.ceil(cd)) : ''; if (this._skSec !== sec) { this._skSec = sec; s.querySelector('.cdn').textContent = sec; }
-    const sc = G.sk.scr, t = sc.t; let on = false; if (t >= 0 && t < SCR_FLASH) on = t < 1.2 ? (t % .3) < .15 : true;
-    if (on && !this._pf) Sfx.warn(); this._pf = on; $('numL').classList.toggle('purple', on); $('numR').classList.toggle('purple', on); $('pflash').classList.toggle('on', on);
+    const sc = G.sk.scr, t = sc.t; let on = false;
+    this._pf = on; $('numL').classList.toggle('purple', on); $('numR').classList.toggle('purple', on); $('pflash').classList.toggle('on', on);
     const ph2 = scrPhase2(p); if (ph2 && !this._ph2) this.startScramble(); if (!ph2 && this._ph2) this.endScramble(); this._ph2 = ph2;
   },
   startScramble() {
@@ -78,7 +79,8 @@ const UI = {
     if (!p) return;
     this.cdUpdate(dt);
     // 計分
-    if (G.mode === 'dm') { const others = G.actors.filter(a => a !== p).reduce((m, a) => Math.max(m, a.kills), 0); e.scR.textContent = p.kills; e.scB.textContent = others; e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
+    if (G.mode === 'hunt') { const others = G.actors.filter(a => a !== p && (a.isPlayer || a.remote)).reduce((m, a) => Math.max(m, a.score || 0), 0); e.scR.textContent = p.score || 0; e.scB.textContent = others; e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
+    else if (G.mode === 'dm') { const others = G.actors.filter(a => a !== p).reduce((m, a) => Math.max(m, a.kills), 0); e.scR.textContent = p.kills; e.scB.textContent = others; e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
     else { e.scR.textContent = G.scores[0]; e.scB.textContent = G.scores[1]; e.scR.className = 'sc red'; e.scB.className = 'sc blue'; }
     const ts = Math.max(0, Math.ceil(G.tleft)), tstr = Math.floor(ts / 60) + ':' + String(ts % 60).padStart(2, '0'); if (tstr !== this.lastTimer) { e.timer.textContent = tstr; this.lastTimer = tstr; }
     if (G.mode === 'ctf') { const f0 = G.flags[0], f1 = G.flags[1]; e.flagR.textContent = f0 && f0.state !== 'home' ? '🚩' : ''; e.flagB.textContent = f1 && f1.state !== 'home' ? '🏴' : ''; } else { e.flagR.textContent = ''; e.flagB.textContent = ''; }
@@ -95,7 +97,7 @@ const UI = {
     // 訊息
     if (this.msgT > 0) { this.msgT -= dt; if (this.msgT <= 0) e.msg.className = ''; }
     // 擊殺列
-    const fk = G.feedVer || 0; if (fk !== this.lastFeed) { this.lastFeed = fk; e.killfeed.innerHTML = G.feed.map(f => `<div class="${f.me ? 'me' : ''}">${esc(f.k)} ➜ <span class="vic">${esc(f.v)}</span></div>`).join(''); }
+    const fk = G.feedVer || 0; if (fk !== this.lastFeed) { this.lastFeed = fk; e.killfeed.innerHTML = G.feed.map(f => `<div class="${f.me ? 'me' : ''}">${esc(f.k)} ➜ <span class="vic">${esc(f.v)}</span>${f.st ? '<b class="stk">（' + STREAK_TXT[f.st - 1] + '）</b>' : ''}</div>`).join(''); }
     // 威脅
     const th = G.threat;
     if (th && p.alive) {
@@ -128,7 +130,7 @@ const UI = {
     else { e.scR.textContent = G.scores[0]; e.scB.textContent = G.scores[1]; e.scR.className = 'sc red'; e.scB.className = 'sc blue'; }
     const ts = Math.max(0, Math.ceil(G.tleft)), tstr = Math.floor(ts / 60) + ':' + String(ts % 60).padStart(2, '0'); if (tstr !== this.lastTimer) { e.timer.textContent = tstr; this.lastTimer = tstr; }
     if (G.mode === 'ctf') { const f0 = G.flags[0], f1 = G.flags[1]; e.flagR.textContent = f0 && f0.state !== 'home' ? '🚩' : ''; e.flagB.textContent = f1 && f1.state !== 'home' ? '🏴' : ''; } else { e.flagR.textContent = ''; e.flagB.textContent = ''; }
-    const fk = G.feedVer || 0; if (fk !== this.lastFeed) { this.lastFeed = fk; e.killfeed.innerHTML = G.feed.map(f => `<div>${esc(f.k)} ➜ <span class="vic">${esc(f.v)}</span></div>`).join(''); }
+    const fk = G.feedVer || 0; if (fk !== this.lastFeed) { this.lastFeed = fk; e.killfeed.innerHTML = G.feed.map(f => `<div>${esc(f.k)} ➜ <span class="vic">${esc(f.v)}</span>${f.st ? '<b class="stk">（' + STREAK_TXT[f.st - 1] + '）</b>' : ''}</div>`).join(''); }
     if (this.msgT > 0) { this.msgT -= dt; if (this.msgT <= 0) e.msg.className = ''; }
     e.flash.style.opacity = (v && v.blind > 0 ? clamp(v.blind / 2, 0, .9) : 0).toFixed(2); e.bino.style.display = 'none';
     Perf.hud(dt);
@@ -301,10 +303,16 @@ const MENU_HOWTO = `<p><b>目標：</b>每個人額頭都戴著一組數字牌�
 <p><b>道具：</b>📷 相機（拍照後照片留在畫面上數秒，可慢慢看清數字）　💥 閃光彈（讓人暫時讀不到你）　🌫️ 煙霧彈（阻斷視線）　📣 干擾彈（吸引注意力、打斷記憶）　🔭 望遠鏡（遠距離讀碼）。地圖上的 <b>?</b> 箱會補給道具。</p>
 <p><b>地圖：</b>熱血高校（白天校園，標準面積）／詭譎學苑（黑夜版，遠處會沒入黑暗、要靠近才看得到對手）／追逃商城（1.4 倍大，兩座電扶梯通往二樓，可從欄杆直接跳下一樓、不會摔傷）。</p>
 <p><b>人數：</b>含你在內最多 20 人，不足的人數由電腦補上；手機預設 12 人較順。<b>號碼位數：</b>頭上數字的位數（3～5 碼），位數越多讀得越久、也越難記。</p>
-<p><b>角色技能：</b>按 <kbd>R</kbd>（手機為 G 左邊的技能鍵）施放，圓環與秒數顯示冷卻。蘇蘇【顛倒乾坤】反轉其他人移動 5 秒；艾迪【銅牆鐵壁】3 秒內擋下一次輸入攻擊並刷新號碼；艾伯特【紫電干擾】數字鍵閃光預警後錯亂 5 秒。</p>
+<p><b>角色技能：</b>按 <kbd>R</kbd>（手機為 G 左邊的技能鍵）施放，圓環與秒數顯示冷卻。蘇蘇【顛倒乾坤】反轉其他人移動 5 秒；艾迪【銅牆鐵壁】3 秒內擋下一次輸入攻擊並刷新號碼；艾伯特【紫電干擾】讓其他人的數字鍵錯亂 5 秒。</p>
 <p><b>探頭：</b>躲在掩體後可按住 <kbd>Z</kbd>（左）／<kbd>C</kbd>（右）將上半身探出去看（手機為右側 ↖／↗ 鍵）；探出去時你的頭也會露出來，可能被對手讀到。</p>
 <p><b>模式：</b>個人死鬥（15 淘汰）／團隊死鬥（30 淘汰）／奪旗（3 次）。團隊模式的隊友額頭牌邊框與臂章為同色，無法淘汰。</p>
 <p><b>提示：</b>畫面中央的紅色箭頭代表「有人正在讀你的號碼」，進度條滿了就會被淘汰——快移動、轉身或躲到掩體後。輸錯號碼會被鎖定輸入約 1 秒。</p>`;
+function huntLock() {
+  const h = S.mode === 'hunt'; if (h) { if (S.count !== 16 && S.count !== 20) S.count = 20; S.diff = 3; S.countSet = true; }
+  const CN = [4, 8, 12, 16, 20];
+  for (const id of ['chCount', 'chNCount']) { const el = $(id); if (!el) continue; [...el.children].forEach(b => { const v = parseInt(b.textContent); b.classList.toggle('dis', h && v !== 16 && v !== 20); b.classList.toggle('on', v === S.count); }); }
+  for (const id of ['chDiff', 'chNDiff']) { const el = $(id); if (!el) continue; [...el.children].forEach((b, i) => { b.classList.toggle('dis', h && i !== 3); b.classList.toggle('on', i === S.diff); }); }
+}
 function chips(id, items, get, set, fmt) {
   const el = $(id); el.innerHTML = '';
   items.forEach(it => { const b = document.createElement('button'); b.className = 'chip' + (get() === it.v ? ' on' : ''); b.innerHTML = it.l; b.onclick = () => { set(it.v); saveS(); [...el.children].forEach((c, i) => c.classList.toggle('on', items[i].v === it.v)); }; el.appendChild(b); });
@@ -314,7 +322,7 @@ function buildMenu() {
   const mapItems = Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), updMap = () => { $('mapDesc').textContent = MAPS[S.map].desc; };
   chips('chMap', mapItems, () => S.map, v => { S.map = v; updMap(); World.load(v); }); updMap();
   const updMode = () => { $('modeDescG').textContent = MODES[S.mode] ? MODES[S.mode].short : ''; };
-  chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => { S.mode = v; updMode(); }); updMode();
+  chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => { S.mode = v; updMode(); huntLock(); }); updMode();
   chips('chCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
   chips('chCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; });
   chips('chTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v);
@@ -516,7 +524,7 @@ function boot() {
   window.addEventListener('orientationchange', () => setTimeout(() => { updateRotate(); Perf.apply(); sizeBinoculars(); }, 250));
   const fs = () => { try { const el = document.documentElement; if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) { const r = el.requestFullscreen(); if (r && r.catch) r.catch(() => UI.msg('此環境不允許全螢幕', 'bad')); } else UI.msg('此裝置不支援全螢幕', 'bad'); } catch (e) { } };
   $('btnFs').onclick = fs; $('btnFs2').onclick = fs;
-  $('btnStart').onclick = () => go(() => { UI.els.menu.classList.add('hidden'); $('gset').classList.remove('hidden'); });
+  $('btnStart').onclick = () => go(() => { UI.els.menu.classList.add('hidden'); $('gset').classList.remove('hidden'); huntLock(); });
   $('gBack').onclick = () => go(() => { $('gset').classList.add('hidden'); UI.els.menu.classList.remove('hidden'); });
   $('gGo').onclick = () => go(() => { $('gset').classList.add('hidden'); openCharSelect('start'); }); $('btnDemo').onclick = () => go(openDemoPick); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
   $('csBack').onclick = () => go(closeCharSelect);

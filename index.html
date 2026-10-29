@@ -265,6 +265,12 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 .mbtns{display:flex;flex-direction:column;gap:14px;margin-top:18px}
 .mbtns .btn{width:100%;margin:0;font-size:16px;padding:11px 8px}.mbtns #btnStart{font-size:22px;padding:13px 8px}
 
+.stk{color:#ffd24a;margin-left:4px}
+#streak{position:absolute;left:50%;top:24%;transform:translateX(-50%);font:400 clamp(34px,calc(var(--vh)*9),64px) var(--disp);color:#ffd24a;-webkit-text-stroke:5px #7a2a00;paint-order:stroke fill;text-align:center;pointer-events:none;opacity:0;white-space:nowrap;z-index:6}
+#streak small{display:block;font-size:.4em;-webkit-text-stroke:3px #7a2a00}
+#streak.show{animation:stk 1.8s ease-out forwards}
+@keyframes stk{0%{opacity:0;transform:translateX(-50%) scale(.3)}12%{opacity:1;transform:translateX(-50%) scale(1.25)}25%{transform:translateX(-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-18px) scale(1)}}
+.chip.dis{opacity:.35;pointer-events:none;filter:grayscale(1)}
 .gnote{font-size:12px;color:#fff;margin:4px 0 0;min-height:16px}
 .slot .cdn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:900 clamp(16px,calc(var(--vw)*2.6),22px) var(--font);color:#fff;text-shadow:0 0 5px #000,0 0 3px #000;pointer-events:none}
 .slot .ring{position:absolute;inset:-5px;border-radius:50%;pointer-events:none;opacity:0;background:conic-gradient(#ffd84a var(--p,0deg),rgba(255,255,255,.12) 0);-webkit-mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px));mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px))}
@@ -288,7 +294,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <div id="countdown" class="hidden"><div id="cdTxt"></div><div id="cdNum"></div></div><div id="modeName"></div>
     <div id="killfeed"></div>
     <div id="crosshair"></div>
-    <div id="msg"></div>
+    <div id="msg"></div><div id="streak"></div>
     <div id="carry" class="hidden">🚩 你正帶著旗幟，快回基地！</div>
     <div id="warn" class="hidden"><svg id="warnArrow" viewBox="0 0 24 24"><path d="M12 2 L22 21 L12 16 L2 21 Z" fill="currentColor"/></svg></div>
     <div id="warnBox" class="hidden"><div id="warnTxt">⚠ 有人正在讀你的號碼！</div><div class="bar"><i id="warnFill"></i></div></div>
@@ -320,7 +326,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.2</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.3</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -1774,7 +1780,7 @@ const OUTFITS = [
     torso: [[.001, -.16], [.205, -.16], [.195, -.08], [.162, .05], [.15, .17], [.152, .28], [.17, .38], [.182, .46], [.172, .51], [.12, .545], [.056, .56], [.05, .595], [.001, .595]] },
   { key: 'm1', label: '艾迪Eddie', sub: '', skill: { name: '銅牆鐵壁', desc: '展開護盾 3 秒，擋下一次輸入攻擊並刷新號碼。冷卻 40 秒。' }, H: 1.78, skin: '#d8a883', hipX: .1, shX: .245, tz: .52, hair: '#0f0f12',
     torso: [[.001, -.09], [.197, -.09], [.2, .0], [.186, .1], [.19, .22], [.224, .36], [.25, .46], [.246, .53], [.176, .57], [.07, .595], [.058, .63], [.001, .63]] },
-  { key: 'm2', label: '艾伯特Albert', sub: '', skill: { name: '紫電干擾', desc: '數字鍵閃光預警後，其他玩家的按鍵錯亂 5 秒。冷卻 60 秒。' }, H: 1.76, skin: '#c99a76', hipX: .098, shX: .228, tz: .52, hair: '#0d0d10',
+  { key: 'm2', label: '艾伯特Albert', sub: '', skill: { name: '紫電干擾', desc: '讓其他玩家的數字鍵錯亂 5 秒。冷卻 60 秒。' }, H: 1.76, skin: '#c99a76', hipX: .098, shX: .228, tz: .52, hair: '#0d0d10',
     torso: [[.001, -.10], [.222, -.10], [.227, -.02], [.212, .1], [.217, .22], [.238, .36], [.257, .46], [.252, .53], [.19, .57], [.13, .60], [.118, .645], [.001, .645]] }
 ];
 OUTFITS.push(
@@ -2149,6 +2155,7 @@ function drawAvatar(a, opt) {
   if (R.shadowPass) return;
   if (a.team >= 0) { M4.trs(T, 0, -.09, 0, 0, 0, 0, 1, 1, 1); M4.mul(M, Ar, T); R.draw(AV.bandMesh, M, AV.bandMat[a.team]); }
   // 號碼牌（略向後仰，戴在額頭上）
+  if (a.number === '' && !a.fake) return;
   const sc = a.plateScale || 1, k = C.head;
   placeM(M, U, 0, chinN + (O.plateY - d.chinY) * k + .04 * (sc - 1), O.plateZ * k, -.14, 0, .40 * sc * 1.1, .19 * sc * 1.1, 1); R.draw(AV.plateMesh, M, a.plateMat);
 }
@@ -2159,11 +2166,13 @@ function drawBlob(a, tint) {
 
 /* ================= 遊戲邏輯 ================= */
 const STEP = .45, RAD = .22, GRAV = 22, EYE = 1.62;
+const isDM = () => G.mode === 'dm' || G.mode === 'hunt';
 const NAMES = ['Honda', '小明', '阿杰', 'Mia', 'Ken', 'Luna', 'Jay', 'Yuki', '小美', 'Leo', '阿宏', 'Nina', 'Ray', '小雨', 'Zoe', 'Max', '阿德', 'Coco', 'Tom', 'Eli'];
 /* 新增模式只要在這裡加一筆；demo:false 代表電腦無法示範（需真人操作），示範選單會自動排除並提示 */
 const MODES = {
   dm: { name: '個人死鬥', sub: '人人為敵', desc: '所有人互相淘汰，最先達到 15 次淘汰者獲勝', time: 300, limit: 15, short: '人人為敵，先淘汰 15 人者獲勝' },
   tdm: { name: '團隊死鬥', sub: '紅 vs 藍', desc: '紅藍兩隊對戰，隊伍先累積 30 次淘汰者獲勝', time: 360, limit: 30, short: '紅藍對戰，隊伍先累積 30 次淘汰者獲勝' },
+  hunt: { name: '激鬥追捕', sub: '追殺電腦角色', desc: '玩家頭上沒有號碼，只能追殺電腦角色，連殺積分更高；時間到積分最高或最先 100 分者獲勝', time: 300, limit: 100, demo: false, short: '只追殺電腦、連殺加分，100 分或時間到積分最高者勝' },
   ctf: { name: '奪旗', sub: '搶旗帶回基地', desc: '搶走敵方旗幟帶回己方基地得分，先得 3 分獲勝', time: 480, limit: 3, short: '搶走敵方旗幟帶回己方基地，先得 3 分獲勝' }
 };
 const ITEMS = { cam: { ico: '📷', name: '相機' }, flash: { ico: '💥', name: '閃光彈' }, smoke: { ico: '🌫️', name: '煙霧彈' }, lure: { ico: '📣', name: '干擾彈' } };
@@ -2194,14 +2203,14 @@ function assignNumber(a) {
 }
 function spawnActor(a, fixed) {
   const avoid = G.actors.filter(o => o !== a && o.alive);
-  const p = fixed || World.pickSpawn(G.mode === 'dm' ? -1 : a.team, avoid) || [0, 0];
+  const p = fixed || World.pickSpawn(isDM() ? -1 : a.team, avoid) || [0, 0];
   a.x = p[0] + (fixed ? 0 : rand(-.4, .4)); a.z = p[1] + (fixed ? 0 : rand(-.4, .4)); a.y = (fixed ? fixed[3] : p[2]) ? World.mezz.h : 0; a.vx = a.vy = a.vz = 0; a.alive = true; a.fake = null; a.fakeT = 0; a.dashT = 0; a.dashReady = false; a.fall = 0; a.protect = 1.8; a.blind = 0; a.carry = null; a.read = {}; a.typing = null; a.tgt = null; a.path = []; a.goal = null; a.lure = null; a.deadT = 0;
   const c = a.team === 0 ? World.cur.faceRed : a.team === 1 ? World.cur.faceBlue : [0, 0]; a.yaw = fixed ? fixed[2] : Math.atan2(-(c[0] - a.x), -(c[1] - a.z)) + rand(-.4, .4); a.pitch = 0; a.sp = 0; a.redT = 0;
   if (a.remote) { a.rsC = (a.rsC || 0) + 1; a.net = null; }
-  assignNumber(a);
+  if (G.mode === 'hunt' && (a.isPlayer || a.remote)) { a.number = ''; a.fake = null; drawPlate(a); } else assignNumber(a);
   if (!a.isPlayer && !a.remote) {
     a.slots = [null, null]; a.mode = 'roam'; a.threatT = 0; a.reader = null;
-    const troll = DIFF[S.diff].troll && !G.demo, n0 = (G.demo || troll) ? 2 : (Math.random() < .6 ? 1 : 0), pool = G.demo ? ['flash', 'smoke', 'lure', 'cam'] : ['flash', 'smoke', 'lure'];
+    const troll = (DIFF[S.diff].troll || G.mode === 'hunt') && !G.demo, n0 = (G.demo || troll) ? 2 : (Math.random() < .6 ? 1 : 0), pool = G.demo ? ['flash', 'smoke', 'lure', 'cam'] : ['flash', 'smoke', 'lure'];
     for (let i = 0; i < n0; i++) { const t = pick(pool); a.slots[i] = { type: t, n: t === 'cam' ? 3 : 1 }; }
   }
 }
@@ -2247,7 +2256,7 @@ const isSumi = a => skOn() && a.av && a.av.outfitIdx === 3;
 const jumpMul = a => isSumi(a) ? 1.285 : 1; // 高度 1.65 倍 → 初速 √1.65 倍
 const speedMul = a => (skOn() && a.av && a.av.outfitIdx === 5) ? 2.5 : 1;
 const SKILLS = { cloak: { name: '幻影易容', cd: 45, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 40, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 40, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 60, ico: '⚡' } };
-const SCR_FLASH = 3.0, SCR_TOTAL = 8.0; // 預警閃光 3 秒（4 次短閃 + 1.8 秒長閃）+ 錯亂 5 秒
+const SCR_FLASH = 0, SCR_TOTAL = 5.0; // 預警閃光 3 秒（4 次短閃 + 1.8 秒長閃）+ 錯亂 5 秒
 const skillOf = a => SKILL_OF[a.av.outfitIdx] ? SKILLS[SKILL_OF[a.av.outfitIdx]] : null;
 const revActive = a => G.sk.rev.t > 0 && G.sk.rev.by !== a;
 const scrPhase2 = a => G.sk.scr.t >= SCR_FLASH && G.sk.scr.by !== a;
@@ -2259,7 +2268,7 @@ function castSkill(a) {
   if (!skOn() || !a || !a.alive || (a.skCd || 0) > 0 || G.state !== 'playing' || G.countdown > 0) return false;
   const k = SKILL_OF[a.av.outfitIdx]; if (!k) return false; if (k === 'cloak' && a.fake) return false; a.skCd = SKILLS[k].cd;
   if (k === 'rev') { G.sk.rev = { t: 5, by: a }; skMsg(a, '發動【顛倒乾坤】！其他人的移動方向反轉 5 秒'); }
-  else if (k === 'scr') { G.sk.scr = { t: 0, by: a }; skMsg(a, '發動【紫電干擾】！數字鍵即將錯亂'); }
+  else if (k === 'scr') { G.sk.scr = { t: 0, by: a }; skMsg(a, '發動【紫電干擾】！其他人的數字鍵錯亂 5 秒'); }
   else if (k === 'cloak') {
     puffFx(a); let best = null, bd = 1e9; const fx = FWD(a.yaw);
     for (const o of G.actors) { if (o === a || !o.alive || o.fake) continue; const dx = o.x - a.x, dz = o.z - a.z, d = Math.hypot(dx, dz) || 1, front = (dx * fx[0] + dz * fx[1]) / d; const sc = d + (front > .3 && los(a.x, a.y + 1.6, a.z, o.x, o.y + 1.65, o.z) ? 0 : 40); if (sc < bd) { bd = sc; best = o; } }
@@ -2283,7 +2292,8 @@ function botSkill(b, dt) {
   if (!skOn()) return; if (!b.alive || (b.skCd || 0) > 0 || G.countdown > 0 || G.state !== 'playing') return; const k = SKILL_OF[b.av.outfitIdx];
   if (!k) return; if (k === 'shield') { if (b.threatT > 0 && Math.random() < dt * 2.5) castSkill(b); } else if (Math.random() < dt * .035) castSkill(b);
 }
-function enemyOf(a, o) { return o !== a && o.alive && (G.mode === 'dm' || o.team !== a.team); }
+const STREAK_PTS = [3, 5, 7, 10, 15], STREAK_TXT = ['', '二連殺', '三連殺', '四連殺', '五連殺'];
+function enemyOf(a, o) { return o !== a && o.alive && (isDM() || o.team !== a.team); }
 
 /* ---------- 物理 ---------- */
 function collideH(a) {
@@ -2451,9 +2461,10 @@ function eliminate(k, v) {
   v.alive = false; v.deaths++; v.deadT = 0; v.respawnT = 3.2; v.killedBy = k; v.typing = null; v.lure = null;
   k.lastKillT = G.time;
   if (k !== v) { assignNumber(k); for (const o of G.actors) { if (o.read) o.read[k.id] = 0; if (o.typing && o.typing.target === k) o.typing = null; } } // 擊殺成功：自己的號碼立即更新
+  if (G.mode === 'hunt' && k !== v && (k.isPlayer || k.remote)) { k.streak = (G.time - (k.lastKillT0 ?? -99) <= 10) ? (k.streak || 0) + 1 : 1; k.lastKillT0 = G.time; const pts = STREAK_PTS[Math.min(k.streak, 5) - 1]; k.score = (k.score || 0) + pts; k.lastStreak = k.streak; if (k.isPlayer) UI.streak(k.streak, pts); }
   if (k !== v) { k.kills++; if (G.mode === 'tdm' && k.team >= 0) G.scores[k.team]++; }
   for (const f of G.flags) if (f.carrier === v) dropFlag(f, v);
-  G.feed.push({ t: 6, k: k.name, v: v.name, me: k.isPlayer || v.isPlayer, kt: k.team, vt: v.team, seq: (G.feedSeq = (G.feedSeq || 0) + 1), ki: G.actors.indexOf(k), vi: G.actors.indexOf(v) }); if (G.feed.length > 5) G.feed.shift(); G.feedVer = (G.feedVer || 0) + 1;
+  G.feed.push({ t: 6, k: k.name, v: v.name, me: k.isPlayer || v.isPlayer, kt: k.team, vt: v.team, st: (G.mode === 'hunt' && k.lastStreak > 1 && (k.isPlayer || k.remote)) ? Math.min(k.lastStreak, 5) : 0, seq: (G.feedSeq = (G.feedSeq || 0) + 1), ki: G.actors.indexOf(k), vi: G.actors.indexOf(v) }); if (G.feed.length > 5) G.feed.shift(); G.feedVer = (G.feedVer || 0) + 1;
   for (const o of G.actors) { if (o.read) o.read[v.id] = 0; }
   if (k.isPlayer) { Sfx.kill(); UI.msg('你淘汰了 ' + v.name + ' (' + v.number + ')', 'good'); UI.killFlash(); }
   if (v.isPlayer) { Sfx.die(); G.typed = ''; G.bino = false; UI.onDeath(k); }
@@ -2462,6 +2473,7 @@ function eliminate(k, v) {
 function checkWin() {
   if (G.state !== 'playing') return;
   let over = false, win = '';
+  if (G.mode === 'hunt') { const hs = G.actors.filter(a => a.isPlayer || a.remote); const best = hs.reduce((m, a) => (a.score || 0) > (m.score || 0) ? a : m, hs[0]); if ((best.score || 0) >= G.limit || G.tleft <= 0) { G.state = 'ended'; G.winner = best.name; G.endT = 0; UI.onEnd(); } return; }
   if (G.mode === 'dm') { const best = G.actors.reduce((m, a) => a.kills > m.kills ? a : m, G.actors[0]); if (best.kills >= G.limit) { over = true; win = best.name; } }
   else { for (const t of [0, 1]) if (G.scores[t] >= G.limit) { over = true; win = t; } }
   if (G.tleft <= 0) { over = true; if (G.mode === 'dm') { win = G.actors.reduce((m, a) => a.kills > m.kills ? a : m, G.actors[0]).name; } else win = G.scores[0] === G.scores[1] ? -1 : (G.scores[0] > G.scores[1] ? 0 : 1); }
@@ -2489,8 +2501,8 @@ function backspace() { if (G.state !== 'playing' || G.lock > 0) return; if (G.ty
 function submitNumber() {
   const p = G.player; if (G.state !== 'playing' || G.countdown > 0 || !p || !p.alive || G.lock > 0) return;
   if (G.typed.length < (G.codeLen || 3)) { UI.msg('請輸入完整的 ' + (G.codeLen || 3) + ' 位以上數字', 'bad'); return; }
-  const code = G.typed, t = G.actors.find(a => a.alive && a.number === code && a !== p);
-  if (t && (G.mode === 'dm' || t.team !== p.team)) {
+  const code = G.typed, t = G.actors.find(a => a.alive && a.number === code && a !== p && a.number !== '');
+  if (t && (isDM() || t.team !== p.team)) {
     if (t.protect > 0) { UI.msg('對方有重生保護', 'bad'); G.typed = ''; UI.dirty = true; return; }
     if (G.netClient) { netAct(['k', G.actors.indexOf(t), code]); G.typed = ''; UI.dirty = true; return; }
     G.typed = ''; UI.dirty = true; eliminate(p, t);
@@ -2562,7 +2574,7 @@ function updateCamera(dt) {
 
 /* ---------- 機器人 AI ---------- */
 function scanBot(b, dt) {
-  const R2 = b.range * b.range, ex = b.x, ey = b.y + 1.62, ez = b.z, df = DIFF[S.diff], teamMode = G.mode !== 'dm';
+  const R2 = b.range * b.range, ex = b.x, ey = b.y + 1.62, ez = b.z, df = DIFF[S.diff], teamMode = !isDM();
   let seen = null, seenD = 1e9;
   for (const o of G.actors) {
     if (o === b || !o.alive) continue; if (teamMode && o.team === b.team) continue;
@@ -2672,7 +2684,7 @@ function updateTroll(b, dt) {
   }
 }
 function updateBot(b, dt) {
-  if (DIFF[S.diff].troll && !G.demo) { updateTroll(b, dt); return; }
+  if ((DIFF[S.diff].troll || G.mode === 'hunt') && !G.demo) { updateTroll(b, dt); return; }
   botSkill(b, dt);
   b.threatT = Math.max(0, b.threatT - dt); if (b.smart) smartThink(b, dt);
   b.protect = Math.max(0, b.protect - dt); b.blind = Math.max(0, b.blind - dt); b.cd -= dt; b.tgtT -= dt; if (b.tgtT <= 0) b.tgt = null;
@@ -2797,8 +2809,8 @@ function startMatch(demo, roster) {
   if (roster) for (const r of roster.slice(1)) { const a = newActor(r.name, r.outfit, false); a.remote = true; a.peer = r.peer; a.slots = [null, null]; a.speed = 0; G.actors.push(a); }
   const names = NAMES.slice().sort(() => Math.random() - .5);
   for (let i = demo ? 0 : G.actors.length; i < n; i++) { const b = newActor(names[(demo ? i : i - hum)], randi(0, OUTFITS.length - 1), false); b.role = i % 4 === 0 ? 1 : 0; b.smart = !!demo; if (demo) b.speed *= 1.08; b.scaleBase = .85 + Math.random() * .4; b.range = Math.random() < .15 ? 58 : 34; if (b.range > 50) b.scaleBase *= 1.3; G.actors.push(b); }
-  G.actors.forEach((a, i) => { a.team = G.mode === 'dm' ? -1 : (i % 2); });
-  G.actors.forEach(a => { drawPlate(a); });
+  G.actors.forEach((a, i) => { a.team = isDM() ? -1 : (i % 2); });
+  G.actors.forEach(a => { a.score = 0; a.streak = 0; a.lastKillT0 = -99; a.lastStreak = 0; drawPlate(a); });
   for (const a of G.actors) if (!a.isPlayer && !a.remote && speedMul(a) > 1) a.speed *= speedMul(a);
   skReset(); spawnAll();
   if (!demo) { giveItem(0, 'cam'); giveItem(1, pick(['flash', 'smoke', 'lure'])); }
@@ -2910,7 +2922,7 @@ function drawWorldFrame() {
   for (const a of G.actors) { if (!a.alive || a === pl) continue; const dd = (a.x - c.x) ** 2 + (a.z - c.z) ** 2; if (a.shieldT > 0) list.push({ x: a.x, y: a.y + .75, z: a.z, w: 2.3, a: .5 + .2 * Math.sin(G.time * 8), k: 12, d: dd }); if (a.say) list.push({ x: a.x, y: a.y + 1.95, z: a.z, w: 2.0, a: clamp(a.say.t / .25, 0, 1), k: 11, a_: a, d: dd }); }
   for (const f of G.fx) if (f.k === 'puff') { const q = f.t / f.d; list.push({ x: f.x, y: f.y + q * .5, z: f.z, w: 1.2 + q * 1.8, a: .8 * (1 - q), k: 0, d: (f.x - c.x) ** 2 + (f.z - c.z) ** 2 }); }
   for (const f of G.fx) if (f.k === 'flash') { const q = f.t / f.d; list.push({ x: f.x, y: f.y, z: f.z, w: 5 + q * 8, a: 1 - q, k: 3, d: (f.x - c.x) ** 2 + (f.z - c.z) ** 2 }); }
-  if (G.mode !== 'dm' && pl) for (const a of G.actors) { if (a === pl || !a.alive || a.team !== pl.team) continue; const d2 = (a.x - c.x) ** 2 + (a.z - c.z) ** 2; if (d2 > 3600) continue; list.push({ x: a.x, y: a.y + 1.8, z: a.z, w: 1.5, a: 1, k: 1, a_: a, d: d2 }); }
+  if (!isDM() && pl) for (const a of G.actors) { if (a === pl || !a.alive || a.team !== pl.team) continue; const d2 = (a.x - c.x) ** 2 + (a.z - c.z) ** 2; if (d2 > 3600) continue; list.push({ x: a.x, y: a.y + 1.8, z: a.z, w: 1.5, a: 1, k: 1, a_: a, d: d2 }); }
   list.sort((p, q) => q.d - p.d);
   for (const s of list) {
     if (s.k === 0) drawSprite(SPR.puff, s.x, s.y, s.z, s.w, s.w, [1, 1, 1], s.a);
@@ -3092,11 +3104,12 @@ function initNetUI() {
   chips('chNMap', Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name })), () => S.map, v => { S.map = v; World.load(v); });
   chips('chNTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v);
   chips('chNSkill', [{ v: true, l: '是' }, { v: false, l: '否' }], () => S.skills !== false, v => S.skills = v);
-  chips('chNMode', Object.entries(MODES).map(([k, m]) => ({ v: k, l: m.name })), () => S.mode, v => S.mode = v);
+  chips('chNMode', Object.entries(MODES).map(([k, m]) => ({ v: k, l: m.name })), () => S.mode, v => { S.mode = v; huntLock(); });
   chips('chNCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
   $('mpChar').onclick = () => go(() => openCharSelect('mp'));
   chips('chNCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; });
   chips('chNDiff', DIFF.map((d, i) => ({ v: i, l: d.name + '<small>' + d.desc + '</small>' })), () => S.diff, v => S.diff = v);
+  huntLock();
   chips('chNBots', [{ v: true, l: '機器人補滿人數' }, { v: false, l: '僅限真人' }], () => S.netBots, v => S.netBots = v);
 }
 
@@ -3137,7 +3150,7 @@ function hostReadPeers(dt) {
 function hostAct(a, ac) {
   if (!a.alive || G.state !== 'playing') return;
   if (ac[1] === 'k') {
-    const t = G.actors.find(x => x.alive && x.number === String(ac[3])); if (t && t !== a && t.alive && t.protect <= 0 && t.number === String(ac[3]) && (G.mode === 'dm' || t.team !== a.team)) eliminate(a, t);
+    const t = G.actors.find(x => x.alive && x.number === String(ac[3])); if (t && t !== a && t.alive && t.protect <= 0 && t.number === String(ac[3]) && (isDM() || t.team !== a.team)) eliminate(a, t);
   } else if (ac[1] === 'w') { a.redT = 2; }
   else if (ac[1] === 's') { castSkill(a); }
   else if (ac[1] === 'u') {
@@ -3175,7 +3188,7 @@ function buildSnap() {
     fg: G.mode === 'ctf' ? G.flags.map(f => [f.state === 'home' ? 0 : f.state === 'carried' ? 1 : 2, Math.round(f.x * 10), Math.round(f.z * 10), Math.round(f.y * 10), f.carrier ? A.indexOf(f.carrier) : -1]) : [],
     sk: [Math.round(G.sk.rev.t * 10), G.actors.indexOf(G.sk.rev.by), Math.round(G.sk.scr.t * 10), G.actors.indexOf(G.sk.scr.by)],
     pk: G.pickups.reduce((m, p, i) => m | (p.on ? (1 << i) : 0), 0),
-    fd: G.feed.slice(-4).map(f => [f.seq, f.ki, f.vi]), ms: NET.msgQ.slice()
+    fd: G.feed.slice(-4).map(f => [f.seq, f.ki, f.vi, f.st || 0]), hs: G.mode === 'hunt' ? G.actors.map(a => a.score || 0) : 0, ms: NET.msgQ.slice()
   };
   return snap;
 }
@@ -3253,9 +3266,10 @@ function applySnap(s) {
   G.lures = s.lu.map(l => ({ x: l[0] / 10, y: 0, z: l[1] / 10, t: l[2] / 10, life: 7, nt: 1 }));
   if (G.mode === 'ctf') G.flags.forEach((f, i) => { const e = s.fg[i]; if (!e) return; f.state = ['home', 'carried', 'dropped'][e[0]]; f.x = e[1] / 10; f.z = e[2] / 10; f.y = e[3] / 10; f.carrier = e[4] >= 0 ? A[e[4]] : null; });
   G.pickups.forEach((p, i) => { p.on = !!(s.pk & (1 << i)); });
+  if (s.hs) s.hs.forEach((v, i) => { if (A[i]) A[i].score = v; });
   if (s.sk) { G.sk.rev = { t: s.sk[0] / 10, by: A[s.sk[1]] || null }; G.sk.scr = { t: s.sk[2] / 10, by: A[s.sk[3]] || null }; }
   if (NET.feedSeen < 0) NET.feedSeen = s.fd.length ? s.fd[s.fd.length - 1][0] : 0;
-  for (const f of s.fd) if (f[0] > NET.feedSeen) { NET.feedSeen = f[0]; const k = A[f[1]], v = A[f[2]]; if (k && v) { G.feed.push({ t: 6, k: k.name, v: v.name, me: k === me || v === me, seq: f[0] }); if (G.feed.length > 5) G.feed.shift(); G.feedVer++; } }
+  for (const f of s.fd) if (f[0] > NET.feedSeen) { NET.feedSeen = f[0]; const k = A[f[1]], v = A[f[2]]; if (k && v) { G.feed.push({ t: 6, k: k.name, v: v.name, me: k === me || v === me, st: f[3] || 0, seq: f[0] }); if (k === me && f[3] > 1) UI.streak(f[3], STREAK_PTS[Math.min(f[3], 5) - 1]); if (G.feed.length > 5) G.feed.shift(); G.feedVer++; } }
   if (NET.msgSeen < 0) NET.msgSeen = s.ms.length ? s.ms[s.ms.length - 1][0] : 0;
   for (const m of s.ms) if (m[0] > NET.msgSeen) { NET.msgSeen = m[0]; UI.msg(m[1], m[2]); }
   if (s.st === 1 && G.state === 'playing') { G.state = 'ended'; G.winner = s.w; UI.onEnd(); }
@@ -3300,6 +3314,7 @@ const UI = {
   },
   msg(t, k) { const e = this.els.msg; e.textContent = t; e.className = 'show ' + (k || ''); this.msgT = 2.2; },
   flashWhite(a) { this.flashW = Math.max(this.flashW, a); },
+  streak(n, pts) { if (n < 2) { this.msg('+' + pts + ' 分', 'good'); return; } const t = STREAK_TXT[Math.min(n, 5) - 1], el = $('streak'); el.innerHTML = t + '<small>+' + pts + ' 分</small>'; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show'); Sfx.kill(); },
   killFlash() { this.killF = .25; },
   shake() { const e = this.els.typed; e.classList.remove('shake'); void e.offsetWidth; e.classList.add('shake'); },
   onDeath(k) {
@@ -3312,7 +3327,7 @@ const UI = {
     const p = G.player, tok = this.endTok = (this.endTok || 0) + 1; let res = null;
     if (G.sk) { G.sk.rev.t = 0; G.sk.scr.t = -1; } this.endScramble(); this._ph2 = false; this._pf = false; $('numL').classList.remove('purple'); $('numR').classList.remove('purple'); $('pflash').classList.remove('on');
     if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
-    if (p && !G.demo) { if (G.mode === 'dm') res = G.winner === p.name ? 'win' : 'lose'; else res = G.winner === -1 ? 'draw' : (G.winner === p.team ? 'win' : 'lose'); }
+    if (p && !G.demo) { if (isDM()) res = G.winner === p.name ? 'win' : 'lose'; else res = G.winner === -1 ? 'draw' : (G.winner === p.team ? 'win' : 'lose'); }
     if (!res) { this.showEnd(false); return; }
     const f = $('fin'); f.className = res === 'win' ? 'win' : 'lose'; f.innerHTML = '<div class="finBg"></div><div class="finRays"></div><div class="finTxt">' + (res === 'win' ? 'Victory' : res === 'draw' ? 'Draw' : 'Defeat') + '</div>';
     if (res === 'win') { for (let k = 0; k < 18; k++) { const i = document.createElement('i'); i.textContent = '✦'; i.style.left = (Math.random() * 96) + '%'; i.style.top = (Math.random() * 90) + '%'; i.style.fontSize = (14 + Math.random() * 26) + 'px'; i.style.animationDelay = (.2 + Math.random() * 1.6) + 's'; f.appendChild(i); } Sfx.victory(); } else Sfx.defeat();
@@ -3323,13 +3338,13 @@ const UI = {
     }, wait);
   },
   showEnd(flip) {
-    const sorted = G.actors.slice().sort((a, b) => b.kills - a.kills || a.deaths - b.deaths), p = G.player || {};
+    const hunt = G.mode === 'hunt', sorted = (hunt ? G.actors.filter(a => a.isPlayer || a.remote) : G.actors).slice().sort((a, b) => hunt ? (b.score || 0) - (a.score || 0) : b.kills - a.kills || a.deaths - b.deaths), p = G.player || {};
     let title = '', col = '#fff';
-    if (G.mode === 'dm') { title = G.winner === p.name ? '🏆 你贏了！' : `${G.winner} 獲勝`; }
+    if (isDM()) { title = G.winner === p.name ? '🏆 你贏了！' : `${G.winner} 獲勝`; }
     else { const w = G.winner; if (w === -1) title = '平手'; else { title = (w === p.team ? '🏆 你的隊伍獲勝！' : '對手隊伍獲勝'); col = w === 0 ? '#ff7a7a' : '#7aa5ff'; } }
-    let rows = sorted.map((a, i) => `<tr class="${a.isPlayer ? 'me' : ''}"><td class="n">${i + 1}</td><td><span class="dot" style="background:${a.team === 0 ? '#d93a3a' : a.team === 1 ? '#3a6fd9' : '#999'}"></span>${a.name}</td><td class="n">${a.kills}</td><td class="n">${a.deaths}</td></tr>`).join('');
-    const sc = G.mode === 'dm' ? '' : `<div style="font-size:20px;margin-bottom:6px"><span style="color:#ff7a7a">紅 ${G.scores[0]}</span>　-　<span style="color:#7aa5ff">${G.scores[1]} 藍</span></div>`;
-    this.els.end.innerHTML = `<h2 style="color:${col}">${title}</h2>${sc}<table><tr><th class="n">#</th><th>玩家</th><th class="n">淘汰</th><th class="n">被淘汰</th></tr>${rows}</table><div class="btnrow"><button class="btn" id="btnAgain">再來一場</button><button class="btn alt" id="btnMenu">回主選單</button></div>`;
+    let rows = sorted.map((a, i) => `<tr class="${a.isPlayer ? 'me' : ''}"><td class="n">${i + 1}</td><td><span class="dot" style="background:${a.team === 0 ? '#d93a3a' : a.team === 1 ? '#3a6fd9' : '#999'}"></span>${a.name}</td><td class="n">${a.kills}</td><td class="n">${hunt ? (a.score || 0) : a.deaths}</td></tr>`).join('');
+    const sc = isDM() ? '' : `<div style="font-size:20px;margin-bottom:6px"><span style="color:#ff7a7a">紅 ${G.scores[0]}</span>　-　<span style="color:#7aa5ff">${G.scores[1]} 藍</span></div>`;
+    this.els.end.innerHTML = `<h2 style="color:${col}">${title}</h2>${sc}<table><tr><th class="n">#</th><th>玩家</th><th class="n">淘汰</th><th class="n">${hunt ? '積分' : '被淘汰'}</th></tr>${rows}</table><div class="btnrow"><button class="btn" id="btnAgain">再來一場</button><button class="btn alt" id="btnMenu">回主選單</button></div>`;
     this.els.end.classList.remove('hidden', 'flipin'); if (flip) { void this.els.end.offsetWidth; this.els.end.classList.add('flipin'); }
     $('btnAgain').onclick = () => { const d = G.demo; this.hideEnd(); beginGame(d); };
     $('btnMenu').onclick = () => { this.hideEnd(); toMenu(); };
@@ -3356,8 +3371,8 @@ const UI = {
     if (this._skIco !== sk.ico) { this._skIco = sk.ico; s.querySelector('.ico').textContent = sk.ico; }
     s.classList.toggle('cd', cd > 0); s.classList.toggle('on', (p.shieldT || 0) > 0); s.style.setProperty('--p', (cd / sk.cd * 360).toFixed(1) + 'deg');
     const sec = cd > 0 ? String(Math.ceil(cd)) : ''; if (this._skSec !== sec) { this._skSec = sec; s.querySelector('.cdn').textContent = sec; }
-    const sc = G.sk.scr, t = sc.t; let on = false; if (t >= 0 && t < SCR_FLASH) on = t < 1.2 ? (t % .3) < .15 : true;
-    if (on && !this._pf) Sfx.warn(); this._pf = on; $('numL').classList.toggle('purple', on); $('numR').classList.toggle('purple', on); $('pflash').classList.toggle('on', on);
+    const sc = G.sk.scr, t = sc.t; let on = false;
+    this._pf = on; $('numL').classList.toggle('purple', on); $('numR').classList.toggle('purple', on); $('pflash').classList.toggle('on', on);
     const ph2 = scrPhase2(p); if (ph2 && !this._ph2) this.startScramble(); if (!ph2 && this._ph2) this.endScramble(); this._ph2 = ph2;
   },
   startScramble() {
@@ -3371,7 +3386,8 @@ const UI = {
     if (!p) return;
     this.cdUpdate(dt);
     // 計分
-    if (G.mode === 'dm') { const others = G.actors.filter(a => a !== p).reduce((m, a) => Math.max(m, a.kills), 0); e.scR.textContent = p.kills; e.scB.textContent = others; e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
+    if (G.mode === 'hunt') { const others = G.actors.filter(a => a !== p && (a.isPlayer || a.remote)).reduce((m, a) => Math.max(m, a.score || 0), 0); e.scR.textContent = p.score || 0; e.scB.textContent = others; e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
+    else if (G.mode === 'dm') { const others = G.actors.filter(a => a !== p).reduce((m, a) => Math.max(m, a.kills), 0); e.scR.textContent = p.kills; e.scB.textContent = others; e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
     else { e.scR.textContent = G.scores[0]; e.scB.textContent = G.scores[1]; e.scR.className = 'sc red'; e.scB.className = 'sc blue'; }
     const ts = Math.max(0, Math.ceil(G.tleft)), tstr = Math.floor(ts / 60) + ':' + String(ts % 60).padStart(2, '0'); if (tstr !== this.lastTimer) { e.timer.textContent = tstr; this.lastTimer = tstr; }
     if (G.mode === 'ctf') { const f0 = G.flags[0], f1 = G.flags[1]; e.flagR.textContent = f0 && f0.state !== 'home' ? '🚩' : ''; e.flagB.textContent = f1 && f1.state !== 'home' ? '🏴' : ''; } else { e.flagR.textContent = ''; e.flagB.textContent = ''; }
@@ -3388,7 +3404,7 @@ const UI = {
     // 訊息
     if (this.msgT > 0) { this.msgT -= dt; if (this.msgT <= 0) e.msg.className = ''; }
     // 擊殺列
-    const fk = G.feedVer || 0; if (fk !== this.lastFeed) { this.lastFeed = fk; e.killfeed.innerHTML = G.feed.map(f => `<div class="${f.me ? 'me' : ''}">${esc(f.k)} ➜ <span class="vic">${esc(f.v)}</span></div>`).join(''); }
+    const fk = G.feedVer || 0; if (fk !== this.lastFeed) { this.lastFeed = fk; e.killfeed.innerHTML = G.feed.map(f => `<div class="${f.me ? 'me' : ''}">${esc(f.k)} ➜ <span class="vic">${esc(f.v)}</span>${f.st ? '<b class="stk">（' + STREAK_TXT[f.st - 1] + '）</b>' : ''}</div>`).join(''); }
     // 威脅
     const th = G.threat;
     if (th && p.alive) {
@@ -3421,7 +3437,7 @@ const UI = {
     else { e.scR.textContent = G.scores[0]; e.scB.textContent = G.scores[1]; e.scR.className = 'sc red'; e.scB.className = 'sc blue'; }
     const ts = Math.max(0, Math.ceil(G.tleft)), tstr = Math.floor(ts / 60) + ':' + String(ts % 60).padStart(2, '0'); if (tstr !== this.lastTimer) { e.timer.textContent = tstr; this.lastTimer = tstr; }
     if (G.mode === 'ctf') { const f0 = G.flags[0], f1 = G.flags[1]; e.flagR.textContent = f0 && f0.state !== 'home' ? '🚩' : ''; e.flagB.textContent = f1 && f1.state !== 'home' ? '🏴' : ''; } else { e.flagR.textContent = ''; e.flagB.textContent = ''; }
-    const fk = G.feedVer || 0; if (fk !== this.lastFeed) { this.lastFeed = fk; e.killfeed.innerHTML = G.feed.map(f => `<div>${esc(f.k)} ➜ <span class="vic">${esc(f.v)}</span></div>`).join(''); }
+    const fk = G.feedVer || 0; if (fk !== this.lastFeed) { this.lastFeed = fk; e.killfeed.innerHTML = G.feed.map(f => `<div>${esc(f.k)} ➜ <span class="vic">${esc(f.v)}</span>${f.st ? '<b class="stk">（' + STREAK_TXT[f.st - 1] + '）</b>' : ''}</div>`).join(''); }
     if (this.msgT > 0) { this.msgT -= dt; if (this.msgT <= 0) e.msg.className = ''; }
     e.flash.style.opacity = (v && v.blind > 0 ? clamp(v.blind / 2, 0, .9) : 0).toFixed(2); e.bino.style.display = 'none';
     Perf.hud(dt);
@@ -3594,10 +3610,16 @@ const MENU_HOWTO = `<p><b>目標：</b>每個人額頭都戴著一組數字牌�
 <p><b>道具：</b>📷 相機（拍照後照片留在畫面上數秒，可慢慢看清數字）　💥 閃光彈（讓人暫時讀不到你）　🌫️ 煙霧彈（阻斷視線）　📣 干擾彈（吸引注意力、打斷記憶）　🔭 望遠鏡（遠距離讀碼）。地圖上的 <b>?</b> 箱會補給道具。</p>
 <p><b>地圖：</b>熱血高校（白天校園，標準面積）／詭譎學苑（黑夜版，遠處會沒入黑暗、要靠近才看得到對手）／追逃商城（1.4 倍大，兩座電扶梯通往二樓，可從欄杆直接跳下一樓、不會摔傷）。</p>
 <p><b>人數：</b>含你在內最多 20 人，不足的人數由電腦補上；手機預設 12 人較順。<b>號碼位數：</b>頭上數字的位數（3～5 碼），位數越多讀得越久、也越難記。</p>
-<p><b>角色技能：</b>按 <kbd>R</kbd>（手機為 G 左邊的技能鍵）施放，圓環與秒數顯示冷卻。蘇蘇【顛倒乾坤】反轉其他人移動 5 秒；艾迪【銅牆鐵壁】3 秒內擋下一次輸入攻擊並刷新號碼；艾伯特【紫電干擾】數字鍵閃光預警後錯亂 5 秒。</p>
+<p><b>角色技能：</b>按 <kbd>R</kbd>（手機為 G 左邊的技能鍵）施放，圓環與秒數顯示冷卻。蘇蘇【顛倒乾坤】反轉其他人移動 5 秒；艾迪【銅牆鐵壁】3 秒內擋下一次輸入攻擊並刷新號碼；艾伯特【紫電干擾】讓其他人的數字鍵錯亂 5 秒。</p>
 <p><b>探頭：</b>躲在掩體後可按住 <kbd>Z</kbd>（左）／<kbd>C</kbd>（右）將上半身探出去看（手機為右側 ↖／↗ 鍵）；探出去時你的頭也會露出來，可能被對手讀到。</p>
 <p><b>模式：</b>個人死鬥（15 淘汰）／團隊死鬥（30 淘汰）／奪旗（3 次）。團隊模式的隊友額頭牌邊框與臂章為同色，無法淘汰。</p>
 <p><b>提示：</b>畫面中央的紅色箭頭代表「有人正在讀你的號碼」，進度條滿了就會被淘汰——快移動、轉身或躲到掩體後。輸錯號碼會被鎖定輸入約 1 秒。</p>`;
+function huntLock() {
+  const h = S.mode === 'hunt'; if (h) { if (S.count !== 16 && S.count !== 20) S.count = 20; S.diff = 3; S.countSet = true; }
+  const CN = [4, 8, 12, 16, 20];
+  for (const id of ['chCount', 'chNCount']) { const el = $(id); if (!el) continue; [...el.children].forEach(b => { const v = parseInt(b.textContent); b.classList.toggle('dis', h && v !== 16 && v !== 20); b.classList.toggle('on', v === S.count); }); }
+  for (const id of ['chDiff', 'chNDiff']) { const el = $(id); if (!el) continue; [...el.children].forEach((b, i) => { b.classList.toggle('dis', h && i !== 3); b.classList.toggle('on', i === S.diff); }); }
+}
 function chips(id, items, get, set, fmt) {
   const el = $(id); el.innerHTML = '';
   items.forEach(it => { const b = document.createElement('button'); b.className = 'chip' + (get() === it.v ? ' on' : ''); b.innerHTML = it.l; b.onclick = () => { set(it.v); saveS(); [...el.children].forEach((c, i) => c.classList.toggle('on', items[i].v === it.v)); }; el.appendChild(b); });
@@ -3607,7 +3629,7 @@ function buildMenu() {
   const mapItems = Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), updMap = () => { $('mapDesc').textContent = MAPS[S.map].desc; };
   chips('chMap', mapItems, () => S.map, v => { S.map = v; updMap(); World.load(v); }); updMap();
   const updMode = () => { $('modeDescG').textContent = MODES[S.mode] ? MODES[S.mode].short : ''; };
-  chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => { S.mode = v; updMode(); }); updMode();
+  chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => { S.mode = v; updMode(); huntLock(); }); updMode();
   chips('chCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
   chips('chCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; });
   chips('chTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v);
@@ -3809,7 +3831,7 @@ function boot() {
   window.addEventListener('orientationchange', () => setTimeout(() => { updateRotate(); Perf.apply(); sizeBinoculars(); }, 250));
   const fs = () => { try { const el = document.documentElement; if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) { const r = el.requestFullscreen(); if (r && r.catch) r.catch(() => UI.msg('此環境不允許全螢幕', 'bad')); } else UI.msg('此裝置不支援全螢幕', 'bad'); } catch (e) { } };
   $('btnFs').onclick = fs; $('btnFs2').onclick = fs;
-  $('btnStart').onclick = () => go(() => { UI.els.menu.classList.add('hidden'); $('gset').classList.remove('hidden'); });
+  $('btnStart').onclick = () => go(() => { UI.els.menu.classList.add('hidden'); $('gset').classList.remove('hidden'); huntLock(); });
   $('gBack').onclick = () => go(() => { $('gset').classList.add('hidden'); UI.els.menu.classList.remove('hidden'); });
   $('gGo').onclick = () => go(() => { $('gset').classList.add('hidden'); openCharSelect('start'); }); $('btnDemo').onclick = () => go(openDemoPick); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
   $('csBack').onclick = () => go(closeCharSelect);
