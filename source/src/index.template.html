@@ -94,7 +94,7 @@ tr.me td{background:rgba(238,28,46,.35);font-weight:900}
 .chips{display:flex;flex-wrap:wrap;gap:7px}
 .chip{background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.25);border-radius:10px;padding:7px 13px;font:700 14px var(--font);color:#fff;cursor:pointer}
 .chip.on{background:var(--orange);border-color:#fff}
-.chip small{display:block;font-weight:500;font-size:10.5px;opacity:.85}
+.chip small{display:block;font-weight:500;font-size:10.5px;opacity:.85;max-width:132px;white-space:normal;line-height:1.3;margin-top:2px}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .card{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.2);border-radius:12px;padding:9px 8px;cursor:pointer;text-align:center;font-size:12.5px;font-weight:700;line-height:1.3}
 .card.on{background:rgba(238,28,46,.85);border-color:#fff}
@@ -323,6 +323,8 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <h4>遊戲模式</h4><div class="chips" id="chMode"></div><div id="modeDescG" class="gnote"></div>
     <h4>地圖</h4><div class="chips" id="chMap"></div><div id="mapDesc" class="mpnote" style="margin:2px 0 4px"></div>
     <h4>人數</h4><div class="chips" id="chCount"></div>
+    <h4>時間</h4><div class="chips" id="chTime"></div>
+    <h4>是否允許使用技能</h4><div class="chips" id="chSkill"></div><div id="skDesc" class="gnote"></div>
     <h4>難度</h4><div class="chips" id="chCode"></div>
     <h4>機器人難度</h4><div class="chips" id="chDiff"></div>
     <div class="btnrow"><button class="btn gray" id="gBack">🔙 回上一頁</button><button class="btn" id="gGo">🔥 進入遊戲</button></div>
@@ -348,6 +350,8 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
       <div id="mpHostCtl">
         <div class="row"><label>地圖</label><div class="chips" id="chNMap"></div></div>
         <div class="row"><label>模式</label><div class="chips" id="chNMode"></div></div>
+        <div class="row"><label>時間</label><div class="chips" id="chNTime"></div></div>
+        <div class="row"><label>技能</label><div class="chips" id="chNSkill"></div></div>
         <div class="row"><label>總人數</label><div class="chips" id="chNCount"></div></div>
         <div class="row"><label>號碼位數</label><div class="chips" id="chNCode"></div></div>
         <div class="row"><label>難度</label><div class="chips" id="chNDiff"></div></div>

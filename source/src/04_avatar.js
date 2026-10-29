@@ -1,12 +1,20 @@
 /* ================= 角色（依參考圖：白襯衫牛仔寬褲／黑T黑長褲／紫帽T工裝褲） ================= */
 const OUTFITS = [
-  { key: 'f', label: '蘇蘇', sub: '', skill: { name: '顛倒乾坤', desc: '揮動魔法，讓其他所有玩家的移動方向整整顛倒 5 秒，趁他們手忙腳亂時掌握先機。冷卻 40 秒。' }, H: 1.66, skin: '#efcbb0', hipX: .088, shX: .185, tz: .56, hair: '#4a2f22', hair2: '#8d5c3b', female: true,
+  { key: 'f', label: '蘇蘇Susu', sub: '', skill: { name: '顛倒乾坤', desc: '揮動魔法，讓其他玩家的移動方向顛倒 5 秒。冷卻 40 秒。' }, H: 1.66, skin: '#efcbb0', hipX: .088, shX: .185, tz: .56, hair: '#4a2f22', hair2: '#8d5c3b', female: true,
     torso: [[.001, -.16], [.205, -.16], [.195, -.08], [.162, .05], [.15, .17], [.152, .28], [.17, .38], [.182, .46], [.172, .51], [.12, .545], [.056, .56], [.05, .595], [.001, .595]] },
-  { key: 'm1', label: '艾迪', sub: '', skill: { name: '銅牆鐵壁', desc: '展開護盾 3 秒，穩穩擋下一次輸入攻擊；擋住後號碼立刻刷新，讓對手前功盡棄。冷卻 40 秒。' }, H: 1.78, skin: '#d8a883', hipX: .1, shX: .245, tz: .52, hair: '#0f0f12',
+  { key: 'm1', label: '艾迪Eddie', sub: '', skill: { name: '銅牆鐵壁', desc: '展開護盾 3 秒，擋下一次輸入攻擊並刷新號碼。冷卻 40 秒。' }, H: 1.78, skin: '#d8a883', hipX: .1, shX: .245, tz: .52, hair: '#0f0f12',
     torso: [[.001, -.09], [.197, -.09], [.2, .0], [.186, .1], [.19, .22], [.224, .36], [.25, .46], [.246, .53], [.176, .57], [.07, .595], [.058, .63], [.001, .63]] },
-  { key: 'm2', label: '艾伯特', sub: '', skill: { name: '紫電干擾', desc: '釋放紫色電波：數字鍵先閃光預警，隨後其他玩家的按鍵錯亂 5 秒（手機鍵位亂跳、鍵盤會按錯數字）。冷卻 60 秒。' }, H: 1.76, skin: '#c99a76', hipX: .098, shX: .228, tz: .52, hair: '#0d0d10',
+  { key: 'm2', label: '艾伯特Albert', sub: '', skill: { name: '紫電干擾', desc: '數字鍵閃光預警後，其他玩家的按鍵錯亂 5 秒。冷卻 60 秒。' }, H: 1.76, skin: '#c99a76', hipX: .098, shX: .228, tz: .52, hair: '#0d0d10',
     torso: [[.001, -.10], [.222, -.10], [.227, -.02], [.212, .1], [.217, .22], [.238, .36], [.257, .46], [.252, .53], [.19, .57], [.13, .60], [.118, .645], [.001, .645]] }
 ];
+OUTFITS.push(
+  { key: 'sumi', label: '蘇米Sumi', sub: '', skill: { name: '精靈力量', desc: '跳得比常人高 1.65 倍，二段跳後還能向前突進一段距離。' }, H: 1.5, skin: '#dcbb92', hipX: .085, shX: .16, tz: .78, hair: '#c9a878', hair2: '#e7d3ae', female: true, passive: true,
+    torso: [[.001, -.12], [.15, -.1], [.19, .0], [.2, .1], [.19, .22], [.17, .34], [.13, .46], [.08, .54], [.001, .56]] },
+  { key: 'eric', label: '艾瑞克Eric', sub: '', skill: { name: '幻影易容', desc: '噴出白霧，頭上號碼偽裝成眼前最近的玩家，最長 20 秒。冷卻 45 秒。' }, H: 1.78, skin: '#d2a27c', hipX: .1, shX: .235, tz: .52, hair: '#2d2824', hair2: '#6d6760',
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'mike', label: '麥克Mike', sub: '', skill: { name: '疾風之速', desc: '移動速度是一般角色的 2.5 倍。' }, H: 1.74, skin: '#e2b896', hipX: .1, shX: .235, tz: .54, hair: '#b0702f', hair2: '#d89b52', passive: true,
+    torso: [[.001, -.1], [.22, -.1], [.235, -.02], [.225, .1], [.23, .24], [.26, .38], [.275, .47], [.26, .54], [.18, .575], [.075, .6], [.06, .63], [.001, .63]] }
+);
 const SKINPATCH = [.975, .975];
 
 function inkblot(g, cx, cy, sc, seed) {
@@ -43,6 +51,20 @@ function paintTorso(o) {
     for (const [x, y] of [[440, 170], [584, 170]]) { const q = g.createRadialGradient(x, y, 4, x, y, 90); q.addColorStop(0, 'rgba(255,255,255,.13)'); q.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = q; g.fillRect(x - 90, y - 90, 180, 180); }
     g.fillStyle = '#2a2a30'; g.fillRect(0, 0, W, 16); g.fillStyle = '#101013'; g.fillRect(0, 16, W, 4); dots(g, W, Hh, 3000, ['#26262c', '#0c0c0e'], 1, 2, .4);
     const sh = g.createLinearGradient(0, 0, 0, Hh); sh.addColorStop(.7, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.25)'); g.fillStyle = sh; g.fillRect(0, 0, W, Hh);
+  } else if (o.key === 'sumi') {
+    g.fillStyle = '#c4a273'; g.fillRect(0, 0, W, Hh); folds('#ad8a5c', 50, .3); folds('#e9d6b3', 30, .35); dots(g, W, Hh, 5000, ['#c9a97c', '#ead9b8', '#bf9f72'], 1, 2.4, .35);
+    const cg = g.createRadialGradient(512, 300, 10, 512, 300, 200); cg.addColorStop(0, '#fbf1dc'); cg.addColorStop(1, 'rgba(251,241,220,0)'); g.fillStyle = cg; g.fillRect(250, 80, 524, 430);
+    g.strokeStyle = '#17171b'; g.lineWidth = 16; g.beginPath(); g.moveTo(330, 0); g.lineTo(640, 512); g.stroke(); g.strokeStyle = '#c7a26a'; g.lineWidth = 3; g.setLineDash([10, 8]); g.stroke(); g.setLineDash([]);
+  } else if (o.key === 'eric') {
+    g.fillStyle = '#4f4740'; g.fillRect(0, 0, W, Hh); dots(g, W, Hh, 9000, ['#85796d', '#524a42', '#9a8e80', '#3f3832'], 1, 2.6, .5); folds('#4b433c', 26, .3);
+    g.fillStyle = '#0f0f12'; g.beginPath(); g.moveTo(512 - 120, 0); g.lineTo(512 + 120, 0); g.lineTo(512 + 70, 330); g.lineTo(512, 400); g.lineTo(512 - 70, 330); g.closePath(); g.fill();
+    g.strokeStyle = '#2b2520'; g.lineWidth = 6; g.beginPath(); g.moveTo(512 - 120, 0); g.lineTo(512 - 36, 400); g.moveTo(512 + 120, 0); g.lineTo(512 + 36, 400); g.stroke();
+    g.fillStyle = '#2a2420'; for (const y of [440, 490]) { g.beginPath(); g.arc(512, y, 9, 0, TAU); g.fill(); }
+  } else if (o.key === 'mike') {
+    g.fillStyle = '#d9cfc0'; g.fillRect(0, 0, W, Hh); folds('#bfb4a3', 40, .35); folds('#f1e9dc', 20, .4); dots(g, W, Hh, 4500, ['#c8bdac', '#a89c89', '#efe6d6'], 1, 2.8, .4);
+    g.fillStyle = '#c6baa8'; g.beginPath(); g.moveTo(330, 330); g.lineTo(694, 330); g.lineTo(730, 500); g.lineTo(294, 500); g.closePath(); g.fill(); g.strokeStyle = 'rgba(70,60,50,.5)'; g.lineWidth = 3; g.stroke();
+    g.strokeStyle = '#2a2622'; g.lineWidth = 4; for (const dx of [-40, 40]) { g.beginPath(); g.moveTo(512 + dx, 20); g.lineTo(512 + dx, 260); g.stroke(); }
+    g.fillStyle = '#2a2622'; g.beginPath(); g.moveTo(620, 130); g.lineTo(640, 190); g.lineTo(600, 190); g.closePath(); g.fill();
   } else {
     g.fillStyle = '#3b1f5e'; g.fillRect(0, 0, W, Hh); folds('#52307a', 40, .35); folds('#1d0d33', 46, .4); dots(g, W, Hh, 3500, ['#4a2a70', '#2c1548'], 1, 2.2, .4);
     g.fillStyle = '#2d1649'; g.beginPath(); g.moveTo(512 - 175, 335); g.lineTo(512 + 175, 335); g.lineTo(512 + 205, 500); g.lineTo(512 - 205, 500); g.closePath(); g.fill();
@@ -53,7 +75,27 @@ function paintTorso(o) {
   }
   return c;
 }
+function paintSumiFace() {
+  const W = 1024, Hh = 512, c = cv(W, Hh), g = c.getContext('2d');
+  g.fillStyle = '#dcbb92'; g.fillRect(0, 0, W, Hh); dots(g, W, Hh, 4000, ['#cfae84', '#e8cfa6'], 1, 2.2, .35);
+  let q = g.createRadialGradient(512, 360, 20, 512, 360, 230); q.addColorStop(0, '#f8ecd6'); q.addColorStop(1, 'rgba(248,236,214,0)'); g.fillStyle = q; g.fillRect(250, 200, 524, 312);
+  for (const sgn of [-1, 1]) {
+    const ex = 512 + sgn * 92, ey = 250;
+    g.fillStyle = '#fff'; g.beginPath(); g.ellipse(ex, ey, 54, 62, 0, 0, TAU); g.fill();
+    const ir = g.createRadialGradient(ex, ey - 6, 6, ex, ey + 6, 52); ir.addColorStop(0, '#8a5a2e'); ir.addColorStop(.6, '#4a2a14'); ir.addColorStop(1, '#2a160a'); g.fillStyle = ir; g.beginPath(); g.ellipse(ex, ey + 4, 44, 52, 0, 0, TAU); g.fill();
+    g.fillStyle = '#080404'; g.beginPath(); g.ellipse(ex, ey + 8, 22, 28, 0, 0, TAU); g.fill();
+    g.fillStyle = '#fff'; g.beginPath(); g.arc(ex - 16, ey - 18, 15, 0, TAU); g.fill(); g.beginPath(); g.arc(ex + 16, ey + 26, 7, 0, TAU); g.fill();
+    g.strokeStyle = '#1a0e08'; g.lineWidth = 7; g.lineCap = 'round'; g.beginPath(); g.ellipse(ex, ey, 55, 63, 0, PI * 1.05, PI * 1.95); g.stroke();
+    const b = g.createRadialGradient(512 + sgn * 150, 340, 3, 512 + sgn * 150, 340, 62); b.addColorStop(0, 'rgba(245,120,125,.6)'); b.addColorStop(1, 'rgba(245,120,125,0)'); g.fillStyle = b; g.fillRect(512 + sgn * 150 - 66, 275, 132, 132);
+  }
+  g.fillStyle = '#4a2a1a'; g.beginPath(); g.ellipse(512, 330, 16, 11, 0, 0, TAU); g.fill();
+  g.fillStyle = '#7a2a30'; g.beginPath(); g.moveTo(512 - 36, 372); g.quadraticCurveTo(512, 386, 512 + 36, 372); g.quadraticCurveTo(512 + 26, 424, 512, 424); g.quadraticCurveTo(512 - 26, 424, 512 - 36, 372); g.fill();
+  g.fillStyle = '#ee8088'; g.beginPath(); g.ellipse(512, 410, 15, 9, 0, 0, TAU); g.fill();
+  g.strokeStyle = '#5a1f24'; g.lineWidth = 4; g.beginPath(); g.moveTo(512, 346); g.lineTo(512, 372); g.stroke();
+  return c;
+}
 function paintFace(o) {
+  if (o.key === 'sumi') return paintSumiFace();
   const W = 1024, Hh = 512, c = cv(W, Hh), g = c.getContext('2d'), f = !!o.female;
   g.fillStyle = o.skin; g.fillRect(0, 0, W, Hh);
   g.fillStyle = o.skin; g.fillRect(940, 0, 84, 70);
@@ -79,6 +121,7 @@ function paintFace(o) {
     // 腮紅
     const b = g.createRadialGradient(512 + sgn * 128, 338, 3, 512 + sgn * 128, 338, 56); b.addColorStop(0, 'rgba(240,110,110,.42)'); b.addColorStop(1, 'rgba(240,110,110,0)'); g.fillStyle = b; g.fillRect(512 + sgn * 128 - 60, 280, 120, 120);
   }
+  if (o.key === 'eric') { g.strokeStyle = '#1a1714'; g.lineWidth = 9; for (const sgn of [-1, 1]) { g.beginPath(); g.ellipse(512 + sgn * 86, 250, 76, 66, 0, 0, TAU); g.stroke(); } g.beginPath(); g.moveTo(512 - 12, 246); g.lineTo(512 + 12, 246); g.stroke(); g.fillStyle = 'rgba(160,200,230,.18)'; for (const sgn of [-1, 1]) { g.beginPath(); g.ellipse(512 + sgn * 86, 250, 72, 62, 0, 0, TAU); g.fill(); } }
   // 鼻
   q = g.createLinearGradient(486, 0, 538, 0); q.addColorStop(0, 'rgba(120,64,44,.0)'); q.addColorStop(.18, 'rgba(120,64,44,.2)'); q.addColorStop(.5, 'rgba(255,230,210,.07)'); q.addColorStop(.82, 'rgba(120,64,44,.2)'); q.addColorStop(1, 'rgba(120,64,44,0)'); g.fillStyle = q; g.fillRect(486, 222, 52, 105);
   g.fillStyle = 'rgba(60,25,20,.5)'; for (const s of [-1, 1]) { g.beginPath(); g.ellipse(512 + s * 10, 334, 4.5, 3.2, 0, 0, TAU); g.fill(); }
@@ -127,7 +170,7 @@ function buildOutfit(i) {
     for (let k = 0; k < 8; k++) { const a = -.8 + k * .23; hairP.push({ g: gCyl(0, .02, .07, 6, 1), t: [Math.sin(a) * hw * .78, hc + hh * .5, hw * 1.02 * Math.cos(a) * 1.1], r: [1.0 + Math.sin(k * 2) * .15, a, 0], c: shade(hR, 1.5) }); }
     for (const sg of [-1, 1]) hairP.push({ g: gBox(.012, .045, .05), t: [sg * hw * 1.0, hc - .005, .0], c: [.07, .07, .08] });
     for (const sg of [-1, 1]) hairP.push({ g: gSphere(.0075, 6, 5), t: [sg * hw * 1.02, hc - .06, -.002], c: [.75, .75, .78] });
-  } else {
+  } else if (O.key === 'm2') {
     const cap = [.05, .05, .055];
     hairP.push({ g: gSphere(1, 22, 11, 0, TAU, 0, PI / 2), t: [0, hc + hh * .2, -.006], r: [-.12, 0, 0], s: [hw * 1.14, hh * .62, hw * 1.14 * 1.2], c: cap });
     hairP.push({ g: gCyl(1, 1, .012, 18, 1, false, -1.3, 2.6), t: [0, hc + hh * .24, .08], r: [.08, 0, 0], s: [hw * 1.05, 1, .105], c: [.03, .03, .035] });
@@ -135,6 +178,26 @@ function buildOutfit(i) {
     hairP.push({ g: gSphere(1, 26, 14, PI / 2 + .95, TAU - 1.9, 0, 2.35), t: [0, hc - .005, -.02], s: [hw * 1.62, hh * .95, hw * 1.62 * 1.12], cfn: (x, y, z) => shade(pur, .7 + .5 * clamp((y - (hc - .15)) / .3, 0, 1)) });
     hairP.push({ g: gCyl(.14, .205, .13, 20, 1, true), t: [0, shY + .005, -.02], s: [1, 1, .85], c: shade(pur, .9) });
     for (const sg of [-1, 1]) hairP.push({ g: gSphere(.0075, 6, 5), t: [sg * hw * 1.02, hc - .06, -.002], c: [.75, .75, .78] });
+  }
+  if (O.key === 'sumi') {
+    const bg = rgb('#c4a273'), pk = [.93, .62, .64], cr = rgb('#f4e6c9'), dk = [.45, .35, .25];
+    hairP.push({ g: gSphere(1, 20, 12, 0, TAU, 0, 1.35), t: [0, hc + .03, -.004], s: [hw * 1.1, hh * .62, hw * 1.1 * 1.18], c: shade(bg, 1.05) });
+    for (const sg of [-1, 1]) {
+      hairP.push({ g: gSphere(1, 14, 10), t: [sg * hw * 1.7, hc + hh * .5, -.01], r: [0, 0, -sg * 1.0], s: [hw * 1.2, hh * .62, hw * .3], c: shade(bg, .82) });
+      hairP.push({ g: gSphere(1, 12, 8), t: [sg * hw * 1.7, hc + hh * .5, .004], r: [0, 0, -sg * 1.0], s: [hw * .85, hh * .46, hw * .24], c: [.96, .72, .72] });
+    }
+    hairP.push({ g: gCyl(.004, .008, .06, 6, 1), t: [0, hc + hh * .72, .02], r: [.5, 0, .3], c: bg });
+    hairP.push({ g: gSphere(1, 8, 6), t: [hw * .62, hc + hh * .5, hw * 1.02], s: [.022, .022, .01], r: [0, 0, .4], c: [1, .85, .2] });
+    hairP.push({ g: gBox(.03, .03, .008), t: [hw * .62, hc + hh * .5, hw * 1.04], r: [0, 0, .78], c: [1, .86, .24] });
+  } else if (O.key === 'eric') {
+    const g1 = rgb('#2d2824');
+    hairP.push({ g: gSphere(1, 20, 12, 0, TAU, 0, 1.3), t: [0, hc + .024, -.006], r: [-.12, 0, 0], s: [hw * 1.06, hh * .6, hw * 1.06 * 1.2], cfn: (x, y, z) => mixc(g1, rgb('#7b746c'), clamp((x * x * 400) - .1, 0, .45)) });
+    for (const sg of [-1, 1]) hairP.push({ g: gBox(.014, .05, .05), t: [sg * hw * 1.0, hc, 0], c: [.4, .38, .36] });
+  } else if (O.key === 'mike') {
+    const h1 = rgb('#b0702f'), h2 = rgb('#d89b52'), rr2 = rng(31);
+    for (let k = 0; k < 16; k++) { const a = rr2() * TAU, el = rr2() * 1.2, r = hw * (.55 + rr2() * .4); hairP.push({ g: gSphere(.035 + rr2() * .02, 8, 6), t: [Math.sin(a) * Math.cos(el) * r * 1.2, hc + .03 + Math.sin(el) * hh * .52, Math.cos(a) * Math.cos(el) * r * 1.3 - .01], c: mixc(h1, h2, rr2()) }); }
+    hairP.push({ g: gSphere(1, 18, 10, 0, TAU, 0, 1.25), t: [0, hc + .026, -.006], s: [hw * 1.04, hh * .6, hw * 1.04 * 1.18], c: h1 });
+    for (const sg of [-1, 1]) hairP.push({ g: gSphere(.007, 6, 5), t: [sg * hw * 1.0, hc - .06, 0], c: [.78, .78, .8] });
   }
   const hairG = mergeGeos(hairP);
 
@@ -162,7 +225,7 @@ function buildOutfit(i) {
       P.push({ g: gCyl(.05, .038, Lf, 10, 2), t: [0, fcy, fcz], r: [elbowRot, 0, 0], c: shade(skin, .98) });
       P.push({ g: gSphere(.04, 10, 8), t: [0, wy - .04, wz + .014], s: [1, 1.35, .9], c: skin });
       if (side === 0) { P.push({ g: gCyl(.036, .036, .02, 14, 1, true), t: [0, wy + .012, wz - .004], r: [elbowRot, 0, 0], c: [.08, .08, .09] }); P.push({ g: gBox(.034, .008, .034), t: [0, wy + .012, wz + .036], r: [elbowRot, 0, 0], c: [.12, .12, .14] }); }
-    } else {
+    } else if (O.key === 'm2') {
       const pu = rgb('#3b1f5e');
       P.push({ g: gCyl(.07, .066, Lu, 12, 3), t: [0, -Lu / 2, 0], cfn: (x, y) => shade(pu, .85 + .2 * Math.sin(y * 30)) });
       P.push({ g: gCyl(.066, .05, Lf * .96, 12, 3), t: [0, fcy + .005, fcz], r: [elbowRot, 0, 0], cfn: (x, y) => shade(pu, .85 + .2 * Math.sin(y * 34)) });
@@ -170,6 +233,20 @@ function buildOutfit(i) {
       P.push({ g: gSphere(.04, 10, 8), t: [0, wy - .045, wz + .012], s: [1, 1.35, .9], c: skin });
       const lil = [[.66, .55, .85], [.8, .8, .87], [.55, .47, .78]];
       for (let k = 0; k < 7; k++) P.push({ g: gSphere(.025 + (k % 3) * .006, 7, 5), t: [sg * .04 + sg * (k % 2) * .02, -.04 - k * .065, .01 - (k % 2) * .05], s: [.5, 1.4, 1], c: lil[k % 3] });
+    }
+    if (O.key === 'sumi') {
+      const bg = rgb('#c4a273'), cr = [.97, .93, .86];
+      P.push({ g: gCyl(.075, .068, Lu * .95, 12, 2), t: [0, -Lu * .47, 0], c: bg }); P.push({ g: gCyl(.07, .062, Lf * .8, 12, 2), t: [0, fcy + .03, fcz], r: [elbowRot, 0, 0], c: bg });
+      P.push({ g: gSphere(.062, 10, 8), t: [0, wy - .02, wz + .01], s: [1, 1.1, 1], c: cr });
+    } else if (O.key === 'eric') {
+      const gj = rgb('#554d46');
+      P.push({ g: gCyl(.075, .068, Lu, 12, 3), t: [0, -Lu / 2, 0], cfn: (x, y) => shade(gj, .9 + .1 * Math.sin(y * 30)) }); P.push({ g: gCyl(.066, .056, Lf * .95, 12, 3), t: [0, fcy, fcz], r: [elbowRot, 0, 0], cfn: (x, y) => shade(gj, .92 + .1 * Math.sin(y * 28)) });
+      P.push({ g: gCyl(.052, .05, .03, 12, 1), t: [0, wy + .03, wz - .004], r: [elbowRot, 0, 0], c: [.95, .95, .93] }); P.push({ g: gSphere(.04, 10, 8), t: [0, wy - .045, wz + .012], s: [1, 1.35, .9], c: skin });
+      if (side === 0) P.push({ g: gCyl(.04, .04, .02, 14, 1, true), t: [0, wy + .008, wz - .003], r: [elbowRot, 0, 0], c: [.75, .75, .78] });
+    } else if (O.key === 'mike') {
+      const hd = rgb('#d9cfc0');
+      P.push({ g: gCyl(.08, .076, Lu, 12, 3), t: [0, -Lu / 2, 0], cfn: (x, y) => shade(hd, .88 + .15 * Math.sin(y * 24)) }); P.push({ g: gCyl(.082, .07, Lf * .92, 12, 3), t: [0, fcy, fcz], r: [elbowRot, 0, 0], cfn: (x, y) => shade(hd, .88 + .15 * Math.sin(y * 22)) });
+      P.push({ g: gCyl(.06, .056, .045, 12, 1), t: [0, wy + .02, wz - .004], r: [elbowRot, 0, 0], c: shade(hd, .8) }); P.push({ g: gSphere(.04, 10, 8), t: [0, wy - .045, wz + .012], s: [1, 1.35, .9], c: skin });
     }
     armG.push(mergeGeos(P));
   }
@@ -197,7 +274,7 @@ function buildOutfit(i) {
       P.push({ g: gCyl(.1, .088, Lt, 14, 3), t: [0, -Lt / 2, 0], cfn: (x, y) => shade(t, 1.1 - clamp(-y / Lt, 0, 1) * .15) });
       P.push({ g: gCyl(.088, .076, Ls, 14, 3), t: [0, -Lt - Ls / 2, 0], c: shade(t, .95) });
       shoe(P, { sole: .036, soleC: [.97, .97, .96], up: [.97, .97, .96] });
-    } else {
+    } else if (O.key === 'm2') {
       const t = rgb('#17171c'), Lt = .45, Ls = hipY - Lt - .07;
       P.push({ g: gCyl(.118, .112, Lt, 14, 3), t: [0, -Lt / 2, 0], cfn: (x, y) => shade(t, 1.05 + .08 * Math.sin(y * 25)) });
       P.push({ g: gCyl(.112, .128, Ls, 14, 3), t: [0, -Lt - Ls / 2, 0], cfn: (x, y) => shade(t, 1.0 + .08 * Math.sin(y * 22)) });
@@ -206,11 +283,40 @@ function buildOutfit(i) {
       P.push({ g: gCyl(.128, .13, .02, 14, 1, true), t: [0, -hipY + .075, 0], c: [.1, .1, .12] });
       shoe(P, { sole: .042, soleC: [.93, .93, .96], up: [.23, .14, .38], toe: [.72, .7, .77], heel: [.72, .7, .77] });
     }
+    if (O.key === 'sumi') {
+      const bg = rgb('#c4a273'), cr = [.97, .93, .86];
+      P.push({ g: gCyl(.09, .082, hipY * .95, 12, 2), t: [0, -hipY * .47, 0], c: bg }); P.push({ g: gSphere(1, 12, 8), t: [0, -hipY + .035, .045], s: [.085, .055, .12], c: cr });
+    } else if (O.key === 'eric') {
+      const t = rgb('#4f4842'), Lt = .45, Ls = hipY - Lt - .07;
+      P.push({ g: gCyl(.1, .09, Lt, 14, 3), t: [0, -Lt / 2, 0], cfn: (x, y) => shade(t, 1.05 + .06 * Math.sin(y * 30)) }); P.push({ g: gCyl(.09, .082, Ls, 14, 3), t: [0, -Lt - Ls / 2, 0], c: shade(t, .96) });
+      shoe(P, { sole: .03, soleC: [.06, .05, .05], up: [.1, .07, .06] });
+    } else if (O.key === 'mike') {
+      const t = rgb('#2a2522'), Lt = .45, Ls = hipY - Lt - .075;
+      P.push({ g: gCyl(.125, .12, Lt, 14, 3), t: [0, -Lt / 2, 0], cfn: (x, y) => shade(t, 1.0 + .1 * Math.sin(y * 22)) }); P.push({ g: gCyl(.12, .13, Ls, 14, 3), t: [0, -Lt - Ls / 2, 0], c: shade(t, .95) });
+      P.push({ g: gBox(.07, .16, .12), t: [sg * .13, -.3, .01], c: shade(t, 1.3) });
+      shoe(P, { sole: .045, soleC: [.9, .9, .92], up: [.82, .82, .85], toe: [.55, .55, .6], heel: [.5, .5, .55] });
+    }
     legG.push(mergeGeos(P));
   }
+  // ---- 軀幹附屬物（尾巴／背包／耳機…，與軀幹同座標）
+  const ex = [];
+  if (O.key === 'sumi') {
+    const tc = rgb('#efe0c4'), tb = rgb('#d6b88c');
+    ex.push({ g: gSphere(1, 16, 12), t: [0, hipY + .22, -.2], s: [.14, .3, .16], r: [.5, 0, 0], cfn: (x, y) => mixc(tb, tc, clamp((y - hipY) * 1.6, 0, 1)) });
+    ex.push({ g: gBox(.09, .04, .03), t: [-.03, hipY + .12, -.3], r: [0, 0, .5], c: [.06, .06, .08] }); ex.push({ g: gBox(.09, .04, .03), t: [.03, hipY + .12, -.3], r: [0, 0, -.5], c: [.06, .06, .08] }); ex.push({ g: gSphere(.025, 8, 6), t: [0, hipY + .12, -.3], c: [.06, .06, .08] });
+    ex.push({ g: gBox(.15, .12, .08), t: [.19, hipY + .08, .02], c: [.08, .08, .1] });
+  } else if (O.key === 'mike') {
+    ex.push({ g: gBox(.34, .46, .16), t: [0, hipY + .4, -.2], c: [.1, .1, .12] }); ex.push({ g: gBox(.26, .16, .05), t: [0, hipY + .34, -.3], c: [.16, .16, .18] });
+    for (const sg of [-1, 1]) ex.push({ g: gBox(.04, .42, .03), t: [sg * .13, hipY + .42, .17], c: [.07, .07, .08] });
+    ex.push({ g: gCyl(.15, .15, .035, 16, 1, true), t: [0, shY - .01, -.005], s: [1.12, 1, .95], c: [.78, .78, .82] });
+    for (const sg of [-1, 1]) ex.push({ g: gCyl(.045, .045, .04, 12, 1), t: [sg * .15, shY - .03, .02], r: [0, 0, PI / 2], c: [.7, .7, .75] });
+  } else if (O.key === 'eric') {
+    ex.push({ g: gBox(.05, .03, .02), t: [-.12, hipY + .46, .12], c: [.95, .95, .93] });
+  }
+  const exG = ex.length ? mergeGeos(ex) : null;
   const faceTex = R.tex(paintFace(O), { aniso: 8 }), torsoTex = R.tex(paintTorso(O), { aniso: 8 });
   return {
-    O, dim, meshes: { torso: R.mkMesh(tg), head: R.mkMesh(hg), hair: R.mkMesh(hairG), armL: R.mkMesh(armG[0]), armR: R.mkMesh(armG[1]), legL: R.mkMesh(legG[0]), legR: R.mkMesh(legG[1]) },
+    O, dim, meshes: { extra: exG ? R.mkMesh(exG) : null, torso: R.mkMesh(tg), head: R.mkMesh(hg), hair: R.mkMesh(hairG), armL: R.mkMesh(armG[0]), armR: R.mkMesh(armG[1]), legL: R.mkMesh(legG[0]), legR: R.mkMesh(legG[1]) },
     mats: { torso: R.mat({ tex: torsoTex, spec: O.key === 'f' ? .04 : .08 }), head: R.mat({ tex: faceTex, spec: .12 }), cloth: R.mat({ spec: .05 }), hair: R.mat({ spec: .4 }) },
     skin, plateY: chinY + .6 * hh + .1, plateZ: .1
   };
@@ -236,7 +342,7 @@ function drawPlate(a) {
   const border = team === 0 ? '#d93a3a' : team === 1 ? '#3a6fd9' : '#2a2018';
   g.fillStyle = '#f4c64e'; g.fillRect(0, 0, 256, 128); g.fillStyle = border; g.fillRect(0, 0, 256, 10); g.fillRect(0, 118, 256, 10); g.fillRect(0, 0, 10, 128); g.fillRect(246, 0, 10, 128);
   g.fillStyle = '#0d0d0d'; g.font = '900 96px "Arial Black",Impact,"Helvetica Neue",Arial,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-  const txt = a.number || '0'.repeat(G.codeLen || 4); let w = g.measureText(txt).width; const sc = Math.min(1, 220 / w); g.save(); g.translate(128, 68); g.scale(sc, 1); g.fillText(txt, 0, 0); g.restore();
+  const txt = a.fake || a.number || '0'.repeat(G.codeLen || 4); let w = g.measureText(txt).width; const sc = Math.min(1, 220 / w); g.save(); g.translate(128, 68); g.scale(sc, 1); g.fillText(txt, 0, 0); g.restore();
   g.fillStyle = '#c9a469'; g.fillRect(256, 0, 256, 128); g.fillStyle = 'rgba(0,0,0,.18)'; g.fillRect(256, 56, 256, 16); dots(g, 512, 128, 400, ['#b8935a', '#d7b87c'], 1, 2, .4);
   R.updateTex(a.plateTex);
 }
@@ -259,7 +365,7 @@ function drawAvatar(a, opt) {
   const hipN = d.hipY * C.legS, shN = (d.shY - d.hipY) * C.torS, chinN = (d.chinY - d.hipY) * C.torS;
   const lean = clamp((a.lo || 0) / LEANMAX, -1, 1) * .38;
   M4.trs(T, 0, hipN, 0, 0, 0, -lean, 1, 1, 1); M4.mul(_U, Mr, T); const U = _U;
-  placeM(M, U, 0, 0, 0, 0, 0, C.wide, C.torS, C.wide, 0, -d.hipY, 0); R.draw(mt.torso, M, ms.torso);
+  placeM(M, U, 0, 0, 0, 0, 0, C.wide, C.torS, C.wide, 0, -d.hipY, 0); R.draw(mt.torso, M, ms.torso); if (mt.extra) R.draw(mt.extra, M, ms.cloth);
   placeM(M, U, 0, chinN, 0, 0, 0, C.head, C.head, C.head, 0, -d.chinY, 0); R.draw(mt.head, M, ms.head); R.draw(mt.hair, M, ms.hair);
   const sw = Math.sin(ph) * .85 * sp, arm = a.armUp || 0;
   // 腿
