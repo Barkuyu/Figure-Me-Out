@@ -757,10 +757,10 @@ function horrorFx(list, c, t) {
 function applyNightEnv(viewer) {
   const b = World.baseEnv; if (!b) return; const nt = (G.sk && G.sk.night) || { by: null, e: 0 }; let k = 1, tint = [1, 1, 1], nv = false;
   if (nt.by && nt.e >= 1.5) {
-    if (viewer !== nt.by) { k = lerp(1, .2, clamp((nt.e - 1.5) / .8, 0, 1)); } else if (nt.e >= 2.5) { nv = true; k = .3; tint = [.35, 1, .4]; }
+    if (viewer !== nt.by) { k = lerp(1, .4, clamp((nt.e - 1.5) / .8, 0, 1)); } else if (nt.e >= 2.5) { nv = true; k = .3; tint = [.35, 1, .4]; }
     const rem = 31.5 - nt.e; if (rem < .5) k = lerp(1, k, clamp(rem / .5, 0, 1));
   }
-  G.plateK = (nt.by && viewer !== nt.by && nt.e >= 1.5) ? Math.max(.12, k * .8) : 1;
+  G.plateK = (nt.by && viewer !== nt.by && nt.e >= 1.5) ? Math.max(.3, k * .9) : 1;
   const key = k + '|' + tint.join() + '|' + World.id;
   if (key !== applyNightEnv.key) { for (const kk of ['sunCol', 'sky', 'gnd', 'fog']) R.env[kk] = b[kk].map((v, i) => v * k * tint[i]); for (const m of [SPR.skyMat, SPR.skyNightMat]) for (let q = 0; q < 3; q++) m.tint[q] = k * tint[q]; applyNightEnv.key = key; }
   if (nv !== applyNightEnv.nv) { applyNightEnv.nv = nv; document.getElementById('nvov').classList.toggle('on', nv); }

@@ -354,7 +354,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.9</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 3.0</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -3049,10 +3049,10 @@ function horrorFx(list, c, t) {
 function applyNightEnv(viewer) {
   const b = World.baseEnv; if (!b) return; const nt = (G.sk && G.sk.night) || { by: null, e: 0 }; let k = 1, tint = [1, 1, 1], nv = false;
   if (nt.by && nt.e >= 1.5) {
-    if (viewer !== nt.by) { k = lerp(1, .2, clamp((nt.e - 1.5) / .8, 0, 1)); } else if (nt.e >= 2.5) { nv = true; k = .3; tint = [.35, 1, .4]; }
+    if (viewer !== nt.by) { k = lerp(1, .4, clamp((nt.e - 1.5) / .8, 0, 1)); } else if (nt.e >= 2.5) { nv = true; k = .3; tint = [.35, 1, .4]; }
     const rem = 31.5 - nt.e; if (rem < .5) k = lerp(1, k, clamp(rem / .5, 0, 1));
   }
-  G.plateK = (nt.by && viewer !== nt.by && nt.e >= 1.5) ? Math.max(.12, k * .8) : 1;
+  G.plateK = (nt.by && viewer !== nt.by && nt.e >= 1.5) ? Math.max(.3, k * .9) : 1;
   const key = k + '|' + tint.join() + '|' + World.id;
   if (key !== applyNightEnv.key) { for (const kk of ['sunCol', 'sky', 'gnd', 'fog']) R.env[kk] = b[kk].map((v, i) => v * k * tint[i]); for (const m of [SPR.skyMat, SPR.skyNightMat]) for (let q = 0; q < 3; q++) m.tint[q] = k * tint[q]; applyNightEnv.key = key; }
   if (nv !== applyNightEnv.nv) { applyNightEnv.nv = nv; document.getElementById('nvov').classList.toggle('on', nv); }
@@ -3818,7 +3818,7 @@ const MENU_HOWTO = `<p><b>目標：</b>每個人額頭都戴著一組數字牌�
 <p><b>人數：</b>含你在內最多 20 人，不足的人數由電腦補上；手機預設 12 人較順。<b>號碼位數：</b>頭上數字的位數（3～5 碼），位數越多讀得越久、也越難記。</p>
 <p><b>角色技能：</b>按 <kbd>R</kbd>（手機為 G 左邊的技能鍵）施放，圓環與秒數顯示冷卻。蘇蘇【顛倒乾坤】反轉其他人移動 5 秒；艾迪【銅牆鐵壁】3 秒內擋下一次輸入攻擊並刷新號碼；艾伯特【紫電干擾】讓其他人的數字鍵錯亂 5 秒。</p>
 <p><b>探頭：</b>躲在掩體後可按住 <kbd>Z</kbd>（左）／<kbd>C</kbd>（右）將上半身探出去看（手機為右側 ↖／↗ 鍵）；探出去時你的頭也會露出來，可能被對手讀到。</p>
-<p><b>角色技能（新增）：</b>穆法沙【命運拷貝】——發動後竊取下一個擊殺對象的技能，主動技能用完不進冷卻，被動技能可持續使用，並可繼續偷取（偷到不同被動技能才會覆蓋）；戴克【生化操作】——戴上透視鏡後噴發 15 秒濃霧，大幅降低周圍敵人視力，自己不受影響；夜梟【夜間戰術】——黑雲使全場亮度降低 80% 持續 30 秒，自己戴夜視鏡、其他人的號碼發出紅橘黃光；夜梟被淘汰會提前結束。另有貝雷特、鷹眼、雷柏爾、貓女、王心靈、蕾西亞、柏、迪倫等角色，詳見選角畫面。技能可在「遊戲設定」中整體關閉。</p>
+<p><b>角色技能（新增）：</b>穆法沙【命運拷貝】——發動後竊取下一個擊殺對象的技能，主動技能用完不進冷卻，被動技能可持續使用，並可繼續偷取（偷到不同被動技能才會覆蓋）；戴克【生化操作】——戴上透視鏡後噴發 15 秒濃霧，大幅降低周圍敵人視力，自己不受影響；夜梟【夜間戰術】——黑雲使全場亮度降低 60% 持續 30 秒，自己戴夜視鏡、其他人的號碼發出紅橘黃光；夜梟被淘汰會提前結束。另有貝雷特、鷹眼、雷柏爾、貓女、王心靈、蕾西亞、柏、迪倫等角色，詳見選角畫面。技能可在「遊戲設定」中整體關閉。</p>
 <p><b>賞金：</b>個人死鬥中，淘汰數領先者頭上的號碼牌會隨殺人數變得更大、更亮，成為眾人圍剿的目標。<b>逆轉：</b>激鬥追捕中，積分排名落在後半的玩家，主動技能冷卻縮短 50%。<b>干擾者：</b>可選輕度（25%）、中度（55%）、重度（100%）靈活度。</p>
 <p><b>模式：</b>個人死鬥（15 淘汰）／團隊死鬥（30 淘汰）／奪旗（3 次）。團隊模式的隊友額頭牌邊框與臂章為同色，無法淘汰。</p>
 <p><b>提示：</b>畫面中央的紅色箭頭代表「有人正在讀你的號碼」，進度條滿了就會被淘汰——快移動、轉身或躲到掩體後。輸錯號碼會被鎖定輸入約 1 秒。</p>`;
