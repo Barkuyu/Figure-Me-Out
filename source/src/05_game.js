@@ -1,6 +1,7 @@
 /* ================= 遊戲邏輯 ================= */
 const STEP = .45, RAD = .22, GRAV = 22, EYE = 1.62;
 const isDM = () => G.mode === 'dm' || G.mode === 'hunt';
+const VIS_OUTFITS = OUTFITS.map((o, i) => o.hidden ? -1 : i).filter(i => i >= 0);
 const NAMES = ['Honda', '小明', '阿杰', 'Mia', 'Ken', 'Luna', 'Jay', 'Yuki', '小美', 'Leo', '阿宏', 'Nina', 'Ray', '小雨', 'Zoe', 'Max', '阿德', 'Coco', 'Tom', 'Eli'];
 /* 新增模式只要在這裡加一筆；demo:false 代表電腦無法示範（需真人操作），示範選單會自動排除並提示 */
 const MODES = {
@@ -84,35 +85,52 @@ function spawnAll() {
   for (let i = 0; i < n; i++) spawnActor(A[i], [pts[i][0], pts[i][1], yawFor(i)[0], pts[i][2] | 0]);
 }
 /* ---------- 角色技能 ---------- */
-const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null]; // 對應 OUTFITS：蘇蘇／艾迪／艾伯特／蘇米(被動)／艾瑞克／麥克(被動)
+const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null];
+const isOut = (a, i) => skOn() && a.av && a.av.outfitIdx === i; // 對應 OUTFITS：蘇蘇／艾迪／艾伯特／蘇米(被動)／艾瑞克／麥克(被動)
 const skOn = () => G.skillsOn !== false;
 const isSumi = a => skOn() && a.av && a.av.outfitIdx === 3;
 const jumpMul = a => isSumi(a) ? 1.285 : 1; // 高度 1.65 倍 → 初速 √1.65 倍
-const speedMul = a => (skOn() && a.av && a.av.outfitIdx === 5) ? 2.5 : 1;
-const SKILLS = { cloak: { name: '幻影易容', cd: 45, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 40, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 40, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 60, ico: '⚡' } };
+const speedMul = a => isOut(a, 5) ? 2.5 : isOut(a, 13) ? .7 : 1;
+const SKILLS = { ink: { name: '烏賊戲法', cd: 40, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 50, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 40, ico: '🐱' }, mind: { name: '心靈控制', cd: 40, ico: '🌀' }, cloak: { name: '幻影易容', cd: 45, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 40, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 40, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 60, ico: '⚡' } };
 const SCR_FLASH = 0, SCR_TOTAL = 5.0; // 預警閃光 3 秒（4 次短閃 + 1.8 秒長閃）+ 錯亂 5 秒
 const skillOf = a => SKILL_OF[a.av.outfitIdx] ? SKILLS[SKILL_OF[a.av.outfitIdx]] : null;
-const revActive = a => G.sk.rev.t > 0 && G.sk.rev.by !== a;
-const scrPhase2 = a => G.sk.scr.t >= SCR_FLASH && G.sk.scr.by !== a;
-function skReset() { G.sk = { rev: { t: 0, by: null }, scr: { t: -1, by: null } }; for (const a of G.actors) { a.skCd = 0; a.shieldT = 0; a.say = null; } }
+const revActive = a => G.sk.rev.t > 0 && G.sk.rev.by !== a && a.clrRev !== G.sk.rev.id;
+const inkActive = a => G.sk.ink.t > 0 && G.sk.ink.by !== a && a.clrInk !== G.sk.ink.id;
+const scrPhase2 = a => G.sk.scr.t >= SCR_FLASH && G.sk.scr.by !== a && a.clrScr !== G.sk.scr.id;
+function skReset() { G.sk = { rev: { t: 0, by: null, id: 0 }, scr: { t: -1, by: null, id: 0 }, ink: { t: 0, by: null, id: 0 }, eagle: { t: 0, by: null } }; G.skId = 0; for (const a of G.actors) { a.skCd = 0; a.shieldT = 0; a.say = null; a.cloak = false; a.invis = false; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2.5; a.clrRev = a.clrScr = a.clrInk = -1; } }
+function cleanse(a) { a.blind = 0; a.ctrlT = 0; a.redT = 0; a.clrRev = G.sk.rev.id; a.clrScr = G.sk.scr.id; a.clrInk = G.sk.ink.id; a.cleanFx = .7; if (a.isPlayer) { G.flashT = 0; G.freezeT = 0; G.lock = 0; UI.cleanse(); } }
 function skMsg(a, t) { const m = a.name + ' ' + t; UI.msg(m, 'item'); netMsg(m, 'item'); }
 function puffFx(a) { for (let i = 0; i < 6; i++) G.fx.push({ k: 'puff', x: a.x + rand(-.4, .4), y: a.y + rand(.6, 1.5), z: a.z + rand(-.4, .4), t: 0, d: .3 + rand(0, .5) }); }
 function uncloak(a, smoke) { if (!a.fake) return; a.fake = null; a.fakeT = 0; a.fakeOf = null; drawPlate(a); if (smoke) puffFx(a); }
 function castSkill(a) {
   if (!skOn() || !a || !a.alive || (a.skCd || 0) > 0 || G.state !== 'playing' || G.countdown > 0) return false;
   const k = SKILL_OF[a.av.outfitIdx]; if (!k) return false; if (k === 'cloak' && a.fake) return false; a.skCd = SKILLS[k].cd;
-  if (k === 'rev') { G.sk.rev = { t: 5, by: a }; skMsg(a, '發動【顛倒乾坤】！其他人的移動方向反轉 5 秒'); }
-  else if (k === 'scr') { G.sk.scr = { t: 0, by: a }; skMsg(a, '發動【紫電干擾】！其他人的數字鍵錯亂 5 秒'); }
+  if (k === 'rev') { G.sk.rev = { t: 5, by: a, id: ++G.skId }; skMsg(a, '發動【顛倒乾坤】！其他人的移動方向反轉 5 秒'); }
+  else if (k === 'scr') { G.sk.scr = { t: 0, by: a, id: ++G.skId }; skMsg(a, '發動【紫電干擾】！其他人的數字鍵錯亂 5 秒'); }
+  else if (k === 'ink') { G.sk.ink = { t: 5, by: a, id: ++G.skId }; for (const o of G.actors) if (o !== a && o.alive && !o.isPlayer && !o.remote) { o.blind = Math.max(o.blind, 5); o.typing = null; } skMsg(a, '發動【烏賊戲法】！其他人的視野被墨汁遮住'); }
+  else if (k === 'eagle') { G.sk.eagle = { t: 7, by: a }; skMsg(a, '發動【靶靶命中】！所有號碼牌轉向放大'); }
+  else if (k === 'lydia') { puffFx(a); a.cloak = true; a.cloakE = 0; if (a.isPlayer) UI.msg('隱身 5 秒（擊殺可延長，輸錯號碼會現形）', 'item'); }
+  else if (k === 'mind') { let n = 0; for (const o of G.actors) { if (o === a || !o.alive) continue; if (Math.hypot(o.x - a.x, o.z - a.z) <= 2.5) { o.ctrlT = 2.5; o.ctrlBy = a; o.typing = null; n++; } } skMsg(a, '發動【心靈控制】！' + (n ? n + ' 人被控制' : '範圍內無人')); }
   else if (k === 'cloak') {
     puffFx(a); let best = null, bd = 1e9; const fx = FWD(a.yaw);
     for (const o of G.actors) { if (o === a || !o.alive || o.fake) continue; const dx = o.x - a.x, dz = o.z - a.z, d = Math.hypot(dx, dz) || 1, front = (dx * fx[0] + dz * fx[1]) / d; const sc = d + (front > .3 && los(a.x, a.y + 1.6, a.z, o.x, o.y + 1.65, o.z) ? 0 : 40); if (sc < bd) { bd = sc; best = o; } }
     if (best) { a.fake = best.number; a.fakeT = 20; a.fakeOf = best; drawPlate(a); if (a.isPlayer) UI.msg('已偽裝成 ' + best.name + ' 的號碼', 'item'); } else a.skCd = 3;
   }
   else { a.shieldT = 3; if (a.isPlayer) UI.msg('護盾展開！3 秒內擋下一次攻擊', 'item'); }
-  if (a.isPlayer || a === G.view) Sfx.skill(); return true;
+  (a.kp || (a.kp = {})).R = G.time + .5; if (a.isPlayer || a === G.view) Sfx.skill(); return true;
 }
 function castSkillPlayer() { const p = G.player; if (!p || G.demo || G.state !== 'playing') return; if (G.netClient) { if ((p.skCd || 0) <= 0 && p.alive) { netAct(['s']); p.skCd = 0.01; } return; } castSkill(p); UI.dirty = true; }
 function skTick(dt) {
+  if (G.sk.ink.t > 0) G.sk.ink.t -= dt; if (G.sk.eagle.t > 0) G.sk.eagle.t -= dt;
+  for (const a of G.actors) {
+    a.ctrlT = Math.max(0, (a.ctrlT || 0) - dt); a.cleanFx = Math.max(0, (a.cleanFx || 0) - dt);
+    if (isOut(a, 11) && a.alive) { a.cleanT = (a.cleanT ?? 2.5) - dt; if (a.cleanT <= 0) { a.cleanT = 2.5; cleanse(a); } }
+    const og = a.remote ? (a.y - groundAt(a.x, a.z, a.y + .1) < .06) : a.onGround;
+    if (a._og && !og) { a.rayJ = true; a.airT = 0; } if (a.rayJ) { if (og && a.airT > .1) { a.rayJ = false; } else a.airT = (a.airT || 0) + dt; } a._og = og;
+    if (a.cloak) { a.cloakE += dt; if (a.cloakE >= 5 || !a.alive) a.cloak = false; }
+    const ray = isOut(a, 8) && a.rayJ && a.airT >= .3, ly = a.cloak && !(a.cloakE >= 1.5 && (a.cloakE % 1.5) < .1);
+    a.invis = a.alive && (ray || ly);
+  }
   for (const a of G.actors) { if (a.fake) { a.fakeT -= dt; if (a.fakeT <= 0 || !a.alive || !a.fakeOf || !a.fakeOf.alive || a.fakeOf.number !== a.fake) uncloak(a, a.alive); } a.skCd = Math.max(0, (a.skCd || 0) - dt); a.shieldT = Math.max(0, (a.shieldT || 0) - dt); if (a.say) { a.say.t -= dt; if (a.say.t <= 0) a.say = null; } }
   if (G.sk.rev.t > 0) G.sk.rev.t -= dt; if (G.sk.scr.t >= 0) { G.sk.scr.t += dt; if (G.sk.scr.t >= SCR_TOTAL) G.sk.scr.t = -1; }
 }
@@ -252,7 +270,7 @@ function useItem(i) {
   if (G.netClient) netAct(['u', i]);
   it.n--; if (it.n <= 0) G.slots[i] = null; UI.dirty = true;
 }
-function botUse(b, i) { const x = b.slots[i]; x.n--; if (x.n <= 0) b.slots[i] = null; }
+function botUse(b, i) { (b.kp || (b.kp = {}))[i ? 'G' : 'F'] = G.time + .4; const x = b.slots[i]; x.n--; if (x.n <= 0) b.slots[i] = null; }
 function botThrowAt(b, type, tx, tz) {
   const dx = tx - b.x, dz = tz - b.z, d = Math.max(1, Math.hypot(dx, dz));
   throwGrenade(b, type, dx / d, .28 + d * .006, dz / d, clamp(d * 1.05 + 5, 9, 20));
@@ -293,7 +311,7 @@ function eliminate(k, v) {
   if (k !== v && v.alive && v.shieldT > 0) { blockHit(k, v); return; }
   if (!v.alive || v.protect > 0) return;
   v.alive = false; v.deaths++; v.deadT = 0; v.respawnT = 3.2; v.killedBy = k; v.typing = null; v.lure = null;
-  k.lastKillT = G.time;
+  k.lastKillT = G.time; if (k.cloak) k.cloakE = 0;
   if (k !== v) { assignNumber(k); for (const o of G.actors) { if (o.read) o.read[k.id] = 0; if (o.typing && o.typing.target === k) o.typing = null; } } // 擊殺成功：自己的號碼立即更新
   if (G.mode === 'hunt' && k !== v && (k.isPlayer || k.remote)) { k.streak = (G.time - (k.lastKillT0 ?? -99) <= 10) ? (k.streak || 0) + 1 : 1; k.lastKillT0 = G.time; const pts = STREAK_PTS[Math.min(k.streak, 5) - 1]; k.score = (k.score || 0) + pts; k.lastStreak = k.streak; if (k.isPlayer) UI.streak(k.streak, pts); }
   if (k !== v) { k.kills++; if (G.mode === 'tdm' && k.team >= 0) G.scores[k.team]++; }
@@ -325,7 +343,7 @@ function leanClear(p, d) {
 }
 const headX = o => Math.cos(o.yaw) * (o.lo || 0), headZ = o => -Math.sin(o.yaw) * (o.lo || 0);
 function typeDigit(d) {
-  if (G.state !== 'playing' || G.countdown > 0 || !G.player || !G.player.alive || G.lock > 0) return;
+  if (G.state !== 'playing' || G.countdown > 0 || !G.player || !G.player.alive || G.lock > 0 || G.player.ctrlT > 0) return;
   if (!Device.mobile && scrPhase2(G.player) && G.keyMap) d = G.keyMap[d] || d;
   const mix = !G.codeLen, L = G.codeLen || 6; if (G.typed.length >= L) return; G.typed += d; Sfx.key(); UI.dirty = true;
   if (mix) { if (G.typed.length >= 3 && (G.typed.length >= 6 || G.actors.some(a => a.alive && a !== G.player && a.number === G.typed)) && (S.auto || Device.mobile)) submitNumber(); }
@@ -341,13 +359,13 @@ function submitNumber() {
     if (G.netClient) { netAct(['k', G.actors.indexOf(t), code]); G.typed = ''; UI.dirty = true; return; }
     G.typed = ''; UI.dirty = true; eliminate(p, t);
   } else if (t) { UI.msg('這是隊友的號碼！', 'bad'); Sfx.wrong(); G.typed = ''; UI.dirty = true; UI.shake(); }
-  else { Sfx.wrong(); UI.msg('號碼錯誤！定身 2 秒', 'bad'); G.lock = 2; G.freezeT = 2; p.redT = 2; if (G.netClient) netAct(['w']); UI.shake(); UI.stunFx(2); setTimeout(() => { G.typed = ''; UI.dirty = true; }, 350); }
+  else { p.streak = 0; p.cloak = false; Sfx.wrong(); UI.msg('號碼錯誤！定身 2 秒', 'bad'); G.lock = 2; G.freezeT = 2; p.redT = 2; if (G.netClient) netAct(['w']); UI.shake(); UI.stunFx(2); setTimeout(() => { G.typed = ''; UI.dirty = true; }, 350); }
 }
 function updatePlayer(dt) {
   const p = G.player;
   if (Device.mobile) In.sprint = In.sprintT;
   if (In.sprintT && G.stam <= .02) { In.sprintT = false; In.sprint = false; const rb = document.getElementById('bRun'); if (rb) rb.classList.remove('tog'); }
-  if (G.freezeT > 0) In.lookX = In.lookY = 0; // 定身時連視角也不能轉
+  if (G.freezeT > 0 || p.ctrlT > 0) In.lookX = In.lookY = 0; // 定身時連視角也不能轉
   p.yaw += In.lookX; p.pitch = clamp(p.pitch + In.lookY, -1.45, 1.45); In.lookX = In.lookY = 0;
   const f = FWD(p.yaw), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
   if (p.alive) {
@@ -357,10 +375,11 @@ function updatePlayer(dt) {
     const moving = ml > .08;
     let spd = 5.85; const wantSprint = In.sprint && my > .2 && moving;
     G.stamDelay -= dt;
-    if (wantSprint && G.stam > .02 && !G.bino) { spd = 8.4; G.stam = Math.max(0, G.stam - dt * .26); G.stamDelay = .9; } else if (G.stamDelay <= 0) G.stam = Math.min(1, G.stam + dt * .2);
+    const bolt = isOut(p, 12); if (wantSprint && (G.stam > .02 || bolt) && !G.bino) { spd = 8.4; if (!bolt) G.stam = Math.max(0, G.stam - dt * .26); G.stamDelay = .9; } else if (G.stamDelay <= 0) G.stam = Math.min(1, G.stam + dt * .2);
     const sprinting = spd > 7; p.sprinting = sprinting; spd *= speedMul(p);
     if (G.bino) spd *= .42; if (p.carry) spd *= .93;
-    const wx = (f[0] * my + rx * mx) * spd, wz = (f[1] * my + rz * mx) * spd, k = Math.min(1, dt * (p.onGround ? 12 : 3));
+    let wx = (f[0] * my + rx * mx) * spd, wz = (f[1] * my + rz * mx) * spd; if (p.ctrlT > 0 && p.ctrlBy) { const dx = p.x - p.ctrlBy.x, dz = p.z - p.ctrlBy.z, dd = Math.hypot(dx, dz) || 1; wx = dx / dd * spd * .3; wz = dz / dd * spd * .3; }
+    const k = Math.min(1, dt * (p.onGround ? 12 : 3));
     p.vx += (wx - p.vx) * k; p.vz += (wz - p.vz) * k;
     const jp = In.jump && !G.jumpHeld && !(G.freezeT > 0); G.jumpHeld = In.jump;
     if (p.onGround) { p.jumps = 0; p.dashReady = false; }
@@ -376,7 +395,7 @@ function updatePlayer(dt) {
     G.camBob += Math.hypot(p.vx, p.vz) * dt * (sprinting ? 1.6 : 1.3);
     p.protect = Math.max(0, p.protect - dt);
     // 望遠鏡能量
-    if (G.bino) { G.energy -= dt * .22; if (G.energy <= 0) { G.energy = 0; G.bino = false; } } else G.energy = Math.min(1, G.energy + dt * .12);
+    if (G.bino && isOut(p, 13)) G.energy = 1; else if (G.bino) { G.energy -= dt * .22; if (G.energy <= 0) { G.energy = 0; G.bino = false; } } else G.energy = Math.min(1, G.energy + dt * .12);
   } else { p.vx *= .9; p.vz *= .9; p.deadT += dt; p.respawnT -= dt; p.fall = Math.min(1, p.fall + dt * 2.5); }
   { const want = p.alive ? (In.leanL ? -1 : 0) + (In.leanR ? 1 : 0) : 0; let tgt = 0; if (want) { let k = 0; for (let s = 1; s <= 11; s++) { if (!leanClear(p, want * s * .05)) break; k = s * .05; } tgt = want * k; } p.lo += (tgt - p.lo) * Math.min(1, dt * 11); p.lean = want; }
   p.fx = f[0]; p.fz = f[1]; if (!p.alive) { In.leanL = In.leanR = false; }
@@ -411,7 +430,7 @@ function scanBot(b, dt) {
   const R2 = b.range * b.range, ex = b.x, ey = b.y + 1.62, ez = b.z, df = DIFF[S.diff], teamMode = !isDM();
   let seen = null, seenD = 1e9;
   for (const o of G.actors) {
-    if (o === b || !o.alive) continue; if (teamMode && o.team === b.team) continue;
+    if (o === b || !o.alive || o.invis) continue; if (teamMode && o.team === b.team) continue;
     let p = b.read[o.id] || 0;
     const dx = o.x - b.x, dz = o.z - b.z, d2 = dx * dx + dz * dz;
     if (d2 > R2 || b.blind > 0) { if (p > 0) b.read[o.id] = Math.max(0, p - dt * 1.5); continue; }
@@ -518,6 +537,7 @@ function updateTroll(b, dt) {
   }
 }
 function updateBot(b, dt) {
+  if ((b.ctrlT || 0) > 0 && b.ctrlBy) { b.typing = null; b.protect = Math.max(0, b.protect - dt); b.cd -= dt; const dx = b.x - b.ctrlBy.x, dz = b.z - b.ctrlBy.z, dd = Math.hypot(dx, dz) || 1, sp0 = b.speed * .3; b.vx += (dx / dd * sp0 - b.vx) * Math.min(1, dt * 9); b.vz += (dz / dd * sp0 - b.vz) * Math.min(1, dt * 9); moveActor(b, dt); b.sp = clamp(Math.hypot(b.vx, b.vz) / 8.4, 0, 1); b.animT += dt * (5 + b.sp * 9); return; }
   if ((DIFF[S.diff].troll || G.mode === 'hunt') && !G.demo) { updateTroll(b, dt); return; }
   botSkill(b, dt);
   b.threatT = Math.max(0, b.threatT - dt); if (b.smart) smartThink(b, dt);
@@ -642,10 +662,11 @@ function startMatch(demo, roster) {
   if (!demo) { pl = newActor(roster ? NET.name : '你', S.outfit, true); G.player = pl; G.actors.push(pl); }
   if (roster) for (const r of roster.slice(1)) { const a = newActor(r.name, r.outfit, false); a.remote = true; a.peer = r.peer; a.slots = [null, null]; a.speed = 0; G.actors.push(a); }
   const names = NAMES.slice().sort(() => Math.random() - .5);
-  for (let i = demo ? 0 : G.actors.length; i < n; i++) { const b = newActor(names[(demo ? i : i - hum)], randi(0, OUTFITS.length - 1), false); b.role = i % 4 === 0 ? 1 : 0; b.smart = !!demo; if (demo) b.speed *= 1.08; b.scaleBase = .85 + Math.random() * .4; b.range = Math.random() < .15 ? 58 : 34; if (b.range > 50) b.scaleBase *= 1.3; G.actors.push(b); }
+  for (let i = demo ? 0 : G.actors.length; i < n; i++) { const b = newActor(names[(demo ? i : i - hum)], pick(VIS_OUTFITS), false); b.role = i % 4 === 0 ? 1 : 0; b.smart = !!demo; if (demo) b.speed *= 1.08; b.scaleBase = .85 + Math.random() * .4; b.range = Math.random() < .15 ? 58 : 34; if (b.range > 50) b.scaleBase *= 1.3; G.actors.push(b); }
   G.actors.forEach((a, i) => { a.team = isDM() ? -1 : (i % 2); });
+  if ((DIFF[S.diff].troll || G.mode === 'hunt') && !demo) for (const a of G.actors) if (!a.isPlayer && !a.remote) a.av = createAvatar(OUTFITS.findIndex(o => o.key === 'troll'));
   G.actors.forEach(a => { a.score = 0; a.streak = 0; a.lastKillT0 = -99; a.lastStreak = 0; drawPlate(a); });
-  for (const a of G.actors) if (!a.isPlayer && !a.remote && speedMul(a) > 1) a.speed *= speedMul(a);
+  for (const a of G.actors) if (!a.isPlayer && !a.remote && speedMul(a) !== 1) a.speed *= speedMul(a);
   skReset(); spawnAll();
   if (!demo) { giveItem(0, 'cam'); giveItem(1, pick(['flash', 'smoke', 'lure'])); }
   for (const a of G.actors) if (a.remote) a.slots = [{ type: 'cam', n: 4 }, { type: pick(['flash', 'smoke', 'lure']), n: 1 }];
@@ -688,6 +709,8 @@ function nameTexFor(a) {
   const c = cv(256, 64), g = c.getContext('2d'); g.font = '700 34px "Noto Sans TC","Microsoft JhengHei",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = 6; g.strokeStyle = 'rgba(0,0,0,.75)'; g.strokeText(a.name, 128, 34); g.fillStyle = '#fff'; g.fillText(a.name, 128, 34);
   a.nameTex = R.tex(c, { nomip: true }); return a.nameTex;
 }
+let _dz = null;
+function dizzyTex() { if (_dz) return _dz; const c = cv(256, 128), g = c.getContext('2d'); g.font = '900 70px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#ffd21a'; g.strokeStyle = '#7a4a00'; g.lineWidth = 6; for (const [x, y] of [[50, 70], [128, 40], [206, 70]]) { g.strokeText('★', x, y); g.fillText('★', x, y); } g.font = '900 38px Arial'; g.strokeText('✦', 128, 100); g.fillText('✦', 128, 100); return (_dz = R.tex(c, { nomip: true })); }
 const _sayC = {};
 function sayTex(txt) {
   if (_sayC[txt]) return _sayC[txt]; const c = cv(512, 134), g = c.getContext('2d');
@@ -714,7 +737,7 @@ function drawWorldFrame() {
   const c = R.cam, pl = G.player || (G.demo ? G.view : null);
   if (R.shadowOn()) {
     const fw = [-Math.sin(c.yaw), -Math.cos(c.yaw)]; R.beginShadow(c.x + fw[0] * 16, 0, c.z + fw[1] * 16); World.drawShadow();
-    for (const a of G.actors) { if (a === pl || (!a.alive && a.deadT > 3)) continue; if (Math.abs(a.x - c.x) > 80 || Math.abs(a.z - c.z) > 80) continue; drawAvatar(a); }
+    for (const a of G.actors) { if (a === pl || a.invis || (!a.alive && a.deadT > 3)) continue; if (Math.abs(a.x - c.x) > 80 || Math.abs(a.z - c.z) > 80) continue; drawAvatar(a); }
     R.endShadow();
   }
   R.begin();
@@ -735,13 +758,13 @@ function drawWorldFrame() {
   // 角色
   const ps = Device.mobile ? 1.32 : 1.0;
   for (const a of G.actors) {
-    if (a === pl) continue; if (!a.alive && a.deadT > 3) continue;
+    if (a === pl || a.invis) continue; if (!a.alive && a.deadT > 3) continue;
     if (!R.visible(a.x, a.y + .9, a.z, 1.4)) continue;
     a.plateScale = ps; drawAvatar(a);
   }
   // 影子
   R.polyOffset(true);
-  for (const a of G.actors) { if (!a.alive && a.deadT > 2.5) continue; if (!R.visible(a.x, a.y, a.z, 1.2)) continue; a.blobS = a.alive ? 1.25 : 1.6; drawBlob(a); }
+  for (const a of G.actors) { if (a.invis || (!a.alive && a.deadT > 2.5)) continue; if (!R.visible(a.x, a.y, a.z, 1.2)) continue; a.blobS = a.alive ? 1.25 : 1.6; drawBlob(a); }
   R.polyOffset(false);
   // 透明：雲、煙、特效、名字
   drawSkyFx(c, t);
@@ -753,10 +776,11 @@ function drawWorldFrame() {
   for (const a of G.actors) { if (!(a.redT > 0) || a === pl || !a.alive) continue; list.push({ x: a.x, y: a.y + 1.0, z: a.z, w: 2.8, a: .5 + .25 * Math.sin(G.time * 14), k: 5, d: (a.x - c.x) ** 2 + (a.z - c.z) ** 2 }); }
   for (const l of G.lures) { const on = Math.sin(l.t * 14) > 0; list.push({ x: l.x, y: l.y + .2, z: l.z, w: on ? .7 : .3, a: 1, k: 2, d: (l.x - c.x) ** 2 + (l.z - c.z) ** 2 }); }
   if (World.cur.night) horrorFx(list, c, t);
+  for (const a of G.actors) { if (a.alive && a.ctrlT > 0) list.push({ x: a.x, y: a.y + 1.95, z: a.z, w: .9, a: 1, k: 13, d: (a.x - c.x) ** 2 + (a.z - c.z) ** 2 }); if (a.alive && a.cleanFx > 0 && !a.invis) { const q = 1 - a.cleanFx / .7; list.push({ x: a.x, y: a.y + .9, z: a.z, w: 1 + q * 3.2, a: .8 * (1 - q), k: 14, d: (a.x - c.x) ** 2 + (a.z - c.z) ** 2 }); } }
   for (const a of G.actors) { if (!a.alive || a === pl) continue; const dd = (a.x - c.x) ** 2 + (a.z - c.z) ** 2; if (a.shieldT > 0) list.push({ x: a.x, y: a.y + .75, z: a.z, w: 2.3, a: .5 + .2 * Math.sin(G.time * 8), k: 12, d: dd }); if (a.say) list.push({ x: a.x, y: a.y + 1.95, z: a.z, w: 2.0, a: clamp(a.say.t / .25, 0, 1), k: 11, a_: a, d: dd }); }
   for (const f of G.fx) if (f.k === 'puff') { const q = f.t / f.d; list.push({ x: f.x, y: f.y + q * .5, z: f.z, w: 1.2 + q * 1.8, a: .8 * (1 - q), k: 0, d: (f.x - c.x) ** 2 + (f.z - c.z) ** 2 }); }
   for (const f of G.fx) if (f.k === 'flash') { const q = f.t / f.d; list.push({ x: f.x, y: f.y, z: f.z, w: 5 + q * 8, a: 1 - q, k: 3, d: (f.x - c.x) ** 2 + (f.z - c.z) ** 2 }); }
-  if (!isDM() && pl) for (const a of G.actors) { if (a === pl || !a.alive || a.team !== pl.team) continue; const d2 = (a.x - c.x) ** 2 + (a.z - c.z) ** 2; if (d2 > 3600) continue; list.push({ x: a.x, y: a.y + 1.8, z: a.z, w: 1.5, a: 1, k: 1, a_: a, d: d2 }); }
+  if (!isDM() && pl) for (const a of G.actors) { if (a === pl || a.invis || !a.alive || a.team !== pl.team) continue; const d2 = (a.x - c.x) ** 2 + (a.z - c.z) ** 2; if (d2 > 3600) continue; list.push({ x: a.x, y: a.y + 1.8, z: a.z, w: 1.5, a: 1, k: 1, a_: a, d: d2 }); }
   list.sort((p, q) => q.d - p.d);
   for (const s of list) {
     if (s.k === 0) drawSprite(SPR.puff, s.x, s.y, s.z, s.w, s.w, [1, 1, 1], s.a);
@@ -764,6 +788,8 @@ function drawWorldFrame() {
     else if (s.k === 5) drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w * 1.25, [1, .08, .08], s.a);
     else if (s.k === 2) drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w, [1, .3, .2], s.a);
     else if (s.k === 11) drawSprite(sayTex(s.a_.say.txt), s.x, s.y, s.z, s.w, s.w * .26, [1, 1, 1], s.a);
+    else if (s.k === 13) drawSprite(dizzyTex(), s.x, s.y + Math.sin(G.time * 6) * .05, s.z, s.w * 1.4, s.w * .7, [1, 1, 1], 1);
+    else if (s.k === 14) { drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w, [.5, 1, .7], s.a); drawSprite(SPR.glow, s.x, s.y + .3, s.z, s.w * .5, s.w * .5, [1, 1, .8], s.a); }
     else if (s.k === 12) drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w * 1.3, [.4, .75, 1], s.a);
     else if (s.k === 6) drawSprite(World.spriteTex.ghost, s.x, s.y, s.z, s.w, s.h, [.86, .95, 1], s.a);
     else if (s.k === 7) drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w, s.col, s.a);
@@ -810,7 +836,7 @@ function drawPreview() {
   a.x = cx; a.z = cz; a.y = 0; a.sp = 0; a.team = -1; a.plateScale = 1.0;
   const ang = .3 + Math.sin(G.time * .45) * .55, dist = 3.5;
   a.yaw = Math.atan2(Math.sin(ang + .2), -Math.cos(ang + .2)) + Math.sin(G.time * .9) * .3; // 角色始終朝向鏡頭附近，臉一直看得到
-  c.x = cx - Math.sin(ang + .2) * dist; c.z = cz + Math.cos(ang + .2) * dist; c.y = 1.05; c.fov = .9; c.yaw = Math.atan2(-(cx - c.x), -(cz - c.z)); c.pitch = -.06; c.roll = 0;
+  c.x = cx - Math.sin(ang + .2) * dist; c.z = cz + Math.cos(ang + .2) * dist; c.y = 1.05; c.fov = .9; { const th = Math.tan(.45), asp = c.asp || 1.8; c.yaw = Math.atan2(-(cx - c.x), -(cz - c.z)) + Math.atan(.64 * th * asp); c.pitch = -.06 + Math.atan(.1 * th); } c.roll = 0;
   R.begin(); drawSkyDome(c); World.draw();
   a.plateScale = 1; drawAvatar(a); R.polyOffset(true); a.blobS = 1.3; drawBlob(a); R.polyOffset(false);
   drawSkyFx(c, G.time);

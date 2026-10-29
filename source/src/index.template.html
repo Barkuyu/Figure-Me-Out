@@ -262,6 +262,16 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 #streak.show{animation:stk 1.8s ease-out forwards}
 @keyframes stk{0%{opacity:0;transform:translateX(-50%) scale(.3)}12%{opacity:1;transform:translateX(-50%) scale(1.25)}25%{transform:translateX(-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-18px) scale(1)}}
 .chip.dis{opacity:.35;pointer-events:none;filter:grayscale(1)}
+.chip small{max-width:none}
+#ink{position:absolute;left:50%;top:50%;width:60vw;height:60vh;transform:translate(-50%,-50%) scale(0);pointer-events:none;z-index:7;opacity:0;background:center/100% 100% no-repeat}
+#ink.on{opacity:1;transform:translate(-50%,-50%) scale(1);transition:transform .45s cubic-bezier(.2,.9,.3,1),opacity .4s}
+#cleanse{position:absolute;inset:0;pointer-events:none;z-index:4;opacity:0;background:radial-gradient(circle at 50% 62%,rgba(150,255,190,.55),rgba(150,255,190,0) 55%)}#cleanse.on{animation:cln .7s ease-out}
+@keyframes cln{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+#keysov{position:absolute;left:10px;bottom:10px;z-index:30;display:grid;grid-template-columns:repeat(10,24px);gap:3px;pointer-events:none;font:700 11px var(--font)}
+#keysov.hidden{display:none}
+#keysov b{display:flex;align-items:center;justify-content:center;height:24px;border-radius:5px;background:rgba(0,0,0,.45);border:1.5px solid rgba(255,255,255,.4);color:#fff;font-weight:700}
+#keysov b.w2{grid-column:span 2}#keysov b.w3{grid-column:span 3}#keysov b.sp{visibility:hidden}
+#keysov b.on{background:#ffd21a;color:#222;border-color:#fff;box-shadow:0 0 10px #ffd21a}
 .gnote{font-size:12px;color:#fff;margin:4px 0 0;min-height:16px}
 .slot .cdn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:900 clamp(16px,2.6vw,22px) var(--font);color:#fff;text-shadow:0 0 5px #000,0 0 3px #000;pointer-events:none}
 .slot .ring{position:absolute;inset:-5px;border-radius:50%;pointer-events:none;opacity:0;background:conic-gradient(#ffd84a var(--p,0deg),rgba(255,255,255,.12) 0);-webkit-mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px));mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px))}
@@ -292,7 +302,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <div id="photo" class="hidden"><canvas id="photoCv" width="520" height="390"></canvas><div class="cap" id="photoCap">____</div></div>
     <div id="fps"></div>
     <button id="pauseBtn">⏸</button>
-    <div id="demoTag" class="hidden"></div><div id="demoBar"><button class="btn alt" id="dbPause">⏸ 選單／退出</button><button class="btn alt" id="dbSet">⚙ 設定</button></div><div id="vig"></div><div id="pflash"></div><div id="deadv"></div>
+    <div id="demoTag" class="hidden"></div><div id="demoBar"><button class="btn alt" id="dbPause">⏸ 選單／退出</button><button class="btn alt" id="dbSet">⚙ 設定</button></div><div id="vig"></div><div id="pflash"></div><div id="ink"></div><div id="cleanse"></div><div id="keysov" class="hidden"></div><div id="deadv"></div>
     <div id="deadMsg" class="hidden"></div>
   </div>
 
@@ -332,7 +342,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <h4>時間</h4><div class="chips" id="chTime"></div>
     <h4>是否允許使用技能</h4><div class="chips" id="chSkill"></div><div id="skDesc" class="gnote"></div>
     <h4>難度</h4><div class="chips" id="chCode"></div>
-    <h4>機器人難度</h4><div class="chips" id="chDiff"></div>
+    <h4>機器人難度</h4><div class="chips" id="chDiff"></div><div id="diffDesc" class="gnote"></div>
     <div class="btnrow"><button class="btn gray" id="gBack">🔙 回上一頁</button><button class="btn" id="gGo">🔥 進入遊戲</button></div>
   </div></div>
   <div id="tut" class="hidden"></div>
@@ -360,7 +370,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
         <div class="row"><label>技能</label><div class="chips" id="chNSkill"></div></div>
         <div class="row"><label>總人數</label><div class="chips" id="chNCount"></div></div>
         <div class="row"><label>號碼位數</label><div class="chips" id="chNCode"></div></div>
-        <div class="row"><label>難度</label><div class="chips" id="chNDiff"></div></div>
+        <div class="row"><label>難度</label><div class="chips" id="chNDiff"></div></div><div id="diffDescN" class="gnote" style="margin:-4px 0 6px"></div>
         <div class="row"><label>補位</label><div class="chips" id="chNBots"></div></div>
       </div>
       <div id="mpGuestInfo" class="mpnote"></div>

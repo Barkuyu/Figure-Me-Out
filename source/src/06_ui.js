@@ -49,8 +49,9 @@ const UI = {
     const pc = this.els.photoCv, g = pc.getContext('2d'); try { g.drawImage(cvs, sx, sy, sw, sh, 0, 0, pc.width, pc.height); } catch (e) { }
     // 簡單的拍立得色調
     g.fillStyle = 'rgba(255,240,210,.06)'; g.fillRect(0, 0, pc.width, pc.height);
-    this.els.photo.classList.remove('hidden', 'fade'); this.photoT = 6.5; this.dirty = true;
+    this.els.photo.classList.remove('hidden', 'fade'); this.photoT = 2.2; this.dirty = true;
   },
+  cleanse() { const c = $('cleanse'); c.classList.remove('on'); void c.offsetWidth; c.classList.add('on'); },
   slotHTML(el, s) {
     const ico = el.querySelector('.ico'), n = el.querySelector('small');
     if (!s) { ico.textContent = ''; n.textContent = ''; el.classList.remove('has'); return; }
@@ -59,6 +60,8 @@ const UI = {
   /* 角色技能鍵：圓形倒數環 + 秒數；艾伯特技能的預警閃光與按鍵錯亂 */
   skillHUD(dt, p) {
     const s = $('slotS'), sk = skillOf(p), cd = p.skCd || 0, show = !!sk && skOn(); s.style.display = show ? '' : 'none';
+    $('stamwrap').style.visibility = isOut(p, 12) ? 'hidden' : ''; $('binwrap').style.visibility = isOut(p, 13) ? 'hidden' : '';
+    { const ik = $('ink'), on = inkActive(p); if (on !== this._ink) { this._ink = on; ik.classList.toggle('on', on); } if (on && G.sk.ink.t < .5) ik.style.opacity = G.sk.ink.t * 2; else if (on) ik.style.opacity = 1; }
     const dash = isSumi(p) && p.dashReady && !p.onGround, jb = $('bJump'); if (jb) { const tx = dash ? '突進' : '跳躍'; if (jb.textContent !== tx) jb.textContent = tx; }
     if (!show) { this._ph2 = false; return; }
     if (this._skIco !== sk.ico) { this._skIco = sk.ico; s.querySelector('.ico').textContent = sk.ico; }
@@ -124,8 +127,18 @@ const UI = {
     else if (this.goT > 0) { this.goT -= dt; if (this.goT <= 0) e.classList.add('hidden'); } else e.classList.add('hidden');
   },
   demoTag() { const v = G.view; if (v) { this.els.demoTag.textContent = '🎬 示範模式・目前視角：' + v.name; this.els.demoTag.classList.remove('hidden'); } },
+  keysOverlay(v) {
+    const el = $('keysov'); if (!el.firstChild) { const rows = ['1 2 3 4 5 6 7 8 9 0', 'Z Q W R _ F G C _ _', 'Shift:2 A S D _ Space:3']; el.innerHTML = rows.map(r => r.split(' ').map(t => { const [k, w] = t.split(':'); return k === '_' ? '<b class="sp"></b>' : `<b data-k="${k}"${w ? ' class="w' + w + '"' : ''}>${k}</b>`; }).join('')).join(''); this.kb = {}; el.querySelectorAll('b[data-k]').forEach(b => this.kb[b.dataset.k] = b); }
+    el.classList.toggle('hidden', !v || !G.demo); if (!v) return;
+    const on = {}, sp = Math.hypot(v.vx, v.vz), fw = FWD(v.yaw), rx = Math.cos(v.yaw), rz = -Math.sin(v.yaw);
+    if (v.alive && sp > 1) { const d = (v.vx * fw[0] + v.vz * fw[1]) / sp, r = (v.vx * rx + v.vz * rz) / sp; if (d > .3) on.W = 1; if (d < -.3) on.S = 1; if (r > .3) on.D = 1; if (r < -.3) on.A = 1; if (sp > v.speed * 1.2) on.Shift = 1; }
+    if (v.alive && !v.onGround) on.Space = 1;
+    if (v.alive && v.typing) { const ty = v.typing; if (!ty.t0) ty.t0 = Math.max(ty.t, .2); const L = ty.num.length, i = clamp(Math.floor((1 - ty.t / ty.t0) * L), 0, L - 1); on[ty.num[i]] = 1; }
+    if (v.kp) for (const k in v.kp) if (v.kp[k] > G.time) on[k] = 1;
+    for (const k in this.kb) this.kb[k].classList.toggle('on', !!on[k]);
+  },
   demoHUD(dt) {
-    const e = this.els, v = G.view;
+    const e = this.els, v = G.view; this.keysOverlay(v);
     if (G.mode === 'dm') { const k = G.actors.map(a => a.kills).sort((a, b) => b - a); e.scR.textContent = k[0] || 0; e.scB.textContent = k[1] || 0; e.scR.className = 'sc dm'; e.scB.className = 'sc dm'; }
     else { e.scR.textContent = G.scores[0]; e.scB.textContent = G.scores[1]; e.scR.className = 'sc red'; e.scB.className = 'sc blue'; }
     const ts = Math.max(0, Math.ceil(G.tleft)), tstr = Math.floor(ts / 60) + ':' + String(ts % 60).padStart(2, '0'); if (tstr !== this.lastTimer) { e.timer.textContent = tstr; this.lastTimer = tstr; }
@@ -311,6 +324,7 @@ function huntLock() {
   const h = S.mode === 'hunt'; if (h) { if (S.count !== 16 && S.count !== 20) S.count = 20; S.diff = 3; S.countSet = true; }
   const CN = [4, 8, 12, 16, 20];
   for (const id of ['chCount', 'chNCount']) { const el = $(id); if (!el) continue; [...el.children].forEach(b => { const v = parseInt(b.textContent); b.classList.toggle('dis', h && v !== 16 && v !== 20); b.classList.toggle('on', v === S.count); }); }
+  if ($('diffDesc')) $('diffDesc').textContent = DIFF[S.diff].desc; if ($('diffDescN')) $('diffDescN').textContent = DIFF[S.diff].desc;
   for (const id of ['chDiff', 'chNDiff']) { const el = $(id); if (!el) continue; [...el.children].forEach((b, i) => { b.classList.toggle('dis', h && i !== 3); b.classList.toggle('on', i === S.diff); }); }
 }
 function chips(id, items, get, set, fmt) {
@@ -328,7 +342,8 @@ function buildMenu() {
   chips('chTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v);
   const updSk = () => { $('skDesc').textContent = S.skills === false ? '所有角色的主動、被動技能都停用，純粹比拼眼力與手速。' : '角色技能全部啟用（含主動技能與被動能力）。'; };
   chips('chSkill', [{ v: true, l: '是' }, { v: false, l: '否' }], () => S.skills !== false, v => { S.skills = v; updSk(); }); updSk();
-  chips('chDiff', DIFF.map((d, i) => ({ v: i, l: d.name + '<small>' + d.desc + '</small>' })), () => S.diff, v => S.diff = v);
+  const updDiff = () => { $('diffDesc').textContent = DIFF[S.diff].desc; };
+  chips('chDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; updDiff(); }); updDiff();
   chips('chInput', [{ v: 'auto', l: '自動偵測' }, { v: 'desktop', l: '🖥️ 電腦' }, { v: 'mobile', l: '📱 手機' }], () => S.input, v => { S.input = v; Device.update(); refreshBadge(); });
   chips('chQual', [{ v: 'auto', l: '自動' }, { v: 'high', l: '高' }, { v: 'mid', l: '中' }, { v: 'low', l: '低（最順）' }], () => S.quality, v => { S.quality = v; Perf.profile(); Perf.apply(); });
   chips('chAuto', [{ v: true, l: '輸入滿位數自動送出' }, { v: false, l: '需按 Enter' }], () => S.auto, v => S.auto = v);
@@ -408,7 +423,7 @@ function beginNetClientUI() {
 function showCharInfo() { const o = OUTFITS[S.outfit]; $('cName').textContent = o.label; $('cPass').textContent = '【' + o.skill.name + '】' + o.skill.desc; if (G.preview) G.preview.fake = null; }
 function buildCards() {
   const cards = $('cards'); cards.innerHTML = '';
-  OUTFITS.forEach((o, i) => { const c = document.createElement('div'); c.className = 'card' + (S.outfit === i ? ' on' : ''); c.textContent = o.label; c.onclick = () => { S.outfit = i; saveS(); [...cards.children].forEach((k, j) => k.classList.toggle('on', j === i)); setPreview(); showCharInfo(); }; cards.appendChild(c); });
+  OUTFITS.forEach((o, i) => { if (o.hidden) return; const c = document.createElement('div'); c.className = 'card' + (S.outfit === i ? ' on' : ''); c.textContent = o.label; c.onclick = () => { S.outfit = i; saveS(); [...cards.children].forEach((k, j) => k.classList.toggle('on', j === i)); setPreview(); showCharInfo(); }; cards.appendChild(c); });
   showCharInfo();
 }
 function openCharSelect(origin) {
@@ -508,8 +523,16 @@ function sizeBinoculars() {
   $('bmC1').setAttribute('cx', cx - off); $('bmC1').setAttribute('cy', cy); $('bmC1').setAttribute('r', r); $('bmC2').setAttribute('cx', cx + off); $('bmC2').setAttribute('cy', cy); $('bmC2').setAttribute('r', r);
   $('bmS1').setAttribute('cx', cx - off); $('bmS1').setAttribute('cy', cy); $('bmS1').setAttribute('r', r); $('bmS2').setAttribute('cx', cx + off); $('bmS2').setAttribute('cy', cy); $('bmS2').setAttribute('r', r);
 }
+function makeInk() {
+  const c = cv(512, 512), g = c.getContext('2d'), r = rng(5); g.fillStyle = '#0b0710'; g.beginPath();
+  const N = 64; for (let i = 0; i <= N; i++) { const a = i / N * TAU, rr = 200 + Math.sin(a * 3 + 1) * 40 + Math.sin(a * 7) * 25 + (r() - .5) * 40 + (i % 8 === 0 ? 38 : 0); const x = 256 + Math.cos(a) * rr * 1.2, y = 256 + Math.sin(a) * rr; i ? g.lineTo(x, y) : g.moveTo(x, y); } g.closePath(); g.fill();
+  for (let k = 0; k < 40; k++) { const a = r() * TAU, d = 190 + r() * 60, s = 3 + r() * 14; g.beginPath(); g.arc(256 + Math.cos(a) * d * 1.18, 256 + Math.sin(a) * d, s, 0, TAU); g.fill(); }
+  for (let k = 0; k < 14; k++) { const a = r() * TAU; g.lineWidth = 4 + r() * 10; g.strokeStyle = '#0b0710'; g.lineCap = 'round'; g.beginPath(); g.moveTo(256 + Math.cos(a) * 160, 256 + Math.sin(a) * 140); g.lineTo(256 + Math.cos(a) * (210 + r() * 40), 256 + Math.sin(a) * (200 + r() * 40)); g.stroke(); }
+  const hl = g.createRadialGradient(200, 200, 5, 200, 200, 150); hl.addColorStop(0, 'rgba(120,90,170,.25)'); hl.addColorStop(1, 'rgba(120,90,170,0)'); g.fillStyle = hl; g.fillRect(0, 0, 512, 512);
+  $('ink').style.backgroundImage = 'url(' + c.toDataURL() + ')';
+}
 function boot() {
-  UI.init(); Device.init(); VP.update();
+  UI.init(); Device.init(); VP.update(); makeInk();
   try {
     R.init($('gl'), !Device.mobile);
   } catch (e) {
