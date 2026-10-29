@@ -530,7 +530,7 @@ function sizeBinoculars() {
   $('bmS1').setAttribute('cx', cx - off); $('bmS1').setAttribute('cy', cy); $('bmS1').setAttribute('r', r); $('bmS2').setAttribute('cx', cx + off); $('bmS2').setAttribute('cy', cy); $('bmS2').setAttribute('r', r);
 }
 function makeInk() {
-  let S0 = 1.0, c; for (let it = 0; it < 7; it++) { c = drawInk(S0); const d = c.getContext('2d').getImageData(0, 0, 512, 512).data; let n = 0; for (let q = 3; q < d.length; q += 4) if (d[q] > 128) n++; const fr = n / (512 * 512); if (Math.abs(fr - .6) < .02) break; S0 *= Math.sqrt(.6 / Math.max(fr, .05)); }
+  let S0 = 1.0, c; for (let it = 0; it < 7; it++) { c = drawInk(S0); const d = c.getContext('2d').getImageData(0, 0, 512, 512).data; let n = 0; for (let q = 3; q < d.length; q += 4) if (d[q] > 128) n++; const fr = n / (512 * 512); if (Math.abs(fr - .35) < .02) break; S0 *= Math.sqrt(.35 / Math.max(fr, .05)); }
   $('ink').style.backgroundImage = 'url(' + c.toDataURL() + ')';
 }
 function drawInk(S0) {
