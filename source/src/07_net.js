@@ -8,7 +8,7 @@ const NET = {
   lastSnap: null, hostMissT: 0, dismissedG: null, rsMine: -1, feedSeen: -1, msgSeen: -1, msgQ: [], msgSeq: 0, myIdx: -1, killsSeen: -1, joinT: 0, waiting: false, puffs: [], slC: '', lobbyT: 0, thrP: 0
 };
 const wait = ms => new Promise(r => setTimeout(r, ms));
-const SLOTC = { cam: 1, flash: 2, smoke: 3, lure: 4 }, SLOTT = [null, 'cam', 'flash', 'smoke', 'lure'];
+const SLOTC = { cam: 1, quake: 2, scope: 3, fake: 4, spring: 5 }, SLOTT = [null, 'cam', 'quake', 'scope', 'fake', 'spring'];
 const encSl = s => s ? SLOTC[s.type] * 10 + s.n : 0;
 const decSl = c => c ? { type: SLOTT[(c / 10) | 0], n: c % 10 } : null;
 function cleanName(s) { s = String(s || '').replace(/[\u0000-\u001f\u007f<>&"']/g, '').trim().slice(0, 10); return s || ('玩家' + randi(10, 99)); }
@@ -120,11 +120,12 @@ function initNetUI() {
   chips('chNMap', Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name })), () => S.map, v => { S.map = v; World.load(v); });
   chips('chNTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v);
   chips('chNSkill', [{ v: true, l: '是' }, { v: false, l: '否' }], () => S.skills !== false, v => S.skills = v);
-  chips('chNMode', Object.entries(MODES).map(([k, m]) => ({ v: k, l: m.name })), () => S.mode, v => { S.mode = v; huntLock(); });
+  chips('chNMode', Object.entries(MODES).filter(([k, m]) => !m.soon).map(([k, m]) => ({ v: k, l: m.name })), () => S.mode, v => { S.mode = v; huntLock(); });
   chips('chNCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
   $('mpChar').onclick = () => go(() => openCharSelect('mp'));
   chips('chNCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; });
-  chips('chNDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; $('diffDescN').textContent = DIFF[v].desc; }); $('diffDescN').textContent = DIFF[S.diff].desc;
+  chips('chNDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; $('diffDescN').textContent = DIFF[v].desc; $('trollRowN').classList.toggle('hidden', v !== 3); }); $('diffDescN').textContent = DIFF[S.diff].desc; $('trollRowN').classList.toggle('hidden', S.diff !== 3);
+  chips('chNTroll', [{ v: 1, l: '輕度' }, { v: 2, l: '中度' }, { v: 3, l: '重度' }], () => S.trollLv, v => { S.trollLv = v; });
   huntLock();
   chips('chNBots', [{ v: true, l: '機器人補滿人數' }, { v: false, l: '僅限真人' }], () => S.netBots, v => S.netBots = v);
 }
@@ -171,7 +172,7 @@ function hostAct(a, ac) {
   else if (ac[1] === 's') { castSkill(a); }
   else if (ac[1] === 'u') {
     const i = ac[2] | 0, it = a.slots && a.slots[i]; if (!it) return;
-    if (it.type !== 'cam') { const cp = Math.cos(a.pitch + .12), sp = Math.sin(a.pitch + .12), f = FWD(a.yaw); throwGrenade(a, it.type, f[0] * cp, sp, f[1] * cp, 15); }
+    if (it.type !== 'cam' && it.type !== 'scope') applyItem(a, it.type);
     it.n--; if (it.n <= 0) a.slots[i] = null;
   }
 }
@@ -188,7 +189,7 @@ function buildSnap() {
   const A = G.actors, ac = [];
   for (let i = 0; i < A.length; i++) {
     const a = A[i];
-    const e = [Math.round(a.x * 20), Math.round(a.z * 20), Math.round(a.y * 20), Math.round(a.yaw * 50), Math.round(a.sp * 10), (a.alive ? 1 : 0) | (a.carry ? 2 : 0) | (a.protect > 0 ? 4 : 0) | (a.redT > 0 ? 8 : 0) | (a.lo > .12 ? 32 : a.lo < -.12 ? 16 : 0) | (a.shieldT > 0 ? 64 : 0) | (a.invis ? 128 : 0) | (a.ctrlT > 0 ? 256 : 0), a.kills, a.deaths, a.fake || a.number];
+    const e = [Math.round(a.x * 20), Math.round(a.z * 20), Math.round(a.y * 20), Math.round(a.yaw * 50), Math.round(a.sp * 10), (a.alive ? 1 : 0) | (a.carry ? 2 : 0) | (a.protect > 0 ? 4 : 0) | (a.redT > 0 ? 8 : 0) | (a.lo > .12 ? 32 : a.lo < -.12 ? 16 : 0) | (a.shieldT > 0 ? 64 : 0) | (a.invis ? 128 : 0) | (a.ctrlT > 0 ? 256 : 0) | (a.dackE >= 1 ? 512 : 0), a.kills, a.deaths, a.fake || a.number];
     if (a.isPlayer || a.remote) {
       const sl = a.isPlayer ? G.slots : (a.slots || [null, null]); let thr = -1, tp = 0;
       if (a.alive) for (let j = 0; j < A.length; j++) { const b = A[j]; if (b === a || !b.alive || !b.read) continue; let q = b.read[a.id] || 0; if (b.typing && b.typing.target === a) q = 1; if (q > tp && q > .12) { tp = q; thr = j; } }
@@ -202,7 +203,7 @@ function buildSnap() {
     sm: G.smokes.slice(0, 4).map(s => [Math.round(s.x * 10), Math.round(s.y * 10), Math.round(s.z * 10), Math.round(s.r * 10), Math.round(s.t * 10)]),
     lu: G.lures.slice(0, 3).map(l => [Math.round(l.x * 10), Math.round(l.z * 10), Math.round(l.t * 10)]),
     fg: G.mode === 'ctf' ? G.flags.map(f => [f.state === 'home' ? 0 : f.state === 'carried' ? 1 : 2, Math.round(f.x * 10), Math.round(f.z * 10), Math.round(f.y * 10), f.carrier ? A.indexOf(f.carrier) : -1]) : [],
-    sk: [Math.round(G.sk.rev.t * 10), G.actors.indexOf(G.sk.rev.by), Math.round(G.sk.scr.t * 10), G.actors.indexOf(G.sk.scr.by), Math.round(G.sk.ink.t * 10), G.actors.indexOf(G.sk.ink.by), Math.round(G.sk.eagle.t * 10), G.actors.indexOf(G.sk.eagle.by)],
+    sk: [Math.round(G.sk.rev.t * 10), G.actors.indexOf(G.sk.rev.by), Math.round(G.sk.scr.t * 10), G.actors.indexOf(G.sk.scr.by), Math.round(G.sk.ink.t * 10), G.actors.indexOf(G.sk.ink.by), Math.round(G.sk.eagle.t * 10), G.actors.indexOf(G.sk.eagle.by), Math.round(G.sk.quake.t * 10), G.actors.indexOf(G.sk.quake.by), G.sk.night.by ? Math.round(G.sk.night.e * 10) : -1, G.actors.indexOf(G.sk.night.by)],
     pk: G.pickups.reduce((m, p, i) => m | (p.on ? (1 << i) : 0), 0),
     fd: G.feed.slice(-4).map(f => [f.seq, f.ki, f.vi, f.st || 0]), hs: G.mode === 'hunt' ? G.actors.map(a => a.score || 0) : 0, ms: NET.msgQ.slice()
   };
@@ -255,7 +256,7 @@ function applySnap(s) {
     const e = s.ac[i], a = A[i]; if (!e || !a) continue;
     const alive = !!(e[5] & 1);
     a.kills = e[6]; a.deaths = e[7]; if (a.number !== e[8]) { a.number = e[8]; drawPlate(a); }
-    a.carry = (e[5] & 2) ? true : null; a.protect = (e[5] & 4) ? 1 : 0; if (a !== me) { a.invis = !!(e[5] & 128); a.ctrlT = (e[5] & 256) ? .3 : 0; a.shieldT = (e[5] & 64) ? 1 : 0; a.redT = (e[5] & 8) ? .4 : 0; a.lo += (((e[5] & 32) ? .45 : (e[5] & 16) ? -.45 : 0) - a.lo) * .4; }
+    a.carry = (e[5] & 2) ? true : null; a.protect = (e[5] & 4) ? 1 : 0; if (a !== me) { a.dackE = (e[5] & 512) ? 2 : -1; a.invis = !!(e[5] & 128); a.ctrlT = (e[5] & 256) ? .3 : 0; a.shieldT = (e[5] & 64) ? 1 : 0; a.redT = (e[5] & 8) ? .4 : 0; a.lo += (((e[5] & 32) ? .45 : (e[5] & 16) ? -.45 : 0) - a.lo) * .4; }
     if (a !== me) {
       a.tx = e[0] / 20; a.tz = e[1] / 20; a.ty = e[2] / 20; a.tyaw = e[3] / 50;
       if (!a.init || (!a.alive && alive)) { a.x = a.tx; a.z = a.tz; a.y = a.ty; a.yaw = a.tyaw; a.init = true; a.fall = 0; }
@@ -283,7 +284,7 @@ function applySnap(s) {
   if (G.mode === 'ctf') G.flags.forEach((f, i) => { const e = s.fg[i]; if (!e) return; f.state = ['home', 'carried', 'dropped'][e[0]]; f.x = e[1] / 10; f.z = e[2] / 10; f.y = e[3] / 10; f.carrier = e[4] >= 0 ? A[e[4]] : null; });
   G.pickups.forEach((p, i) => { p.on = !!(s.pk & (1 << i)); });
   if (s.hs) s.hs.forEach((v, i) => { if (A[i]) A[i].score = v; });
-  if (s.sk) { G.sk.rev = { t: s.sk[0] / 10, by: A[s.sk[1]] || null, id: 1 }; G.sk.scr = { t: s.sk[2] / 10, by: A[s.sk[3]] || null, id: 1 }; G.sk.ink = { t: (s.sk[4] || 0) / 10, by: A[s.sk[5]] || null, id: 1 }; G.sk.eagle = { t: (s.sk[6] || 0) / 10, by: A[s.sk[7]] || null }; }
+  if (s.sk) { G.sk.rev = { t: s.sk[0] / 10, by: A[s.sk[1]] || null, id: 1 }; G.sk.scr = { t: s.sk[2] / 10, by: A[s.sk[3]] || null, id: 1 }; G.sk.ink = { t: (s.sk[4] || 0) / 10, by: A[s.sk[5]] || null, id: 1 }; G.sk.eagle = { t: (s.sk[6] || 0) / 10, by: A[s.sk[7]] || null }; G.sk.quake = { t: (s.sk[8] || 0) / 10, by: A[s.sk[9]] || null }; G.sk.night = { e: s.sk[10] >= 0 ? s.sk[10] / 10 : 0, by: s.sk[10] >= 0 ? (A[s.sk[11]] || null) : null }; }
   if (NET.feedSeen < 0) NET.feedSeen = s.fd.length ? s.fd[s.fd.length - 1][0] : 0;
   for (const f of s.fd) if (f[0] > NET.feedSeen) { NET.feedSeen = f[0]; const k = A[f[1]], v = A[f[2]]; if (k && v) { G.feed.push({ t: 6, k: k.name, v: v.name, me: k === me || v === me, st: f[3] || 0, seq: f[0] }); if (k === me && f[3] > 1) UI.streak(f[3], STREAK_PTS[Math.min(f[3], 5) - 1]); if (G.feed.length > 5) G.feed.shift(); G.feedVer++; } }
   if (NET.msgSeen < 0) NET.msgSeen = s.ms.length ? s.ms[s.ms.length - 1][0] : 0;
@@ -292,7 +293,7 @@ function applySnap(s) {
 }
 function updateClientGame(dt) {
   if (G.state === 'ended') { G.time += dt; In.lookX = In.lookY = 0; return; } // 結算：全場暫停
-  G.time += dt; if (G.state === 'playing' && G.countdown <= 0) { G.tleft = Math.max(0, G.tleft - dt); const me0 = G.player; if (me0) me0.skCd = Math.max(0, me0.skCd - dt); if (G.sk.rev.t > 0) G.sk.rev.t -= dt; if (G.sk.scr.t >= 0) G.sk.scr.t += dt; if (G.sk.ink.t > 0) G.sk.ink.t -= dt; if (G.sk.eagle.t > 0) G.sk.eagle.t -= dt; if (me0) { me0.ctrlT = Math.max(0, (me0.ctrlT || 0) - dt); if (isOut(me0, 11)) { me0.cleanT = (me0.cleanT ?? 2.5) - dt; if (me0.cleanT <= 0) { me0.cleanT = 2.5; G.flashT = 0; G.freezeT = 0; G.lock = 0; me0.redT = 0; me0.ctrlT = 0; UI.cleanse(); } } } }
+  G.time += dt; if (G.state === 'playing' && G.countdown <= 0) { G.tleft = Math.max(0, G.tleft - dt); const me0 = G.player; if (me0) me0.skCd = Math.max(0, me0.skCd - dt); if (G.sk.rev.t > 0) G.sk.rev.t -= dt; if (G.sk.scr.t >= 0) G.sk.scr.t += dt; if (G.sk.ink.t > 0) G.sk.ink.t -= dt; if (G.sk.eagle.t > 0) G.sk.eagle.t -= dt; if (G.sk.quake.t > 0) G.sk.quake.t -= dt; if (G.sk.night.by) G.sk.night.e += dt; if (me0) { me0.ctrlT = Math.max(0, (me0.ctrlT || 0) - dt); if (isOut(me0, 11)) { me0.cleanT = (me0.cleanT ?? 2.5) - dt; if (me0.cleanT <= 0) { me0.cleanT = 2.5; G.flashT = 0; G.freezeT = 0; G.lock = 0; me0.redT = 0; me0.ctrlT = 0; UI.cleanse(); } } } }
   if (G.countdown > 0) { G.countdown = Math.max(0, G.countdown - dt); In.lookX = In.lookY = 0; } else if (G.player) updatePlayer(dt);
   const k = 1 - Math.exp(-dt * 14);
   for (const a of G.actors) {

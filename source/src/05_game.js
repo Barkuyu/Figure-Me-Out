@@ -8,9 +8,10 @@ const MODES = {
   dm: { name: '個人死鬥', sub: '人人為敵', desc: '所有人互相淘汰，最先達到 15 次淘汰者獲勝', time: 300, limit: 15, short: '人人為敵，先淘汰 15 人者獲勝' },
   tdm: { name: '團隊死鬥', sub: '紅 vs 藍', desc: '紅藍兩隊對戰，隊伍先累積 30 次淘汰者獲勝', time: 360, limit: 30, short: '紅藍對戰，隊伍先累積 30 次淘汰者獲勝' },
   hunt: { name: '激鬥追捕', sub: '追殺電腦角色', desc: '玩家頭上沒有號碼，只能追殺電腦角色，連殺積分更高；時間到積分最高或最先 100 分者獲勝', time: 300, limit: 100, demo: false, short: '只追殺電腦、連殺加分，100 分或時間到積分最高者勝' },
+  arena: { name: '擂台逃殺', sub: '🔒 敬請期待', soon: true, desc: '敬請期待，玩法即將公開', time: 300, limit: 1, demo: false, short: '敬請期待，玩法即將公開' },
   ctf: { name: '奪旗', sub: '搶旗帶回基地', desc: '搶走敵方旗幟帶回己方基地得分，先得 3 分獲勝', time: 480, limit: 3, short: '搶走敵方旗幟帶回己方基地，先得 3 分獲勝' }
 };
-const ITEMS = { cam: { ico: '📷', name: '相機' }, flash: { ico: '💥', name: '閃光彈' }, smoke: { ico: '🌫️', name: '煙霧彈' }, lure: { ico: '📣', name: '干擾彈' } };
+const ITEMS = { cam: { ico: '📷', name: '相機' }, quake: { ico: '🌋', name: '地牛控制器' }, scope: { ico: '🔍', name: '偵查鏡' }, fake: { ico: '🎫', name: '假號碼牌' }, spring: { ico: '⛲', name: '神仙泉水' } };
 const DIFF = [{ base: 1.9, type: 1.5, name: '輕鬆', desc: '電腦讀碼慢、出手遲鈍，適合新手練習' }, { base: 1.25, type: 1.0, name: '普通', desc: '電腦速度與反應適中，標準對戰' }, { base: .85, type: .7, name: '困難', desc: '電腦讀碼快、輸入迅速，考驗反應力' }, { base: 1.25, type: 1.0, name: '干擾者', troll: true, desc: '機器人不殺人，只四處亂跑丟道具搗亂' }];
 
 const G = {
@@ -45,8 +46,6 @@ function spawnActor(a, fixed) {
   if (G.mode === 'hunt' && (a.isPlayer || a.remote)) { a.number = ''; a.fake = null; drawPlate(a); } else assignNumber(a);
   if (!a.isPlayer && !a.remote) {
     a.slots = [null, null]; a.mode = 'roam'; a.threatT = 0; a.reader = null;
-    const troll = (DIFF[S.diff].troll || G.mode === 'hunt') && !G.demo, n0 = (G.demo || troll) ? 2 : (Math.random() < .6 ? 1 : 0), pool = G.demo ? ['flash', 'smoke', 'lure', 'cam'] : ['flash', 'smoke', 'lure'];
-    for (let i = 0; i < n0; i++) { const t = pick(pool); a.slots[i] = { type: t, n: t === 'cam' ? 3 : 1 }; }
   }
 }
 /* 開場：所有人平均散布在地圖各處（最遠點取樣），且每人的視野內看不到任何其他角色 */
@@ -85,26 +84,36 @@ function spawnAll() {
   for (let i = 0; i < n; i++) spawnActor(A[i], [pts[i][0], pts[i][1], yawFor(i)[0], pts[i][2] | 0]);
 }
 /* ---------- 角色技能 ---------- */
-const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null];
-const isOut = (a, i) => skOn() && a.av && a.av.outfitIdx === i; // 對應 OUTFITS：蘇蘇／艾迪／艾伯特／蘇米(被動)／艾瑞克／麥克(被動)
+const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null, 'steal', 'dack', 'nox'];
+const PASSIVE_IDX = [3, 5, 8, 11, 12, 13];
+const isOut = (a, i) => skOn() && a.av && (a.av.outfitIdx === i || a.passIdx === i); // 對應 OUTFITS：蘇蘇／艾迪／艾伯特／蘇米(被動)／艾瑞克／麥克(被動)
 const skOn = () => G.skillsOn !== false;
-const isSumi = a => skOn() && a.av && a.av.outfitIdx === 3;
+const isSumi = a => isOut(a, 3);
 const jumpMul = a => isSumi(a) ? 1.285 : 1; // 高度 1.65 倍 → 初速 √1.65 倍
 const speedMul = a => isOut(a, 5) ? 2.5 : isOut(a, 13) ? .7 : 1;
-const SKILLS = { ink: { name: '烏賊戲法', cd: 40, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 50, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 40, ico: '🐱' }, mind: { name: '心靈控制', cd: 40, ico: '🌀' }, cloak: { name: '幻影易容', cd: 45, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 40, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 40, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 60, ico: '⚡' } };
+const SKILLS = { steal: { name: '命運拷貝', cd: 1, ico: '🔮' }, dack: { name: '生化操作', cd: 35, ico: '🧪' }, nox: { name: '夜間戰術', cd: 30, ico: '🌑' }, ink: { name: '烏賊戲法', cd: 40, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 50, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 40, ico: '🐱' }, mind: { name: '心靈控制', cd: 40, ico: '🌀' }, cloak: { name: '幻影易容', cd: 45, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 40, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 40, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 60, ico: '⚡' } };
 const SCR_FLASH = 0, SCR_TOTAL = 5.0; // 預警閃光 3 秒（4 次短閃 + 1.8 秒長閃）+ 錯亂 5 秒
 const skillOf = a => SKILL_OF[a.av.outfitIdx] ? SKILLS[SKILL_OF[a.av.outfitIdx]] : null;
 const revActive = a => G.sk.rev.t > 0 && G.sk.rev.by !== a && a.clrRev !== G.sk.rev.id;
 const inkActive = a => G.sk.ink.t > 0 && G.sk.ink.by !== a && a.clrInk !== G.sk.ink.id;
 const scrPhase2 = a => G.sk.scr.t >= SCR_FLASH && G.sk.scr.by !== a && a.clrScr !== G.sk.scr.id;
-function skReset() { G.sk = { rev: { t: 0, by: null, id: 0 }, scr: { t: -1, by: null, id: 0 }, ink: { t: 0, by: null, id: 0 }, eagle: { t: 0, by: null } }; G.skId = 0; for (const a of G.actors) { a.skCd = 0; a.shieldT = 0; a.say = null; a.cloak = false; a.invis = false; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2.5; a.clrRev = a.clrScr = a.clrInk = -1; } }
+function skReset() { G.sk = { night: { e: 0, by: null }, quake: { t: 0, by: null }, rev: { t: 0, by: null, id: 0 }, scr: { t: -1, by: null, id: 0 }, ink: { t: 0, by: null, id: 0 }, eagle: { t: 0, by: null } }; G.skId = 0; for (const a of G.actors) { a.skCd = 0; a.shieldT = 0; a.say = null; a.cloak = false; a.invis = false; a.dackE = -1; a.armed = false; a.stolen = null; a.passIdx = -1; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2.5; a.clrRev = a.clrScr = a.clrInk = -1; } }
 function cleanse(a) { a.blind = 0; a.ctrlT = 0; a.redT = 0; a.clrRev = G.sk.rev.id; a.clrScr = G.sk.scr.id; a.clrInk = G.sk.ink.id; a.cleanFx = .7; if (a.isPlayer) { G.flashT = 0; G.freezeT = 0; G.lock = 0; UI.cleanse(); } }
 function skMsg(a, t) { const m = a.name + ' ' + t; UI.msg(m, 'item'); netMsg(m, 'item'); }
 function puffFx(a) { for (let i = 0; i < 6; i++) G.fx.push({ k: 'puff', x: a.x + rand(-.4, .4), y: a.y + rand(.6, 1.5), z: a.z + rand(-.4, .4), t: 0, d: .3 + rand(0, .5) }); }
 function uncloak(a, smoke) { if (!a.fake) return; a.fake = null; a.fakeT = 0; a.fakeOf = null; drawPlate(a); if (smoke) puffFx(a); }
 function castSkill(a) {
-  if (!skOn() || !a || !a.alive || (a.skCd || 0) > 0 || G.state !== 'playing' || G.countdown > 0) return false;
-  const k = SKILL_OF[a.av.outfitIdx]; if (!k) return false; if (k === 'cloak' && a.fake) return false; a.skCd = SKILLS[k].cd;
+  if (!skOn() || !a || !a.alive || G.state !== 'playing' || G.countdown > 0) return false;
+  const base = SKILL_OF[a.av.outfitIdx]; if (!base) return false;
+  if (base === 'steal') {
+    if (a.stolen) { const k = a.stolen; a.stolen = null; return runSkill(a, k, false); }
+    if (a.armed) return false; a.armed = true; skMsg(a, '發動【命運拷貝】！等待竊取下一個擊殺對象的技能'); (a.kp || (a.kp = {})).R = G.time + .5; if (a.isPlayer) Sfx.skill(); return true;
+  }
+  if ((a.skCd || 0) > 0) return false;
+  return runSkill(a, base, true);
+}
+function runSkill(a, k, useCd) {
+  if (k === 'cloak' && a.fake) return false; if (useCd) a.skCd = SKILLS[k].cd + (k === 'dack' ? 16 : k === 'nox' ? 31.5 : 0);
   if (k === 'rev') { G.sk.rev = { t: 5, by: a, id: ++G.skId }; skMsg(a, '發動【顛倒乾坤】！其他人的移動方向反轉 5 秒'); }
   else if (k === 'scr') { G.sk.scr = { t: 0, by: a, id: ++G.skId }; skMsg(a, '發動【紫電干擾】！其他人的數字鍵錯亂 5 秒'); }
   else if (k === 'ink') { G.sk.ink = { t: 5, by: a, id: ++G.skId }; for (const o of G.actors) if (o !== a && o.alive && !o.isPlayer && !o.remote) { o.blind = Math.max(o.blind, 5); o.typing = null; } skMsg(a, '發動【烏賊戲法】！其他人的視野被墨汁遮住'); }
@@ -116,13 +125,20 @@ function castSkill(a) {
     for (const o of G.actors) { if (o === a || !o.alive || o.fake) continue; const dx = o.x - a.x, dz = o.z - a.z, d = Math.hypot(dx, dz) || 1, front = (dx * fx[0] + dz * fx[1]) / d; const sc = d + (front > .3 && los(a.x, a.y + 1.6, a.z, o.x, o.y + 1.65, o.z) ? 0 : 40); if (sc < bd) { bd = sc; best = o; } }
     if (best) { a.fake = best.number; a.fakeT = 20; a.fakeOf = best; drawPlate(a); if (a.isPlayer) UI.msg('已偽裝成 ' + best.name + ' 的號碼', 'item'); } else a.skCd = 3;
   }
+  else if (k === 'dack') { a.dackE = 0; skMsg(a, '發動【生化操作】！戴上透視鏡，濃霧即將噴發'); }
+  else if (k === 'nox') { G.sk.night = { e: 0, by: a }; skMsg(a, '發動【夜間戰術】！黑雲籠罩全場'); }
   else { a.shieldT = 3; if (a.isPlayer) UI.msg('護盾展開！3 秒內擋下一次攻擊', 'item'); }
   (a.kp || (a.kp = {})).R = G.time + .5; if (a.isPlayer || a === G.view) Sfx.skill(); return true;
 }
 function castSkillPlayer() { const p = G.player; if (!p || G.demo || G.state !== 'playing') return; if (G.netClient) { if ((p.skCd || 0) <= 0 && p.alive) { netAct(['s']); p.skCd = 0.01; } return; } castSkill(p); UI.dirty = true; }
 function skTick(dt) {
-  if (G.sk.ink.t > 0) G.sk.ink.t -= dt; if (G.sk.eagle.t > 0) G.sk.eagle.t -= dt;
+  if (G.sk.ink.t > 0) G.sk.ink.t -= dt; if (G.sk.eagle.t > 0) G.sk.eagle.t -= dt; if (G.sk.quake.t > 0) G.sk.quake.t -= dt;
+  if (G.sk.night.by) { G.sk.night.e += dt; if (G.sk.night.e >= 31.5 || !G.sk.night.by.alive) G.sk.night.by = null; }
+  { let lead = null, mx = 1; if (G.mode === 'dm') { for (const a of G.actors) { if (a.kills > mx) { mx = a.kills; lead = a; } else if (a.kills === mx && lead) lead = null; } } G.bountyId = lead && lead.kills >= 2 ? lead : null; }
+  if (G.mode === 'hunt') { const hs = G.actors.filter(a => a.isPlayer || a.remote).sort((x, y) => (y.score || 0) - (x.score || 0)); hs.forEach((a, i) => { a.boost = hs.length >= 2 && (i + 1) > hs.length / 2; }); }
   for (const a of G.actors) {
+    if (a.boost && a.skCd > 0) a.skCd = Math.max(0, a.skCd - dt);
+    if (a.dackE >= 0) { a.dackE += dt; if (a.dackE > 16 || !a.alive) a.dackE = -1; }
     a.ctrlT = Math.max(0, (a.ctrlT || 0) - dt); a.cleanFx = Math.max(0, (a.cleanFx || 0) - dt);
     if (isOut(a, 11) && a.alive) { a.cleanT = (a.cleanT ?? 2.5) - dt; if (a.cleanT <= 0) { a.cleanT = 2.5; cleanse(a); } }
     const og = a.remote ? (a.y - groundAt(a.x, a.z, a.y + .1) < .06) : a.onGround;
@@ -131,7 +147,7 @@ function skTick(dt) {
     const ray = isOut(a, 8) && a.rayJ && a.airT >= .3, ly = a.cloak && !(a.cloakE >= 1.5 && (a.cloakE % 1.5) < .1);
     a.invis = a.alive && (ray || ly);
   }
-  for (const a of G.actors) { if (a.fake) { a.fakeT -= dt; if (a.fakeT <= 0 || !a.alive || !a.fakeOf || !a.fakeOf.alive || a.fakeOf.number !== a.fake) uncloak(a, a.alive); } a.skCd = Math.max(0, (a.skCd || 0) - dt); a.shieldT = Math.max(0, (a.shieldT || 0) - dt); if (a.say) { a.say.t -= dt; if (a.say.t <= 0) a.say = null; } }
+  for (const a of G.actors) { if (a.fake) { a.fakeT -= dt; if (a.fakeT <= 0 || !a.alive || (a.fakeOf && (!a.fakeOf.alive || a.fakeOf.number !== a.fake))) uncloak(a, a.alive && !!a.fakeOf); } a.skCd = Math.max(0, (a.skCd || 0) - dt); a.shieldT = Math.max(0, (a.shieldT || 0) - dt); if (a.say) { a.say.t -= dt; if (a.say.t <= 0) a.say = null; } }
   if (G.sk.rev.t > 0) G.sk.rev.t -= dt; if (G.sk.scr.t >= 0) { G.sk.scr.t += dt; if (G.sk.scr.t >= SCR_TOTAL) G.sk.scr.t = -1; }
 }
 function blockHit(att, t) {
@@ -141,8 +157,8 @@ function blockHit(att, t) {
   const m = t.name + ' 的護盾擋下了 ' + att.name + ' 的攻擊！'; UI.msg(m, att.isPlayer ? 'bad' : 'item'); netMsg(m, 'item'); if (att.isPlayer) Sfx.wrong();
 }
 function botSkill(b, dt) {
-  if (!skOn()) return; if (!b.alive || (b.skCd || 0) > 0 || G.countdown > 0 || G.state !== 'playing') return; const k = SKILL_OF[b.av.outfitIdx];
-  if (!k) return; if (k === 'shield') { if (b.threatT > 0 && Math.random() < dt * 2.5) castSkill(b); } else if (Math.random() < dt * .035) castSkill(b);
+  if (!skOn()) return; if (!b.alive || G.countdown > 0 || G.state !== 'playing') return; const k = SKILL_OF[b.av.outfitIdx]; if (k !== 'steal' && (b.skCd || 0) > 0) return;
+  if (!k) return; if (k === 'steal') { if (b.stolen) { if (Math.random() < dt * .06) castSkill(b); } else if (!b.armed && Math.random() < dt * .2) castSkill(b); return; } if (k === 'shield') { if (b.threatT > 0 && Math.random() < dt * 2.5) castSkill(b); } else if (Math.random() < dt * .035) castSkill(b);
 }
 const STREAK_PTS = [3, 5, 7, 10, 15], STREAK_TXT = ['', '二連殺', '三連殺', '四連殺', '五連殺'];
 function enemyOf(a, o) { return o !== a && o.alive && (isDM() || o.team !== a.team); }
@@ -244,31 +260,44 @@ function updateGrenades(dt) {
   }
   for (let i = G.fx.length - 1; i >= 0; i--) { G.fx[i].t += dt; if (G.fx[i].t > G.fx[i].d) G.fx.splice(i, 1); }
 }
-function randomItem() { const r = Math.random(); return r < .2 ? 'cam' : r < .5 ? 'flash' : r < .8 ? 'smoke' : 'lure'; }
+function randomItem() { const r = Math.random(); return r < .3 ? 'cam' : r < .5 ? 'quake' : r < .7 ? 'scope' : r < .85 ? 'fake' : 'spring'; }
 function giveItem(i, type) { G.slots[i] = { type, n: type === 'cam' ? 4 : 1 }; }
 function grantItem(sl) {
   const ty = randomItem(), i0 = sl.findIndex(x => x && x.type === ty);
   if (i0 >= 0) { sl[i0].n = Math.min(ty === 'cam' ? 9 : 3, sl[i0].n + (ty === 'cam' ? 3 : 1)); return { i: i0, ty }; }
-  let free = !sl[0] ? 0 : !sl[1] ? 1 : -1;
-  if (free < 0) free = (sl[1] && sl[1].type !== 'cam') ? 1 : (sl[0] && sl[0].type !== 'cam') ? 0 : 1;
+  const free = !sl[0] ? 0 : !sl[1] ? 1 : -1; if (free < 0) return null; // 道具欄已滿：不更換
   sl[free] = { type: ty, n: ty === 'cam' ? 4 : 1 }; return { i: free, ty };
 }
 function tryPickup(a) {
   for (const p of G.pickups) {
     if (!p.on) continue; if (Math.abs(p.x - a.x) > 1.5 || Math.abs(p.z - a.z) > 1.5 || Math.abs(p.y - a.y) > 2.2) continue;
-    if (a.isPlayer) { if (G.netClient) continue; const r = grantItem(G.slots); Sfx.pick(); UI.msg('獲得 ' + ITEMS[r.ty].name + (G.slots[r.i].n > 1 ? ' ×' + G.slots[r.i].n : ''), 'item'); UI.dirty = true; }
-    else if (a.slots) grantItem(a.slots);
+    if (a.isPlayer) { if (G.netClient) continue; const r = grantItem(G.slots); if (!r) continue; Sfx.pick(); UI.msg('獲得 ' + ITEMS[r.ty].name + (G.slots[r.i].n > 1 ? ' ×' + G.slots[r.i].n : ''), 'item'); UI.dirty = true; }
+    else if (a.slots) { if (!grantItem(a.slots)) continue; }
     else continue;
     p.on = false; p.t = 18;
   }
 }
+/* 道具效果（玩家／電腦／連線訪客共用） */
+function applyItem(a, type) {
+  if (type === 'quake') { G.sk.quake = { t: 2, by: a }; for (const o of G.actors) if (o !== a && o.alive && !o.isPlayer && !o.remote) o.blind = Math.max(o.blind, .8); const m = a.name + ' 啟動了地牛控制器！'; UI.msg(m, 'item'); netMsg(m, 'item'); }
+  else if (type === 'fake') { let n, L = G.codeLen || randi(3, 6); do { n = String(randi(Math.pow(10, L - 1), Math.pow(10, L) - 1)); } while (G.actors.some(o => o.number === n)); a.fake = n; a.fakeT = 7; a.fakeOf = null; drawPlate(a); if (a.isPlayer) UI.msg('號碼已偽裝 7 秒', 'item'); }
+  else if (type === 'spring') { a.skCd = 0; if (a.isPlayer) UI.msg('神仙泉水：技能冷卻已刷新！', 'item'); }
+}
 function useItem(i) {
   const p = G.player; if (!p || !p.alive || G.state !== 'playing' || G.countdown > 0) return;
-  const it = G.slots[i]; if (!it || G.itemCd > 0 || G.bino) return;
+  const it = G.slots[i]; if (!it || G.itemCd > 0 || G.bino || p.ctrlT > 0) return;
   if (it.type === 'cam') { G.photoReq = true; G.fp.camT = .55; Sfx.shutter(); UI.flashWhite(.35); G.itemCd = 1.0; }
-  else { if (G.netClient) Sfx.throwS(); else { const f = FWD(p.yaw), cp = Math.cos(p.pitch + .12), sp = Math.sin(p.pitch + .12); throwGrenade(p, it.type, f[0] * cp, sp, f[1] * cp, 15); } G.fp.throwT = .4; G.itemCd = .7; }
+  else if (it.type === 'scope') { if (!G.scopeOn) { G.scopeOn = true; G.itemCd = .3; Sfx.tone(700, .1, 'sine', .1, 200); UI.dirty = true; return; } G.scopeOn = false; G.photoReq = true; G.fp.camT = .55; Sfx.shutter(); UI.flashWhite(.35); G.itemCd = 1.0; }
+  else { Sfx.pick(); if (G.netClient) { if (it.type === 'spring') p.skCd = 0; } else applyItem(p, it.type); G.itemCd = .6; }
   if (G.netClient) netAct(['u', i]);
   it.n--; if (it.n <= 0) G.slots[i] = null; UI.dirty = true;
+}
+function botItems(b, dt, threat) {
+  if (!b.slots || b.cd > 0 || b.blind > 0) return; const has = t => b.slots.findIndex(x => x && x.type === t); let i;
+  if ((i = has('spring')) >= 0 && b.skCd > 8 && skillOf(b)) { botUse(b, i); applyItem(b, 'spring'); b.cd = 2; return; }
+  if ((i = has('fake')) >= 0 && (threat || b.threatT > 0) && !b.fake) { botUse(b, i); applyItem(b, 'fake'); b.cd = 3; return; }
+  if ((i = has('quake')) >= 0 && Math.random() < (dt || .05) * .4 && G.actors.some(o => (o.isPlayer || o.remote) && o.alive && Math.hypot(o.x - b.x, o.z - b.z) < 30)) { botUse(b, i); applyItem(b, 'quake'); b.cd = 4; return; }
+  if ((i = has('scope')) >= 0 && Math.random() < (dt || .05) * .05) { botUse(b, i); b.cd = 3; }
 }
 function botUse(b, i) { (b.kp || (b.kp = {}))[i ? 'G' : 'F'] = G.time + .4; const x = b.slots[i]; x.n--; if (x.n <= 0) b.slots[i] = null; }
 function botThrowAt(b, type, tx, tz) {
@@ -312,6 +341,8 @@ function eliminate(k, v) {
   if (!v.alive || v.protect > 0) return;
   v.alive = false; v.deaths++; v.deadT = 0; v.respawnT = 3.2; v.killedBy = k; v.typing = null; v.lure = null;
   k.lastKillT = G.time; if (k.cloak) k.cloakE = 0;
+  if (G.sk.night.by === v) G.sk.night.by = null;
+  if (skOn() && k !== v && k.armed && k.av && k.av.outfitIdx === 15) { const vi = v.av.outfitIdx, kind = SKILL_OF[vi]; if (kind && kind !== 'steal') { k.stolen = kind; k.armed = false; skMsg(k, '竊取了【' + SKILLS[kind].name + '】！再按一次施放'); } else if (PASSIVE_IDX.includes(vi)) { k.passIdx = vi; k.armed = false; skMsg(k, '竊取了被動技能【' + OUTFITS[vi].skill.name + '】'); } }
   if (k !== v) { assignNumber(k); for (const o of G.actors) { if (o.read) o.read[k.id] = 0; if (o.typing && o.typing.target === k) o.typing = null; } } // 擊殺成功：自己的號碼立即更新
   if (G.mode === 'hunt' && k !== v && (k.isPlayer || k.remote)) { k.streak = (G.time - (k.lastKillT0 ?? -99) <= 10) ? (k.streak || 0) + 1 : 1; k.lastKillT0 = G.time; const pts = STREAK_PTS[Math.min(k.streak, 5) - 1]; k.score = (k.score || 0) + pts; k.lastStreak = k.streak; if (k.isPlayer) UI.streak(k.streak, pts); }
   if (k !== v) { k.kills++; if (G.mode === 'tdm' && k.team >= 0) G.scores[k.team]++; }
@@ -365,6 +396,7 @@ function updatePlayer(dt) {
   const p = G.player;
   if (Device.mobile) In.sprint = In.sprintT;
   if (In.sprintT && G.stam <= .02) { In.sprintT = false; In.sprint = false; const rb = document.getElementById('bRun'); if (rb) rb.classList.remove('tog'); }
+  if (G.scopeOn && (!p.alive || !G.slots.some(s => s && s.type === 'scope'))) G.scopeOn = false;
   if (G.freezeT > 0 || p.ctrlT > 0) In.lookX = In.lookY = 0; // 定身時連視角也不能轉
   p.yaw += In.lookX; p.pitch = clamp(p.pitch + In.lookY, -1.45, 1.45); In.lookX = In.lookY = 0;
   const f = FWD(p.yaw), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
@@ -417,10 +449,11 @@ function updateCamera(dt) {
   const base = Device.mobile ? 1.19 : 1.28; // 弧度 ≈ 68° / 73°
   const zoom = .15; // 望遠鏡 ≈ 8.6°（倍率為先前的 2 倍）
   const sp = p.sprinting && !G.bino ? .06 : 0;
-  const fov = lerp(base + sp, zoom, G.binK);
+  const fov = G.scopeOn ? .175 : lerp(base + sp, zoom, G.binK);
   G.fov += (fov - G.fov) * Math.min(1, dt * 14); c.fov = G.fov;
   let sx = 0, sy = 0; if (G.binK > .5) { sx = Math.sin(G.time * 1.7) * .0016 + Math.sin(G.time * 4.1) * .0007; sy = Math.cos(G.time * 1.3) * .0014; }
   c.x = p.x + Math.cos(p.yaw) * p.lo; c.z = p.z - Math.sin(p.yaw) * p.lo; c.y = (p.alive ? G.camY - Math.abs(p.lo) * .12 : Math.max(.35, G.camY - p.deadT * 2.2)) + bob;
+  { const q = G.sk && G.sk.quake; if (q && q.t > 0 && q.by !== p) { const ev = .2 + .8 * clamp(q.t / 2, 0, 1); sx += Math.sin(G.time * 38) * .17 * ev; } }
   c.yaw = p.yaw + sx; c.pitch = p.pitch + sy; c.roll = p.alive ? -p.lo * .4 : clamp(p.deadT * 2.2, 0, .35) * (p.id % 2 ? 1 : -1);
   if (!p.alive) c.pitch = lerp(c.pitch, -.45, clamp(p.deadT * 2, 0, 1));
 }
@@ -476,12 +509,7 @@ function coverFor(b, rd) {
   if (best) return [best[0], best[1], best[2]];
   const dx = b.x - rd.x, dz = b.z - rd.z, d = Math.hypot(dx, dz) || 1, bn = World.bounds; return [clamp(b.x + dx / d * 14, bn.x0 + 2, bn.x1 - 2), clamp(b.z + dz / d * 14, bn.z0 + 2, bn.z1 - 2), World.layerOf(b.y)];
 }
-function smartDefend(b, rd) {
-  const d = Math.hypot(rd.x - b.x, rd.z - b.z), has = t => b.slots.findIndex(x => x && x.type === t); let i;
-  if ((i = has('flash')) >= 0 && d < 26) { botUse(b, i); botThrowAt(b, 'flash', rd.x, rd.z); b.cd = 2.5; }
-  else if ((i = has('smoke')) >= 0) { botUse(b, i); botThrowAt(b, 'smoke', b.x + (rd.x - b.x) / Math.max(d, 1) * 4, b.z + (rd.z - b.z) / Math.max(d, 1) * 4); b.cd = 2.5; }
-  else if ((i = has('lure')) >= 0 && d > 7) { botUse(b, i); botThrowAt(b, 'lure', rd.x + (rd.x - b.x) / d * 6, rd.z + (rd.z - b.z) / d * 6); b.cd = 3; }
-}
+function smartDefend(b, rd) { botItems(b, 0, true); }
 function smartThink(b, dt) {
   b.modeT -= dt; b.evadeCd = Math.max(0, b.evadeCd - dt);
   const rd = b.reader && b.reader.alive ? b.reader : null;
@@ -498,10 +526,11 @@ function smartThink(b, dt) {
     if (ci >= 0 && d > 9 && d < 40 && face > .34 && t.alive && (b.read[t.id] || 0) < .9) {
       botUse(b, ci); b.read[t.id] = Math.min(1, (b.read[t.id] || 0) + .6); b.cd = 3.5;
       if (b.read[t.id] >= 1 && !b.typing) { b.typing = { target: t, num: t.number, t: DIFF[S.diff].type * 1.1 }; b.read[t.id] = 0; }
-    } else { const fi = b.slots.findIndex(x => x && x.type === 'flash'); if (fi >= 0 && d > 8 && d < 22 && Math.random() < dt * .5) { botUse(b, fi); botThrowAt(b, 'flash', t.x, t.z); b.cd = 3; } }
+    }
   }
 }
 /* ---- 干擾者機器人：不讀碼、不殺人，只在全場亂跑、亂轉頭、丟道具搗亂 ---- */
+const trollF = () => [.25, .55, 1][clamp((S.trollLv || 3) - 1, 0, 2)];
 function trollGoal(b) {
   if ((!b.slots[0] || !b.slots[1]) && Math.random() < .65) { let bp = null, bd = 1e9; for (const p of G.pickups) { if (!p.on) continue; const d = Math.hypot(p.x - b.x, p.z - b.z) + Math.random() * 12; if (d < bd) { bd = d; bp = p; } } if (bp) return [bp.x, bp.z, bp.l]; }
   let best = null, bs = -1;
@@ -514,36 +543,30 @@ function updateTroll(b, dt) {
   b.goalT -= dt; b.repT -= dt;
   if (!b.goal || b.goalT <= 0 || (b.path.length && b.pi >= b.path.length)) { b.goal = trollGoal(b); b.path = []; b.pi = 0; b.goalT = 5 + Math.random() * 5; }
   if (!b.path.length) { b.path = World.path(b.x, b.z, b.goal[0], b.goal[1], World.layerOf(b.y), b.goal[2] | 0); b.pi = 0; }
-  let wx = 0, wz = 0; const spd = b.speed * 1.22;
+  let wx = 0, wz = 0; const spd = b.speed * 1.22 * trollF();
   if (b.pi < b.path.length) { const w = b.path[b.pi], dx = w[0] - b.x, dz = w[1] - b.z, d = Math.hypot(dx, dz); if (d < .9) b.pi++; else { wx = dx / d; wz = dz / d; } }
   for (const o of G.actors) { if (o === b || !o.alive) continue; const dx = b.x - o.x, dz = b.z - o.z, d2 = dx * dx + dz * dz; if (d2 < 36 && d2 > 1e-4) { const d = Math.sqrt(d2), f = (1 - d / 6) * 1.4; wx += dx / d * f; wz += dz / d * f; } } // 不群聚
   const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; }
   if (revActive(b)) { wx = -wx; wz = -wz; }
   const k = Math.min(1, dt * 9); b.vx += (wx * spd - b.vx) * k; b.vz += (wz * spd - b.vz) * k;
-  if (b.onGround && wl > .3 && Math.random() < dt * .35) b.vy = 7.0 * jumpMul(b);
+  if (b.onGround && wl > .3 && Math.random() < dt * .35 * trollF()) b.vy = 7.0 * jumpMul(b);
   b.stuckT += dt; if (b.stuckT > 1.2) { if (Math.hypot(b.x - b.lx, b.z - b.lz) < .5 && wl > .2) { b.path = []; b.goal = null; if (b.onGround) b.vy = 6.8; } b.lx = b.x; b.lz = b.z; b.stuckT = 0; }
   moveActor(b, dt);
   const sp = Math.hypot(b.vx, b.vz); b.sp = clamp(sp / 8.4, 0, 1); b.animT += dt * (5 + b.sp * 9) * (sp > .3 ? 1 : 0);
   b.lookT = (b.lookT || 0) - dt; if (b.lookT <= 0) { b.lookOff = rand(-2.2, 2.2); b.lookT = rand(.5, 1.6); }
   const want = (sp > .5 ? Math.atan2(-b.vx, -b.vz) : b.yaw) + (b.lookOff || 0) * (sp > .5 ? .9 : 1);
-  b.yaw += clamp(angDiff(b.yaw, want), -6 * dt, 6 * dt); const f = FWD(b.yaw); b.fx = f[0]; b.fz = f[1];
-  // 搗亂：對附近的人（優先真人）丟閃光／煙霧／干擾彈
-  if (b.cd <= 0 && b.blind <= 0 && b.slots && (b.slots[0] || b.slots[1])) {
-    let tg = null, td = 30; for (const o of G.actors) { if (o === b || !o.alive) continue; const d = Math.hypot(o.x - b.x, o.z - b.z) - ((o.isPlayer || o.remote) ? 8 : 0); if (d < td && d > 4) { td = d; tg = o; } }
-    if (tg) {
-      const i = b.slots.findIndex(x => x && x.type !== 'cam'); if (i >= 0) { const type = b.slots[i].type; botUse(b, i); if (type === 'lure') botThrowAt(b, 'lure', tg.x + rand(-9, 9), tg.z + rand(-9, 9)); else if (type === 'smoke') botThrowAt(b, 'smoke', tg.x + rand(-2, 2), tg.z + rand(-2, 2)); else botThrowAt(b, 'flash', tg.x, tg.z); }
-      b.cd = 2.5 + Math.random() * 4;
-    } else b.cd = 1;
-  }
+  b.yaw += clamp(angDiff(b.yaw, want), -6 * dt * trollF(), 6 * dt * trollF()); const f = FWD(b.yaw); b.fx = f[0]; b.fz = f[1];
+  // 搗亂：使用道具干擾戰場
+  botItems(b, dt, false); if (b.cd <= 0) b.cd = (.6 + Math.random() * 1.2) / Math.max(.2, trollF());
 }
 function updateBot(b, dt) {
   if ((b.ctrlT || 0) > 0 && b.ctrlBy) { b.typing = null; b.protect = Math.max(0, b.protect - dt); b.cd -= dt; const dx = b.x - b.ctrlBy.x, dz = b.z - b.ctrlBy.z, dd = Math.hypot(dx, dz) || 1, sp0 = b.speed * .3; b.vx += (dx / dd * sp0 - b.vx) * Math.min(1, dt * 9); b.vz += (dz / dd * sp0 - b.vz) * Math.min(1, dt * 9); moveActor(b, dt); b.sp = clamp(Math.hypot(b.vx, b.vz) / 8.4, 0, 1); b.animT += dt * (5 + b.sp * 9); return; }
   if ((DIFF[S.diff].troll || G.mode === 'hunt') && !G.demo) { updateTroll(b, dt); return; }
-  botSkill(b, dt);
+  botSkill(b, dt); if (!b.smart) botItems(b, dt, false);
   b.threatT = Math.max(0, b.threatT - dt); if (b.smart) smartThink(b, dt);
   b.protect = Math.max(0, b.protect - dt); b.blind = Math.max(0, b.blind - dt); b.cd -= dt; b.tgtT -= dt; if (b.tgtT <= 0) b.tgt = null;
   if (b.lure) { b.lure.t -= dt; if (b.lure.t <= 0) b.lure = null; }
-  b.scanAcc += dt; if (b.scanAcc >= b.scanInt) { if (b.blind <= 0 && !b.lure) scanBot(b, b.scanAcc); b.scanAcc = 0; b.scanInt = .11 + Math.random() * .06; }
+  b.scanAcc += dt; if (b.scanAcc >= b.scanInt) { if (b.blind <= 0 && !b.lure && !G.actors.some(o => o !== b && o.alive && o.dackE >= 1 && Math.hypot(o.x - b.x, o.z - b.z) < 8)) scanBot(b, b.scanAcc); b.scanAcc = 0; b.scanInt = .11 + Math.random() * .06; }
   if (b.typing) {
     b.typing.t -= dt; if (b.blind > 0) b.typing = null;
     else if (b.typing.t <= 0) { const t = G.actors.find(a => a.alive && a.number === b.typing.num); if (scrPhase2(b) && Math.random() < .6) { b.blind = 1.5; b.redT = 2; } else if (t && t !== b && t.protect <= 0 && (G.mode === 'dm' || t.team !== b.team)) { if (b.typing.target.fake === b.typing.num) uncloak(b.typing.target, true); eliminate(b, t); } b.typing = null; }
@@ -655,7 +678,7 @@ function updateDemoCam(dt) {
 function startMatch(demo, roster) {
   const mapId = roster ? (roster.map || S.map) : (demo ? (S.demoMap || S.map) : S.map); World.load(MAPS[mapId] ? mapId : 'hb'); G.map = World.id;
   const mk = (demo && S.demoMode && MODES[S.demoMode]) ? S.demoMode : S.mode, m = MODES[mk]; G.mode = mk; G.codeLen = S.codeLen === 'rand' ? pick([3, 4, 5, 6]) : S.codeLen === 'mix' ? 0 : (S.codeLen | 0) || 4; G.countdown = 3; G.freezeT = 0; G.skillsOn = S.skills !== false; G.tleft = (S.time || 5) * 60; G.limit = m.limit; G.scores = [0, 0]; G.grenades = []; G.smokes = []; G.lures = []; G.fx = []; G.feed = []; G.typed = ''; G.lock = 0; G.time = 0;
-  freeActors(G.actors); G.actors = []; _id = 0; G.slots = [null, null]; G.bino = false; G.binK = 0; G.energy = 1; G.stam = 1; G.flashT = 0; G.itemCd = 0; G.threat = null;
+  freeActors(G.actors); G.actors = []; _id = 0; G.slots = [null, null]; G.scopeOn = false; G.bino = false; G.binK = 0; G.energy = 1; G.stam = 1; G.flashT = 0; G.itemCd = 0; G.threat = null;
   G.netClient = false; const hum = roster ? roster.length : 1;
   const n = roster ? (S.netBots ? clamp(Math.max(S.count, hum), hum, 20) : hum) : clamp(S.count, 4, 20);
   G.demo = !!demo; G.view = null; G.player = null; let pl = null;
@@ -668,8 +691,6 @@ function startMatch(demo, roster) {
   G.actors.forEach(a => { a.score = 0; a.streak = 0; a.lastKillT0 = -99; a.lastStreak = 0; drawPlate(a); });
   for (const a of G.actors) if (!a.isPlayer && !a.remote && speedMul(a) !== 1) a.speed *= speedMul(a);
   skReset(); spawnAll();
-  if (!demo) { giveItem(0, 'cam'); giveItem(1, pick(['flash', 'smoke', 'lure'])); }
-  for (const a of G.actors) if (a.remote) a.slots = [{ type: 'cam', n: 4 }, { type: pick(['flash', 'smoke', 'lure']), n: 1 }];
   G.pickups = World.pickSpots.map(p => ({ x: p[0], z: p[1], y: p[2] ? World.mezz.h : 0, l: p[2] | 0, on: true, t: 0 }));
   initFlags(); G.state = 'playing'; G.fov = 1.2;
   if (demo) { G.view = pick(G.actors); G.viewT = rand(10, 16); G.camY = G.view.y + EYE; G.camYaw = G.view.yaw; R.cam.yaw = G.view.yaw; UI.demoTag && UI.demoTag(); }
@@ -733,8 +754,14 @@ function horrorFx(list, c, t) {
   for (const e of W.eyes || []) { if (Math.sin(t * .6 + e[0] * 3) > .7) continue; const d = d2(e[0], e[2]); if (d > 3600) continue; list.push({ x: e[0], y: e[1], z: e[2], w: 1, a: .95, k: 8, d }); }
   for (const m of W.mist || []) { const x = m.x + Math.sin(t * .1 + m.ph) * 3, z = m.z + Math.cos(t * .08 + m.ph) * 3, d = d2(x, z); if (d > 4900) continue; list.push({ x, y: .55, z, w: m.s * 1.3, h: m.s * .38, a: .15, k: 9, d }); }
 }
+function applyNightEnv(viewer) {
+  const b = World.baseEnv; if (!b || !G.sk) return; let k = 1; const nt = G.sk.night;
+  if (nt.by && nt.e >= 1.5 && viewer !== nt.by) { k = lerp(1, .2, clamp((nt.e - 1.5) / .8, 0, 1)); const rem = 31.5 - nt.e; if (rem < .5) k = lerp(1, k, rem / .5); }
+  if (k !== applyNightEnv.k || World.id !== applyNightEnv.w) { for (const key of ['sunCol', 'sky', 'gnd', 'fog']) R.env[key] = b[key].map(v => v * k); SPR.skyMat.tint[0] = SPR.skyMat.tint[1] = SPR.skyMat.tint[2] = k; SPR.skyNightMat.tint[0] = SPR.skyNightMat.tint[1] = SPR.skyNightMat.tint[2] = k; applyNightEnv.k = k; applyNightEnv.w = World.id; }
+  const nv = !!(nt.by && nt.by === viewer && nt.e >= 2.5); if (nv !== applyNightEnv.nv) { applyNightEnv.nv = nv; document.getElementById('gl').classList.toggle('nv', nv); document.getElementById('nvov').classList.toggle('on', nv); }
+}
 function drawWorldFrame() {
-  const c = R.cam, pl = G.player || (G.demo ? G.view : null);
+  const c = R.cam, pl = G.player || (G.demo ? G.view : null); applyNightEnv(pl);
   if (R.shadowOn()) {
     const fw = [-Math.sin(c.yaw), -Math.cos(c.yaw)]; R.beginShadow(c.x + fw[0] * 16, 0, c.z + fw[1] * 16); World.drawShadow();
     for (const a of G.actors) { if (a === pl || a.invis || (!a.alive && a.deadT > 3)) continue; if (Math.abs(a.x - c.x) > 80 || Math.abs(a.z - c.z) > 80) continue; drawAvatar(a); }
@@ -776,6 +803,12 @@ function drawWorldFrame() {
   for (const a of G.actors) { if (!(a.redT > 0) || a === pl || !a.alive) continue; list.push({ x: a.x, y: a.y + 1.0, z: a.z, w: 2.8, a: .5 + .25 * Math.sin(G.time * 14), k: 5, d: (a.x - c.x) ** 2 + (a.z - c.z) ** 2 }); }
   for (const l of G.lures) { const on = Math.sin(l.t * 14) > 0; list.push({ x: l.x, y: l.y + .2, z: l.z, w: on ? .7 : .3, a: 1, k: 2, d: (l.x - c.x) ** 2 + (l.z - c.z) ** 2 }); }
   if (World.cur.night) horrorFx(list, c, t);
+  for (const a of G.actors) {
+    if (!a.alive || a === pl) continue; const dd2 = (a.x - c.x) ** 2 + (a.z - c.z) ** 2;
+    if (a.dackE >= 1) for (let q = 0; q < 6; q++) { const an = t * .8 + q * 1.05, rr = 1.1 + (q % 3) * .35; list.push({ x: a.x + Math.cos(an) * rr, y: a.y + .5 + (q % 4) * .45, z: a.z + Math.sin(an) * rr, w: 2.6, a: .38, k: 0, d: dd2 }); }
+    if (applyNightEnv.nv && !a.invis) { const cc = [[1, .2, .1], [1, .55, .12], [1, .9, .25]][a.id % 3]; list.push({ x: a.x, y: a.y + 1.2, z: a.z, w: 1.9, a: .9, k: 15, col: cc, d: dd2 }); }
+    if (G.bountyId === a && !a.invis) list.push({ x: a.x, y: a.y + 1.2, z: a.z, w: 1.6 + Math.min(a.kills, 10) * .22, a: .35 + Math.min(a.kills, 10) * .05, k: 15, col: [1, .82, .2], d: dd2 });
+  }
   for (const a of G.actors) { if (a.alive && a.ctrlT > 0) list.push({ x: a.x, y: a.y + 1.95, z: a.z, w: .9, a: 1, k: 13, d: (a.x - c.x) ** 2 + (a.z - c.z) ** 2 }); if (a.alive && a.cleanFx > 0 && !a.invis) { const q = 1 - a.cleanFx / .7; list.push({ x: a.x, y: a.y + .9, z: a.z, w: 1 + q * 3.2, a: .8 * (1 - q), k: 14, d: (a.x - c.x) ** 2 + (a.z - c.z) ** 2 }); } }
   for (const a of G.actors) { if (!a.alive || a === pl) continue; const dd = (a.x - c.x) ** 2 + (a.z - c.z) ** 2; if (a.shieldT > 0) list.push({ x: a.x, y: a.y + .75, z: a.z, w: 2.3, a: .5 + .2 * Math.sin(G.time * 8), k: 12, d: dd }); if (a.say) list.push({ x: a.x, y: a.y + 1.95, z: a.z, w: 2.0, a: clamp(a.say.t / .25, 0, 1), k: 11, a_: a, d: dd }); }
   for (const f of G.fx) if (f.k === 'puff') { const q = f.t / f.d; list.push({ x: f.x, y: f.y + q * .5, z: f.z, w: 1.2 + q * 1.8, a: .8 * (1 - q), k: 0, d: (f.x - c.x) ** 2 + (f.z - c.z) ** 2 }); }
@@ -788,6 +821,7 @@ function drawWorldFrame() {
     else if (s.k === 5) drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w * 1.25, [1, .08, .08], s.a);
     else if (s.k === 2) drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w, [1, .3, .2], s.a);
     else if (s.k === 11) drawSprite(sayTex(s.a_.say.txt), s.x, s.y, s.z, s.w, s.w * .26, [1, 1, 1], s.a);
+    else if (s.k === 15) drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w * .6, s.col, s.a);
     else if (s.k === 13) drawSprite(dizzyTex(), s.x, s.y + Math.sin(G.time * 6) * .05, s.z, s.w * 1.4, s.w * .7, [1, 1, 1], 1);
     else if (s.k === 14) { drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w, [.5, 1, .7], s.a); drawSprite(SPR.glow, s.x, s.y + .3, s.z, s.w * .5, s.w * .5, [1, 1, .8], s.a); }
     else if (s.k === 12) drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w * 1.3, [.4, .75, 1], s.a);

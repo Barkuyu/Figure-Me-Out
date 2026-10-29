@@ -290,6 +290,12 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 @keyframes menuIn{from{opacity:0}to{opacity:1}}
 .card .av,.ico2{display:block}
 .cav{width:30px;height:30px;border-radius:50%;vertical-align:middle;margin-right:6px;border:2px solid rgba(255,255,255,.85);background:#333;object-fit:cover}
+.np.purple{}
+#dfog{position:absolute;inset:0;pointer-events:none;z-index:6;opacity:0;background:radial-gradient(circle at 50% 50%,rgba(245,248,250,.78),rgba(235,240,245,.97));transition:opacity .25s}
+#gl.nv{filter:grayscale(1) sepia(1) hue-rotate(58deg) saturate(3.2) brightness(1.5) contrast(1.15)}
+#nvov{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;background:radial-gradient(circle,rgba(0,0,0,0) 45%,rgba(0,25,0,.75) 100%),repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 4px)}#nvov.on{opacity:1}
+#slotS.boost .ring{background:conic-gradient(#7dff9a var(--p,0deg),rgba(255,255,255,.12) 0)}
+.chip.soon{opacity:.5;filter:grayscale(1) brightness(1.4);background:rgba(255,255,255,.08)}
 .gnote{font-size:12px;color:#fff;margin:4px 0 0;min-height:16px}
 .slot .cdn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:900 clamp(16px,calc(var(--vw)*2.6),22px) var(--font);color:#fff;text-shadow:0 0 5px #000,0 0 3px #000;pointer-events:none}
 .slot .ring{position:absolute;inset:-5px;border-radius:50%;pointer-events:none;opacity:0;background:conic-gradient(#ffd84a var(--p,0deg),rgba(255,255,255,.12) 0);-webkit-mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px));mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px))}
@@ -326,7 +332,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <div id="photo" class="hidden"><canvas id="photoCv" width="520" height="390"></canvas><div class="cap" id="photoCap">____</div></div>
     <div id="fps"></div>
     <button id="pauseBtn">⏸</button>
-    <div id="demoTag" class="hidden"></div><div id="demoBar"><button class="btn alt" id="dbPause">⏸ 選單／退出</button><button class="btn alt" id="dbSet">⚙ 設定</button></div><div id="vig"></div><div id="pflash"></div><div id="ink"></div><div id="cleanse"></div><div id="keysov" class="hidden"></div><div id="deadv"></div>
+    <div id="demoTag" class="hidden"></div><div id="demoBar"><button class="btn alt" id="dbPause">⏸ 選單／退出</button><button class="btn alt" id="dbSet">⚙ 設定</button></div><div id="vig"></div><div id="pflash"></div><div id="ink"></div><div id="dfog"></div><div id="nvov"></div><div id="cleanse"></div><div id="keysov" class="hidden"></div><div id="deadv"></div>
     <div id="deadMsg" class="hidden"></div>
   </div>
 
@@ -346,7 +352,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.5</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.6</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -366,7 +372,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <h4>時間</h4><div class="chips" id="chTime"></div>
     <h4>是否允許使用技能</h4><div class="chips" id="chSkill"></div><div id="skDesc" class="gnote"></div>
     <h4>難度</h4><div class="chips" id="chCode"></div>
-    <h4>機器人難度</h4><div class="chips" id="chDiff"></div><div id="diffDesc" class="gnote"></div>
+    <h4>機器人難度</h4><div class="chips" id="chDiff"></div><div id="diffDesc" class="gnote"></div><div id="trollRow" class="hidden"><h4>干擾者程度</h4><div class="chips" id="chTroll"></div><div id="trollDesc" class="gnote"></div></div>
     <div class="btnrow"><button class="btn gray" id="gBack">🔙 回上一頁</button><button class="btn" id="gGo">🔥 進入遊戲</button></div>
   </div></div>
   <div id="tut" class="hidden"></div>
@@ -394,7 +400,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
         <div class="row"><label>技能</label><div class="chips" id="chNSkill"></div></div>
         <div class="row"><label>總人數</label><div class="chips" id="chNCount"></div></div>
         <div class="row"><label>號碼位數</label><div class="chips" id="chNCode"></div></div>
-        <div class="row"><label>難度</label><div class="chips" id="chNDiff"></div></div><div id="diffDescN" class="gnote" style="margin:-4px 0 6px"></div>
+        <div class="row"><label>難度</label><div class="chips" id="chNDiff"></div></div><div id="diffDescN" class="gnote" style="margin:-4px 0 6px"></div><div id="trollRowN" class="row hidden"><label>程度</label><div class="chips" id="chNTroll"></div></div>
         <div class="row"><label>補位</label><div class="chips" id="chNBots"></div></div>
       </div>
       <div id="mpGuestInfo" class="mpnote"></div>
@@ -450,7 +456,7 @@ function rng(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 10139
 /* ================= 設定 / 裝置偵測 ================= */
 const CODE_OPTS = [3, 4, 5, 6, 'rand', 'mix'];
 const codeLabel = v => v === 'rand' ? '隨機' : v === 'mix' ? '大亂鬥' : v + ' 碼';
-const S = { mode: 'dm', count: 20, diff: 1, outfit: 0, input: 'auto', quality: 'auto', sens: 1, auto: true, fps: true, sound: true, countSet: false, codeLen: 4, time: 5, skills: true, demoMode: 'dm', map: 'hb', demoMap: 'hb', layout: {}, layoutV: 0, netBots: true, netName: '' };
+const S = { mode: 'dm', count: 20, diff: 1, outfit: 0, input: 'auto', quality: 'auto', sens: 1, auto: true, fps: true, sound: true, countSet: false, codeLen: 4, trollLv: 3, time: 5, skills: true, demoMode: 'dm', map: 'hb', demoMap: 'hb', layout: {}, layoutV: 0, netBots: true, netName: '' };
 try { Object.assign(S, JSON.parse(localStorage.getItem('fmo2') || '{}')); } catch (e) { }
 if (S.layoutV < 2) { S.layout = {}; S.layoutV = 2; }
 const saveS = () => { try { localStorage.setItem('fmo2', JSON.stringify(S)); } catch (e) { } };
@@ -1239,7 +1245,7 @@ const World = {
     if (this.atTex) { R.freeTex(this.atTex); this.atTex = null; }
     const m = MAPS[id]; this.id = id; this.cur = m; this.bounds = m.bounds; this.mezz = m.mezz || null; this.flagPos = m.flagPos; this.gymBox = m.interior;
     this.resetBuckets(); this.atlasReset(); this.setLook(m.look || null);
-    Object.assign(R.env, m.env); if (typeof Perf !== 'undefined') R.setShadow(Perf.shadowWanted && !Perf.shadowOff && !m.noShadow);
+    Object.assign(R.env, m.env); this.baseEnv = JSON.parse(JSON.stringify(m.env)); if (typeof Perf !== 'undefined') R.setShadow(Perf.shadowWanted && !Perf.shadowOff && !m.noShadow);
     m.build(this);
     const ar = this.at; this.atTex = R.tex(ar.c, {}); this.defs.decal.m.tex = this.defs.neon.m.tex = this.atTex; this.defs.decal.m.useTexOnly = true;
     for (const k in this.bk) { const b = this.bk[k]; if (!b.p.length) continue; this.meshes.push({ mesh: R.mkMesh({ p: b.p, n: b.n, u: b.u, c: b.c, i: b.i }), m: this.defs[k].m, k }); }
@@ -1831,6 +1837,14 @@ OUTFITS.push(
   { key: 'troll', label: '干擾者', hidden: true, sub: '', skill: { name: '', desc: '' }, H: 1.78, skin: '#1c1c1f', hipX: .1, shX: .235, tz: .52, hair: '#111', hair2: '#222', gen: { top: '#16161a', top2: '#d8d8dc', pants: '#16161a', shoe: '#101012', hair: '#111', style: 'mask', acc: ['skullbelt'], accC: '#c9c9cf' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] }
 );
+OUTFITS.push(
+  { key: 'mufaza', label: '穆法沙Mufaza', sub: '', skill: { name: '命運拷貝', desc: '發動後竊取下個擊殺對象的技能；偷到的主動技能用完不進冷卻。' }, H: 1.84, skin: '#a9714a', hipX: .1, shX: .245, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#8a1f1f', top2: '#e0a82e', pants: '#4a2f1c', shoe: '#2a1a10', hair: '#a8641c', style: 'long', acc: ['headband'], accC: '#e0a82e' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.235, .36], [.255, .46], [.25, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'dack', label: '戴克Dack', sub: '', skill: { name: '生化操作', desc: '戴上透視鏡後釋放濃霧 15 秒，擾亂周圍敵人視線。冷卻 35 秒。' }, H: 1.76, skin: '#e0b896', hipX: .095, shX: .23, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#e8eef0', top2: '#3fbf6a', pants: '#2b3a40', shoe: '#1a2226', hair: '#2f8a5a', style: 'spiky', acc: ['goggles'], accC: '#6fe0a0' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'nox', label: '夜梟Nox', sub: '', skill: { name: '夜間戰術', desc: '召喚黑雲使全場變暗 30 秒，自己戴夜視鏡看清號碼。冷卻 30 秒。' }, H: 1.78, skin: '#c9a07c', hipX: .095, shX: .235, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#1a1d2a', top2: '#8ff04a', pants: '#14161f', shoe: '#0c0d12', hair: '#1c1c22', style: 'short', acc: ['goggles'], accC: '#3cff6a' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] }
+);
 const SKINPATCH = [.975, .975];
 
 function inkblot(g, cx, cy, sc, seed) {
@@ -2250,7 +2264,7 @@ function drawAvatar(a, opt) {
   if (a.team >= 0) { M4.trs(T, 0, -.09, 0, 0, 0, 0, 1, 1, 1); M4.mul(M, Ar, T); R.draw(AV.bandMesh, M, AV.bandMat[a.team]); }
   // 號碼牌（略向後仰，戴在額頭上）
   if (a.number === '' && !a.fake) return;
-  const sc = a.plateScale || 1, k = C.head, eg = G.sk && G.sk.eagle.t > 0 && G.sk.eagle.by;
+  const sc = (a.plateScale || 1) * (G.bountyId === a ? 1 + Math.min(a.kills - 1, 8) * .14 : 1), k = C.head, eg = G.sk && G.sk.eagle.t > 0 && G.sk.eagle.by;
   if (eg) { const yy = a.y + hipN + chinN + (O.plateY - d.chinY) * k + .12, ps = sc * 2.2; M4.trs(M, a.x, yy, a.z, 0, Math.atan2(eg.x - a.x, eg.z - a.z), 0, .40 * ps * 1.1, .19 * ps * 1.1, 1); R.draw(AV.plateMesh, M, a.plateMat); return; }
   placeM(M, U, 0, chinN + (O.plateY - d.chinY) * k + .04 * (sc - 1), O.plateZ * k, -.14, 0, .40 * sc * 1.1, .19 * sc * 1.1, 1); R.draw(AV.plateMesh, M, a.plateMat);
 }
@@ -2269,9 +2283,10 @@ const MODES = {
   dm: { name: '個人死鬥', sub: '人人為敵', desc: '所有人互相淘汰，最先達到 15 次淘汰者獲勝', time: 300, limit: 15, short: '人人為敵，先淘汰 15 人者獲勝' },
   tdm: { name: '團隊死鬥', sub: '紅 vs 藍', desc: '紅藍兩隊對戰，隊伍先累積 30 次淘汰者獲勝', time: 360, limit: 30, short: '紅藍對戰，隊伍先累積 30 次淘汰者獲勝' },
   hunt: { name: '激鬥追捕', sub: '追殺電腦角色', desc: '玩家頭上沒有號碼，只能追殺電腦角色，連殺積分更高；時間到積分最高或最先 100 分者獲勝', time: 300, limit: 100, demo: false, short: '只追殺電腦、連殺加分，100 分或時間到積分最高者勝' },
+  arena: { name: '擂台逃殺', sub: '🔒 敬請期待', soon: true, desc: '敬請期待，玩法即將公開', time: 300, limit: 1, demo: false, short: '敬請期待，玩法即將公開' },
   ctf: { name: '奪旗', sub: '搶旗帶回基地', desc: '搶走敵方旗幟帶回己方基地得分，先得 3 分獲勝', time: 480, limit: 3, short: '搶走敵方旗幟帶回己方基地，先得 3 分獲勝' }
 };
-const ITEMS = { cam: { ico: '📷', name: '相機' }, flash: { ico: '💥', name: '閃光彈' }, smoke: { ico: '🌫️', name: '煙霧彈' }, lure: { ico: '📣', name: '干擾彈' } };
+const ITEMS = { cam: { ico: '📷', name: '相機' }, quake: { ico: '🌋', name: '地牛控制器' }, scope: { ico: '🔍', name: '偵查鏡' }, fake: { ico: '🎫', name: '假號碼牌' }, spring: { ico: '⛲', name: '神仙泉水' } };
 const DIFF = [{ base: 1.9, type: 1.5, name: '輕鬆', desc: '電腦讀碼慢、出手遲鈍，適合新手練習' }, { base: 1.25, type: 1.0, name: '普通', desc: '電腦速度與反應適中，標準對戰' }, { base: .85, type: .7, name: '困難', desc: '電腦讀碼快、輸入迅速，考驗反應力' }, { base: 1.25, type: 1.0, name: '干擾者', troll: true, desc: '機器人不殺人，只四處亂跑丟道具搗亂' }];
 
 const G = {
@@ -2306,8 +2321,6 @@ function spawnActor(a, fixed) {
   if (G.mode === 'hunt' && (a.isPlayer || a.remote)) { a.number = ''; a.fake = null; drawPlate(a); } else assignNumber(a);
   if (!a.isPlayer && !a.remote) {
     a.slots = [null, null]; a.mode = 'roam'; a.threatT = 0; a.reader = null;
-    const troll = (DIFF[S.diff].troll || G.mode === 'hunt') && !G.demo, n0 = (G.demo || troll) ? 2 : (Math.random() < .6 ? 1 : 0), pool = G.demo ? ['flash', 'smoke', 'lure', 'cam'] : ['flash', 'smoke', 'lure'];
-    for (let i = 0; i < n0; i++) { const t = pick(pool); a.slots[i] = { type: t, n: t === 'cam' ? 3 : 1 }; }
   }
 }
 /* 開場：所有人平均散布在地圖各處（最遠點取樣），且每人的視野內看不到任何其他角色 */
@@ -2346,26 +2359,36 @@ function spawnAll() {
   for (let i = 0; i < n; i++) spawnActor(A[i], [pts[i][0], pts[i][1], yawFor(i)[0], pts[i][2] | 0]);
 }
 /* ---------- 角色技能 ---------- */
-const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null];
-const isOut = (a, i) => skOn() && a.av && a.av.outfitIdx === i; // 對應 OUTFITS：蘇蘇／艾迪／艾伯特／蘇米(被動)／艾瑞克／麥克(被動)
+const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null, 'steal', 'dack', 'nox'];
+const PASSIVE_IDX = [3, 5, 8, 11, 12, 13];
+const isOut = (a, i) => skOn() && a.av && (a.av.outfitIdx === i || a.passIdx === i); // 對應 OUTFITS：蘇蘇／艾迪／艾伯特／蘇米(被動)／艾瑞克／麥克(被動)
 const skOn = () => G.skillsOn !== false;
-const isSumi = a => skOn() && a.av && a.av.outfitIdx === 3;
+const isSumi = a => isOut(a, 3);
 const jumpMul = a => isSumi(a) ? 1.285 : 1; // 高度 1.65 倍 → 初速 √1.65 倍
 const speedMul = a => isOut(a, 5) ? 2.5 : isOut(a, 13) ? .7 : 1;
-const SKILLS = { ink: { name: '烏賊戲法', cd: 40, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 50, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 40, ico: '🐱' }, mind: { name: '心靈控制', cd: 40, ico: '🌀' }, cloak: { name: '幻影易容', cd: 45, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 40, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 40, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 60, ico: '⚡' } };
+const SKILLS = { steal: { name: '命運拷貝', cd: 1, ico: '🔮' }, dack: { name: '生化操作', cd: 35, ico: '🧪' }, nox: { name: '夜間戰術', cd: 30, ico: '🌑' }, ink: { name: '烏賊戲法', cd: 40, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 50, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 40, ico: '🐱' }, mind: { name: '心靈控制', cd: 40, ico: '🌀' }, cloak: { name: '幻影易容', cd: 45, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 40, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 40, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 60, ico: '⚡' } };
 const SCR_FLASH = 0, SCR_TOTAL = 5.0; // 預警閃光 3 秒（4 次短閃 + 1.8 秒長閃）+ 錯亂 5 秒
 const skillOf = a => SKILL_OF[a.av.outfitIdx] ? SKILLS[SKILL_OF[a.av.outfitIdx]] : null;
 const revActive = a => G.sk.rev.t > 0 && G.sk.rev.by !== a && a.clrRev !== G.sk.rev.id;
 const inkActive = a => G.sk.ink.t > 0 && G.sk.ink.by !== a && a.clrInk !== G.sk.ink.id;
 const scrPhase2 = a => G.sk.scr.t >= SCR_FLASH && G.sk.scr.by !== a && a.clrScr !== G.sk.scr.id;
-function skReset() { G.sk = { rev: { t: 0, by: null, id: 0 }, scr: { t: -1, by: null, id: 0 }, ink: { t: 0, by: null, id: 0 }, eagle: { t: 0, by: null } }; G.skId = 0; for (const a of G.actors) { a.skCd = 0; a.shieldT = 0; a.say = null; a.cloak = false; a.invis = false; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2.5; a.clrRev = a.clrScr = a.clrInk = -1; } }
+function skReset() { G.sk = { night: { e: 0, by: null }, quake: { t: 0, by: null }, rev: { t: 0, by: null, id: 0 }, scr: { t: -1, by: null, id: 0 }, ink: { t: 0, by: null, id: 0 }, eagle: { t: 0, by: null } }; G.skId = 0; for (const a of G.actors) { a.skCd = 0; a.shieldT = 0; a.say = null; a.cloak = false; a.invis = false; a.dackE = -1; a.armed = false; a.stolen = null; a.passIdx = -1; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2.5; a.clrRev = a.clrScr = a.clrInk = -1; } }
 function cleanse(a) { a.blind = 0; a.ctrlT = 0; a.redT = 0; a.clrRev = G.sk.rev.id; a.clrScr = G.sk.scr.id; a.clrInk = G.sk.ink.id; a.cleanFx = .7; if (a.isPlayer) { G.flashT = 0; G.freezeT = 0; G.lock = 0; UI.cleanse(); } }
 function skMsg(a, t) { const m = a.name + ' ' + t; UI.msg(m, 'item'); netMsg(m, 'item'); }
 function puffFx(a) { for (let i = 0; i < 6; i++) G.fx.push({ k: 'puff', x: a.x + rand(-.4, .4), y: a.y + rand(.6, 1.5), z: a.z + rand(-.4, .4), t: 0, d: .3 + rand(0, .5) }); }
 function uncloak(a, smoke) { if (!a.fake) return; a.fake = null; a.fakeT = 0; a.fakeOf = null; drawPlate(a); if (smoke) puffFx(a); }
 function castSkill(a) {
-  if (!skOn() || !a || !a.alive || (a.skCd || 0) > 0 || G.state !== 'playing' || G.countdown > 0) return false;
-  const k = SKILL_OF[a.av.outfitIdx]; if (!k) return false; if (k === 'cloak' && a.fake) return false; a.skCd = SKILLS[k].cd;
+  if (!skOn() || !a || !a.alive || G.state !== 'playing' || G.countdown > 0) return false;
+  const base = SKILL_OF[a.av.outfitIdx]; if (!base) return false;
+  if (base === 'steal') {
+    if (a.stolen) { const k = a.stolen; a.stolen = null; return runSkill(a, k, false); }
+    if (a.armed) return false; a.armed = true; skMsg(a, '發動【命運拷貝】！等待竊取下一個擊殺對象的技能'); (a.kp || (a.kp = {})).R = G.time + .5; if (a.isPlayer) Sfx.skill(); return true;
+  }
+  if ((a.skCd || 0) > 0) return false;
+  return runSkill(a, base, true);
+}
+function runSkill(a, k, useCd) {
+  if (k === 'cloak' && a.fake) return false; if (useCd) a.skCd = SKILLS[k].cd + (k === 'dack' ? 16 : k === 'nox' ? 31.5 : 0);
   if (k === 'rev') { G.sk.rev = { t: 5, by: a, id: ++G.skId }; skMsg(a, '發動【顛倒乾坤】！其他人的移動方向反轉 5 秒'); }
   else if (k === 'scr') { G.sk.scr = { t: 0, by: a, id: ++G.skId }; skMsg(a, '發動【紫電干擾】！其他人的數字鍵錯亂 5 秒'); }
   else if (k === 'ink') { G.sk.ink = { t: 5, by: a, id: ++G.skId }; for (const o of G.actors) if (o !== a && o.alive && !o.isPlayer && !o.remote) { o.blind = Math.max(o.blind, 5); o.typing = null; } skMsg(a, '發動【烏賊戲法】！其他人的視野被墨汁遮住'); }
@@ -2377,13 +2400,20 @@ function castSkill(a) {
     for (const o of G.actors) { if (o === a || !o.alive || o.fake) continue; const dx = o.x - a.x, dz = o.z - a.z, d = Math.hypot(dx, dz) || 1, front = (dx * fx[0] + dz * fx[1]) / d; const sc = d + (front > .3 && los(a.x, a.y + 1.6, a.z, o.x, o.y + 1.65, o.z) ? 0 : 40); if (sc < bd) { bd = sc; best = o; } }
     if (best) { a.fake = best.number; a.fakeT = 20; a.fakeOf = best; drawPlate(a); if (a.isPlayer) UI.msg('已偽裝成 ' + best.name + ' 的號碼', 'item'); } else a.skCd = 3;
   }
+  else if (k === 'dack') { a.dackE = 0; skMsg(a, '發動【生化操作】！戴上透視鏡，濃霧即將噴發'); }
+  else if (k === 'nox') { G.sk.night = { e: 0, by: a }; skMsg(a, '發動【夜間戰術】！黑雲籠罩全場'); }
   else { a.shieldT = 3; if (a.isPlayer) UI.msg('護盾展開！3 秒內擋下一次攻擊', 'item'); }
   (a.kp || (a.kp = {})).R = G.time + .5; if (a.isPlayer || a === G.view) Sfx.skill(); return true;
 }
 function castSkillPlayer() { const p = G.player; if (!p || G.demo || G.state !== 'playing') return; if (G.netClient) { if ((p.skCd || 0) <= 0 && p.alive) { netAct(['s']); p.skCd = 0.01; } return; } castSkill(p); UI.dirty = true; }
 function skTick(dt) {
-  if (G.sk.ink.t > 0) G.sk.ink.t -= dt; if (G.sk.eagle.t > 0) G.sk.eagle.t -= dt;
+  if (G.sk.ink.t > 0) G.sk.ink.t -= dt; if (G.sk.eagle.t > 0) G.sk.eagle.t -= dt; if (G.sk.quake.t > 0) G.sk.quake.t -= dt;
+  if (G.sk.night.by) { G.sk.night.e += dt; if (G.sk.night.e >= 31.5 || !G.sk.night.by.alive) G.sk.night.by = null; }
+  { let lead = null, mx = 1; if (G.mode === 'dm') { for (const a of G.actors) { if (a.kills > mx) { mx = a.kills; lead = a; } else if (a.kills === mx && lead) lead = null; } } G.bountyId = lead && lead.kills >= 2 ? lead : null; }
+  if (G.mode === 'hunt') { const hs = G.actors.filter(a => a.isPlayer || a.remote).sort((x, y) => (y.score || 0) - (x.score || 0)); hs.forEach((a, i) => { a.boost = hs.length >= 2 && (i + 1) > hs.length / 2; }); }
   for (const a of G.actors) {
+    if (a.boost && a.skCd > 0) a.skCd = Math.max(0, a.skCd - dt);
+    if (a.dackE >= 0) { a.dackE += dt; if (a.dackE > 16 || !a.alive) a.dackE = -1; }
     a.ctrlT = Math.max(0, (a.ctrlT || 0) - dt); a.cleanFx = Math.max(0, (a.cleanFx || 0) - dt);
     if (isOut(a, 11) && a.alive) { a.cleanT = (a.cleanT ?? 2.5) - dt; if (a.cleanT <= 0) { a.cleanT = 2.5; cleanse(a); } }
     const og = a.remote ? (a.y - groundAt(a.x, a.z, a.y + .1) < .06) : a.onGround;
@@ -2392,7 +2422,7 @@ function skTick(dt) {
     const ray = isOut(a, 8) && a.rayJ && a.airT >= .3, ly = a.cloak && !(a.cloakE >= 1.5 && (a.cloakE % 1.5) < .1);
     a.invis = a.alive && (ray || ly);
   }
-  for (const a of G.actors) { if (a.fake) { a.fakeT -= dt; if (a.fakeT <= 0 || !a.alive || !a.fakeOf || !a.fakeOf.alive || a.fakeOf.number !== a.fake) uncloak(a, a.alive); } a.skCd = Math.max(0, (a.skCd || 0) - dt); a.shieldT = Math.max(0, (a.shieldT || 0) - dt); if (a.say) { a.say.t -= dt; if (a.say.t <= 0) a.say = null; } }
+  for (const a of G.actors) { if (a.fake) { a.fakeT -= dt; if (a.fakeT <= 0 || !a.alive || (a.fakeOf && (!a.fakeOf.alive || a.fakeOf.number !== a.fake))) uncloak(a, a.alive && !!a.fakeOf); } a.skCd = Math.max(0, (a.skCd || 0) - dt); a.shieldT = Math.max(0, (a.shieldT || 0) - dt); if (a.say) { a.say.t -= dt; if (a.say.t <= 0) a.say = null; } }
   if (G.sk.rev.t > 0) G.sk.rev.t -= dt; if (G.sk.scr.t >= 0) { G.sk.scr.t += dt; if (G.sk.scr.t >= SCR_TOTAL) G.sk.scr.t = -1; }
 }
 function blockHit(att, t) {
@@ -2402,8 +2432,8 @@ function blockHit(att, t) {
   const m = t.name + ' 的護盾擋下了 ' + att.name + ' 的攻擊！'; UI.msg(m, att.isPlayer ? 'bad' : 'item'); netMsg(m, 'item'); if (att.isPlayer) Sfx.wrong();
 }
 function botSkill(b, dt) {
-  if (!skOn()) return; if (!b.alive || (b.skCd || 0) > 0 || G.countdown > 0 || G.state !== 'playing') return; const k = SKILL_OF[b.av.outfitIdx];
-  if (!k) return; if (k === 'shield') { if (b.threatT > 0 && Math.random() < dt * 2.5) castSkill(b); } else if (Math.random() < dt * .035) castSkill(b);
+  if (!skOn()) return; if (!b.alive || G.countdown > 0 || G.state !== 'playing') return; const k = SKILL_OF[b.av.outfitIdx]; if (k !== 'steal' && (b.skCd || 0) > 0) return;
+  if (!k) return; if (k === 'steal') { if (b.stolen) { if (Math.random() < dt * .06) castSkill(b); } else if (!b.armed && Math.random() < dt * .2) castSkill(b); return; } if (k === 'shield') { if (b.threatT > 0 && Math.random() < dt * 2.5) castSkill(b); } else if (Math.random() < dt * .035) castSkill(b);
 }
 const STREAK_PTS = [3, 5, 7, 10, 15], STREAK_TXT = ['', '二連殺', '三連殺', '四連殺', '五連殺'];
 function enemyOf(a, o) { return o !== a && o.alive && (isDM() || o.team !== a.team); }
@@ -2505,31 +2535,44 @@ function updateGrenades(dt) {
   }
   for (let i = G.fx.length - 1; i >= 0; i--) { G.fx[i].t += dt; if (G.fx[i].t > G.fx[i].d) G.fx.splice(i, 1); }
 }
-function randomItem() { const r = Math.random(); return r < .2 ? 'cam' : r < .5 ? 'flash' : r < .8 ? 'smoke' : 'lure'; }
+function randomItem() { const r = Math.random(); return r < .3 ? 'cam' : r < .5 ? 'quake' : r < .7 ? 'scope' : r < .85 ? 'fake' : 'spring'; }
 function giveItem(i, type) { G.slots[i] = { type, n: type === 'cam' ? 4 : 1 }; }
 function grantItem(sl) {
   const ty = randomItem(), i0 = sl.findIndex(x => x && x.type === ty);
   if (i0 >= 0) { sl[i0].n = Math.min(ty === 'cam' ? 9 : 3, sl[i0].n + (ty === 'cam' ? 3 : 1)); return { i: i0, ty }; }
-  let free = !sl[0] ? 0 : !sl[1] ? 1 : -1;
-  if (free < 0) free = (sl[1] && sl[1].type !== 'cam') ? 1 : (sl[0] && sl[0].type !== 'cam') ? 0 : 1;
+  const free = !sl[0] ? 0 : !sl[1] ? 1 : -1; if (free < 0) return null; // 道具欄已滿：不更換
   sl[free] = { type: ty, n: ty === 'cam' ? 4 : 1 }; return { i: free, ty };
 }
 function tryPickup(a) {
   for (const p of G.pickups) {
     if (!p.on) continue; if (Math.abs(p.x - a.x) > 1.5 || Math.abs(p.z - a.z) > 1.5 || Math.abs(p.y - a.y) > 2.2) continue;
-    if (a.isPlayer) { if (G.netClient) continue; const r = grantItem(G.slots); Sfx.pick(); UI.msg('獲得 ' + ITEMS[r.ty].name + (G.slots[r.i].n > 1 ? ' ×' + G.slots[r.i].n : ''), 'item'); UI.dirty = true; }
-    else if (a.slots) grantItem(a.slots);
+    if (a.isPlayer) { if (G.netClient) continue; const r = grantItem(G.slots); if (!r) continue; Sfx.pick(); UI.msg('獲得 ' + ITEMS[r.ty].name + (G.slots[r.i].n > 1 ? ' ×' + G.slots[r.i].n : ''), 'item'); UI.dirty = true; }
+    else if (a.slots) { if (!grantItem(a.slots)) continue; }
     else continue;
     p.on = false; p.t = 18;
   }
 }
+/* 道具效果（玩家／電腦／連線訪客共用） */
+function applyItem(a, type) {
+  if (type === 'quake') { G.sk.quake = { t: 2, by: a }; for (const o of G.actors) if (o !== a && o.alive && !o.isPlayer && !o.remote) o.blind = Math.max(o.blind, .8); const m = a.name + ' 啟動了地牛控制器！'; UI.msg(m, 'item'); netMsg(m, 'item'); }
+  else if (type === 'fake') { let n, L = G.codeLen || randi(3, 6); do { n = String(randi(Math.pow(10, L - 1), Math.pow(10, L) - 1)); } while (G.actors.some(o => o.number === n)); a.fake = n; a.fakeT = 7; a.fakeOf = null; drawPlate(a); if (a.isPlayer) UI.msg('號碼已偽裝 7 秒', 'item'); }
+  else if (type === 'spring') { a.skCd = 0; if (a.isPlayer) UI.msg('神仙泉水：技能冷卻已刷新！', 'item'); }
+}
 function useItem(i) {
   const p = G.player; if (!p || !p.alive || G.state !== 'playing' || G.countdown > 0) return;
-  const it = G.slots[i]; if (!it || G.itemCd > 0 || G.bino) return;
+  const it = G.slots[i]; if (!it || G.itemCd > 0 || G.bino || p.ctrlT > 0) return;
   if (it.type === 'cam') { G.photoReq = true; G.fp.camT = .55; Sfx.shutter(); UI.flashWhite(.35); G.itemCd = 1.0; }
-  else { if (G.netClient) Sfx.throwS(); else { const f = FWD(p.yaw), cp = Math.cos(p.pitch + .12), sp = Math.sin(p.pitch + .12); throwGrenade(p, it.type, f[0] * cp, sp, f[1] * cp, 15); } G.fp.throwT = .4; G.itemCd = .7; }
+  else if (it.type === 'scope') { if (!G.scopeOn) { G.scopeOn = true; G.itemCd = .3; Sfx.tone(700, .1, 'sine', .1, 200); UI.dirty = true; return; } G.scopeOn = false; G.photoReq = true; G.fp.camT = .55; Sfx.shutter(); UI.flashWhite(.35); G.itemCd = 1.0; }
+  else { Sfx.pick(); if (G.netClient) { if (it.type === 'spring') p.skCd = 0; } else applyItem(p, it.type); G.itemCd = .6; }
   if (G.netClient) netAct(['u', i]);
   it.n--; if (it.n <= 0) G.slots[i] = null; UI.dirty = true;
+}
+function botItems(b, dt, threat) {
+  if (!b.slots || b.cd > 0 || b.blind > 0) return; const has = t => b.slots.findIndex(x => x && x.type === t); let i;
+  if ((i = has('spring')) >= 0 && b.skCd > 8 && skillOf(b)) { botUse(b, i); applyItem(b, 'spring'); b.cd = 2; return; }
+  if ((i = has('fake')) >= 0 && (threat || b.threatT > 0) && !b.fake) { botUse(b, i); applyItem(b, 'fake'); b.cd = 3; return; }
+  if ((i = has('quake')) >= 0 && Math.random() < (dt || .05) * .4 && G.actors.some(o => (o.isPlayer || o.remote) && o.alive && Math.hypot(o.x - b.x, o.z - b.z) < 30)) { botUse(b, i); applyItem(b, 'quake'); b.cd = 4; return; }
+  if ((i = has('scope')) >= 0 && Math.random() < (dt || .05) * .05) { botUse(b, i); b.cd = 3; }
 }
 function botUse(b, i) { (b.kp || (b.kp = {}))[i ? 'G' : 'F'] = G.time + .4; const x = b.slots[i]; x.n--; if (x.n <= 0) b.slots[i] = null; }
 function botThrowAt(b, type, tx, tz) {
@@ -2573,6 +2616,8 @@ function eliminate(k, v) {
   if (!v.alive || v.protect > 0) return;
   v.alive = false; v.deaths++; v.deadT = 0; v.respawnT = 3.2; v.killedBy = k; v.typing = null; v.lure = null;
   k.lastKillT = G.time; if (k.cloak) k.cloakE = 0;
+  if (G.sk.night.by === v) G.sk.night.by = null;
+  if (skOn() && k !== v && k.armed && k.av && k.av.outfitIdx === 15) { const vi = v.av.outfitIdx, kind = SKILL_OF[vi]; if (kind && kind !== 'steal') { k.stolen = kind; k.armed = false; skMsg(k, '竊取了【' + SKILLS[kind].name + '】！再按一次施放'); } else if (PASSIVE_IDX.includes(vi)) { k.passIdx = vi; k.armed = false; skMsg(k, '竊取了被動技能【' + OUTFITS[vi].skill.name + '】'); } }
   if (k !== v) { assignNumber(k); for (const o of G.actors) { if (o.read) o.read[k.id] = 0; if (o.typing && o.typing.target === k) o.typing = null; } } // 擊殺成功：自己的號碼立即更新
   if (G.mode === 'hunt' && k !== v && (k.isPlayer || k.remote)) { k.streak = (G.time - (k.lastKillT0 ?? -99) <= 10) ? (k.streak || 0) + 1 : 1; k.lastKillT0 = G.time; const pts = STREAK_PTS[Math.min(k.streak, 5) - 1]; k.score = (k.score || 0) + pts; k.lastStreak = k.streak; if (k.isPlayer) UI.streak(k.streak, pts); }
   if (k !== v) { k.kills++; if (G.mode === 'tdm' && k.team >= 0) G.scores[k.team]++; }
@@ -2626,6 +2671,7 @@ function updatePlayer(dt) {
   const p = G.player;
   if (Device.mobile) In.sprint = In.sprintT;
   if (In.sprintT && G.stam <= .02) { In.sprintT = false; In.sprint = false; const rb = document.getElementById('bRun'); if (rb) rb.classList.remove('tog'); }
+  if (G.scopeOn && (!p.alive || !G.slots.some(s => s && s.type === 'scope'))) G.scopeOn = false;
   if (G.freezeT > 0 || p.ctrlT > 0) In.lookX = In.lookY = 0; // 定身時連視角也不能轉
   p.yaw += In.lookX; p.pitch = clamp(p.pitch + In.lookY, -1.45, 1.45); In.lookX = In.lookY = 0;
   const f = FWD(p.yaw), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
@@ -2678,10 +2724,11 @@ function updateCamera(dt) {
   const base = Device.mobile ? 1.19 : 1.28; // 弧度 ≈ 68° / 73°
   const zoom = .15; // 望遠鏡 ≈ 8.6°（倍率為先前的 2 倍）
   const sp = p.sprinting && !G.bino ? .06 : 0;
-  const fov = lerp(base + sp, zoom, G.binK);
+  const fov = G.scopeOn ? .175 : lerp(base + sp, zoom, G.binK);
   G.fov += (fov - G.fov) * Math.min(1, dt * 14); c.fov = G.fov;
   let sx = 0, sy = 0; if (G.binK > .5) { sx = Math.sin(G.time * 1.7) * .0016 + Math.sin(G.time * 4.1) * .0007; sy = Math.cos(G.time * 1.3) * .0014; }
   c.x = p.x + Math.cos(p.yaw) * p.lo; c.z = p.z - Math.sin(p.yaw) * p.lo; c.y = (p.alive ? G.camY - Math.abs(p.lo) * .12 : Math.max(.35, G.camY - p.deadT * 2.2)) + bob;
+  { const q = G.sk && G.sk.quake; if (q && q.t > 0 && q.by !== p) { const ev = .2 + .8 * clamp(q.t / 2, 0, 1); sx += Math.sin(G.time * 38) * .17 * ev; } }
   c.yaw = p.yaw + sx; c.pitch = p.pitch + sy; c.roll = p.alive ? -p.lo * .4 : clamp(p.deadT * 2.2, 0, .35) * (p.id % 2 ? 1 : -1);
   if (!p.alive) c.pitch = lerp(c.pitch, -.45, clamp(p.deadT * 2, 0, 1));
 }
@@ -2737,12 +2784,7 @@ function coverFor(b, rd) {
   if (best) return [best[0], best[1], best[2]];
   const dx = b.x - rd.x, dz = b.z - rd.z, d = Math.hypot(dx, dz) || 1, bn = World.bounds; return [clamp(b.x + dx / d * 14, bn.x0 + 2, bn.x1 - 2), clamp(b.z + dz / d * 14, bn.z0 + 2, bn.z1 - 2), World.layerOf(b.y)];
 }
-function smartDefend(b, rd) {
-  const d = Math.hypot(rd.x - b.x, rd.z - b.z), has = t => b.slots.findIndex(x => x && x.type === t); let i;
-  if ((i = has('flash')) >= 0 && d < 26) { botUse(b, i); botThrowAt(b, 'flash', rd.x, rd.z); b.cd = 2.5; }
-  else if ((i = has('smoke')) >= 0) { botUse(b, i); botThrowAt(b, 'smoke', b.x + (rd.x - b.x) / Math.max(d, 1) * 4, b.z + (rd.z - b.z) / Math.max(d, 1) * 4); b.cd = 2.5; }
-  else if ((i = has('lure')) >= 0 && d > 7) { botUse(b, i); botThrowAt(b, 'lure', rd.x + (rd.x - b.x) / d * 6, rd.z + (rd.z - b.z) / d * 6); b.cd = 3; }
-}
+function smartDefend(b, rd) { botItems(b, 0, true); }
 function smartThink(b, dt) {
   b.modeT -= dt; b.evadeCd = Math.max(0, b.evadeCd - dt);
   const rd = b.reader && b.reader.alive ? b.reader : null;
@@ -2759,10 +2801,11 @@ function smartThink(b, dt) {
     if (ci >= 0 && d > 9 && d < 40 && face > .34 && t.alive && (b.read[t.id] || 0) < .9) {
       botUse(b, ci); b.read[t.id] = Math.min(1, (b.read[t.id] || 0) + .6); b.cd = 3.5;
       if (b.read[t.id] >= 1 && !b.typing) { b.typing = { target: t, num: t.number, t: DIFF[S.diff].type * 1.1 }; b.read[t.id] = 0; }
-    } else { const fi = b.slots.findIndex(x => x && x.type === 'flash'); if (fi >= 0 && d > 8 && d < 22 && Math.random() < dt * .5) { botUse(b, fi); botThrowAt(b, 'flash', t.x, t.z); b.cd = 3; } }
+    }
   }
 }
 /* ---- 干擾者機器人：不讀碼、不殺人，只在全場亂跑、亂轉頭、丟道具搗亂 ---- */
+const trollF = () => [.25, .55, 1][clamp((S.trollLv || 3) - 1, 0, 2)];
 function trollGoal(b) {
   if ((!b.slots[0] || !b.slots[1]) && Math.random() < .65) { let bp = null, bd = 1e9; for (const p of G.pickups) { if (!p.on) continue; const d = Math.hypot(p.x - b.x, p.z - b.z) + Math.random() * 12; if (d < bd) { bd = d; bp = p; } } if (bp) return [bp.x, bp.z, bp.l]; }
   let best = null, bs = -1;
@@ -2775,36 +2818,30 @@ function updateTroll(b, dt) {
   b.goalT -= dt; b.repT -= dt;
   if (!b.goal || b.goalT <= 0 || (b.path.length && b.pi >= b.path.length)) { b.goal = trollGoal(b); b.path = []; b.pi = 0; b.goalT = 5 + Math.random() * 5; }
   if (!b.path.length) { b.path = World.path(b.x, b.z, b.goal[0], b.goal[1], World.layerOf(b.y), b.goal[2] | 0); b.pi = 0; }
-  let wx = 0, wz = 0; const spd = b.speed * 1.22;
+  let wx = 0, wz = 0; const spd = b.speed * 1.22 * trollF();
   if (b.pi < b.path.length) { const w = b.path[b.pi], dx = w[0] - b.x, dz = w[1] - b.z, d = Math.hypot(dx, dz); if (d < .9) b.pi++; else { wx = dx / d; wz = dz / d; } }
   for (const o of G.actors) { if (o === b || !o.alive) continue; const dx = b.x - o.x, dz = b.z - o.z, d2 = dx * dx + dz * dz; if (d2 < 36 && d2 > 1e-4) { const d = Math.sqrt(d2), f = (1 - d / 6) * 1.4; wx += dx / d * f; wz += dz / d * f; } } // 不群聚
   const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; }
   if (revActive(b)) { wx = -wx; wz = -wz; }
   const k = Math.min(1, dt * 9); b.vx += (wx * spd - b.vx) * k; b.vz += (wz * spd - b.vz) * k;
-  if (b.onGround && wl > .3 && Math.random() < dt * .35) b.vy = 7.0 * jumpMul(b);
+  if (b.onGround && wl > .3 && Math.random() < dt * .35 * trollF()) b.vy = 7.0 * jumpMul(b);
   b.stuckT += dt; if (b.stuckT > 1.2) { if (Math.hypot(b.x - b.lx, b.z - b.lz) < .5 && wl > .2) { b.path = []; b.goal = null; if (b.onGround) b.vy = 6.8; } b.lx = b.x; b.lz = b.z; b.stuckT = 0; }
   moveActor(b, dt);
   const sp = Math.hypot(b.vx, b.vz); b.sp = clamp(sp / 8.4, 0, 1); b.animT += dt * (5 + b.sp * 9) * (sp > .3 ? 1 : 0);
   b.lookT = (b.lookT || 0) - dt; if (b.lookT <= 0) { b.lookOff = rand(-2.2, 2.2); b.lookT = rand(.5, 1.6); }
   const want = (sp > .5 ? Math.atan2(-b.vx, -b.vz) : b.yaw) + (b.lookOff || 0) * (sp > .5 ? .9 : 1);
-  b.yaw += clamp(angDiff(b.yaw, want), -6 * dt, 6 * dt); const f = FWD(b.yaw); b.fx = f[0]; b.fz = f[1];
-  // 搗亂：對附近的人（優先真人）丟閃光／煙霧／干擾彈
-  if (b.cd <= 0 && b.blind <= 0 && b.slots && (b.slots[0] || b.slots[1])) {
-    let tg = null, td = 30; for (const o of G.actors) { if (o === b || !o.alive) continue; const d = Math.hypot(o.x - b.x, o.z - b.z) - ((o.isPlayer || o.remote) ? 8 : 0); if (d < td && d > 4) { td = d; tg = o; } }
-    if (tg) {
-      const i = b.slots.findIndex(x => x && x.type !== 'cam'); if (i >= 0) { const type = b.slots[i].type; botUse(b, i); if (type === 'lure') botThrowAt(b, 'lure', tg.x + rand(-9, 9), tg.z + rand(-9, 9)); else if (type === 'smoke') botThrowAt(b, 'smoke', tg.x + rand(-2, 2), tg.z + rand(-2, 2)); else botThrowAt(b, 'flash', tg.x, tg.z); }
-      b.cd = 2.5 + Math.random() * 4;
-    } else b.cd = 1;
-  }
+  b.yaw += clamp(angDiff(b.yaw, want), -6 * dt * trollF(), 6 * dt * trollF()); const f = FWD(b.yaw); b.fx = f[0]; b.fz = f[1];
+  // 搗亂：使用道具干擾戰場
+  botItems(b, dt, false); if (b.cd <= 0) b.cd = (.6 + Math.random() * 1.2) / Math.max(.2, trollF());
 }
 function updateBot(b, dt) {
   if ((b.ctrlT || 0) > 0 && b.ctrlBy) { b.typing = null; b.protect = Math.max(0, b.protect - dt); b.cd -= dt; const dx = b.x - b.ctrlBy.x, dz = b.z - b.ctrlBy.z, dd = Math.hypot(dx, dz) || 1, sp0 = b.speed * .3; b.vx += (dx / dd * sp0 - b.vx) * Math.min(1, dt * 9); b.vz += (dz / dd * sp0 - b.vz) * Math.min(1, dt * 9); moveActor(b, dt); b.sp = clamp(Math.hypot(b.vx, b.vz) / 8.4, 0, 1); b.animT += dt * (5 + b.sp * 9); return; }
   if ((DIFF[S.diff].troll || G.mode === 'hunt') && !G.demo) { updateTroll(b, dt); return; }
-  botSkill(b, dt);
+  botSkill(b, dt); if (!b.smart) botItems(b, dt, false);
   b.threatT = Math.max(0, b.threatT - dt); if (b.smart) smartThink(b, dt);
   b.protect = Math.max(0, b.protect - dt); b.blind = Math.max(0, b.blind - dt); b.cd -= dt; b.tgtT -= dt; if (b.tgtT <= 0) b.tgt = null;
   if (b.lure) { b.lure.t -= dt; if (b.lure.t <= 0) b.lure = null; }
-  b.scanAcc += dt; if (b.scanAcc >= b.scanInt) { if (b.blind <= 0 && !b.lure) scanBot(b, b.scanAcc); b.scanAcc = 0; b.scanInt = .11 + Math.random() * .06; }
+  b.scanAcc += dt; if (b.scanAcc >= b.scanInt) { if (b.blind <= 0 && !b.lure && !G.actors.some(o => o !== b && o.alive && o.dackE >= 1 && Math.hypot(o.x - b.x, o.z - b.z) < 8)) scanBot(b, b.scanAcc); b.scanAcc = 0; b.scanInt = .11 + Math.random() * .06; }
   if (b.typing) {
     b.typing.t -= dt; if (b.blind > 0) b.typing = null;
     else if (b.typing.t <= 0) { const t = G.actors.find(a => a.alive && a.number === b.typing.num); if (scrPhase2(b) && Math.random() < .6) { b.blind = 1.5; b.redT = 2; } else if (t && t !== b && t.protect <= 0 && (G.mode === 'dm' || t.team !== b.team)) { if (b.typing.target.fake === b.typing.num) uncloak(b.typing.target, true); eliminate(b, t); } b.typing = null; }
@@ -2916,7 +2953,7 @@ function updateDemoCam(dt) {
 function startMatch(demo, roster) {
   const mapId = roster ? (roster.map || S.map) : (demo ? (S.demoMap || S.map) : S.map); World.load(MAPS[mapId] ? mapId : 'hb'); G.map = World.id;
   const mk = (demo && S.demoMode && MODES[S.demoMode]) ? S.demoMode : S.mode, m = MODES[mk]; G.mode = mk; G.codeLen = S.codeLen === 'rand' ? pick([3, 4, 5, 6]) : S.codeLen === 'mix' ? 0 : (S.codeLen | 0) || 4; G.countdown = 3; G.freezeT = 0; G.skillsOn = S.skills !== false; G.tleft = (S.time || 5) * 60; G.limit = m.limit; G.scores = [0, 0]; G.grenades = []; G.smokes = []; G.lures = []; G.fx = []; G.feed = []; G.typed = ''; G.lock = 0; G.time = 0;
-  freeActors(G.actors); G.actors = []; _id = 0; G.slots = [null, null]; G.bino = false; G.binK = 0; G.energy = 1; G.stam = 1; G.flashT = 0; G.itemCd = 0; G.threat = null;
+  freeActors(G.actors); G.actors = []; _id = 0; G.slots = [null, null]; G.scopeOn = false; G.bino = false; G.binK = 0; G.energy = 1; G.stam = 1; G.flashT = 0; G.itemCd = 0; G.threat = null;
   G.netClient = false; const hum = roster ? roster.length : 1;
   const n = roster ? (S.netBots ? clamp(Math.max(S.count, hum), hum, 20) : hum) : clamp(S.count, 4, 20);
   G.demo = !!demo; G.view = null; G.player = null; let pl = null;
@@ -2929,8 +2966,6 @@ function startMatch(demo, roster) {
   G.actors.forEach(a => { a.score = 0; a.streak = 0; a.lastKillT0 = -99; a.lastStreak = 0; drawPlate(a); });
   for (const a of G.actors) if (!a.isPlayer && !a.remote && speedMul(a) !== 1) a.speed *= speedMul(a);
   skReset(); spawnAll();
-  if (!demo) { giveItem(0, 'cam'); giveItem(1, pick(['flash', 'smoke', 'lure'])); }
-  for (const a of G.actors) if (a.remote) a.slots = [{ type: 'cam', n: 4 }, { type: pick(['flash', 'smoke', 'lure']), n: 1 }];
   G.pickups = World.pickSpots.map(p => ({ x: p[0], z: p[1], y: p[2] ? World.mezz.h : 0, l: p[2] | 0, on: true, t: 0 }));
   initFlags(); G.state = 'playing'; G.fov = 1.2;
   if (demo) { G.view = pick(G.actors); G.viewT = rand(10, 16); G.camY = G.view.y + EYE; G.camYaw = G.view.yaw; R.cam.yaw = G.view.yaw; UI.demoTag && UI.demoTag(); }
@@ -2994,8 +3029,14 @@ function horrorFx(list, c, t) {
   for (const e of W.eyes || []) { if (Math.sin(t * .6 + e[0] * 3) > .7) continue; const d = d2(e[0], e[2]); if (d > 3600) continue; list.push({ x: e[0], y: e[1], z: e[2], w: 1, a: .95, k: 8, d }); }
   for (const m of W.mist || []) { const x = m.x + Math.sin(t * .1 + m.ph) * 3, z = m.z + Math.cos(t * .08 + m.ph) * 3, d = d2(x, z); if (d > 4900) continue; list.push({ x, y: .55, z, w: m.s * 1.3, h: m.s * .38, a: .15, k: 9, d }); }
 }
+function applyNightEnv(viewer) {
+  const b = World.baseEnv; if (!b || !G.sk) return; let k = 1; const nt = G.sk.night;
+  if (nt.by && nt.e >= 1.5 && viewer !== nt.by) { k = lerp(1, .2, clamp((nt.e - 1.5) / .8, 0, 1)); const rem = 31.5 - nt.e; if (rem < .5) k = lerp(1, k, rem / .5); }
+  if (k !== applyNightEnv.k || World.id !== applyNightEnv.w) { for (const key of ['sunCol', 'sky', 'gnd', 'fog']) R.env[key] = b[key].map(v => v * k); SPR.skyMat.tint[0] = SPR.skyMat.tint[1] = SPR.skyMat.tint[2] = k; SPR.skyNightMat.tint[0] = SPR.skyNightMat.tint[1] = SPR.skyNightMat.tint[2] = k; applyNightEnv.k = k; applyNightEnv.w = World.id; }
+  const nv = !!(nt.by && nt.by === viewer && nt.e >= 2.5); if (nv !== applyNightEnv.nv) { applyNightEnv.nv = nv; document.getElementById('gl').classList.toggle('nv', nv); document.getElementById('nvov').classList.toggle('on', nv); }
+}
 function drawWorldFrame() {
-  const c = R.cam, pl = G.player || (G.demo ? G.view : null);
+  const c = R.cam, pl = G.player || (G.demo ? G.view : null); applyNightEnv(pl);
   if (R.shadowOn()) {
     const fw = [-Math.sin(c.yaw), -Math.cos(c.yaw)]; R.beginShadow(c.x + fw[0] * 16, 0, c.z + fw[1] * 16); World.drawShadow();
     for (const a of G.actors) { if (a === pl || a.invis || (!a.alive && a.deadT > 3)) continue; if (Math.abs(a.x - c.x) > 80 || Math.abs(a.z - c.z) > 80) continue; drawAvatar(a); }
@@ -3037,6 +3078,12 @@ function drawWorldFrame() {
   for (const a of G.actors) { if (!(a.redT > 0) || a === pl || !a.alive) continue; list.push({ x: a.x, y: a.y + 1.0, z: a.z, w: 2.8, a: .5 + .25 * Math.sin(G.time * 14), k: 5, d: (a.x - c.x) ** 2 + (a.z - c.z) ** 2 }); }
   for (const l of G.lures) { const on = Math.sin(l.t * 14) > 0; list.push({ x: l.x, y: l.y + .2, z: l.z, w: on ? .7 : .3, a: 1, k: 2, d: (l.x - c.x) ** 2 + (l.z - c.z) ** 2 }); }
   if (World.cur.night) horrorFx(list, c, t);
+  for (const a of G.actors) {
+    if (!a.alive || a === pl) continue; const dd2 = (a.x - c.x) ** 2 + (a.z - c.z) ** 2;
+    if (a.dackE >= 1) for (let q = 0; q < 6; q++) { const an = t * .8 + q * 1.05, rr = 1.1 + (q % 3) * .35; list.push({ x: a.x + Math.cos(an) * rr, y: a.y + .5 + (q % 4) * .45, z: a.z + Math.sin(an) * rr, w: 2.6, a: .38, k: 0, d: dd2 }); }
+    if (applyNightEnv.nv && !a.invis) { const cc = [[1, .2, .1], [1, .55, .12], [1, .9, .25]][a.id % 3]; list.push({ x: a.x, y: a.y + 1.2, z: a.z, w: 1.9, a: .9, k: 15, col: cc, d: dd2 }); }
+    if (G.bountyId === a && !a.invis) list.push({ x: a.x, y: a.y + 1.2, z: a.z, w: 1.6 + Math.min(a.kills, 10) * .22, a: .35 + Math.min(a.kills, 10) * .05, k: 15, col: [1, .82, .2], d: dd2 });
+  }
   for (const a of G.actors) { if (a.alive && a.ctrlT > 0) list.push({ x: a.x, y: a.y + 1.95, z: a.z, w: .9, a: 1, k: 13, d: (a.x - c.x) ** 2 + (a.z - c.z) ** 2 }); if (a.alive && a.cleanFx > 0 && !a.invis) { const q = 1 - a.cleanFx / .7; list.push({ x: a.x, y: a.y + .9, z: a.z, w: 1 + q * 3.2, a: .8 * (1 - q), k: 14, d: (a.x - c.x) ** 2 + (a.z - c.z) ** 2 }); } }
   for (const a of G.actors) { if (!a.alive || a === pl) continue; const dd = (a.x - c.x) ** 2 + (a.z - c.z) ** 2; if (a.shieldT > 0) list.push({ x: a.x, y: a.y + .75, z: a.z, w: 2.3, a: .5 + .2 * Math.sin(G.time * 8), k: 12, d: dd }); if (a.say) list.push({ x: a.x, y: a.y + 1.95, z: a.z, w: 2.0, a: clamp(a.say.t / .25, 0, 1), k: 11, a_: a, d: dd }); }
   for (const f of G.fx) if (f.k === 'puff') { const q = f.t / f.d; list.push({ x: f.x, y: f.y + q * .5, z: f.z, w: 1.2 + q * 1.8, a: .8 * (1 - q), k: 0, d: (f.x - c.x) ** 2 + (f.z - c.z) ** 2 }); }
@@ -3049,6 +3096,7 @@ function drawWorldFrame() {
     else if (s.k === 5) drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w * 1.25, [1, .08, .08], s.a);
     else if (s.k === 2) drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w, [1, .3, .2], s.a);
     else if (s.k === 11) drawSprite(sayTex(s.a_.say.txt), s.x, s.y, s.z, s.w, s.w * .26, [1, 1, 1], s.a);
+    else if (s.k === 15) drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w * .6, s.col, s.a);
     else if (s.k === 13) drawSprite(dizzyTex(), s.x, s.y + Math.sin(G.time * 6) * .05, s.z, s.w * 1.4, s.w * .7, [1, 1, 1], 1);
     else if (s.k === 14) { drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w, [.5, 1, .7], s.a); drawSprite(SPR.glow, s.x, s.y + .3, s.z, s.w * .5, s.w * .5, [1, 1, .8], s.a); }
     else if (s.k === 12) drawSprite(SPR.glow, s.x, s.y, s.z, s.w, s.w * 1.3, [.4, .75, 1], s.a);
@@ -3113,7 +3161,7 @@ const NET = {
   lastSnap: null, hostMissT: 0, dismissedG: null, rsMine: -1, feedSeen: -1, msgSeen: -1, msgQ: [], msgSeq: 0, myIdx: -1, killsSeen: -1, joinT: 0, waiting: false, puffs: [], slC: '', lobbyT: 0, thrP: 0
 };
 const wait = ms => new Promise(r => setTimeout(r, ms));
-const SLOTC = { cam: 1, flash: 2, smoke: 3, lure: 4 }, SLOTT = [null, 'cam', 'flash', 'smoke', 'lure'];
+const SLOTC = { cam: 1, quake: 2, scope: 3, fake: 4, spring: 5 }, SLOTT = [null, 'cam', 'quake', 'scope', 'fake', 'spring'];
 const encSl = s => s ? SLOTC[s.type] * 10 + s.n : 0;
 const decSl = c => c ? { type: SLOTT[(c / 10) | 0], n: c % 10 } : null;
 function cleanName(s) { s = String(s || '').replace(/[\u0000-\u001f\u007f<>&"']/g, '').trim().slice(0, 10); return s || ('玩家' + randi(10, 99)); }
@@ -3225,11 +3273,12 @@ function initNetUI() {
   chips('chNMap', Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name })), () => S.map, v => { S.map = v; World.load(v); });
   chips('chNTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v);
   chips('chNSkill', [{ v: true, l: '是' }, { v: false, l: '否' }], () => S.skills !== false, v => S.skills = v);
-  chips('chNMode', Object.entries(MODES).map(([k, m]) => ({ v: k, l: m.name })), () => S.mode, v => { S.mode = v; huntLock(); });
+  chips('chNMode', Object.entries(MODES).filter(([k, m]) => !m.soon).map(([k, m]) => ({ v: k, l: m.name })), () => S.mode, v => { S.mode = v; huntLock(); });
   chips('chNCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
   $('mpChar').onclick = () => go(() => openCharSelect('mp'));
   chips('chNCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; });
-  chips('chNDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; $('diffDescN').textContent = DIFF[v].desc; }); $('diffDescN').textContent = DIFF[S.diff].desc;
+  chips('chNDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; $('diffDescN').textContent = DIFF[v].desc; $('trollRowN').classList.toggle('hidden', v !== 3); }); $('diffDescN').textContent = DIFF[S.diff].desc; $('trollRowN').classList.toggle('hidden', S.diff !== 3);
+  chips('chNTroll', [{ v: 1, l: '輕度' }, { v: 2, l: '中度' }, { v: 3, l: '重度' }], () => S.trollLv, v => { S.trollLv = v; });
   huntLock();
   chips('chNBots', [{ v: true, l: '機器人補滿人數' }, { v: false, l: '僅限真人' }], () => S.netBots, v => S.netBots = v);
 }
@@ -3276,7 +3325,7 @@ function hostAct(a, ac) {
   else if (ac[1] === 's') { castSkill(a); }
   else if (ac[1] === 'u') {
     const i = ac[2] | 0, it = a.slots && a.slots[i]; if (!it) return;
-    if (it.type !== 'cam') { const cp = Math.cos(a.pitch + .12), sp = Math.sin(a.pitch + .12), f = FWD(a.yaw); throwGrenade(a, it.type, f[0] * cp, sp, f[1] * cp, 15); }
+    if (it.type !== 'cam' && it.type !== 'scope') applyItem(a, it.type);
     it.n--; if (it.n <= 0) a.slots[i] = null;
   }
 }
@@ -3293,7 +3342,7 @@ function buildSnap() {
   const A = G.actors, ac = [];
   for (let i = 0; i < A.length; i++) {
     const a = A[i];
-    const e = [Math.round(a.x * 20), Math.round(a.z * 20), Math.round(a.y * 20), Math.round(a.yaw * 50), Math.round(a.sp * 10), (a.alive ? 1 : 0) | (a.carry ? 2 : 0) | (a.protect > 0 ? 4 : 0) | (a.redT > 0 ? 8 : 0) | (a.lo > .12 ? 32 : a.lo < -.12 ? 16 : 0) | (a.shieldT > 0 ? 64 : 0) | (a.invis ? 128 : 0) | (a.ctrlT > 0 ? 256 : 0), a.kills, a.deaths, a.fake || a.number];
+    const e = [Math.round(a.x * 20), Math.round(a.z * 20), Math.round(a.y * 20), Math.round(a.yaw * 50), Math.round(a.sp * 10), (a.alive ? 1 : 0) | (a.carry ? 2 : 0) | (a.protect > 0 ? 4 : 0) | (a.redT > 0 ? 8 : 0) | (a.lo > .12 ? 32 : a.lo < -.12 ? 16 : 0) | (a.shieldT > 0 ? 64 : 0) | (a.invis ? 128 : 0) | (a.ctrlT > 0 ? 256 : 0) | (a.dackE >= 1 ? 512 : 0), a.kills, a.deaths, a.fake || a.number];
     if (a.isPlayer || a.remote) {
       const sl = a.isPlayer ? G.slots : (a.slots || [null, null]); let thr = -1, tp = 0;
       if (a.alive) for (let j = 0; j < A.length; j++) { const b = A[j]; if (b === a || !b.alive || !b.read) continue; let q = b.read[a.id] || 0; if (b.typing && b.typing.target === a) q = 1; if (q > tp && q > .12) { tp = q; thr = j; } }
@@ -3307,7 +3356,7 @@ function buildSnap() {
     sm: G.smokes.slice(0, 4).map(s => [Math.round(s.x * 10), Math.round(s.y * 10), Math.round(s.z * 10), Math.round(s.r * 10), Math.round(s.t * 10)]),
     lu: G.lures.slice(0, 3).map(l => [Math.round(l.x * 10), Math.round(l.z * 10), Math.round(l.t * 10)]),
     fg: G.mode === 'ctf' ? G.flags.map(f => [f.state === 'home' ? 0 : f.state === 'carried' ? 1 : 2, Math.round(f.x * 10), Math.round(f.z * 10), Math.round(f.y * 10), f.carrier ? A.indexOf(f.carrier) : -1]) : [],
-    sk: [Math.round(G.sk.rev.t * 10), G.actors.indexOf(G.sk.rev.by), Math.round(G.sk.scr.t * 10), G.actors.indexOf(G.sk.scr.by), Math.round(G.sk.ink.t * 10), G.actors.indexOf(G.sk.ink.by), Math.round(G.sk.eagle.t * 10), G.actors.indexOf(G.sk.eagle.by)],
+    sk: [Math.round(G.sk.rev.t * 10), G.actors.indexOf(G.sk.rev.by), Math.round(G.sk.scr.t * 10), G.actors.indexOf(G.sk.scr.by), Math.round(G.sk.ink.t * 10), G.actors.indexOf(G.sk.ink.by), Math.round(G.sk.eagle.t * 10), G.actors.indexOf(G.sk.eagle.by), Math.round(G.sk.quake.t * 10), G.actors.indexOf(G.sk.quake.by), G.sk.night.by ? Math.round(G.sk.night.e * 10) : -1, G.actors.indexOf(G.sk.night.by)],
     pk: G.pickups.reduce((m, p, i) => m | (p.on ? (1 << i) : 0), 0),
     fd: G.feed.slice(-4).map(f => [f.seq, f.ki, f.vi, f.st || 0]), hs: G.mode === 'hunt' ? G.actors.map(a => a.score || 0) : 0, ms: NET.msgQ.slice()
   };
@@ -3360,7 +3409,7 @@ function applySnap(s) {
     const e = s.ac[i], a = A[i]; if (!e || !a) continue;
     const alive = !!(e[5] & 1);
     a.kills = e[6]; a.deaths = e[7]; if (a.number !== e[8]) { a.number = e[8]; drawPlate(a); }
-    a.carry = (e[5] & 2) ? true : null; a.protect = (e[5] & 4) ? 1 : 0; if (a !== me) { a.invis = !!(e[5] & 128); a.ctrlT = (e[5] & 256) ? .3 : 0; a.shieldT = (e[5] & 64) ? 1 : 0; a.redT = (e[5] & 8) ? .4 : 0; a.lo += (((e[5] & 32) ? .45 : (e[5] & 16) ? -.45 : 0) - a.lo) * .4; }
+    a.carry = (e[5] & 2) ? true : null; a.protect = (e[5] & 4) ? 1 : 0; if (a !== me) { a.dackE = (e[5] & 512) ? 2 : -1; a.invis = !!(e[5] & 128); a.ctrlT = (e[5] & 256) ? .3 : 0; a.shieldT = (e[5] & 64) ? 1 : 0; a.redT = (e[5] & 8) ? .4 : 0; a.lo += (((e[5] & 32) ? .45 : (e[5] & 16) ? -.45 : 0) - a.lo) * .4; }
     if (a !== me) {
       a.tx = e[0] / 20; a.tz = e[1] / 20; a.ty = e[2] / 20; a.tyaw = e[3] / 50;
       if (!a.init || (!a.alive && alive)) { a.x = a.tx; a.z = a.tz; a.y = a.ty; a.yaw = a.tyaw; a.init = true; a.fall = 0; }
@@ -3388,7 +3437,7 @@ function applySnap(s) {
   if (G.mode === 'ctf') G.flags.forEach((f, i) => { const e = s.fg[i]; if (!e) return; f.state = ['home', 'carried', 'dropped'][e[0]]; f.x = e[1] / 10; f.z = e[2] / 10; f.y = e[3] / 10; f.carrier = e[4] >= 0 ? A[e[4]] : null; });
   G.pickups.forEach((p, i) => { p.on = !!(s.pk & (1 << i)); });
   if (s.hs) s.hs.forEach((v, i) => { if (A[i]) A[i].score = v; });
-  if (s.sk) { G.sk.rev = { t: s.sk[0] / 10, by: A[s.sk[1]] || null, id: 1 }; G.sk.scr = { t: s.sk[2] / 10, by: A[s.sk[3]] || null, id: 1 }; G.sk.ink = { t: (s.sk[4] || 0) / 10, by: A[s.sk[5]] || null, id: 1 }; G.sk.eagle = { t: (s.sk[6] || 0) / 10, by: A[s.sk[7]] || null }; }
+  if (s.sk) { G.sk.rev = { t: s.sk[0] / 10, by: A[s.sk[1]] || null, id: 1 }; G.sk.scr = { t: s.sk[2] / 10, by: A[s.sk[3]] || null, id: 1 }; G.sk.ink = { t: (s.sk[4] || 0) / 10, by: A[s.sk[5]] || null, id: 1 }; G.sk.eagle = { t: (s.sk[6] || 0) / 10, by: A[s.sk[7]] || null }; G.sk.quake = { t: (s.sk[8] || 0) / 10, by: A[s.sk[9]] || null }; G.sk.night = { e: s.sk[10] >= 0 ? s.sk[10] / 10 : 0, by: s.sk[10] >= 0 ? (A[s.sk[11]] || null) : null }; }
   if (NET.feedSeen < 0) NET.feedSeen = s.fd.length ? s.fd[s.fd.length - 1][0] : 0;
   for (const f of s.fd) if (f[0] > NET.feedSeen) { NET.feedSeen = f[0]; const k = A[f[1]], v = A[f[2]]; if (k && v) { G.feed.push({ t: 6, k: k.name, v: v.name, me: k === me || v === me, st: f[3] || 0, seq: f[0] }); if (k === me && f[3] > 1) UI.streak(f[3], STREAK_PTS[Math.min(f[3], 5) - 1]); if (G.feed.length > 5) G.feed.shift(); G.feedVer++; } }
   if (NET.msgSeen < 0) NET.msgSeen = s.ms.length ? s.ms[s.ms.length - 1][0] : 0;
@@ -3397,7 +3446,7 @@ function applySnap(s) {
 }
 function updateClientGame(dt) {
   if (G.state === 'ended') { G.time += dt; In.lookX = In.lookY = 0; return; } // 結算：全場暫停
-  G.time += dt; if (G.state === 'playing' && G.countdown <= 0) { G.tleft = Math.max(0, G.tleft - dt); const me0 = G.player; if (me0) me0.skCd = Math.max(0, me0.skCd - dt); if (G.sk.rev.t > 0) G.sk.rev.t -= dt; if (G.sk.scr.t >= 0) G.sk.scr.t += dt; if (G.sk.ink.t > 0) G.sk.ink.t -= dt; if (G.sk.eagle.t > 0) G.sk.eagle.t -= dt; if (me0) { me0.ctrlT = Math.max(0, (me0.ctrlT || 0) - dt); if (isOut(me0, 11)) { me0.cleanT = (me0.cleanT ?? 2.5) - dt; if (me0.cleanT <= 0) { me0.cleanT = 2.5; G.flashT = 0; G.freezeT = 0; G.lock = 0; me0.redT = 0; me0.ctrlT = 0; UI.cleanse(); } } } }
+  G.time += dt; if (G.state === 'playing' && G.countdown <= 0) { G.tleft = Math.max(0, G.tleft - dt); const me0 = G.player; if (me0) me0.skCd = Math.max(0, me0.skCd - dt); if (G.sk.rev.t > 0) G.sk.rev.t -= dt; if (G.sk.scr.t >= 0) G.sk.scr.t += dt; if (G.sk.ink.t > 0) G.sk.ink.t -= dt; if (G.sk.eagle.t > 0) G.sk.eagle.t -= dt; if (G.sk.quake.t > 0) G.sk.quake.t -= dt; if (G.sk.night.by) G.sk.night.e += dt; if (me0) { me0.ctrlT = Math.max(0, (me0.ctrlT || 0) - dt); if (isOut(me0, 11)) { me0.cleanT = (me0.cleanT ?? 2.5) - dt; if (me0.cleanT <= 0) { me0.cleanT = 2.5; G.flashT = 0; G.freezeT = 0; G.lock = 0; me0.redT = 0; me0.ctrlT = 0; UI.cleanse(); } } } }
   if (G.countdown > 0) { G.countdown = Math.max(0, G.countdown - dt); In.lookX = In.lookY = 0; } else if (G.player) updatePlayer(dt);
   const k = 1 - Math.exp(-dt * 14);
   for (const a of G.actors) {
@@ -3483,17 +3532,18 @@ const UI = {
   slotHTML(el, s) {
     const ico = el.querySelector('.ico'), n = el.querySelector('small');
     if (!s) { ico.textContent = ''; n.textContent = ''; el.classList.remove('has'); return; }
-    ico.textContent = ITEMS[s.type].ico; n.textContent = s.type === 'cam' ? s.n : ''; el.classList.add('has');
+    ico.textContent = ITEMS[s.type].ico; n.textContent = s.n > 1 ? s.n : ''; el.classList.add('has');
   },
   /* 角色技能鍵：圓形倒數環 + 秒數；艾伯特技能的預警閃光與按鍵錯亂 */
   skillHUD(dt, p) {
-    const s = $('slotS'), sk = skillOf(p), cd = p.skCd || 0, show = !!sk && skOn(); s.style.display = show ? '' : 'none';
+    const s = $('slotS'), sk = skillOf(p), cd = p.skCd || 0, show = !!sk && skOn(); s.style.display = show ? '' : 'none'; s.classList.toggle('boost', !!p.boost && cd > 0);
+    { let f = 0; for (const o of G.actors) if (o !== p && o.alive && o.dackE >= 1) { const d = Math.hypot(o.x - p.x, o.z - p.z); if (d < 8) f = Math.max(f, .4 + .55 * (1 - d / 8)); } const df = $('dfog'); if (Math.abs((this._df || 0) - f) > .02) { this._df = f; df.style.opacity = f; } }
     $('stamwrap').style.visibility = isOut(p, 12) ? 'hidden' : ''; $('binwrap').style.visibility = isOut(p, 13) ? 'hidden' : '';
     { const ik = $('ink'), on = inkActive(p); if (on !== this._ink) { this._ink = on; ik.classList.toggle('on', on); } if (on && G.sk.ink.t < .5) ik.style.opacity = G.sk.ink.t * 2; else if (on) ik.style.opacity = 1; }
     const dash = isSumi(p) && p.dashReady && !p.onGround, jb = $('bJump'); if (jb) { const tx = dash ? '突進' : '跳躍'; if (jb.textContent !== tx) jb.textContent = tx; }
     if (!show) { this._ph2 = false; return; }
-    if (this._skIco !== sk.ico) { this._skIco = sk.ico; s.querySelector('.ico').textContent = sk.ico; }
-    s.classList.toggle('cd', cd > 0); s.classList.toggle('on', (p.shieldT || 0) > 0); s.style.setProperty('--p', (cd / sk.cd * 360).toFixed(1) + 'deg');
+    const ico = p.stolen ? SKILLS[p.stolen].ico : p.armed ? '🪄' : sk.ico; if (this._skIco !== ico) { this._skIco = ico; s.querySelector('.ico').textContent = ico; }
+    s.classList.toggle('cd', cd > 0); s.classList.toggle('on', (p.shieldT || 0) > 0 || !!p.stolen || !!p.armed); s.style.setProperty('--p', Math.min(360, cd / sk.cd * 360).toFixed(1) + 'deg');
     const sec = cd > 0 ? String(Math.ceil(cd)) : ''; if (this._skSec !== sec) { this._skSec = sec; s.querySelector('.cdn').textContent = sec; }
     const sc = G.sk.scr, t = sc.t; let on = false;
     this._pf = on; $('numL').classList.toggle('purple', on); $('numR').classList.toggle('purple', on); $('pflash').classList.toggle('on', on);
@@ -3741,36 +3791,41 @@ function resumeGame() { UI.menuOpen = false; setPause(false); if (!Device.mobile
 const MENU_HOWTO = `<p><b>目標：</b>每個人額頭都戴著一組數字牌（3～5 碼，可在主畫面選擇）。<b>看清楚 → 記住 → 輸入 → Enter</b>，對方就被淘汰。你自己的號碼別人也讀得到——背對、躲掩體、丟煙霧彈，別讓人讀完。</p>
 <p><b>電腦：</b><kbd>WASD</kbd> 移動　<kbd>Shift</kbd> 衝刺　<kbd>Space</kbd> 跳（空中再按一次＝二段跳）　滑鼠轉視角（先點畫面鎖定）　<kbd>0-9</kbd> 輸入　<kbd>Enter</kbd> 送出　<kbd>Backspace</kbd> 刪除　<kbd>F</kbd>/<kbd>G</kbd> 使用道具　<kbd>Q</kbd> 或右鍵 望遠鏡　<kbd>Esc</kbd> 暫停</p>
 <p><b>手機：</b>左半邊拖曳＝搖桿（走路）、右側「跑」鍵按住＝衝刺、跳躍鍵可在空中再按一次二段跳、右側空白處拖曳＝轉視角、左右兩側的數字鍵輸入（輸入滿位數自動送出）、跳躍／望遠鏡／道具格為按鈕。建議橫向持機。</p>
-<p><b>道具：</b>📷 相機（拍照後照片留在畫面上數秒，可慢慢看清數字）　💥 閃光彈（讓人暫時讀不到你）　🌫️ 煙霧彈（阻斷視線）　📣 干擾彈（吸引注意力、打斷記憶）　🔭 望遠鏡（遠距離讀碼）。地圖上的 <b>?</b> 箱會補給道具。</p>
+<p><b>道具：</b>開局沒有任何道具，必須靠走過地圖上的 <b>?</b> 箱才能取得；道具欄（兩格）已滿時不會更換，要先用掉一個再撿新的。<br>📷 相機：拍照後照片短暫停留，方便看清號碼。　🌋 地牛控制器：使其他人的畫面劇烈橫向晃動 2 秒並逐漸減弱。　🔍 偵查鏡：約 10° 長距離放大，再按一次道具鍵即拍照。　🎫 假號碼牌：頭上號碼偽裝成別的數字 7 秒。　⛲ 神仙泉水：立即刷新角色技能冷卻。　🔭 望遠鏡（內建）：遠距離讀碼，有能量限制。</p>
 <p><b>地圖：</b>熱血高校（白天校園，標準面積）／詭譎學苑（黑夜版，遠處會沒入黑暗、要靠近才看得到對手）／追逃商城（1.4 倍大，兩座電扶梯通往二樓，可從欄杆直接跳下一樓、不會摔傷）。</p>
 <p><b>人數：</b>含你在內最多 20 人，不足的人數由電腦補上；手機預設 12 人較順。<b>號碼位數：</b>頭上數字的位數（3～5 碼），位數越多讀得越久、也越難記。</p>
 <p><b>角色技能：</b>按 <kbd>R</kbd>（手機為 G 左邊的技能鍵）施放，圓環與秒數顯示冷卻。蘇蘇【顛倒乾坤】反轉其他人移動 5 秒；艾迪【銅牆鐵壁】3 秒內擋下一次輸入攻擊並刷新號碼；艾伯特【紫電干擾】讓其他人的數字鍵錯亂 5 秒。</p>
 <p><b>探頭：</b>躲在掩體後可按住 <kbd>Z</kbd>（左）／<kbd>C</kbd>（右）將上半身探出去看（手機為右側 ↖／↗ 鍵）；探出去時你的頭也會露出來，可能被對手讀到。</p>
+<p><b>角色技能（新增）：</b>穆法沙【命運拷貝】——發動後竊取下一個擊殺對象的技能，主動技能用完不進冷卻，被動技能可持續使用，並可繼續偷取（偷到不同被動技能才會覆蓋）；戴克【生化操作】——戴上透視鏡後噴發 15 秒濃霧，大幅降低周圍敵人視力，自己不受影響；夜梟【夜間戰術】——黑雲使全場亮度降低 80% 持續 30 秒，自己戴夜視鏡、其他人的號碼發出紅橘黃光；夜梟被淘汰會提前結束。另有貝雷特、鷹眼、雷柏爾、貓女、王心靈、蕾西亞、柏、迪倫等角色，詳見選角畫面。技能可在「遊戲設定」中整體關閉。</p>
+<p><b>賞金：</b>個人死鬥中，淘汰數領先者頭上的號碼牌會隨殺人數變得更大、更亮，成為眾人圍剿的目標。<b>逆轉：</b>激鬥追捕中，積分排名落在後半的玩家，主動技能冷卻縮短 50%。<b>干擾者：</b>可選輕度（25%）、中度（55%）、重度（100%）靈活度。</p>
 <p><b>模式：</b>個人死鬥（15 淘汰）／團隊死鬥（30 淘汰）／奪旗（3 次）。團隊模式的隊友額頭牌邊框與臂章為同色，無法淘汰。</p>
 <p><b>提示：</b>畫面中央的紅色箭頭代表「有人正在讀你的號碼」，進度條滿了就會被淘汰——快移動、轉身或躲到掩體後。輸錯號碼會被鎖定輸入約 1 秒。</p>`;
 function huntLock() {
   const h = S.mode === 'hunt'; if (h) { if (S.count !== 16 && S.count !== 20) S.count = 20; S.diff = 3; S.countSet = true; }
   const CN = [4, 8, 12, 16, 20];
   for (const id of ['chCount', 'chNCount']) { const el = $(id); if (!el) continue; [...el.children].forEach(b => { const v = parseInt(b.textContent); b.classList.toggle('dis', h && v !== 16 && v !== 20); b.classList.toggle('on', v === S.count); }); }
-  if ($('diffDesc')) $('diffDesc').textContent = DIFF[S.diff].desc; if ($('diffDescN')) $('diffDescN').textContent = DIFF[S.diff].desc;
+  if (window.updTroll) window.updTroll(); if ($('diffDesc')) $('diffDesc').textContent = DIFF[S.diff].desc; if ($('diffDescN')) $('diffDescN').textContent = DIFF[S.diff].desc;
   for (const id of ['chDiff', 'chNDiff']) { const el = $(id); if (!el) continue; [...el.children].forEach((b, i) => { b.classList.toggle('dis', h && i !== 3); b.classList.toggle('on', i === S.diff); }); }
 }
 function chips(id, items, get, set, fmt) {
   const el = $(id); el.innerHTML = '';
-  items.forEach(it => { const b = document.createElement('button'); b.className = 'chip' + (get() === it.v ? ' on' : ''); b.innerHTML = it.l; b.onclick = () => { set(it.v); saveS(); [...el.children].forEach((c, i) => c.classList.toggle('on', items[i].v === it.v)); }; el.appendChild(b); });
+  items.forEach(it => { const b = document.createElement('button'); b.className = 'chip' + (get() === it.v ? ' on' : ''); b.innerHTML = it.l; if (it.dis) b.classList.add('dis', 'soon'); b.onclick = () => { if (it.dis) return; set(it.v); saveS(); [...el.children].forEach((c, i) => c.classList.toggle('on', items[i].v === it.v)); }; el.appendChild(b); });
 }
 function buildMenu() {
   $('howto').innerHTML = MENU_HOWTO; if (!MAPS[S.map]) S.map = 'hb';
   const mapItems = Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), updMap = () => { $('mapDesc').textContent = MAPS[S.map].desc; };
   chips('chMap', mapItems, () => S.map, v => { S.map = v; updMap(); World.load(v); }); updMap();
   const updMode = () => { $('modeDescG').textContent = MODES[S.mode] ? MODES[S.mode].short : ''; };
-  chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => { S.mode = v; updMode(); huntLock(); }); updMode();
+  chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, dis: !!m.soon, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => { S.mode = v; updMode(); huntLock(); }); updMode();
   chips('chCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
   chips('chCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; });
   chips('chTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v);
   const updSk = () => { $('skDesc').textContent = S.skills === false ? '所有角色的主動、被動技能都停用，純粹比拼眼力與手速。' : '角色技能全部啟用（含主動技能與被動能力）。'; };
   chips('chSkill', [{ v: true, l: '是' }, { v: false, l: '否' }], () => S.skills !== false, v => { S.skills = v; updSk(); }); updSk();
-  const updDiff = () => { $('diffDesc').textContent = DIFF[S.diff].desc; };
+  const TL = [{ v: 1, l: '輕度', d: '靈活度降為標準的 25%，動作遲緩、很少搗亂。' }, { v: 2, l: '中度', d: '靈活度降為標準的 55%，動作與搗亂頻率適中。' }, { v: 3, l: '重度', d: '維持標準靈活度，全場亂跑、積極搗亂。' }];
+  const updTroll = () => { $('trollRow').classList.toggle('hidden', S.diff !== 3); $('trollDesc').textContent = (TL.find(t => t.v === S.trollLv) || TL[2]).d; };
+  chips('chTroll', TL.map(t => ({ v: t.v, l: t.l })), () => S.trollLv, v => { S.trollLv = v; updTroll(); }); window.updTroll = updTroll;
+  const updDiff = () => { $('diffDesc').textContent = DIFF[S.diff].desc; updTroll(); };
   chips('chDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; updDiff(); }); updDiff();
   chips('chInput', [{ v: 'auto', l: '自動偵測' }, { v: 'desktop', l: '🖥️ 電腦' }, { v: 'mobile', l: '📱 手機' }], () => S.input, v => { S.input = v; Device.update(); refreshBadge(); });
   chips('chQual', [{ v: 'auto', l: '自動' }, { v: 'high', l: '高' }, { v: 'mid', l: '中' }, { v: 'low', l: '低（最順）' }], () => S.quality, v => { S.quality = v; Perf.profile(); Perf.apply(); });
@@ -3794,7 +3849,7 @@ function tutHTML(mobile) {
 <div class="tcard"><b>🚶 移動</b><span class="kc">W</span><span class="kc">A</span><span class="kc">S</span><span class="kc">D</span> 走路<br><span class="kc">Shift</span> 按住衝刺（耗體力）<br><span class="kc">Space</span> 跳躍，空中再按＝二段跳</div>
 <div class="tcard"><b>🖱 視角</b>滑鼠移動＝轉視角（先點一下畫面鎖定）<br>右鍵／<span class="kc">Q</span> 望遠鏡（放大、移動變慢）</div>
 <div class="tcard"><b>🔢 輸入號碼</b>看清對手額頭的數字後：<br><span class="kc">0</span>–<span class="kc">9</span> 輸入　<span class="kc">Enter</span> 送出<br><span class="kc">Backspace</span> 刪除（輸入滿位數可自動送出）</div>
-<div class="tcard"><b>🎒 道具</b><span class="kc">F</span> 道具 1（預設相機）<br><span class="kc">G</span> 道具 2（閃光／煙霧／干擾）<br>撿地圖上的橘色「?」箱補給</div>
+<div class="tcard"><b>🎒 道具</b><span class="kc">F</span> 道具 1　<span class="kc">G</span> 道具 2　<span class="kc">R</span> 角色技能<br>開局沒有道具，撿地圖上的橘色「?」箱取得；欄位滿了就不會更換</div>
 <div class="tcard"><b>👀 探頭</b>躲在掩體後按住 <span class="kc">Z</span>（左）／<span class="kc">C</span>（右）<br>探頭看一眼就縮回，別被讀到號碼</div>
 <div class="tcard"><b>⚠ 小心</b>紅色箭頭＝有人正在讀你的號碼<br>輸入錯誤會被定身 2 秒（視角也不能轉）<br><span class="kc">Esc</span> 暫停</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
   const P = (l, t, w, cls, txt, st) => `<i class="${cls || ''}" style="left:${l}%;top:${t}%;${w ? 'width:' + w + '%;aspect-ratio:1;' : ''}${st || ''}">${txt}</i>`;

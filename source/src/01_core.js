@@ -16,7 +16,7 @@ function rng(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 10139
 /* ================= 設定 / 裝置偵測 ================= */
 const CODE_OPTS = [3, 4, 5, 6, 'rand', 'mix'];
 const codeLabel = v => v === 'rand' ? '隨機' : v === 'mix' ? '大亂鬥' : v + ' 碼';
-const S = { mode: 'dm', count: 20, diff: 1, outfit: 0, input: 'auto', quality: 'auto', sens: 1, auto: true, fps: true, sound: true, countSet: false, codeLen: 4, time: 5, skills: true, demoMode: 'dm', map: 'hb', demoMap: 'hb', layout: {}, layoutV: 0, netBots: true, netName: '' };
+const S = { mode: 'dm', count: 20, diff: 1, outfit: 0, input: 'auto', quality: 'auto', sens: 1, auto: true, fps: true, sound: true, countSet: false, codeLen: 4, trollLv: 3, time: 5, skills: true, demoMode: 'dm', map: 'hb', demoMap: 'hb', layout: {}, layoutV: 0, netBots: true, netName: '' };
 try { Object.assign(S, JSON.parse(localStorage.getItem('fmo2') || '{}')); } catch (e) { }
 if (S.layoutV < 2) { S.layout = {}; S.layoutV = 2; }
 const saveS = () => { try { localStorage.setItem('fmo2', JSON.stringify(S)); } catch (e) { } };

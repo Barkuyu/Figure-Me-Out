@@ -167,7 +167,7 @@ const World = {
     if (this.atTex) { R.freeTex(this.atTex); this.atTex = null; }
     const m = MAPS[id]; this.id = id; this.cur = m; this.bounds = m.bounds; this.mezz = m.mezz || null; this.flagPos = m.flagPos; this.gymBox = m.interior;
     this.resetBuckets(); this.atlasReset(); this.setLook(m.look || null);
-    Object.assign(R.env, m.env); if (typeof Perf !== 'undefined') R.setShadow(Perf.shadowWanted && !Perf.shadowOff && !m.noShadow);
+    Object.assign(R.env, m.env); this.baseEnv = JSON.parse(JSON.stringify(m.env)); if (typeof Perf !== 'undefined') R.setShadow(Perf.shadowWanted && !Perf.shadowOff && !m.noShadow);
     m.build(this);
     const ar = this.at; this.atTex = R.tex(ar.c, {}); this.defs.decal.m.tex = this.defs.neon.m.tex = this.atTex; this.defs.decal.m.useTexOnly = true;
     for (const k in this.bk) { const b = this.bk[k]; if (!b.p.length) continue; this.meshes.push({ mesh: R.mkMesh({ p: b.p, n: b.n, u: b.u, c: b.c, i: b.i }), m: this.defs[k].m, k }); }

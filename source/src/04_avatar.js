@@ -35,6 +35,14 @@ OUTFITS.push(
   { key: 'troll', label: '干擾者', hidden: true, sub: '', skill: { name: '', desc: '' }, H: 1.78, skin: '#1c1c1f', hipX: .1, shX: .235, tz: .52, hair: '#111', hair2: '#222', gen: { top: '#16161a', top2: '#d8d8dc', pants: '#16161a', shoe: '#101012', hair: '#111', style: 'mask', acc: ['skullbelt'], accC: '#c9c9cf' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] }
 );
+OUTFITS.push(
+  { key: 'mufaza', label: '穆法沙Mufaza', sub: '', skill: { name: '命運拷貝', desc: '發動後竊取下個擊殺對象的技能；偷到的主動技能用完不進冷卻。' }, H: 1.84, skin: '#a9714a', hipX: .1, shX: .245, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#8a1f1f', top2: '#e0a82e', pants: '#4a2f1c', shoe: '#2a1a10', hair: '#a8641c', style: 'long', acc: ['headband'], accC: '#e0a82e' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.235, .36], [.255, .46], [.25, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'dack', label: '戴克Dack', sub: '', skill: { name: '生化操作', desc: '戴上透視鏡後釋放濃霧 15 秒，擾亂周圍敵人視線。冷卻 35 秒。' }, H: 1.76, skin: '#e0b896', hipX: .095, shX: .23, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#e8eef0', top2: '#3fbf6a', pants: '#2b3a40', shoe: '#1a2226', hair: '#2f8a5a', style: 'spiky', acc: ['goggles'], accC: '#6fe0a0' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'nox', label: '夜梟Nox', sub: '', skill: { name: '夜間戰術', desc: '召喚黑雲使全場變暗 30 秒，自己戴夜視鏡看清號碼。冷卻 30 秒。' }, H: 1.78, skin: '#c9a07c', hipX: .095, shX: .235, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#1a1d2a', top2: '#8ff04a', pants: '#14161f', shoe: '#0c0d12', hair: '#1c1c22', style: 'short', acc: ['goggles'], accC: '#3cff6a' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] }
+);
 const SKINPATCH = [.975, .975];
 
 function inkblot(g, cx, cy, sc, seed) {
@@ -454,7 +462,7 @@ function drawAvatar(a, opt) {
   if (a.team >= 0) { M4.trs(T, 0, -.09, 0, 0, 0, 0, 1, 1, 1); M4.mul(M, Ar, T); R.draw(AV.bandMesh, M, AV.bandMat[a.team]); }
   // 號碼牌（略向後仰，戴在額頭上）
   if (a.number === '' && !a.fake) return;
-  const sc = a.plateScale || 1, k = C.head, eg = G.sk && G.sk.eagle.t > 0 && G.sk.eagle.by;
+  const sc = (a.plateScale || 1) * (G.bountyId === a ? 1 + Math.min(a.kills - 1, 8) * .14 : 1), k = C.head, eg = G.sk && G.sk.eagle.t > 0 && G.sk.eagle.by;
   if (eg) { const yy = a.y + hipN + chinN + (O.plateY - d.chinY) * k + .12, ps = sc * 2.2; M4.trs(M, a.x, yy, a.z, 0, Math.atan2(eg.x - a.x, eg.z - a.z), 0, .40 * ps * 1.1, .19 * ps * 1.1, 1); R.draw(AV.plateMesh, M, a.plateMat); return; }
   placeM(M, U, 0, chinN + (O.plateY - d.chinY) * k + .04 * (sc - 1), O.plateZ * k, -.14, 0, .40 * sc * 1.1, .19 * sc * 1.1, 1); R.draw(AV.plateMesh, M, a.plateMat);
 }

@@ -55,17 +55,18 @@ const UI = {
   slotHTML(el, s) {
     const ico = el.querySelector('.ico'), n = el.querySelector('small');
     if (!s) { ico.textContent = ''; n.textContent = ''; el.classList.remove('has'); return; }
-    ico.textContent = ITEMS[s.type].ico; n.textContent = s.type === 'cam' ? s.n : ''; el.classList.add('has');
+    ico.textContent = ITEMS[s.type].ico; n.textContent = s.n > 1 ? s.n : ''; el.classList.add('has');
   },
   /* 角色技能鍵：圓形倒數環 + 秒數；艾伯特技能的預警閃光與按鍵錯亂 */
   skillHUD(dt, p) {
-    const s = $('slotS'), sk = skillOf(p), cd = p.skCd || 0, show = !!sk && skOn(); s.style.display = show ? '' : 'none';
+    const s = $('slotS'), sk = skillOf(p), cd = p.skCd || 0, show = !!sk && skOn(); s.style.display = show ? '' : 'none'; s.classList.toggle('boost', !!p.boost && cd > 0);
+    { let f = 0; for (const o of G.actors) if (o !== p && o.alive && o.dackE >= 1) { const d = Math.hypot(o.x - p.x, o.z - p.z); if (d < 8) f = Math.max(f, .4 + .55 * (1 - d / 8)); } const df = $('dfog'); if (Math.abs((this._df || 0) - f) > .02) { this._df = f; df.style.opacity = f; } }
     $('stamwrap').style.visibility = isOut(p, 12) ? 'hidden' : ''; $('binwrap').style.visibility = isOut(p, 13) ? 'hidden' : '';
     { const ik = $('ink'), on = inkActive(p); if (on !== this._ink) { this._ink = on; ik.classList.toggle('on', on); } if (on && G.sk.ink.t < .5) ik.style.opacity = G.sk.ink.t * 2; else if (on) ik.style.opacity = 1; }
     const dash = isSumi(p) && p.dashReady && !p.onGround, jb = $('bJump'); if (jb) { const tx = dash ? '突進' : '跳躍'; if (jb.textContent !== tx) jb.textContent = tx; }
     if (!show) { this._ph2 = false; return; }
-    if (this._skIco !== sk.ico) { this._skIco = sk.ico; s.querySelector('.ico').textContent = sk.ico; }
-    s.classList.toggle('cd', cd > 0); s.classList.toggle('on', (p.shieldT || 0) > 0); s.style.setProperty('--p', (cd / sk.cd * 360).toFixed(1) + 'deg');
+    const ico = p.stolen ? SKILLS[p.stolen].ico : p.armed ? '🪄' : sk.ico; if (this._skIco !== ico) { this._skIco = ico; s.querySelector('.ico').textContent = ico; }
+    s.classList.toggle('cd', cd > 0); s.classList.toggle('on', (p.shieldT || 0) > 0 || !!p.stolen || !!p.armed); s.style.setProperty('--p', Math.min(360, cd / sk.cd * 360).toFixed(1) + 'deg');
     const sec = cd > 0 ? String(Math.ceil(cd)) : ''; if (this._skSec !== sec) { this._skSec = sec; s.querySelector('.cdn').textContent = sec; }
     const sc = G.sk.scr, t = sc.t; let on = false;
     this._pf = on; $('numL').classList.toggle('purple', on); $('numR').classList.toggle('purple', on); $('pflash').classList.toggle('on', on);
@@ -313,36 +314,41 @@ function resumeGame() { UI.menuOpen = false; setPause(false); if (!Device.mobile
 const MENU_HOWTO = `<p><b>目標：</b>每個人額頭都戴著一組數字牌（3～5 碼，可在主畫面選擇）。<b>看清楚 → 記住 → 輸入 → Enter</b>，對方就被淘汰。你自己的號碼別人也讀得到——背對、躲掩體、丟煙霧彈，別讓人讀完。</p>
 <p><b>電腦：</b><kbd>WASD</kbd> 移動　<kbd>Shift</kbd> 衝刺　<kbd>Space</kbd> 跳（空中再按一次＝二段跳）　滑鼠轉視角（先點畫面鎖定）　<kbd>0-9</kbd> 輸入　<kbd>Enter</kbd> 送出　<kbd>Backspace</kbd> 刪除　<kbd>F</kbd>/<kbd>G</kbd> 使用道具　<kbd>Q</kbd> 或右鍵 望遠鏡　<kbd>Esc</kbd> 暫停</p>
 <p><b>手機：</b>左半邊拖曳＝搖桿（走路）、右側「跑」鍵按住＝衝刺、跳躍鍵可在空中再按一次二段跳、右側空白處拖曳＝轉視角、左右兩側的數字鍵輸入（輸入滿位數自動送出）、跳躍／望遠鏡／道具格為按鈕。建議橫向持機。</p>
-<p><b>道具：</b>📷 相機（拍照後照片留在畫面上數秒，可慢慢看清數字）　💥 閃光彈（讓人暫時讀不到你）　🌫️ 煙霧彈（阻斷視線）　📣 干擾彈（吸引注意力、打斷記憶）　🔭 望遠鏡（遠距離讀碼）。地圖上的 <b>?</b> 箱會補給道具。</p>
+<p><b>道具：</b>開局沒有任何道具，必須靠走過地圖上的 <b>?</b> 箱才能取得；道具欄（兩格）已滿時不會更換，要先用掉一個再撿新的。<br>📷 相機：拍照後照片短暫停留，方便看清號碼。　🌋 地牛控制器：使其他人的畫面劇烈橫向晃動 2 秒並逐漸減弱。　🔍 偵查鏡：約 10° 長距離放大，再按一次道具鍵即拍照。　🎫 假號碼牌：頭上號碼偽裝成別的數字 7 秒。　⛲ 神仙泉水：立即刷新角色技能冷卻。　🔭 望遠鏡（內建）：遠距離讀碼，有能量限制。</p>
 <p><b>地圖：</b>熱血高校（白天校園，標準面積）／詭譎學苑（黑夜版，遠處會沒入黑暗、要靠近才看得到對手）／追逃商城（1.4 倍大，兩座電扶梯通往二樓，可從欄杆直接跳下一樓、不會摔傷）。</p>
 <p><b>人數：</b>含你在內最多 20 人，不足的人數由電腦補上；手機預設 12 人較順。<b>號碼位數：</b>頭上數字的位數（3～5 碼），位數越多讀得越久、也越難記。</p>
 <p><b>角色技能：</b>按 <kbd>R</kbd>（手機為 G 左邊的技能鍵）施放，圓環與秒數顯示冷卻。蘇蘇【顛倒乾坤】反轉其他人移動 5 秒；艾迪【銅牆鐵壁】3 秒內擋下一次輸入攻擊並刷新號碼；艾伯特【紫電干擾】讓其他人的數字鍵錯亂 5 秒。</p>
 <p><b>探頭：</b>躲在掩體後可按住 <kbd>Z</kbd>（左）／<kbd>C</kbd>（右）將上半身探出去看（手機為右側 ↖／↗ 鍵）；探出去時你的頭也會露出來，可能被對手讀到。</p>
+<p><b>角色技能（新增）：</b>穆法沙【命運拷貝】——發動後竊取下一個擊殺對象的技能，主動技能用完不進冷卻，被動技能可持續使用，並可繼續偷取（偷到不同被動技能才會覆蓋）；戴克【生化操作】——戴上透視鏡後噴發 15 秒濃霧，大幅降低周圍敵人視力，自己不受影響；夜梟【夜間戰術】——黑雲使全場亮度降低 80% 持續 30 秒，自己戴夜視鏡、其他人的號碼發出紅橘黃光；夜梟被淘汰會提前結束。另有貝雷特、鷹眼、雷柏爾、貓女、王心靈、蕾西亞、柏、迪倫等角色，詳見選角畫面。技能可在「遊戲設定」中整體關閉。</p>
+<p><b>賞金：</b>個人死鬥中，淘汰數領先者頭上的號碼牌會隨殺人數變得更大、更亮，成為眾人圍剿的目標。<b>逆轉：</b>激鬥追捕中，積分排名落在後半的玩家，主動技能冷卻縮短 50%。<b>干擾者：</b>可選輕度（25%）、中度（55%）、重度（100%）靈活度。</p>
 <p><b>模式：</b>個人死鬥（15 淘汰）／團隊死鬥（30 淘汰）／奪旗（3 次）。團隊模式的隊友額頭牌邊框與臂章為同色，無法淘汰。</p>
 <p><b>提示：</b>畫面中央的紅色箭頭代表「有人正在讀你的號碼」，進度條滿了就會被淘汰——快移動、轉身或躲到掩體後。輸錯號碼會被鎖定輸入約 1 秒。</p>`;
 function huntLock() {
   const h = S.mode === 'hunt'; if (h) { if (S.count !== 16 && S.count !== 20) S.count = 20; S.diff = 3; S.countSet = true; }
   const CN = [4, 8, 12, 16, 20];
   for (const id of ['chCount', 'chNCount']) { const el = $(id); if (!el) continue; [...el.children].forEach(b => { const v = parseInt(b.textContent); b.classList.toggle('dis', h && v !== 16 && v !== 20); b.classList.toggle('on', v === S.count); }); }
-  if ($('diffDesc')) $('diffDesc').textContent = DIFF[S.diff].desc; if ($('diffDescN')) $('diffDescN').textContent = DIFF[S.diff].desc;
+  if (window.updTroll) window.updTroll(); if ($('diffDesc')) $('diffDesc').textContent = DIFF[S.diff].desc; if ($('diffDescN')) $('diffDescN').textContent = DIFF[S.diff].desc;
   for (const id of ['chDiff', 'chNDiff']) { const el = $(id); if (!el) continue; [...el.children].forEach((b, i) => { b.classList.toggle('dis', h && i !== 3); b.classList.toggle('on', i === S.diff); }); }
 }
 function chips(id, items, get, set, fmt) {
   const el = $(id); el.innerHTML = '';
-  items.forEach(it => { const b = document.createElement('button'); b.className = 'chip' + (get() === it.v ? ' on' : ''); b.innerHTML = it.l; b.onclick = () => { set(it.v); saveS(); [...el.children].forEach((c, i) => c.classList.toggle('on', items[i].v === it.v)); }; el.appendChild(b); });
+  items.forEach(it => { const b = document.createElement('button'); b.className = 'chip' + (get() === it.v ? ' on' : ''); b.innerHTML = it.l; if (it.dis) b.classList.add('dis', 'soon'); b.onclick = () => { if (it.dis) return; set(it.v); saveS(); [...el.children].forEach((c, i) => c.classList.toggle('on', items[i].v === it.v)); }; el.appendChild(b); });
 }
 function buildMenu() {
   $('howto').innerHTML = MENU_HOWTO; if (!MAPS[S.map]) S.map = 'hb';
   const mapItems = Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), updMap = () => { $('mapDesc').textContent = MAPS[S.map].desc; };
   chips('chMap', mapItems, () => S.map, v => { S.map = v; updMap(); World.load(v); }); updMap();
   const updMode = () => { $('modeDescG').textContent = MODES[S.mode] ? MODES[S.mode].short : ''; };
-  chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => { S.mode = v; updMode(); huntLock(); }); updMode();
+  chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, dis: !!m.soon, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => { S.mode = v; updMode(); huntLock(); }); updMode();
   chips('chCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
   chips('chCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; });
   chips('chTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v);
   const updSk = () => { $('skDesc').textContent = S.skills === false ? '所有角色的主動、被動技能都停用，純粹比拼眼力與手速。' : '角色技能全部啟用（含主動技能與被動能力）。'; };
   chips('chSkill', [{ v: true, l: '是' }, { v: false, l: '否' }], () => S.skills !== false, v => { S.skills = v; updSk(); }); updSk();
-  const updDiff = () => { $('diffDesc').textContent = DIFF[S.diff].desc; };
+  const TL = [{ v: 1, l: '輕度', d: '靈活度降為標準的 25%，動作遲緩、很少搗亂。' }, { v: 2, l: '中度', d: '靈活度降為標準的 55%，動作與搗亂頻率適中。' }, { v: 3, l: '重度', d: '維持標準靈活度，全場亂跑、積極搗亂。' }];
+  const updTroll = () => { $('trollRow').classList.toggle('hidden', S.diff !== 3); $('trollDesc').textContent = (TL.find(t => t.v === S.trollLv) || TL[2]).d; };
+  chips('chTroll', TL.map(t => ({ v: t.v, l: t.l })), () => S.trollLv, v => { S.trollLv = v; updTroll(); }); window.updTroll = updTroll;
+  const updDiff = () => { $('diffDesc').textContent = DIFF[S.diff].desc; updTroll(); };
   chips('chDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; updDiff(); }); updDiff();
   chips('chInput', [{ v: 'auto', l: '自動偵測' }, { v: 'desktop', l: '🖥️ 電腦' }, { v: 'mobile', l: '📱 手機' }], () => S.input, v => { S.input = v; Device.update(); refreshBadge(); });
   chips('chQual', [{ v: 'auto', l: '自動' }, { v: 'high', l: '高' }, { v: 'mid', l: '中' }, { v: 'low', l: '低（最順）' }], () => S.quality, v => { S.quality = v; Perf.profile(); Perf.apply(); });
@@ -366,7 +372,7 @@ function tutHTML(mobile) {
 <div class="tcard"><b>🚶 移動</b><span class="kc">W</span><span class="kc">A</span><span class="kc">S</span><span class="kc">D</span> 走路<br><span class="kc">Shift</span> 按住衝刺（耗體力）<br><span class="kc">Space</span> 跳躍，空中再按＝二段跳</div>
 <div class="tcard"><b>🖱 視角</b>滑鼠移動＝轉視角（先點一下畫面鎖定）<br>右鍵／<span class="kc">Q</span> 望遠鏡（放大、移動變慢）</div>
 <div class="tcard"><b>🔢 輸入號碼</b>看清對手額頭的數字後：<br><span class="kc">0</span>–<span class="kc">9</span> 輸入　<span class="kc">Enter</span> 送出<br><span class="kc">Backspace</span> 刪除（輸入滿位數可自動送出）</div>
-<div class="tcard"><b>🎒 道具</b><span class="kc">F</span> 道具 1（預設相機）<br><span class="kc">G</span> 道具 2（閃光／煙霧／干擾）<br>撿地圖上的橘色「?」箱補給</div>
+<div class="tcard"><b>🎒 道具</b><span class="kc">F</span> 道具 1　<span class="kc">G</span> 道具 2　<span class="kc">R</span> 角色技能<br>開局沒有道具，撿地圖上的橘色「?」箱取得；欄位滿了就不會更換</div>
 <div class="tcard"><b>👀 探頭</b>躲在掩體後按住 <span class="kc">Z</span>（左）／<span class="kc">C</span>（右）<br>探頭看一眼就縮回，別被讀到號碼</div>
 <div class="tcard"><b>⚠ 小心</b>紅色箭頭＝有人正在讀你的號碼<br>輸入錯誤會被定身 2 秒（視角也不能轉）<br><span class="kc">Esc</span> 暫停</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
   const P = (l, t, w, cls, txt, st) => `<i class="${cls || ''}" style="left:${l}%;top:${t}%;${w ? 'width:' + w + '%;aspect-ratio:1;' : ''}${st || ''}">${txt}</i>`;
