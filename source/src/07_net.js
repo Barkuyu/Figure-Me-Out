@@ -91,8 +91,12 @@ function netLeave() {
   G.netClient = false; $('mp').classList.add('hidden');
 }
 function leaveWithNotice(msg) {
-  netLeave(); resetToMenuUI();
-  $('errBox').innerHTML = `<div class="err">${msg || '連線已中斷，已返回主選單。'}</div>`; setTimeout(() => { $('errBox').innerHTML = ''; }, 12000);
+  NET.leaving = true;
+  try { netLeave(); } catch (e) { console.error(e); }
+  try { resetToMenuUI(); } catch (e) { console.error(e); }
+  for (const id of ['mp', 'mpLobby', 'gset', 'charsel', 'end', 'pause', 'settings', 'fin', 'tut', 'howPick', 'demoPick']) { const el = $(id); if (el) el.classList.add('hidden'); } // 強制清除所有遮罩
+  G.state = 'menu'; G.netClient = false; UI.paused = false; UI.menuOpen = false; UI.els.menu.classList.remove('hidden'); document.body.classList.remove('playing', 'demo'); UI.els.hud.classList.add('hidden');
+  $('hostLeftMsg').textContent = msg || '連線已中斷，已返回主選單。'; $('hostLeft').classList.remove('hidden'); NET.leaving = false;
 }
 
 /* ---------- 大廳 UI ---------- */
@@ -225,8 +229,9 @@ function clientSend() {
   NET.tr.setMine(st);
 }
 function clientPoll(dt) {
+  if (NET.leaving) return;
   const h = hostOf(NET.tr.peers());
-  if (!h || h.st.bye) { NET.hostMissT += dt; if (h && h.st.bye || NET.hostMissT > (NET.curG ? 3 : 5)) leaveWithNotice('房主已離線，已返回主選單。'); return; }
+  if (!h || h.st.bye) { NET.hostMissT += dt; if (h && h.st.bye || NET.hostMissT > (NET.curG ? 3 : 5)) leaveWithNotice('創辦者已經離開了，趕快邀請他回來遊玩吧！'); return; }
   NET.hostMissT = 0; const st = h.st;
   if (st.ph === 'lobby') { NET.waiting = false; if (NET.curG) { NET.dismissedG = null; clientToLobby(true); } return; }
   const s = st.setup; if (!s) return;

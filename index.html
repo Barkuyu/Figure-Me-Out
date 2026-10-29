@@ -298,6 +298,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 #nvov{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;background:radial-gradient(circle,rgba(0,0,0,0) 45%,rgba(0,25,0,.75) 100%),repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 4px)}#nvov.on{opacity:1}
 #slotS.boost .ring{background:conic-gradient(#7dff9a var(--p,0deg),rgba(255,255,255,.12) 0)}
 .chip.soon{opacity:.5;filter:grayscale(1) brightness(1.4);background:rgba(255,255,255,.08)}
+#hostLeft{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:12px}
 .gnote{font-size:12px;color:#fff;margin:4px 0 0;min-height:16px}
 .slot .cdn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:900 clamp(16px,calc(var(--vw)*2.6),22px) var(--font);color:#fff;text-shadow:0 0 5px #000,0 0 3px #000;pointer-events:none}
 .slot .ring{position:absolute;inset:-5px;border-radius:50%;pointer-events:none;opacity:0;background:conic-gradient(#ffd84a var(--p,0deg),rgba(255,255,255,.12) 0);-webkit-mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px));mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px))}
@@ -354,7 +355,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 3.0</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 3.1</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -377,6 +378,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <h4>機器人難度</h4><div class="chips" id="chDiff"></div><div id="diffDesc" class="gnote"></div><div id="trollRow" class="hidden"><h4>干擾者程度</h4><div class="chips" id="chTroll"></div><div id="trollDesc" class="gnote"></div></div>
     <div class="btnrow"><button class="btn gray" id="gBack">🔙 回上一頁</button><button class="btn" id="gGo">🔥 進入遊戲</button></div>
   </div></div>
+  <div id="hostLeft" class="hidden"><div class="sbox" style="text-align:center;max-width:420px"><div id="hostLeftMsg" style="font-size:18px;line-height:1.6;margin-bottom:12px"></div><button class="btn" id="hostLeftOk">確認</button></div></div>
   <div id="tut" class="hidden"></div>
   <div id="fin" class="hidden"></div>
   <div id="end" class="hidden"></div>
@@ -3266,8 +3268,12 @@ function netLeave() {
   G.netClient = false; $('mp').classList.add('hidden');
 }
 function leaveWithNotice(msg) {
-  netLeave(); resetToMenuUI();
-  $('errBox').innerHTML = `<div class="err">${msg || '連線已中斷，已返回主選單。'}</div>`; setTimeout(() => { $('errBox').innerHTML = ''; }, 12000);
+  NET.leaving = true;
+  try { netLeave(); } catch (e) { console.error(e); }
+  try { resetToMenuUI(); } catch (e) { console.error(e); }
+  for (const id of ['mp', 'mpLobby', 'gset', 'charsel', 'end', 'pause', 'settings', 'fin', 'tut', 'howPick', 'demoPick']) { const el = $(id); if (el) el.classList.add('hidden'); } // 強制清除所有遮罩
+  G.state = 'menu'; G.netClient = false; UI.paused = false; UI.menuOpen = false; UI.els.menu.classList.remove('hidden'); document.body.classList.remove('playing', 'demo'); UI.els.hud.classList.add('hidden');
+  $('hostLeftMsg').textContent = msg || '連線已中斷，已返回主選單。'; $('hostLeft').classList.remove('hidden'); NET.leaving = false;
 }
 
 /* ---------- 大廳 UI ---------- */
@@ -3400,8 +3406,9 @@ function clientSend() {
   NET.tr.setMine(st);
 }
 function clientPoll(dt) {
+  if (NET.leaving) return;
   const h = hostOf(NET.tr.peers());
-  if (!h || h.st.bye) { NET.hostMissT += dt; if (h && h.st.bye || NET.hostMissT > (NET.curG ? 3 : 5)) leaveWithNotice('房主已離線，已返回主選單。'); return; }
+  if (!h || h.st.bye) { NET.hostMissT += dt; if (h && h.st.bye || NET.hostMissT > (NET.curG ? 3 : 5)) leaveWithNotice('創辦者已經離開了，趕快邀請他回來遊玩吧！'); return; }
   NET.hostMissT = 0; const st = h.st;
   if (st.ph === 'lobby') { NET.waiting = false; if (NET.curG) { NET.dismissedG = null; clientToLobby(true); } return; }
   const s = st.setup; if (!s) return;
@@ -4076,7 +4083,7 @@ function boot() {
   $('dpBack').onclick = () => go(() => $('demoPick').classList.add('hidden')); $('dpOk').onclick = () => go(() => { $('demoPick').classList.add('hidden'); beginGame(true); });
   $('btnSet').onclick = () => go(openSettings); $('btnSet2').onclick = () => go(openSettings); $('btnSetClose').onclick = () => go(closeSettings); $('dbSet').onclick = () => go(openSettings); $('dbPause').onclick = () => setPause(true);
   $('btnLayout').onclick = () => go(openLayoutEditor); $('btnLayoutReset').onclick = () => { S.layout = {}; saveS(); applyLayout(); UI.msg('已重設按鍵配置', 'item'); };
-  initLayoutEditor(); applyLayout(); initNetUI();
+  initLayoutEditor(); applyLayout(); initNetUI(); $('hostLeftOk').onclick = () => $('hostLeft').classList.add('hidden');
   $('pause').addEventListener('click', e => { if (e.target.id === 'pause') resumeGame(); });
   document.addEventListener('visibilitychange', () => { if (document.hidden && G.state === 'playing' && !UI.paused && !NET.mode) setPause(true); });
   window.onGLLost = () => { UI.msg('圖形裝置中斷，請重新整理頁面', 'bad'); };

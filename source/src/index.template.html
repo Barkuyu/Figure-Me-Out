@@ -289,6 +289,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 #nvov{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;background:radial-gradient(circle,rgba(0,0,0,0) 45%,rgba(0,25,0,.75) 100%),repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 4px)}#nvov.on{opacity:1}
 #slotS.boost .ring{background:conic-gradient(#7dff9a var(--p,0deg),rgba(255,255,255,.12) 0)}
 .chip.soon{opacity:.5;filter:grayscale(1) brightness(1.4);background:rgba(255,255,255,.08)}
+#hostLeft{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:12px}
 .gnote{font-size:12px;color:#fff;margin:4px 0 0;min-height:16px}
 .slot .cdn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:900 clamp(16px,2.6vw,22px) var(--font);color:#fff;text-shadow:0 0 5px #000,0 0 3px #000;pointer-events:none}
 .slot .ring{position:absolute;inset:-5px;border-radius:50%;pointer-events:none;opacity:0;background:conic-gradient(#ffd84a var(--p,0deg),rgba(255,255,255,.12) 0);-webkit-mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px));mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px))}
@@ -363,6 +364,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <h4>機器人難度</h4><div class="chips" id="chDiff"></div><div id="diffDesc" class="gnote"></div><div id="trollRow" class="hidden"><h4>干擾者程度</h4><div class="chips" id="chTroll"></div><div id="trollDesc" class="gnote"></div></div>
     <div class="btnrow"><button class="btn gray" id="gBack">🔙 回上一頁</button><button class="btn" id="gGo">🔥 進入遊戲</button></div>
   </div></div>
+  <div id="hostLeft" class="hidden"><div class="sbox" style="text-align:center;max-width:420px"><div id="hostLeftMsg" style="font-size:18px;line-height:1.6;margin-bottom:12px"></div><button class="btn" id="hostLeftOk">確認</button></div></div>
   <div id="tut" class="hidden"></div>
   <div id="fin" class="hidden"></div>
   <div id="end" class="hidden"></div>

@@ -577,7 +577,7 @@ function boot() {
   $('dpBack').onclick = () => go(() => $('demoPick').classList.add('hidden')); $('dpOk').onclick = () => go(() => { $('demoPick').classList.add('hidden'); beginGame(true); });
   $('btnSet').onclick = () => go(openSettings); $('btnSet2').onclick = () => go(openSettings); $('btnSetClose').onclick = () => go(closeSettings); $('dbSet').onclick = () => go(openSettings); $('dbPause').onclick = () => setPause(true);
   $('btnLayout').onclick = () => go(openLayoutEditor); $('btnLayoutReset').onclick = () => { S.layout = {}; saveS(); applyLayout(); UI.msg('已重設按鍵配置', 'item'); };
-  initLayoutEditor(); applyLayout(); initNetUI();
+  initLayoutEditor(); applyLayout(); initNetUI(); $('hostLeftOk').onclick = () => $('hostLeft').classList.add('hidden');
   $('pause').addEventListener('click', e => { if (e.target.id === 'pause') resumeGame(); });
   document.addEventListener('visibilitychange', () => { if (document.hidden && G.state === 'playing' && !UI.paused && !NET.mode) setPause(true); });
   window.onGLLost = () => { UI.msg('圖形裝置中斷，請重新整理頁面', 'bad'); };
