@@ -281,20 +281,20 @@ const World = {
     if (sl && !this.inMezz(sx, sz)) sl = 0; if (gl && !this.inMezz(gx, gz)) gl = 0;
     const si = this.nearestWalk(sx, sz, sl), gi = this.nearestWalk(gx, gz, gl); if (si === gi) return [[gx, gz]];
     const gS = new Float32Array(T).fill(1e9), from = new Int32Array(T).fill(-1), closed = new Uint8Array(T), open = [si];
+    const f = new Float32Array(T), hpush = (i) => { open.push(i); let c = open.length - 1; while (c > 0) { const pr = (c - 1) >> 1; if (f[open[pr]] <= f[i]) break; open[c] = open[pr]; c = pr; } open[c] = i; }, hpop = () => { const top = open[0], last = open.pop(); if (open.length) { let c = 0; const n = open.length; for (;;) { let l = c * 2 + 1; if (l >= n) break; if (l + 1 < n && f[open[l + 1]] < f[open[l]]) l++; if (f[open[l]] >= f[last]) break; open[c] = open[l]; c = l; } open[c] = last; } return top; };
     const gcx = (gi % N) % nx, gcz = ((gi % N) / nx) | 0;
     gS[si] = 0; const hh = (i) => { const q = i % N, dx = Math.abs(q % nx - gcx), dz = Math.abs(((q / nx) | 0) - gcz); return Math.max(dx, dz) + .414 * Math.min(dx, dz); };
-    const f = new Float32Array(T); f[si] = hh(si); let found = false, guard = 0;
-    while (open.length && guard++ < 12000) {
-      let bi = 0; for (let k = 1; k < open.length; k++) if (f[open[k]] < f[open[bi]]) bi = k;
-      const cur = open[bi]; open[bi] = open[open.length - 1]; open.pop(); if (cur === gi) { found = true; break; } closed[cur] = 1;
+    f[si] = hh(si); let found = false, guard = 0;
+    while (open.length && guard++ < 30000) {
+      const cur = hpop(); if (closed[cur]) continue; if (cur === gi) { found = true; break; } closed[cur] = 1;
       const lb = cur >= N ? N : 0, q = cur - lb, cx = q % nx, cz = (q / nx) | 0;
       for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
         if (!dx && !dz) continue; const ix = cx + dx, iz = cz + dz; if (ix < 0 || iz < 0 || ix >= nx || iz >= nz) continue;
         const ni = lb + iz * nx + ix; if (!n.walk[ni] || closed[ni]) continue;
         if (!this.edgeOK(lb, cx, cz, dx, dz)) continue;
-        const ng = gS[cur] + (dx && dz ? 1.414 : 1); if (ng < gS[ni]) { gS[ni] = ng; from[ni] = cur; f[ni] = ng + hh(ni); if (open.indexOf(ni) < 0) open.push(ni); }
+        const ng = gS[cur] + (dx && dz ? 1.414 : 1); if (ng < gS[ni]) { gS[ni] = ng; from[ni] = cur; f[ni] = ng + hh(ni); hpush(ni); }
       }
-      const lk = n.links[cur]; if (lk) for (const ni of lk) { if (closed[ni]) continue; const ng = gS[cur] + 7; if (ng < gS[ni]) { gS[ni] = ng; from[ni] = cur; f[ni] = ng + hh(ni); if (open.indexOf(ni) < 0) open.push(ni); } }
+      const lk = n.links[cur]; if (lk) for (const ni of lk) { if (closed[ni]) continue; const ng = gS[cur] + 7; if (ng < gS[ni]) { gS[ni] = ng; from[ni] = cur; f[ni] = ng + hh(ni); hpush(ni); } }
     }
     if (!found) return [[gx, gz]];
     const cells = []; for (let c = gi; c !== -1; c = from[c]) cells.push(c); cells.reverse();

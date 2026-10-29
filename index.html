@@ -320,7 +320,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.0</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.1</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -1323,20 +1323,20 @@ const World = {
     if (sl && !this.inMezz(sx, sz)) sl = 0; if (gl && !this.inMezz(gx, gz)) gl = 0;
     const si = this.nearestWalk(sx, sz, sl), gi = this.nearestWalk(gx, gz, gl); if (si === gi) return [[gx, gz]];
     const gS = new Float32Array(T).fill(1e9), from = new Int32Array(T).fill(-1), closed = new Uint8Array(T), open = [si];
+    const f = new Float32Array(T), hpush = (i) => { open.push(i); let c = open.length - 1; while (c > 0) { const pr = (c - 1) >> 1; if (f[open[pr]] <= f[i]) break; open[c] = open[pr]; c = pr; } open[c] = i; }, hpop = () => { const top = open[0], last = open.pop(); if (open.length) { let c = 0; const n = open.length; for (;;) { let l = c * 2 + 1; if (l >= n) break; if (l + 1 < n && f[open[l + 1]] < f[open[l]]) l++; if (f[open[l]] >= f[last]) break; open[c] = open[l]; c = l; } open[c] = last; } return top; };
     const gcx = (gi % N) % nx, gcz = ((gi % N) / nx) | 0;
     gS[si] = 0; const hh = (i) => { const q = i % N, dx = Math.abs(q % nx - gcx), dz = Math.abs(((q / nx) | 0) - gcz); return Math.max(dx, dz) + .414 * Math.min(dx, dz); };
-    const f = new Float32Array(T); f[si] = hh(si); let found = false, guard = 0;
-    while (open.length && guard++ < 12000) {
-      let bi = 0; for (let k = 1; k < open.length; k++) if (f[open[k]] < f[open[bi]]) bi = k;
-      const cur = open[bi]; open[bi] = open[open.length - 1]; open.pop(); if (cur === gi) { found = true; break; } closed[cur] = 1;
+    f[si] = hh(si); let found = false, guard = 0;
+    while (open.length && guard++ < 30000) {
+      const cur = hpop(); if (closed[cur]) continue; if (cur === gi) { found = true; break; } closed[cur] = 1;
       const lb = cur >= N ? N : 0, q = cur - lb, cx = q % nx, cz = (q / nx) | 0;
       for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
         if (!dx && !dz) continue; const ix = cx + dx, iz = cz + dz; if (ix < 0 || iz < 0 || ix >= nx || iz >= nz) continue;
         const ni = lb + iz * nx + ix; if (!n.walk[ni] || closed[ni]) continue;
         if (!this.edgeOK(lb, cx, cz, dx, dz)) continue;
-        const ng = gS[cur] + (dx && dz ? 1.414 : 1); if (ng < gS[ni]) { gS[ni] = ng; from[ni] = cur; f[ni] = ng + hh(ni); if (open.indexOf(ni) < 0) open.push(ni); }
+        const ng = gS[cur] + (dx && dz ? 1.414 : 1); if (ng < gS[ni]) { gS[ni] = ng; from[ni] = cur; f[ni] = ng + hh(ni); hpush(ni); }
       }
-      const lk = n.links[cur]; if (lk) for (const ni of lk) { if (closed[ni]) continue; const ng = gS[cur] + 7; if (ng < gS[ni]) { gS[ni] = ng; from[ni] = cur; f[ni] = ng + hh(ni); if (open.indexOf(ni) < 0) open.push(ni); } }
+      const lk = n.links[cur]; if (lk) for (const ni of lk) { if (closed[ni]) continue; const ng = gS[cur] + 7; if (ng < gS[ni]) { gS[ni] = ng; from[ni] = cur; f[ni] = ng + hh(ni); hpush(ni); } }
     }
     if (!found) return [[gx, gz]];
     const cells = []; for (let c = gi; c !== -1; c = from[c]) cells.push(c); cells.reverse();
@@ -3133,6 +3133,7 @@ function applySnap(s) {
   if (s.st === 1 && G.state === 'playing') { G.state = 'ended'; G.winner = s.w; UI.onEnd(); }
 }
 function updateClientGame(dt) {
+  if (G.state === 'ended') { G.time += dt; In.lookX = In.lookY = 0; return; } // 結算：全場暫停
   G.time += dt; if (G.state === 'playing' && G.countdown <= 0) { G.tleft = Math.max(0, G.tleft - dt); const me0 = G.player; if (me0) me0.skCd = Math.max(0, me0.skCd - dt); if (G.sk.rev.t > 0) G.sk.rev.t -= dt; if (G.sk.scr.t >= 0) G.sk.scr.t += dt; }
   if (G.countdown > 0) { G.countdown = Math.max(0, G.countdown - dt); In.lookX = In.lookY = 0; } else if (G.player) updatePlayer(dt);
   const k = 1 - Math.exp(-dt * 14);
@@ -3181,6 +3182,7 @@ const UI = {
   /* 結算流程：全場暫停 → 勝利(金光)/落敗(灰暗) 過場 3 秒 → 翻牌顯示結算表 */
   onEnd() {
     const p = G.player, tok = this.endTok = (this.endTok || 0) + 1; let res = null;
+    if (G.sk) { G.sk.rev.t = 0; G.sk.scr.t = -1; } this.endScramble(); this._ph2 = false; this._pf = false; $('numL').classList.remove('purple'); $('numR').classList.remove('purple'); $('pflash').classList.remove('on');
     if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
     if (p && !G.demo) { if (G.mode === 'dm') res = G.winner === p.name ? 'win' : 'lose'; else res = G.winner === -1 ? 'draw' : (G.winner === p.team ? 'win' : 'lose'); }
     if (!res) { this.showEnd(false); return; }
@@ -3526,7 +3528,7 @@ function beginGame(demo, roster) {
   demo = demo === true;
   Sfx.init(); Sfx.resume(); if (!S.countSet) S.count = defaultCount();
   UI.els.menu.classList.add('hidden'); UI.els.hud.classList.remove('hidden'); document.body.classList.add('playing'); document.body.classList.toggle('demo', demo);
-  UI.hideEnd(); In.sprintT = false; $('bRun').classList.remove('tog'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.els.demoTag.classList.add('hidden');
+  UI.hideEnd(); UI.endScramble(); UI._ph2 = false; In.sprintT = false; $('bRun').classList.remove('tog'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.els.demoTag.classList.add('hidden');
   $('btnResume').textContent = demo ? '繼續示範' : '繼續'; $('btnQuit').textContent = demo ? '退出示範模式' : NET.mode ? '離開房間' : '回主選單'; $('pauseTitle').textContent = demo ? '示範模式已暫停' : '已暫停';
   startMatch(demo, roster); UI.els.modeName.textContent = (demo ? '示範 · ' : '') + MAPS[G.map].name + ' · ' + MODES[G.mode].name + ' · ' + (G.codeLen ? G.codeLen + ' 碼' : '大亂鬥') + ' · ' + DIFF[S.diff].name; UI._cd = 0; UI.goT = 0; UI.lastFeed = -1; UI.dirty = true; UI.onRespawn(); Perf.profile(); Perf.apply(); updateRotate();
   UI.els.hints.style.display = Device.mobile ? 'none' : '';

@@ -17,6 +17,7 @@ const UI = {
   /* 結算流程：全場暫停 → 勝利(金光)/落敗(灰暗) 過場 3 秒 → 翻牌顯示結算表 */
   onEnd() {
     const p = G.player, tok = this.endTok = (this.endTok || 0) + 1; let res = null;
+    if (G.sk) { G.sk.rev.t = 0; G.sk.scr.t = -1; } this.endScramble(); this._ph2 = false; this._pf = false; $('numL').classList.remove('purple'); $('numR').classList.remove('purple'); $('pflash').classList.remove('on');
     if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
     if (p && !G.demo) { if (G.mode === 'dm') res = G.winner === p.name ? 'win' : 'lose'; else res = G.winner === -1 ? 'draw' : (G.winner === p.team ? 'win' : 'lose'); }
     if (!res) { this.showEnd(false); return; }
@@ -362,7 +363,7 @@ function beginGame(demo, roster) {
   demo = demo === true;
   Sfx.init(); Sfx.resume(); if (!S.countSet) S.count = defaultCount();
   UI.els.menu.classList.add('hidden'); UI.els.hud.classList.remove('hidden'); document.body.classList.add('playing'); document.body.classList.toggle('demo', demo);
-  UI.hideEnd(); In.sprintT = false; $('bRun').classList.remove('tog'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.els.demoTag.classList.add('hidden');
+  UI.hideEnd(); UI.endScramble(); UI._ph2 = false; In.sprintT = false; $('bRun').classList.remove('tog'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.els.demoTag.classList.add('hidden');
   $('btnResume').textContent = demo ? '繼續示範' : '繼續'; $('btnQuit').textContent = demo ? '退出示範模式' : NET.mode ? '離開房間' : '回主選單'; $('pauseTitle').textContent = demo ? '示範模式已暫停' : '已暫停';
   startMatch(demo, roster); UI.els.modeName.textContent = (demo ? '示範 · ' : '') + MAPS[G.map].name + ' · ' + MODES[G.mode].name + ' · ' + (G.codeLen ? G.codeLen + ' 碼' : '大亂鬥') + ' · ' + DIFF[S.diff].name; UI._cd = 0; UI.goT = 0; UI.lastFeed = -1; UI.dirty = true; UI.onRespawn(); Perf.profile(); Perf.apply(); updateRotate();
   UI.els.hints.style.display = Device.mobile ? 'none' : '';
