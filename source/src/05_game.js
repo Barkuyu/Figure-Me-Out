@@ -1,6 +1,6 @@
 /* ================= 遊戲邏輯 ================= */
 const STEP = .45, RAD = .22, GRAV = 22, EYE = 1.62;
-const isDM = () => G.mode === 'dm' || G.mode === 'hunt';
+const isDM = () => G.mode === 'dm' || G.mode === 'hunt' || G.mode === 'kof';
 const VIS_OUTFITS = OUTFITS.map((o, i) => o.hidden ? -1 : i).filter(i => i >= 0);
 const NAMES = ['Honda', '小明', '阿杰', 'Mia', 'Ken', 'Luna', 'Jay', 'Yuki', '小美', 'Leo', '阿宏', 'Nina', 'Ray', '小雨', 'Zoe', 'Max', '阿德', 'Coco', 'Tom', 'Eli'];
 /* 新增模式只要在這裡加一筆；demo:false 代表電腦無法示範（需真人操作），示範選單會自動排除並提示 */
@@ -8,8 +8,8 @@ const MODES = {
   dm: { name: '個人死鬥', sub: '人人為敵', desc: '所有人互相淘汰，最先達到 15 次淘汰者獲勝', time: 300, limit: 15, short: '人人為敵，先淘汰 15 人者獲勝' },
   tdm: { name: '團隊死鬥', sub: '紅 vs 藍', desc: '紅藍兩隊對戰，隊伍先累積 30 次淘汰者獲勝', time: 360, limit: 30, short: '紅藍對戰，隊伍先累積 30 次淘汰者獲勝' },
   hunt: { name: '激鬥追捕', sub: '追殺電腦角色', desc: '玩家頭上沒有號碼，只能追殺電腦角色，連殺積分更高；時間到積分最高或最先 100 分者獲勝', time: 300, limit: 100, demo: false, short: '只追殺電腦、連殺加分，100 分或時間到積分最高者勝' },
-  arena: { name: '擂台逃殺', sub: '🔒 敬請期待', soon: true, desc: '敬請期待，玩法即將公開', time: 300, limit: 1, demo: false, short: '敬請期待，玩法即將公開' },
-  kof: { name: 'KOF大賽', sub: '🔒 敬請期待', soon: true, desc: '敬請期待，玩法即將公開', time: 300, limit: 1, demo: false, short: '敬請期待，玩法即將公開' },
+  arena: { name: '擂台逃殺', sub: '關卡生存・無限挑戰', desc: '玩家（可多人合作）對抗一關比一關強的電腦軍團，電腦之間不會互相攻擊；真人全數被殲滅即結束，看你能撐到第幾關。', time: 0, limit: 0, demo: false, short: '闖關生存，電腦軍團一關比一關多、一關比一關強' },
+  kof: { name: 'KOF大賽', sub: '五人車輪戰・1 對 1', desc: '雙方各選 5 位角色以車輪戰一對一單挑，倒下後再選下一位出戰，先耗盡 5 位角色者落敗。僅限單人（對電腦）或 2 位玩家。', time: 0, limit: 0, demo: false, short: '五人車輪戰，先用完 5 位角色者落敗' },
   ctf: { name: '奪旗', sub: '搶旗帶回基地', desc: '搶走敵方旗幟帶回己方基地得分，先得 3 分獲勝', time: 480, limit: 3, short: '搶走敵方旗幟帶回己方基地，先得 3 分獲勝' }
 };
 const ITEMS = { cam: { ico: '📷', name: '相機' }, quake: { ico: '🌋', name: '地牛控制器' }, scope: { ico: '🔍', name: '偵查鏡' }, fake: { ico: '🎫', name: '假號碼牌' }, spring: { ico: '⛲', name: '神仙泉水' } };
@@ -119,6 +119,7 @@ const faceYaw = (a, t) => Math.atan2(-(t.x - a.x), -(t.z - a.z));
 const isStunBy = o => !!o && o.av && (o.av.outfitIdx === 18);
 function startCharge(a, aim) {
   let dir = FWD(a.yaw);
+  if (a.isPlayer) { const f = dir, rx = Math.cos(a.yaw), rz = -Math.sin(a.yaw); let mx = In.mx, my = In.my; if (revActive(a)) { mx = -mx; my = -my; } if (relPhase2(a)) mx = -mx; const l = Math.hypot(mx, my); if (l > .15) dir = [(f[0] * my + rx * mx) / l, (f[1] * my + rz * mx) / l]; } // 依位移鍵方向衝撞
   if (aim && !a.isPlayer && !a.remote) { let best = null, bd = 8; for (const o of G.actors) { if (!enemyOf(a, o) || o.invis) continue; const d = Math.hypot(o.x - a.x, o.z - a.z); if (d < bd) { bd = d; best = o; } } if (best) { dir = [(best.x - a.x) / bd, (best.z - a.z) / bd]; a.yaw = faceYaw(a, best); } }
   a.chg = { ph: 0, t: CH_T, dir, hit: null, vx: dir[0] * CH_V, vz: dir[1] * CH_V };
   if (a.isPlayer || a === G.view) { Sfx.noise(.2, .2, 1800, 0, true); }
@@ -148,7 +149,7 @@ function castSkill(a) {
   return runSkill(a, base, true);
 }
 function runSkill(a, k, useCd) {
-  if (k === 'cloak' && a.fake) return false; if (useCd) a.skCd = (k === 'cloak' ? 0 : SKILLS[k].cd) + (k === 'dack' ? DACK_T : k === 'nox' ? 31.5 : 0);
+  if (k === 'cloak' && a.fake) return false; if (useCd) a.skCd = (k === 'cloak' ? 0 : SKILLS[k].cd) + (k === 'dack' ? DACK_T : k === 'nox' ? 31.5 : k === 'rel' ? REL_WARN + REL_DUR : 0);
   if (k === 'rev') { G.sk.rev = { t: 7, by: a, id: ++G.skId }; skMsg(a, '發動【顛倒乾坤】！其他人的移動方向反轉 7 秒'); }
   else if (k === 'scr') { G.sk.scr = { t: 0, by: a, id: ++G.skId }; skMsg(a, '發動【紫電干擾】！其他人的數字鍵錯亂 5 秒'); }
   else if (k === 'ink') { G.sk.ink = { t: 3, by: a, id: ++G.skId }; for (const o of G.actors) if (o !== a && o.alive && !o.isPlayer && !o.remote && !immune(o)) { o.blind = Math.max(o.blind, 3); o.typing = null; } skMsg(a, '發動【烏賊戲法】！其他人的視野被墨汁遮住'); }
@@ -384,6 +385,8 @@ function eliminate(k, v) {
   if (k !== v && v.alive && v.shieldT > 0) { blockHit(k, v); return; }
   if (!v.alive || v.protect > 0) return;
   v.alive = false; v.deaths++; v.deadT = 0; v.respawnT = 3.2; v.killedBy = k; v.typing = null; v.lure = null;
+  if (G.mode === 'arena' && (v.isPlayer || v.remote)) v.respawnT = 10 + 2 * (Math.max(1, G.arena ? G.arena.stage : 1) - 1);
+  if (G.mode === 'kof') { v.kout++; v.kleft = v.kleft.filter(i => i !== v.kcur); v.respawnT = 1e9; if (v.kout < 5) { v.kw = 10; v.kbot = rand(2.5, 4.5); } }
   if (skOn() && k !== v) {
     if (isOut(k, 18) && (k.skCd || 0) > 0) { k.skCd = 0; skMsg(k, '擊殺成功，【衝鋒陷陣】立即刷新！'); }
     if (isOut(k, 19)) { if (k.wkT > 0) { k.wkT = 6; } else if (!k.wkPre && (k.skCd || 0) <= 0) { k.wkPre = .3; puffFx(k); } }
@@ -399,10 +402,16 @@ function eliminate(k, v) {
   for (const o of G.actors) { if (o.read) o.read[v.id] = 0; }
   if (k.isPlayer) { Sfx.kill(); UI.msg('你淘汰了 ' + v.name + ' (' + v.number + ')', 'good'); UI.killFlash(); }
   if (v.isPlayer) { Sfx.die(); G.typed = ''; G.bino = false; UI.onDeath(k); }
-  UI.dirty = true; checkWin();
+  UI.dirty = true; if (!modeEndCheck(k, v)) checkWin();
+}
+function modeEndCheck(k, v) {
+  if (G.state !== 'playing') return true;
+  if (G.mode === 'arena' && (v.isPlayer || v.remote)) { if (!G.actors.some(a => (a.isPlayer || a.remote) && a.alive)) { G.state = 'ended'; G.winner = ''; G.endT = 0; UI.onEnd(); return true; } }
+  else if (G.mode === 'kof' && v.kout >= 5) { const w = G.actors.find(a => a !== v); G.state = 'ended'; G.winner = w ? w.name : ''; G.endT = 0; UI.onEnd(); return true; }
+  return false;
 }
 function checkWin() {
-  if (G.state !== 'playing') return;
+  if (G.state !== 'playing' || G.mode === 'arena' || G.mode === 'kof') return;
   let over = false, win = '';
   if (G.mode === 'hunt') { const hs = G.actors.filter(a => a.isPlayer || a.remote); const best = hs.reduce((m, a) => (a.score || 0) > (m.score || 0) ? a : m, hs[0]); if ((best.score || 0) >= G.limit || G.tleft <= 0) { G.state = 'ended'; G.winner = best.name; G.endT = 0; UI.onEnd(); } return; }
   if (G.mode === 'dm') { const best = G.actors.reduce((m, a) => a.kills > m.kills ? a : m, G.actors[0]); if (best.kills >= G.limit) { over = true; win = best.name; } }
@@ -514,7 +523,7 @@ function updateCamera(dt) {
 
 /* ---------- 機器人 AI ---------- */
 function scanBot(b, dt) {
-  const R2 = b.range * b.range, ex = b.x, ey = b.y + 1.62, ez = b.z, df = DIFF[S.diff], teamMode = !isDM();
+  const R2 = b.range * b.range, ex = b.x, ey = b.y + 1.62, ez = b.z, df = DIFF[b.dix ?? S.diff], teamMode = !isDM();
   let seen = null, seenD = 1e9;
   for (const o of G.actors) {
     if (o === b || !o.alive || o.invis) continue; if (teamMode && o.team === b.team) continue;
@@ -579,7 +588,7 @@ function smartThink(b, dt) {
     const ci = b.slots.findIndex(x => x && x.type === 'cam');
     if (ci >= 0 && d > 9 && d < 40 && face > .34 && t.alive && (b.read[t.id] || 0) < .9) {
       botUse(b, ci); b.read[t.id] = Math.min(1, (b.read[t.id] || 0) + .6); b.cd = 3.5;
-      if (b.read[t.id] >= 1 && !b.typing) { b.typing = { target: t, num: t.number, t: DIFF[S.diff].type * 1.1 }; b.read[t.id] = 0; }
+      if (b.read[t.id] >= 1 && !b.typing) { b.typing = { target: t, num: t.number, t: DIFF[b.dix ?? S.diff].type * 1.1 }; b.read[t.id] = 0; }
     }
   }
 }
@@ -617,7 +626,7 @@ function updateBot(b, dt) {
   if (b.chg) { b.typing = null; b.vx = b.chg.vx; b.vz = b.chg.vz; moveActor(b, dt); b.sp = clamp(Math.hypot(b.vx, b.vz) / 8.4, 0, 1); b.animT += dt * 14; return; }
   if ((b.ctrlT || 0) > 0 && b.ctrlBy && isStunBy(b.ctrlBy)) { b.typing = null; b.protect = Math.max(0, b.protect - dt); b.cd -= dt; b.vx *= .5; b.vz *= .5; b.yaw = faceYaw(b, b.ctrlBy); moveActor(b, dt); b.sp = 0; return; }
   if ((b.ctrlT || 0) > 0 && b.ctrlBy) { b.typing = null; b.protect = Math.max(0, b.protect - dt); b.cd -= dt; const dx = b.x - b.ctrlBy.x, dz = b.z - b.ctrlBy.z, dd = Math.hypot(dx, dz) || 1, sp0 = b.speed * .3; b.vx += (dx / dd * sp0 - b.vx) * Math.min(1, dt * 9); b.vz += (dz / dd * sp0 - b.vz) * Math.min(1, dt * 9); moveActor(b, dt); b.sp = clamp(Math.hypot(b.vx, b.vz) / 8.4, 0, 1); b.animT += dt * (5 + b.sp * 9); return; }
-  if ((DIFF[S.diff].troll || G.mode === 'hunt') && !G.demo) { updateTroll(b, dt); return; }
+  if ((DIFF[b.dix ?? S.diff].troll || G.mode === 'hunt') && !G.demo && G.mode !== 'arena' && G.mode !== 'kof') { updateTroll(b, dt); return; }
   botSkill(b, dt); if (!b.smart) botItems(b, dt, false);
   b.threatT = Math.max(0, b.threatT - dt); if (b.smart) smartThink(b, dt);
   b.protect = Math.max(0, b.protect - dt); b.blind = Math.max(0, b.blind - dt); b.cd -= dt; b.tgtT -= dt; if (b.tgtT <= 0) b.tgt = null;
@@ -669,7 +678,42 @@ function updateBot(b, dt) {
   // 丟道具
   if (!b.smart && b.slots && b.slots.some(x => x && x.type !== 'cam') && b.cd <= 0 && tgt && b.blind <= 0) { const d = Math.hypot(tgt.x - b.x, tgt.z - b.z); if (d > 9 && d < 28 && Math.random() < dt * .6) botThrow(b, tgt); }
 }
+/* ---------- 擂台逃殺 ---------- */
+function arenaSpec(st) { const T = [[2, 0], [3, 0], [5, 0], [7, 0], [1, 1], [3, 1], [5, 1], [7, 1], [9, 1], [1, 2]]; return st <= 10 ? T[st - 1] : [st - 9, 2]; }
+function arenaSpawnStage() {
+  const A = G.arena, [cnt0, dix] = arenaSpec(A.stage), hum = A.hum, want = Math.min(cnt0 * hum, A.cap); let n = 0;
+  for (const b of G.actors) { if (!b.pool || n >= want) continue; b.dix = dix; b.team = 1; spawnActor(b); b.deadT = 0; n++; }
+  A.spawned = true; for (const k of G.pickups) { k.on = true; k.t = 0; } // 每關開始補滿道具箱
+}
+function arenaTick(dt) {
+  const A = G.arena; if (!A) return; A.t -= dt;
+  if (A.ph === 0) { if (!A.warned && A.t <= 3) { A.warned = true; Sfx.warn(); } if (A.t <= 0) { Sfx.arenaGo(); A.stage = 1; A.ph = 1; A.t = 1.8; } }
+  else if (A.ph === 1) { if (A.t <= 0) { arenaSpawnStage(); A.ph = 2; } }
+  else if (A.ph === 2) { if (A.spawned && !G.actors.some(a => a.pool && a.alive)) { A.ph = 3; A.t = 2.6; A.spawned = false; Sfx.victory(); } }
+  else if (A.ph === 3) { if (A.t <= 0) { A.stage++; A.ph = 1; A.t = 1.8; } }
+}
+/* ---------- KOF 大賽 ---------- */
+function resetSkillState(a) { a.skCd = 0; a.shieldT = 0; a.cloak = false; a.invis = false; a.fake = null; a.fakeT = 0; a.fakeOf = null; a.dackE = -1; a.armed = false; a.stolen = null; a.passIdx = -1; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2; a.cleanW = 0; a.chg = null; a.wkT = 0; a.wkPre = 0; a.say = null; a.blind = 0; }
+const kofVisible = (o, x, z, y) => { if (!o || !o.alive) return false; const dx = x - o.x, dz = z - o.z, d = Math.hypot(dx, dz); if (d > 75) return false; const f = FWD(o.yaw); if ((dx * f[0] + dz * f[1]) / (d || 1) < Math.cos(.95)) return false; return los(o.x, o.y + 1.6, o.z, x, y + 1.6, z); };
+function kofSpawnPos(a, o) {
+  let best = null; for (let k = 0; k < 18; k++) { const p = World.pickSpawn(-1, o ? [o] : []) || [0, 0, 0]; if (!kofVisible(o, p[0], p[1], p[2] ? World.mezz.h : 0)) { best = p; break; } if (!best) best = p; }
+  return [best[0], best[1], o ? Math.atan2(-(o.x - best[0]), -(o.z - best[1])) : 0, best[2] | 0];
+}
+function kofPick(a, idx) {
+  if (G.mode !== 'kof' || a.alive || !a.kleft || !a.kleft.includes(idx)) return false;
+  a.kcur = idx; a.outfit = idx; a.av = createAvatar(idx); resetSkillState(a); a.kw = 0; a.kbot = 0;
+  const o = G.actors.find(x => x !== a); spawnActor(a, kofSpawnPos(a, o)); a.protect = 2.2;
+  if (a.isPlayer) { UI.onRespawn(); G.typed = ''; } else if (G.player) UI.msg('對手派出了【' + OUTFITS[idx].label + '】', 'item'); G.countdown = 2; G.kofCd = true; UI.dirty = true; return true;
+}
+function kofTick(dt) {
+  for (const a of G.actors) {
+    if (a.alive || !(a.kw > 0)) continue; a.kw -= dt;
+    if (!a.isPlayer && !a.remote) { a.kbot = (a.kbot || 0) - dt; if (a.kbot <= 0) { kofPick(a, pick(a.kleft)); continue; } }
+    if (a.kw <= 0) kofPick(a, pick(a.kleft));
+  }
+}
 function updateDead(a, dt) {
+  if (G.mode === 'arena' && !a.isPlayer && !a.remote) { a.deadT += dt; a.fall = Math.min(1, a.fall + dt * 3); return; }
   a.deadT += dt; a.respawnT -= dt; a.fall = Math.min(1, a.fall + dt * 3);
   if (a.respawnT <= 0 && G.state === 'playing') { spawnActor(a); if (a.isPlayer) UI.onRespawn(); }
 }
@@ -681,13 +725,13 @@ function updateGame(dt) {
   G.time += dt;
   if (G.countdown > 0 && G.state === 'playing') {
     const c0 = Math.ceil(G.countdown); G.countdown -= dt;
-    if (G.countdown <= 0) { G.countdown = 0; Sfx.bell(); UI.goText(); } else if (Math.ceil(G.countdown) !== c0) Sfx.tick();
+    if (G.countdown <= 0) { G.countdown = 0; if (G.kofCd) G.kofCd = false; else if (G.mode !== 'arena') { Sfx.bell(); UI.goText(); } } else if (Math.ceil(G.countdown) !== c0) { if (G.kofCd && Math.ceil(G.countdown) === 1) Sfx.bell(); else Sfx.tick(); }
     for (const a of G.actors) { const f = FWD(a.yaw); a.fx = f[0]; a.fz = f[1]; }
     In.lookX = In.lookY = 0; if (G.player) updateCamera(dt); else if (G.demo) updateDemoCam(dt); return;
   }
   if (G.state === 'playing') {
     G.tleft -= dt; if (G.tleft <= 0) { G.tleft = 0; checkWin(); }
-    skTick(dt);
+    skTick(dt); if (G.mode === 'arena') arenaTick(dt); else if (G.mode === 'kof') kofTick(dt);
     for (const a of G.actors) {
       if (a.isPlayer) { updatePlayer(dt); if (!a.alive && a.respawnT <= 0) { spawnActor(a); UI.onRespawn(); } continue; }
       if (a.remote) { updateRemote(a, dt); continue; }
@@ -736,17 +780,21 @@ function startMatch(demo, roster) {
   const mk = (demo && S.demoMode && MODES[S.demoMode]) ? S.demoMode : S.mode, m = MODES[mk]; G.mode = mk; G.codeLen = S.codeLen === 'rand' ? pick([3, 4, 5, 6]) : S.codeLen === 'mix' ? 0 : (S.codeLen | 0) || 4; G.countdown = 3; G.freezeT = 0; G.skillsOn = S.skills !== false; G.tleft = (S.time || 5) * 60; G.limit = m.limit; G.scores = [0, 0]; G.grenades = []; G.smokes = []; G.lures = []; G.fx = []; G.feed = []; G.typed = ''; G.lock = 0; G.time = 0;
   freeActors(G.actors); G.actors = []; _id = 0; G.slots = [null, null]; G.scopeOn = false; G.bino = false; G.binK = 0; G.energy = 1; G.stam = 1; G.flashT = 0; G.itemCd = 0; G.threat = null;
   G.netClient = false; G.multi = !!roster; const hum = roster ? roster.length : 1;
-  const n = roster ? (S.netBots ? clamp(Math.max(S.count, hum), hum, 20) : hum) : clamp(S.count, 4, 20);
+  let n = roster ? (S.netBots ? clamp(Math.max(S.count, hum), hum, 20) : hum) : clamp(S.count, 4, 20);
+  if (mk === 'arena') n = hum + (roster ? Math.max(0, 20 - hum) : 20); else if (mk === 'kof') n = 2;
   G.demo = !!demo; G.view = null; G.player = null; let pl = null;
   if (!demo) { pl = newActor(roster ? NET.name : '你', S.outfit, true); G.player = pl; G.actors.push(pl); }
   if (roster) for (const r of roster.slice(1)) { const a = newActor(r.name, r.outfit, false); a.remote = true; a.peer = r.peer; a.slots = [null, null]; a.speed = 0; G.actors.push(a); }
   const names = NAMES.slice().sort(() => Math.random() - .5);
-  for (let i = demo ? 0 : G.actors.length; i < n; i++) { const b = newActor(names[(demo ? i : i - hum)], pick(VIS_OUTFITS), false); b.role = i % 4 === 0 ? 1 : 0; b.smart = !!demo; if (demo) b.speed *= 1.08; b.scaleBase = .85 + Math.random() * .4; b.range = Math.random() < .15 ? 58 : 34; if (b.range > 50) b.scaleBase *= 1.3; G.actors.push(b); }
-  G.actors.forEach((a, i) => { a.team = isDM() ? -1 : (i % 2); });
-  if ((DIFF[S.diff].troll || G.mode === 'hunt') && !demo) for (const a of G.actors) if (!a.isPlayer && !a.remote) a.av = createAvatar(OUTFITS.findIndex(o => o.key === 'troll'));
+  for (let i = demo ? 0 : G.actors.length; i < n; i++) { const b = newActor(names[(demo ? i : i - hum)], pick(VIS_OUTFITS), false); b.role = i % 4 === 0 ? 1 : 0; b.smart = !!demo; if (demo) b.speed *= 1.08; b.scaleBase = .85 + Math.random() * .4; b.range = Math.random() < .15 ? 58 : 34; if (b.range > 50) b.scaleBase *= 1.3; if (mk === 'arena') b.pool = true; b.dix = Math.min(S.diff, 2); G.actors.push(b); }
+  G.actors.forEach((a, i) => { a.team = isDM() ? -1 : mk === 'arena' ? ((a.isPlayer || a.remote) ? 0 : 1) : (i % 2); });
+  if (mk === 'kof') { const kp = G.kofPre || {}, lists = roster ? [...roster].map(r => r.list) : [kp.me, kp.opp]; G.actors.forEach((a, i) => { const l = (lists[i] && lists[i].length ? lists[i] : kofRandRoster()).slice(0, 5); a.kroster = l; a.kleft = l.slice(); a.kcur = l[0]; a.kout = 0; a.kw = 0; a.av = createAvatar(l[0]); a.outfit = l[0]; }); G.kofPre = null; G.kofCd = false; G.arena = null; }
+  if ((DIFF[S.diff].troll || G.mode === 'hunt') && !demo && mk !== 'arena' && mk !== 'kof') for (const a of G.actors) if (!a.isPlayer && !a.remote) a.av = createAvatar(OUTFITS.findIndex(o => o.key === 'troll'));
   G.actors.forEach(a => { a.score = 0; a.streak = 0; a.lastKillT0 = -99; a.lastStreak = 0; drawPlate(a); });
   for (const a of G.actors) if (!a.isPlayer && !a.remote && speedMul(a) !== 1) a.speed *= speedMul(a);
   skReset(); spawnAll();
+  if (mk === 'arena') { G.arena = { stage: 0, ph: 0, t: 10, warned: false, spawned: false, cap: n - hum, hum }; G.tleft = 9e9; for (const a of G.actors) if (a.pool) { a.alive = false; a.deadT = 99; a.respawnT = 1e9; a.number = ''; } }
+  else if (mk === 'kof') { G.tleft = 9e9; } else G.arena = null;
   G.pickups = World.pickSpots.map(p => ({ x: p[0], z: p[1], y: p[2] ? World.mezz.h : 0, l: p[2] | 0, on: true, t: 0 }));
   initFlags(); G.state = 'playing'; G.fov = 1.2;
   if (demo) { G.view = pick(G.actors); G.viewT = rand(10, 16); G.camY = G.view.y + EYE; G.camYaw = G.view.yaw; R.cam.yaw = G.view.yaw; UI.demoTag && UI.demoTag(); }

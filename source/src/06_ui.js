@@ -20,7 +20,7 @@ const UI = {
     const p = G.player, tok = this.endTok = (this.endTok || 0) + 1; let res = null;
     if (G.sk) { G.sk.rev.t = 0; G.sk.scr.t = -1; G.sk.rel.t = -1; } this.endScramble(); this._ph2 = false; this._pf = false; $('numL').classList.remove('purple'); $('numR').classList.remove('purple'); $('pflash').classList.remove('on');
     if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
-    if (p && !G.demo) { if (isDM()) res = G.winner === p.name ? 'win' : 'lose'; else res = G.winner === -1 ? 'draw' : (G.winner === p.team ? 'win' : 'lose'); }
+    if (p && !G.demo) { if (G.mode === 'arena') res = 'lose'; else if (isDM()) res = G.winner === p.name ? 'win' : 'lose'; else res = G.winner === -1 ? 'draw' : (G.winner === p.team ? 'win' : 'lose'); }
     if (!res) { this.showEnd(false); return; }
     const f = $('fin'); f.className = res === 'win' ? 'win' : 'lose'; f.innerHTML = '<div class="finBg"></div><div class="finRays"></div><div class="finTxt">' + (res === 'win' ? 'Victory' : res === 'draw' ? 'Draw' : 'Defeat') + '</div>';
     if (res === 'win') { for (let k = 0; k < 18; k++) { const i = document.createElement('i'); i.textContent = '✦'; i.style.left = (Math.random() * 96) + '%'; i.style.top = (Math.random() * 90) + '%'; i.style.fontSize = (14 + Math.random() * 26) + 'px'; i.style.animationDelay = (.2 + Math.random() * 1.6) + 's'; f.appendChild(i); } Sfx.victory(); } else Sfx.defeat();
@@ -31,15 +31,16 @@ const UI = {
     }, wait);
   },
   showEnd(flip) {
-    const hunt = G.mode === 'hunt', sorted = (hunt ? G.actors.filter(a => a.isPlayer || a.remote) : G.actors).slice().sort((a, b) => hunt ? (b.score || 0) - (a.score || 0) : b.kills - a.kills || a.deaths - b.deaths), p = G.player || {};
+    const hunt = G.mode === 'hunt', arena = G.mode === 'arena', sorted = (hunt || arena ? G.actors.filter(a => a.isPlayer || a.remote) : G.actors).slice().sort((a, b) => hunt ? (b.score || 0) - (a.score || 0) : b.kills - a.kills || a.deaths - b.deaths), p = G.player || {};
     let title = '', col = '#fff';
-    if (isDM()) { title = G.winner === p.name ? '🏆 你贏了！' : `${G.winner} 獲勝`; }
+    if (arena) { title = `💀 全員陣亡　最終抵達 Stage ${(G.arena && G.arena.stage) || 1}`; col = '#ffd24a'; }
+    else if (isDM()) { title = G.winner === p.name ? '🏆 你贏了！' : `${G.winner} 獲勝`; }
     else { const w = G.winner; if (w === -1) title = '平手'; else { title = (w === p.team ? '🏆 你的隊伍獲勝！' : '對手隊伍獲勝'); col = w === 0 ? '#ff7a7a' : '#7aa5ff'; } }
     let rows = sorted.map((a, i) => `<tr class="${a.isPlayer ? 'me' : ''}"><td class="n">${i + 1}</td><td><span class="dot" style="background:${a.team === 0 ? '#d93a3a' : a.team === 1 ? '#3a6fd9' : '#999'}"></span>${a.name}</td><td class="n">${a.kills}</td><td class="n">${hunt ? (a.score || 0) : a.deaths}</td></tr>`).join('');
-    const sc = isDM() ? '' : `<div style="font-size:20px;margin-bottom:6px"><span style="color:#ff7a7a">紅 ${G.scores[0]}</span>　-　<span style="color:#7aa5ff">${G.scores[1]} 藍</span></div>`;
+    const sc = isDM() || arena ? '' : `<div style="font-size:20px;margin-bottom:6px"><span style="color:#ff7a7a">紅 ${G.scores[0]}</span>　-　<span style="color:#7aa5ff">${G.scores[1]} 藍</span></div>`;
     this.els.end.innerHTML = `<h2 style="color:${col}">${title}</h2>${sc}<table><tr><th class="n">#</th><th>玩家</th><th class="n">淘汰</th><th class="n">${hunt ? '積分' : '被淘汰'}</th></tr>${rows}</table><div class="btnrow"><button class="btn" id="btnAgain">再來一場</button><button class="btn alt" id="btnMenu">回主選單</button></div>`;
     this.els.end.classList.remove('hidden', 'flipin'); if (flip) { void this.els.end.offsetWidth; this.els.end.classList.add('flipin'); }
-    $('btnAgain').onclick = () => { const d = G.demo; this.hideEnd(); beginGame(d); };
+    $('btnAgain').onclick = () => { const d = G.demo; this.hideEnd(); if (G.mode === 'kof' && !d) { go(() => { resetToMenuUI(); startPickFlow(); }); } else beginGame(d); };
     $('btnMenu').onclick = () => { this.hideEnd(); toMenu(); };
     if (NET.mode) { if (NET.mode === 'host') NET.phase = 'end'; $('btnAgain').textContent = '回到大廳'; $('btnAgain').onclick = () => { this.hideEnd(); if (NET.mode === 'host') hostToLobby(); else clientToLobby(false); }; $('btnMenu').textContent = '離開房間'; }
     if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
@@ -58,6 +59,32 @@ const UI = {
     ico.textContent = ITEMS[s.type].ico; n.textContent = s.n > 1 ? s.n : ''; el.classList.add('has');
   },
   /* 角色技能鍵：圓形倒數環 + 秒數；艾伯特技能的預警閃光與按鍵錯亂 */
+  setEv(key, rem, ico) { const e = this.ev || (this.ev = {}); if (!e[key]) e[key] = { seq: (this.evSeq = (this.evSeq || 0) + 1) }; e[key].rem = rem; e[key].ico = ico || '⏱'; },
+  clrEv(key) { if (this.ev) delete this.ev[key]; },
+  renderPills() { // 右上角倒數時鐘：事件倒數在前、技能倒數在後；第一個白底，其餘依序換底色
+    const L = Object.values(this.ev || {}).sort((a, b) => a.seq - b.seq).filter(x => x.rem > .02).map(x => [x.ico, x.rem]).concat(G.state === 'playing' && !document.getElementById('hud').classList.contains('hidden') ? (this.skPills || []) : []);
+    const key = L.map(x => x[0] + Math.ceil(x[1])).join('|'); if (key === this._pk) return; this._pk = key;
+    const COL = ['#ffffff', '#ffe27a', '#9fe3ff', '#ffb3c8', '#c3f5a6', '#e0c3ff'];
+    $('sktm').innerHTML = L.map((x, i) => `<span style="--pbg:${COL[i % COL.length]}"><i class="clk"></i><i class="ti">${x[0]}</i><b>${Math.ceil(x[1])}</b></span>`).join('');
+  },
+  modeHUD(dt, p) {
+    const A = G.arena, ar = G.mode === 'arena' && !!A && !G.demo, bn = $('arBanner'), bg = $('arBig');
+    const intro = ar && A.ph === 0 && G.countdown <= 0; bn.classList.toggle('hidden', !intro);
+    if (intro) this.setEv('ar', A.t, '🏟️'); else this.clrEv('ar');
+    let key = ''; if (ar) { if (A.ph === 1) key = 's' + A.stage; else if (A.ph === 3) key = 'c' + A.stage; }
+    if (key !== this._arK) { this._arK = key; if (!key) bg.classList.add('hidden'); else { bg.className = key[0] === 's' ? 'stage' : 'clear'; bg.innerHTML = key[0] === 's' ? 'Stage ' + A.stage : 'Clear！！' + [[-6, 10], [105, -4], [30, 95], [80, 88], [-10, 70], [50, -22]].map((q, i) => `<i style="left:${q[0]}%;top:${q[1]}%;animation-delay:${i * .15}s;font-size:${22 + i * 4}px">✦</i>`).join(''); } }
+    if (ar && p && !p.alive && p.respawnT > 0 && p.respawnT < 1e8 && G.state === 'playing') this.setEv('rs', p.respawnT, '💀'); else this.clrEv('rs');
+    const kof = G.mode === 'kof' && G.actors.length >= 2, kb = $('kofbar'); kb.classList.toggle('hidden', !kof);
+    if (kof) {
+      const me = G.player || G.actors[0], ot = G.actors.find(a => a !== me), key2 = [me, ot].map(a => (a.kroster || []).join() + '/' + (a.kleft || []).join() + '/' + a.kcur + (a.alive ? 1 : 0)).join('#');
+      if (key2 !== this._kk) { this._kk = key2; const side = (a, cls) => `<div class="ks ${cls}"><em>${a === me ? '你' : a.name}</em>` + (a.kroster || []).map(i => `<i class="ki${(a.kleft || []).includes(i) ? '' : ' used'}${a.alive && a.kcur === i ? ' cur' : ''}" style="background-image:url(${outfitIcon(i)})"></i>`).join('') + '</div>'; kb.innerHTML = side(me, '') + side(ot, 'r'); }
+      if (p && !p.alive && p.kw > 0 && p.kleft && p.kleft.length && !CS.o && G.state === 'playing') {
+        try { if (document.exitPointerLock) document.exitPointerLock(); } catch (e) { }
+        openPick({ need: 1, allowed: p.kleft.slice(), secs: Math.max(1, p.kw), evIco: '⏳', title: `選擇下一位出戰角色（剩 ${p.kleft.length} 位）`, okText: '確認出戰', back: null, kofChoose: true, noPrev: true, onDone: list => { if (G.netClient) netAct(['kp', list[0]]); else kofPick(G.player, list[0]); } });
+      }
+    }
+    if (CS.o && CS.o.kofChoose && (!p || p.alive || G.state !== 'playing' || G.mode !== 'kof')) closePick();
+  },
   skTimers(p) {
     const K = G.sk, L = [], add = (ico, r) => { if (r > .05) L.push([ico, r]); }, cd = p.skCd || 0, c = G.netClient;
     if (K) {
@@ -73,8 +100,7 @@ const UI = {
     add('🌫️', p.dackE >= 0 ? DACK_T - p.dackE : (c && SKILL_OF[p.av.outfitIdx] === 'dack' && cd > 15 ? cd - 15 : 0));
     if (p.cloak) add('🐱', 5 - p.cloakE); else if (c && SKILL_OF[p.av.outfitIdx] === 'lydia' && cd > 15) add('🐱', cd - 15);
     add('🐵', p.wkT || 0);
-    const key = L.map(x => x[0] + Math.ceil(x[1])).join('|'); if (key === this._tmk) return; this._tmk = key;
-    $('sktm').innerHTML = L.map(x => `<span>${x[0]}<b>${Math.ceil(x[1])}</b></span>`).join('');
+    this.skPills = L;
   },
   skillHUD(dt, p) {
     { const rl = G.sk && G.sk.rel, rt = rl ? rl.t : -1; if (rt >= 0 && (this._rlp === undefined || this._rlp < 0 || rt < this._rlp)) { Sfx.siren(); if (rl.by !== p) this.msg('⚠ 相對論發動！操作即將左右互換', 'bad'); } this._rlp = rt;
@@ -114,9 +140,10 @@ const UI = {
     this.cdUpdate(dt);
     // 計分
     if (G.mode === 'hunt') { const others = G.actors.filter(a => a !== p && (a.isPlayer || a.remote)).reduce((m, a) => Math.max(m, a.score || 0), 0); e.scR.textContent = p.score || 0; e.scB.textContent = others; e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
-    else if (G.mode === 'dm') { const others = G.actors.filter(a => a !== p).reduce((m, a) => Math.max(m, a.kills), 0); e.scR.textContent = p.kills; e.scB.textContent = others; e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
+    else if (G.mode === 'arena') { e.scR.textContent = p.kills; e.scB.textContent = 'S' + ((G.arena && G.arena.stage) || 0); e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
+    else if (G.mode === 'dm' || G.mode === 'kof') { const others = G.actors.filter(a => a !== p).reduce((m, a) => Math.max(m, a.kills), 0); e.scR.textContent = p.kills; e.scB.textContent = others; e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
     else { e.scR.textContent = G.scores[0]; e.scB.textContent = G.scores[1]; e.scR.className = 'sc red'; e.scB.className = 'sc blue'; }
-    const ts = Math.max(0, Math.ceil(G.tleft)), tstr = Math.floor(ts / 60) + ':' + String(ts % 60).padStart(2, '0'); if (tstr !== this.lastTimer) { e.timer.textContent = tstr; this.lastTimer = tstr; }
+    const ts = Math.max(0, Math.ceil(G.tleft)), tstr = Math.floor(ts / 60) + ':' + String(ts % 60).padStart(2, '0'); if (G.mode === 'arena' || G.mode === 'kof') { const A = G.arena, t = G.mode === 'kof' ? '🥊 KOF 大賽' : (A && A.stage ? 'Stage ' + A.stage + (A.ph === 2 ? ' ・ 剩 ' + G.actors.filter(a => a.pool && a.alive).length + ' 名' : '') : '擂台準備中'); if (t !== this.lastTimer) { e.timer.textContent = t; this.lastTimer = t; } } else if (tstr !== this.lastTimer) { e.timer.textContent = tstr; this.lastTimer = tstr; }
     if (G.mode === 'ctf') { const f0 = G.flags[0], f1 = G.flags[1]; e.flagR.textContent = f0 && f0.state !== 'home' ? '🚩' : ''; e.flagB.textContent = f1 && f1.state !== 'home' ? '🏴' : ''; } else { e.flagR.textContent = ''; e.flagB.textContent = ''; }
     // 輸入
     if (this.dirty || this.lastTyped !== G.typed) {
@@ -124,7 +151,7 @@ const UI = {
       this.slotHTML(e.slotF, G.slots[0]); this.slotHTML(e.slotG, G.slots[1]);
       this.dirty = false;
     }
-    this.skillHUD(dt, p);
+    this.skillHUD(dt, p); this.modeHUD(dt, p);
     e.slotF.classList.toggle('cd', G.itemCd > 0); e.slotG.classList.toggle('cd', G.itemCd > 0);
     if (Math.abs(G.stam - (this._st ?? -1)) > .004) { this._st = G.stam; e.stamFill.style.transform = `scaleX(${G.stam.toFixed(3)})`; }
     if (Math.abs(G.energy - (this._en ?? -1)) > .004) { this._en = G.energy; e.binFill.style.transform = `scaleX(${G.energy.toFixed(3)})`; }
@@ -154,7 +181,7 @@ const UI = {
   goText() { this.goT = 1; this._cd = 0; $('cdNum').textContent = '開始！'; $('cdTxt').textContent = '戰鬥開始'; this.els.countdown.classList.remove('hidden'); },
   cdUpdate(dt) {
     const e = this.els.countdown, c = Math.ceil(G.countdown || 0);
-    if (c > 0) { if (c !== this._cd) { this._cd = c; const n = $('cdNum'); n.textContent = c; n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; $('cdTxt').textContent = '遊戲將在 ' + c + ' 秒後開始・請先觀察四周'; } e.classList.remove('hidden'); }
+    if (c > 0) { if (c !== this._cd) { this._cd = c; const n = $('cdNum'); n.textContent = G.kofCd ? (c > 1 ? 'Ready…' : 'Go！') : c; n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; $('cdTxt').textContent = G.kofCd ? '下一位出戰角色登場' : '遊戲將在 ' + c + ' 秒後開始・請先觀察四周'; } e.classList.remove('hidden'); }
     else if (this.goT > 0) { this.goT -= dt; if (this.goT <= 0) e.classList.add('hidden'); } else e.classList.add('hidden');
   },
   demoTag() { const v = G.view; if (v) { this.els.demoTag.textContent = '🎬 示範模式・目前視角：' + v.name; this.els.demoTag.classList.remove('hidden'); } },
@@ -348,7 +375,7 @@ function resumeGame() { UI.menuOpen = false; setPause(false); if (!Device.mobile
 
 /* ---------- 選單 ---------- */
 /* ---------- 遊戲說明（分頁＋圖示） ---------- */
-const HOW_TABS = [['go', '🎯 怎麼玩'], ['ctl', '🎮 操作'], ['item', '🎁 道具'], ['chr', '🧑 角色技能'], ['mode', '🗺️ 模式地圖']];
+const HOW_TABS = [['go', '🎯 怎麼玩'], ['ctl', '🎮 操作'], ['item', '🎁 道具'], ['chr', '🧑 角色技能'], ['mode', '🗺️ 模式地圖'], ['spec', '🏟️ 擂台・KOF']];
 const hStep = (n, ico, t, d) => `<div class="hstep"><i>${n}</i><div class="hic">${ico}</div><b>${t}</b><span>${d}</span></div>`;
 const hCard = (ico, t, d, cls) => `<div class="hcard ${cls || ''}"><div class="hic">${ico}</div><div><b>${t}</b><span>${d}</span></div></div>`;
 const hKey = (k, d) => `<div class="hkey"><span class="kc">${k}</span><em>${d}</em></div>`;
@@ -361,6 +388,16 @@ function howPanel(id) {
 <div class="hnote">🔋 衝刺會消耗體力條；望遠鏡有能量條，用完需等待回復。</div>`;
   if (id === 'item') return `<div class="hnote">開局沒有道具，走過地圖上的 <b>？箱</b> 才會取得；兩格已滿時不會更換。</div><div class="hgrid">${Object.entries({ cam: '拍照後照片短暫停留，方便看清號碼', quake: '讓其他人畫面劇烈橫向晃動 2 秒', scope: '約 13° 超遠距放大，再按一次＝拍照', fake: '頭上號碼偽裝成別的數字 7 秒', spring: '立即刷新角色技能冷卻' }).map(([k, d]) => hCard(ITEMS[k].ico, ITEMS[k].name, d, 'big')).join('')}${hCard('🔭', '望遠鏡（內建）', '遠距離讀碼，有能量限制', 'big')}</div>`;
   if (id === 'chr') { return `<div class="hnote">按 <span class="kc">R</span>（手機：技能鍵）施放，圓環顯示冷卻。可在「遊戲設定」整體關閉技能。</div><div class="hchars">${OUTFITS.map((o, i) => o.hidden ? '' : `<div class="hch"><img src="${outfitIcon(i)}"><div><b>${o.label}</b><u>${o.skill.name}</u><span>${o.skill.desc}</span></div></div>`).join('')}</div>`; }
+  if (id === 'spec') return `<h3>🏟️ 擂台逃殺（單人／多人合作）</h3>
+<div class="hrule">玩家方對抗一波強過一波的電腦軍團；電腦同屬一國，彼此不會互相攻擊。多人遊玩時，電腦人數會依真人人數成倍增加（場上總人數上限 20 人）。</div>
+<div class="hsteps h4">${hStep(1, '⏱️', '3 秒倒數', '進入畫面後先倒數 3 秒')}${hStep(2, '📢', '10 秒準備', '藍底通知＋右上角倒數，剩 3 秒響提示音')}${hStep(3, '🔔', 'Stage 1', '鳴響開賽聲，電腦登場')}${hStep(4, '🏆', 'Clear！！', '全數擊倒後進入下一關')}</div>
+<div class="hrule">每一關<b>沒有時間限制</b>。<b>單人</b>：被電腦擊殺即視同全員陣亡，直接結束。<b>多人</b>：倒下的玩家進入復活等待（Stage 1 為 10 秒，之後每關多 2 秒）；只有當場上<b>沒有任何一位真人存活</b>時才算全數殲滅，顯示 Defeat 並進入結算（列出擊殺數與被殺數）。</div>
+<table class="htb"><tr><th>關卡</th><th>電腦（單人）</th><th>關卡</th><th>電腦（單人）</th></tr><tr><td>Stage 1</td><td>2 名輕鬆</td><td>Stage 6</td><td>3 名普通</td></tr><tr><td>Stage 2</td><td>3 名輕鬆</td><td>Stage 7</td><td>5 名普通</td></tr><tr><td>Stage 3</td><td>5 名輕鬆</td><td>Stage 8</td><td>7 名普通</td></tr><tr><td>Stage 4</td><td>7 名輕鬆</td><td>Stage 9</td><td>9 名普通</td></tr><tr><td>Stage 5</td><td>1 名普通</td><td>Stage 10</td><td>1 名困難</td></tr></table>
+<div class="hnote">Stage 10 之後，每進入下一關就多 1 名困難電腦，直到玩家方被殲滅為止。多人模式依真人人數倍增。</div>
+<h3>🥊 KOF 大賽（單人對電腦／2 位玩家）</h3>
+<div class="hrule">以<b>車輪戰</b>進行的一對一單挑：雙方各自挑選 5 位出賽角色（限時 40 秒，逾時由系統補滿），選定後依一般模式的開場倒數開戰。超過 2 位玩家的房間無法進行此模式。</div>
+<div class="hsteps h4">${hStep(1, '🧩', '選 5 位', '雙方各 40 秒選出出賽名單')}${hStep(2, '⚔️', '單挑', '場上一對一，先被淘汰者換人')}${hStep(3, '⏳', '10 秒選角', '倒下方從剩餘角色中選下一位')}${hStep(4, '🚦', 'Ready… Go！', '雙方各 1 秒，鳴響開賽聲後繼續')}</div>
+<div class="hrule">倒下的玩家有 <b>10 秒</b>挑選下一位出戰角色，這段時間另一位玩家仍可在地圖上自由行動；選定後雙方畫面顯示「Ready…」與「Go！」再繼續。重新登場的角色<b>一定生成在對手視野之外</b>，確保公平。最先耗盡 5 位角色的一方顯示 Defeat，另一方顯示 Victory，隨後進入結算畫面。</div>`;
   return `<h3>🏆 模式</h3><div class="hgrid">${hCard('⚔️', '個人死鬥', '人人為敵，先淘汰 15 人獲勝。領先者號碼變大變亮＝賞金目標。')}${hCard('🔴🔵', '團隊死鬥', '紅藍對戰，隊伍先 30 淘汰獲勝；隊友無法淘汰。')}${hCard('🎯', '激鬥追捕', '只追殺電腦角色，連殺積分更高；落後者技能冷卻縮短 50%。')}${hCard('🚩', '奪旗', '搶敵方旗帶回基地，先得 3 分。')}</div>
 <h3>🗺️ 地圖</h3><div class="hgrid">${hCard('🏫', '熱血高校', '白天校園，標準面積。')}${hCard('🌙', '詭譎學苑', '黑夜版，遠處沒入黑暗，要靠近才看得到。')}${hCard('🛍️', '追逃商城', '1.4 倍大，電扶梯通二樓，可從欄杆跳下。')}</div>
 <h3>🤖 對手</h3><div class="hgrid">${hCard('👥', '人數', '含你最多 20 人，不足由電腦補上。')}${hCard('🔢', '號碼位數', '3～5 碼，越多越難記。')}${hCard('😈', '干擾者', '輕／中／重＝靈活度 25%／55%／100%。')}</div>`;
@@ -376,30 +413,41 @@ function huntLock() {
   if ($('chMode')) [...$('chMode').children].forEach((b, i) => { const m = Object.values(MODES)[i]; if (UI.gDemo && m && m.demo === false) b.classList.add('dis'); else if (!m || !m.soon) b.classList.remove('dis'); });
   const h = S.mode === 'hunt'; if (h) { if (S.count !== 16 && S.count !== 20) S.count = 20; S.diff = 3; S.countSet = true; }
   const CN = [4, 8, 12, 16, 20];
-  for (const id of ['chCount', 'chNCount']) { const el = $(id); if (!el) continue; [...el.children].forEach(b => { const v = parseInt(b.textContent); b.classList.toggle('dis', h && v !== 16 && v !== 20); b.classList.toggle('on', v === S.count); }); }
+  for (const id of ['chCount', 'chNCount']) { const el = $(id); if (!el) continue; [...el.children].forEach(b => { const v = parseInt(b.textContent); if (isNaN(v)) { b.classList.toggle('dis', h); return; } b.classList.toggle('dis', h && v !== 16 && v !== 20); b.classList.toggle('on', v === S.count); }); }
   if (window.updTroll) window.updTroll(); if ($('diffDesc')) $('diffDesc').textContent = DIFF[S.diff].desc; if ($('diffDescN')) $('diffDescN').textContent = DIFF[S.diff].desc;
-  for (const id of ['chDiff', 'chNDiff']) { const el = $(id); if (!el) continue; [...el.children].forEach((b, i) => { b.classList.toggle('dis', h && i !== 3); b.classList.toggle('on', i === S.diff); }); }
+  for (const id of ['chDiff', 'chNDiff']) { const el = $(id); if (!el) continue; [...el.children].forEach((b, i) => { if (i >= DIFF.length) { b.classList.toggle('dis', h); return; } b.classList.toggle('dis', h && i !== 3); b.classList.toggle('on', i === S.diff); }); }
+  refreshRand();
 }
-function chips(id, items, get, set, fmt) {
-  const el = $(id); el.innerHTML = '';
-  items.forEach(it => { const b = document.createElement('button'); b.className = 'chip' + (get() === it.v ? ' on' : ''); b.innerHTML = it.l; if (it.dis) b.classList.add('dis', 'soon'); b.onclick = () => { if (it.dis) return; set(it.v); saveS(); [...el.children].forEach((c, i) => c.classList.toggle('on', items[i].v === it.v)); }; el.appendChild(b); });
+const RAND_IDS = {}; // 容器 id -> 隨機類別
+function chips(id, items, get, set, rk) {
+  const el = $(id); el.innerHTML = ''; if (rk) { RAND_IDS[id] = rk; items = items.concat([{ v: '__r', l: '🎲 隨機', rnd: 1 }]); const g0 = get, s0 = set; get = () => (S.rnd && S.rnd[rk]) ? '__r' : g0(); set = v => { S.rnd = S.rnd || {}; if (v === '__r') S.rnd[rk] = true; else { S.rnd[rk] = false; s0(v); } }; }
+  items.forEach(it => { const b = document.createElement('button'); b.className = 'chip' + (get() === it.v ? ' on' : ''); b.innerHTML = it.l; if (it.dis) b.classList.add('dis', 'soon'); b.onclick = () => { if (it.dis) return; set(it.v); saveS(); [...el.children].forEach((c, i) => c.classList.toggle('on', items[i].v === it.v)); if (it.rnd || (rk && !it.rnd)) huntLock(); }; el.appendChild(b); });
+}
+function refreshRand() { for (const id in RAND_IDS) { const el = $(id); if (!el) continue; const on = !!(S.rnd && S.rnd[RAND_IDS[id]]), ch = [...el.children]; ch.forEach((c, i) => { if (on) c.classList.toggle('on', i === ch.length - 1); else if (i === ch.length - 1) c.classList.remove('on'); }); } }
+function resolveRandoms(demo, humans) { // 開局時把「隨機」類別換成實際值
+  const r = S.rnd || {}, vis = Object.entries(MODES).filter(([k, m]) => !m.soon && !(demo && m.demo === false) && !(k === 'kof' && humans > 2)).map(x => x[0]);
+  if (r.mode) { const k = pick(vis); if (demo) S.demoMode = k; else S.mode = k; }
+  if (r.map) { const k = pick(Object.keys(MAPS)); if (demo) S.demoMap = k; else S.map = k; }
+  if (r.time) S.time = pick([4, 5, 8, 10]); if (r.skills) S.skills = Math.random() < .5;
+  if (r.diff) S.diff = randi(0, 3); if (r.troll) S.trollLv = randi(1, 3); if (r.count) { S.count = pick([4, 8, 12, 16, 20]); S.countSet = true; }
+  const mk = demo ? S.demoMode : S.mode; if (mk === 'hunt') { if (S.count !== 16 && S.count !== 20) S.count = 20; S.diff = 3; S.countSet = true; }
 }
 function buildMenu() {
   buildHowto(); if (!MAPS[S.map]) S.map = 'hb';
   const mapItems = Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), updMap = () => { $('mapDesc').textContent = MAPS[S.map].desc; };
-  chips('chMap', mapItems, () => S.map, v => { S.map = v; updMap(); World.load(v); }); updMap();
+  chips('chMap', mapItems, () => S.map, v => { S.map = v; updMap(); World.load(v); }, 'map'); updMap();
   const updMode = () => { $('modeDescG').textContent = MODES[S.mode] ? MODES[S.mode].short : ''; };
-  chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, dis: !!m.soon, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => { S.mode = v; updMode(); huntLock(); }); updMode();
+  chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, dis: !!m.soon, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => { S.mode = v; updMode(); huntLock(); }, 'mode'); updMode();
   chips('chCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
-  chips('chCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; });
-  chips('chTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v);
+  chips('chCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; }, 'count');
+  chips('chTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v, 'time');
   const updSk = () => { $('skDesc').textContent = S.skills === false ? '所有角色的主動、被動技能都停用，純粹比拼眼力與手速。' : '角色技能全部啟用（含主動技能與被動能力）。'; };
-  chips('chSkill', [{ v: true, l: '是' }, { v: false, l: '否' }], () => S.skills !== false, v => { S.skills = v; updSk(); }); updSk();
+  chips('chSkill', [{ v: true, l: '是' }, { v: false, l: '否' }], () => S.skills !== false, v => { S.skills = v; updSk(); }, 'skills'); updSk();
   const TL = [{ v: 1, l: '輕度', d: '靈活度降為標準的 25%，動作遲緩、很少搗亂。' }, { v: 2, l: '中度', d: '靈活度降為標準的 55%，動作與搗亂頻率適中。' }, { v: 3, l: '重度', d: '維持標準靈活度，全場亂跑、積極搗亂。' }];
   const updTroll = () => { $('trollRow').classList.toggle('hidden', S.diff !== 3); $('trollDesc').textContent = (TL.find(t => t.v === S.trollLv) || TL[2]).d; };
-  chips('chTroll', TL.map(t => ({ v: t.v, l: t.l })), () => S.trollLv, v => { S.trollLv = v; updTroll(); }); window.updTroll = updTroll;
+  chips('chTroll', TL.map(t => ({ v: t.v, l: t.l })), () => S.trollLv, v => { S.trollLv = v; updTroll(); }, 'troll'); window.updTroll = updTroll;
   const updDiff = () => { $('diffDesc').textContent = DIFF[S.diff].desc; updTroll(); };
-  chips('chDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; updDiff(); }); updDiff();
+  chips('chDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; updDiff(); }, 'diff'); updDiff();
   chips('chInput', [{ v: 'auto', l: '自動偵測' }, { v: 'desktop', l: '🖥️ 電腦' }, { v: 'mobile', l: '📱 手機' }], () => S.input, v => { S.input = v; Device.update(); refreshBadge(); });
   chips('chQual', [{ v: 'auto', l: '自動' }, { v: 'high', l: '高' }, { v: 'mid', l: '中' }, { v: 'low', l: '低（最順）' }], () => S.quality, v => { S.quality = v; Perf.profile(); Perf.apply(); });
   chips('chAuto', [{ v: true, l: '輸入滿位數自動送出' }, { v: false, l: '需按 Enter' }], () => S.auto, v => S.auto = v);
@@ -410,7 +458,7 @@ function buildMenu() {
 function refreshBadge() { $('devbadge').textContent = Device.label() + ' ／ 預設 ' + (S.countSet ? S.count : defaultCount()) + ' 人'; }
 function defaultCount() { return Device.mobile ? 12 : 20; }
 window.onDeviceChange = () => { applyLayout(); if (UI.els.menu) { refreshBadge(); updateRotate(); } if (G.state === 'menu' && !S.countSet) { S.count = defaultCount(); buildMenuCounts(); } if (R.gl) { Perf.profile(); Perf.apply(); } };
-function buildMenuCounts() { chips('chCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; }); }
+function buildMenuCounts() { chips('chCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; }, 'count'); }
 function setPreview() { G.preview = { x: 0, y: 0, z: 0, yaw: 0, animT: 0, sp: 0, av: createAvatar(S.outfit), team: -1, number: '4827', plateScale: 1 }; makePlate(G.preview); }
 function tryLandscape() { try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => { }); } catch (e) { } }
 function updateRotate() { VP.update(); if (Device.mobile) tryLandscape(); UI.els.rotate.classList.add('hidden'); }
@@ -444,6 +492,7 @@ function showTut(freeze) {
 function hideTut() { const t = $('tut'); if (t) t.classList.add('hidden'); UI.tutOpen = false; G.tut = false; }
 function beginGame(demo, roster) {
   demo = demo === true;
+  if (!roster && !UI.preResolved) resolveRandoms(demo); UI.preResolved = false;
   Sfx.init(); Sfx.resume(); if (!S.countSet) S.count = defaultCount();
   UI.els.menu.classList.add('hidden'); UI.els.hud.classList.remove('hidden'); document.body.classList.add('playing'); document.body.classList.toggle('demo', demo);
   UI.hideEnd(); UI.endScramble(); UI._ph2 = false; In.sprintT = false; $('bRun').classList.remove('tog'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.els.demoTag.classList.add('hidden');
@@ -459,6 +508,7 @@ function beginGame(demo, roster) {
 function toMenu() { go(() => { netLeave(); resetToMenuUI(); }); }
 function stopGameUI() { resetToMenuUI(); UI.els.menu.classList.add('hidden'); }
 function resetToMenuUI() {
+  UI.ev = {}; UI._pk = null; closePick(); G.arena = null; G.kofCd = false;
   hideTut(); if (G.sk) { G.sk.night = { e: 0, by: null }; G.sk.ink.t = 0; G.sk.rev.t = 0; G.sk.rel.t = -1; G.sk.quake.t = 0; G.sk.eagle.t = 0; } G.scopeOn = false; applyNightEnv(null); $('dfog').style.opacity = 0; $('dself').style.opacity = 0; $('ink').classList.remove('on'); $('gset').classList.add('hidden');
   G.state = 'menu'; G.demo = false; G.view = null; document.body.classList.remove('playing', 'demo'); UI.els.hud.classList.add('hidden'); UI.els.menu.classList.remove('hidden'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.hideEnd(); UI.els.bino.style.display = 'none'; UI.els.flash.style.opacity = 0;
   $('settings').classList.add('hidden'); updateRotate(); if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
@@ -475,17 +525,52 @@ function beginNetClientUI() {
   showTut(false);
 }
 /* ---------- 角色選擇 / 示範模式選單 ---------- */
-function showCharInfo() { const o = OUTFITS[S.outfit]; $('cName').textContent = o.label; $('cPass').textContent = '【' + o.skill.name + '】' + o.skill.desc; if (G.preview) G.preview.fake = null; }
-function buildCards() {
+/* ---------- 選角（單選／五選／從剩餘角色選下一位） ---------- */
+let _qi = null;
+function qIcon() { if (_qi) return _qi; const c = cv(96, 96), g = c.getContext('2d'); g.fillStyle = '#2c2f4a'; g.beginPath(); g.arc(48, 48, 48, 0, TAU); g.fill(); g.font = '900 66px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = 6; g.strokeStyle = '#7a4a00'; g.strokeText('?', 48, 53); g.fillStyle = '#ffd24a'; g.fillText('?', 48, 53); return (_qi = c.toDataURL()); }
+const CS = { o: null, picks: [], rand: false, end: 0, tm: null };
+function csPool() { return CS.o && CS.o.allowed ? CS.o.allowed : VIS_OUTFITS; }
+function showCharInfo(i) {
+  if (CS.rand && CS.o && CS.o.need === 1) { $('cName').textContent = '隨機'; $('cPass').textContent = '【驚喜】開始前由系統隨機指派一位角色。'; return; }
+  const o = OUTFITS[i === undefined ? S.outfit : i]; $('cName').textContent = o.label; $('cPass').textContent = '【' + o.skill.name + '】' + o.skill.desc;
+}
+function setPreview(idx) { if (CS.o && CS.o.noPrev) return; if (idx === null) { G.preview = null; return; } G.preview = { x: 0, y: 0, z: 0, yaw: 0, animT: 0, sp: 0, av: createAvatar(idx === undefined ? S.outfit : idx), team: -1, number: '4827', plateScale: 1 }; makePlate(G.preview); }
+function csRefresh(last) {
+  const o = CS.o; if (!o) return; const multi = o.need > 1;
+  [...$('cards').children].forEach(c => { if (c.dataset.r) { c.classList.toggle('on', CS.rand && !multi); return; } const i = +c.dataset.i, k = CS.picks.indexOf(i), on = multi ? k >= 0 : (!CS.rand && CS.picks[0] === i); c.classList.toggle('on', on); const b = c.querySelector('.pk'); if (b) b.textContent = multi && k >= 0 ? k + 1 : ''; });
+  $('csHint').textContent = multi ? `已選 ${CS.picks.length} / ${o.need}　（點選順序＝出賽順序，可點已選角色取消）` : (o.hint || '');
+  $('csOk').classList.toggle('dis', multi && CS.picks.length < o.need);
+  if (CS.rand && !multi) { setPreview(null); showCharInfo(); } else { const v = last !== undefined ? last : CS.picks[CS.picks.length - 1]; if (v !== undefined) { setPreview(v); showCharInfo(v); } }
+}
+function openPick(o) {
+  CS.o = o; CS.rand = false; $('csTitle').textContent = o.title || '選擇角色'; $('csOk').textContent = o.okText || '確認'; $('csBack').style.display = o.back ? '' : 'none';
+  const pool = o.allowed || VIS_OUTFITS;
+  if (o.need === 1) { const pf = S.pref === 'rand' ? 'rand' : (pool.includes(S.outfit) ? S.outfit : pool[0]); CS.rand = pf === 'rand' && !o.allowed; CS.picks = CS.rand ? [] : [pf]; } else CS.picks = [];
   const cards = $('cards'); cards.innerHTML = '';
-  OUTFITS.forEach((o, i) => { if (o.hidden) return; const c = document.createElement('div'); c.dataset.i = i; c.className = 'card' + (S.outfit === i ? ' on' : ''); c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + o.label; c.onclick = () => { S.outfit = i; saveS(); [...cards.children].forEach(k => k.classList.toggle('on', +k.dataset.i === i)); setPreview(); showCharInfo(); }; cards.appendChild(c); });
-  showCharInfo();
+  const rc = document.createElement('div'); rc.className = 'card'; rc.dataset.r = 1; rc.innerHTML = '<img class="cav" src="' + qIcon() + '">隨機'; rc.onclick = () => { if (o.need === 1) { CS.rand = true; CS.picks = []; csRefresh(); } else { const rest = pool.filter(i => !CS.picks.includes(i)).sort(() => Math.random() - .5); while (CS.picks.length < o.need && rest.length) CS.picks.push(rest.pop()); csRefresh(); } }; cards.appendChild(rc);
+  pool.forEach(i => { const ou = OUTFITS[i], c = document.createElement('div'); c.dataset.i = i; c.className = 'card'; c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + ou.label + '<b class="pk"></b>'; c.onclick = () => { CS.rand = false; if (o.need === 1) CS.picks = [i]; else { const k = CS.picks.indexOf(i); if (k >= 0) CS.picks.splice(k, 1); else if (CS.picks.length < o.need) CS.picks.push(i); } csRefresh(i); }; cards.appendChild(c); });
+  UI.els.menu.classList.add('hidden'); $('mp').classList.add('hidden'); $('gset').classList.add('hidden'); $('charsel').classList.remove('hidden'); showWait(false);
+  csRefresh(); clearInterval(CS.tm); UI.clrEv('cs');
+  if (o.secs) { CS.end = performance.now() + o.secs * 1000; const tick = () => { const rem = (CS.end - performance.now()) / 1000; UI.setEv('cs', rem, o.evIco || '🕒'); if (rem <= 0) csFinish(true); }; tick(); CS.tm = setInterval(tick, 150); }
 }
-function openCharSelect(origin) {
-  UI.csOrigin = origin; $('csOk').textContent = origin === 'mp' ? '確認' : '確認，開始遊戲'; buildCards(); setPreview();
-  UI.els.menu.classList.add('hidden'); $('mp').classList.add('hidden'); $('charsel').classList.remove('hidden');
+function csFinish(auto) {
+  const o = CS.o; if (!o) return; clearInterval(CS.tm); UI.clrEv('cs'); const pool = csPool(); let list, wasRand = false; const ex = CS.rand && !auto;
+  if (o.need === 1) { wasRand = CS.rand || auto || CS.picks[0] === undefined; list = [wasRand ? pick(pool) : CS.picks[0]]; }
+  else { list = CS.picks.slice(); const rest = pool.filter(i => !list.includes(i)).sort(() => Math.random() - .5); while (list.length < o.need && rest.length) list.push(rest.pop()); }
+  $('charsel').classList.add('hidden'); CS.o = null; if (G.state === 'playing' && !G.demo && !Device.mobile) { try { Input.lock(); } catch (e) { } } o.onDone(list, wasRand, ex);
 }
-function closeCharSelect() { $('charsel').classList.add('hidden'); if (UI.csOrigin === 'mp') { $('mp').classList.remove('hidden'); renderLobby(); } else $('gset').classList.remove('hidden'); }
+function closePick() { clearInterval(CS.tm); UI.clrEv('cs'); CS.o = null; $('charsel').classList.add('hidden'); showWait(false); }
+function showWait(on) { $('waitDlg').classList.toggle('hidden', !on); }
+/* 單人／房主：設定完成後才選角 */
+function startPickFlow() {
+  resolveRandoms(false); UI.preResolved = true; const kof = S.mode === 'kof';
+  openPick({
+    need: kof ? 5 : 1, secs: kof ? 40 : 0, evIco: '🧩', title: kof ? '選擇 5 位出賽角色（車輪戰）' : '選擇角色', okText: kof ? '確認出賽名單' : '確認，開始遊戲',
+    back: () => { closePick(); $('gset').classList.remove('hidden'); UI.preResolved = false; },
+    onDone: (list, wasRand, ex) => { if (kof) G.kofPre = { me: list, opp: kofRandRoster() }; else S.pref = ex ? 'rand' : list[0]; S.outfit = list[0]; saveS(); beginGame(false); }
+  });
+}
+function kofRandRoster() { return VIS_OUTFITS.slice().sort(() => Math.random() - .5).slice(0, 5); }
 function openGset(demo) {
   UI.gDemo = !!demo; const g = $('gset');
   if (demo) { UI.gSaved = { mode: S.mode, map: S.map }; if (MODES[S.demoMode] && MODES[S.demoMode].demo !== false) S.mode = S.demoMode; else S.mode = 'dm'; if (MAPS[S.demoMap]) S.map = S.demoMap; buildMenu(); }
@@ -619,9 +704,9 @@ function boot() {
   $('btnFs').onclick = fs; $('btnFs2').onclick = fs;
   $('btnStart').onclick = () => go(() => openGset(false));
   $('gBack').onclick = () => go(() => { const was = UI.gDemo; closeGset(); UI.els.menu.classList.remove('hidden'); });
-  $('gGo').onclick = () => go(() => { if (UI.gDemo) { closeGset(); beginGame(true); } else { $('gset').classList.add('hidden'); openCharSelect('start'); } }); $('btnDemo').onclick = () => go(() => openGset(true)); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
-  $('csBack').onclick = () => go(closeCharSelect);
-  $('csOk').onclick = () => go(() => { $('charsel').classList.add('hidden'); if (UI.csOrigin === 'mp') { $('mp').classList.remove('hidden'); renderLobby(); } else beginGame(false); });
+  $('gGo').onclick = () => go(() => { if (UI.gDemo) { closeGset(); beginGame(true); } else { $('gset').classList.add('hidden'); startPickFlow(); } }); $('btnDemo').onclick = () => go(() => openGset(true)); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
+  $('csBack').onclick = () => go(() => { const o = CS.o; if (o && o.back) o.back(); });
+  $('csOk').onclick = () => { if ($('csOk').classList.contains('dis')) return; go(() => csFinish(false)); };
   $('btnSet').onclick = () => go(openSettings); $('btnSet2').onclick = () => go(openSettings); $('btnSetClose').onclick = () => go(closeSettings); $('dbSet').onclick = () => go(openSettings); $('dbPause').onclick = () => setPause(true);
   $('btnLayout').onclick = () => go(openLayoutEditor); $('btnLayoutReset').onclick = () => { S.layout = {}; saveS(); applyLayout(); UI.msg('已重設按鍵配置', 'item'); };
   initLayoutEditor(); applyLayout(); initNetUI(); $('hostLeftOk').onclick = () => $('hostLeft').classList.add('hidden');
@@ -631,5 +716,6 @@ function boot() {
   updateRotate(); requestAnimationFrame(frame); startIntro();
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
-window.__G = { relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+setInterval(() => { try { UI.renderPills(); } catch (e) { } }, 120);
+window.__G = { kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();

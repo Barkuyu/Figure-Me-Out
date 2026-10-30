@@ -19,7 +19,7 @@ function loadScript(src) { return new Promise((res, rej) => { const s = document
 /* ---------- 傳輸層 ---------- */
 function roomTransport(nr) {
   let cb = () => { }; const off = nr.onPeers(() => cb());
-  const KEYS = ['r', 'n', 'c', 'ph', 'cfg', 'setup', 'snap', 'st', 'a', 'bye'];
+  const KEYS = ['r', 'n', 'c', 'ph', 'cfg', 'setup', 'snap', 'st', 'a', 'bye', 'pid', 'pn', 'pk', 'pr'];
   return {
     kind: 'room',
     setMine(o) { const patch = {}; for (const k of KEYS) patch[k] = o[k] === undefined ? null : o[k]; nr.presence(patch).catch(() => { }); },
@@ -109,8 +109,8 @@ function renderLobby() {
   if (host) { members = [[myPeer(), NET.name, 1, S.outfit], ...NET.ro.map(r => [r[0], r[1], 0, r[2]])]; cfg = { m: S.mode, n: S.count, d: S.diff, b: S.netBots ? 1 : 0, mp: S.map, tm: S.time || 5, sk: S.skills === false ? 0 : 1 }; }
   else { const h = hostOf(NET.tr.peers()); if (h && h.st.cfg) { cfg = h.st.cfg; members = [[h.peer, cleanName(h.st.n), 1, h.st.c | 0], ...(cfg.ro || []).map(r => [r[0], cleanName(r[1]), 0, r[2]])]; } }
   const list = $('mpMembers'); list.textContent = ''; const me = myPeer();
-  members.forEach(m => { const d = document.createElement('div'); d.className = 'mem'; const o = OUTFITS[clamp(m[3] | 0, 0, OUTFITS.length - 1)]; d.textContent = (m[2] ? '👑 ' : '') + m[1] + (m[0] === me ? '（你）' : '') + ' ・ ' + o.label; list.appendChild(d); });
-  $('mpChar').textContent = '角色：' + OUTFITS[S.outfit].label + '　（點此更換）';
+  members.forEach(m => { const d = document.createElement('div'); d.className = 'mem'; const o = OUTFITS[clamp(m[3] | 0, 0, OUTFITS.length - 1)]; d.textContent = (m[2] ? '👑 ' : '') + m[1] + (m[0] === me ? '（你）' : ''); list.appendChild(d); });
+  { const nm = $('chNMode'); if (nm) [...nm.children].forEach(b => { if (/KOF/.test(b.textContent)) { const lock = members.length > 2; b.classList.toggle('dis', lock); b.title = lock ? 'KOF 大賽最多 2 位玩家' : ''; } }); }
   $('mpHostCtl').classList.toggle('hidden', !host); $('mpStart').classList.toggle('hidden', !host);
   $('mpGuestInfo').textContent = host ? '' : (NET.waiting ? '遊戲進行中，請等待下一場…' : cfg ? `地圖：${MAPS[cfg.mp] ? MAPS[cfg.mp].name : '熱血高校'}　模式：${MODES[cfg.m] ? MODES[cfg.m].name : cfg.m}　號碼：${codeLabel(cfg.cl || 4)}　時間：${cfg.tm || 5} 分　技能：${cfg.sk === 0 ? '關' : '開'}　總人數：${cfg.n}　難度：${DIFF[cfg.d].name}　機器人補位：${cfg.b ? '開' : '關'}　等待房主開始…` : '連線中…');
   if (!host && cfg && MAPS[cfg.mp] && World.id !== cfg.mp) World.load(cfg.mp);
@@ -121,35 +121,50 @@ function initNetUI() {
   $('btnMP').onclick = () => go(openMP); $('mpBack').onclick = () => go(() => $('mp').classList.add('hidden'));
   $('mpHost').onclick = netCreate; $('mpJoin').onclick = netJoin; $('mpLeave').onclick = () => go(() => { netLeave(); $('mp').classList.add('hidden'); });
   $('mpStart').onclick = hostStart;
-  chips('chNMap', Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name })), () => S.map, v => { S.map = v; World.load(v); });
-  chips('chNTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v);
-  chips('chNSkill', [{ v: true, l: '是' }, { v: false, l: '否' }], () => S.skills !== false, v => S.skills = v);
-  chips('chNMode', Object.entries(MODES).filter(([k, m]) => !m.soon).map(([k, m]) => ({ v: k, l: m.name })), () => S.mode, v => { S.mode = v; huntLock(); });
+  chips('chNMap', Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name })), () => S.map, v => { S.map = v; World.load(v); }, 'map');
+  chips('chNTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v, 'time');
+  chips('chNSkill', [{ v: true, l: '是' }, { v: false, l: '否' }], () => S.skills !== false, v => S.skills = v, 'skills');
+  chips('chNMode', Object.entries(MODES).filter(([k, m]) => !m.soon).map(([k, m]) => ({ v: k, l: m.name })), () => S.mode, v => { S.mode = v; huntLock(); }, 'mode');
   chips('chNCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
-  $('mpChar').onclick = () => go(() => openCharSelect('mp'));
-  chips('chNCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; });
-  chips('chNDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; $('diffDescN').textContent = DIFF[v].desc; $('trollRowN').classList.toggle('hidden', v !== 3); }); $('diffDescN').textContent = DIFF[S.diff].desc; $('trollRowN').classList.toggle('hidden', S.diff !== 3);
-  chips('chNTroll', [{ v: 1, l: '輕度' }, { v: 2, l: '中度' }, { v: 3, l: '重度' }], () => S.trollLv, v => { S.trollLv = v; });
+  chips('chNCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; }, 'count');
+  chips('chNDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; $('diffDescN').textContent = DIFF[v].desc; $('trollRowN').classList.toggle('hidden', v !== 3); }, 'diff'); $('diffDescN').textContent = DIFF[S.diff].desc; $('trollRowN').classList.toggle('hidden', S.diff !== 3);
+  chips('chNTroll', [{ v: 1, l: '輕度' }, { v: 2, l: '中度' }, { v: 3, l: '重度' }], () => S.trollLv, v => { S.trollLv = v; }, 'troll');
   huntLock();
   chips('chNBots', [{ v: true, l: '機器人補滿人數' }, { v: false, l: '僅限真人' }], () => S.netBots, v => S.netBots = v);
 }
 
 /* ---------- 房主 ---------- */
 function hostStart() {
+  if (NET.phase !== 'lobby') return;
   const humans = 1 + NET.ro.length;
   if (!S.netBots && humans < 2) { lobbyHint('至少需要 2 位真人，或開啟「機器人補滿人數」。'); return; }
-  const roster = [{ peer: myPeer(), name: NET.name, outfit: S.outfit }, ...NET.ro.map(r => ({ peer: r[0], name: r[1], outfit: r[2] }))];
-  roster.map = S.map; NET.gid = (Date.now() % 900000) + 1; NET.phase = 'play'; NET.msgQ = []; NET.msgSeq = 0; G.feedSeq = 0;
+  resolveRandoms(false, humans);
+  if (S.mode === 'kof' && humans > 2) { lobbyHint('KOF 大賽最多只能 2 位玩家，請改選其他模式或請多的玩家離開。'); return; }
+  NET.phase = 'pick'; NET.pid = (Date.now() % 900000) + 1; NET.pickLeft = 40; NET.pickIn = {}; NET.hostPick = null; NET.pickMode = S.mode; const kof = S.mode === 'kof';
+  go(() => {
+    $('mp').classList.add('hidden');
+    openPick({ need: kof ? 5 : 1, secs: 40, evIco: '🧩', title: kof ? '選擇 5 位出賽角色（車輪戰）' : '選擇角色', okText: '確認', back: null, onDone: (list, wasRand, ex) => { NET.hostPick = list; NET.hostRand = ex; S.outfit = list[0]; if (!kof) S.pref = ex ? 'rand' : list[0]; saveS(); if (!hostPickReady()) showWait(true); } });
+  });
+}
+function hostPickReady() { return !!NET.hostPick && NET.ro.every(r => NET.pickIn[r[0]]); }
+function hostLaunch() {
+  if (NET.phase !== 'pick') return; closePick(); const kof = NET.pickMode === 'kof';
+  const rnd = () => pick(VIS_OUTFITS), rl = () => kofRandRoster();
+  if (!NET.hostPick) NET.hostPick = kof ? rl() : [rnd()]; S.outfit = NET.hostPick[0];
+  const roster = [{ peer: myPeer(), name: NET.name, outfit: NET.hostPick[0], list: NET.hostPick }, ...NET.ro.map(r => { const l = NET.pickIn[r[0]] || (kof ? rl() : [rnd()]); return { peer: r[0], name: r[1], outfit: l[0], list: l }; })];
+  if (kof) G.kofPre = { me: roster[0].list, opp: roster[1] ? roster[1].list : kofRandRoster() };
+  roster.map = S.map; NET.gid = (Date.now() % 900000) + 1; NET.phase = 'starting'; NET.msgQ = []; NET.msgSeq = 0; G.feedSeq = 0;
+  showWait(false); UI.preResolved = true;
   go(() => {
   $('mp').classList.add('hidden');
-  beginGame(false, roster);
+  beginGame(false, roster); NET.phase = 'play';
   G.actors[0].peer = myPeer();
-  NET.setup = { tm: S.time || 5, sk: G.skillsOn ? 1 : 0, g: NET.gid, m: G.mode, cl: G.codeLen, mp: G.map, ac: G.actors.map(a => [a.name, a.outfit, a.team, a.isPlayer ? 1 : a.remote ? 2 : 0, a.peer || '']) };
+  NET.setup = { tm: S.time || 5, sk: G.skillsOn ? 1 : 0, g: NET.gid, m: G.mode, cl: G.codeLen, mp: G.map, kr: G.mode === 'kof' ? G.actors.slice(0, 2).map(a => a.kroster) : 0, ac: G.actors.map(a => [a.name, a.outfit, a.team, a.isPlayer ? 1 : a.remote ? 2 : 0, a.peer || '']) };
   NET.curG = NET.gid; NET.sendT = 0;
   });
 }
 function hostToLobby() {
-  go(() => { stopGameUI(); NET.phase = 'lobby'; NET.setup = null; NET.curG = null; showLobby(); });
+  go(() => { closePick(); stopGameUI(); NET.phase = 'lobby'; NET.setup = null; NET.curG = null; showLobby(); });
 }
 function netMsg(text, kind) { if (NET.mode !== 'host') return; NET.msgQ.push([++NET.msgSeq, text, kind || '']); if (NET.msgQ.length > 3) NET.msgQ.shift(); }
 function hostReadPeers(dt) {
@@ -160,6 +175,12 @@ function hostReadPeers(dt) {
     NET.ro = NET.order.map(id => { const p = ps.find(x => x.peer === id); return [id, cleanName(p.st.n), clamp(p.st.c | 0, 0, OUTFITS.length - 1)]; });
     return;
   }
+  if (NET.phase === 'starting') return;
+  if (NET.phase === 'pick') {
+    const ids = new Set(ps.map(p => p.peer)); NET.ro = NET.ro.filter(r => ids.has(r[0]));
+    for (const r of NET.ro) { const p = ps.find(x => x.peer === r[0]); if (p && p.st.pk === NET.pid && Array.isArray(p.st.pr)) NET.pickIn[r[0]] = p.st.pr.map(v => clamp(v | 0, 0, OUTFITS.length - 1)); }
+    NET.pickLeft -= dt; if (hostPickReady() || NET.pickLeft <= -1.5) hostLaunch(); return;
+  }
   for (const a of G.actors) {
     if (!a.remote) continue; const p = ps.find(x => x.peer === a.peer);
     if (!p) { a.missT = (a.missT || 0) + dt; if (a.missT > 3) { a.remote = false; a.net = null; a.speed = (4 + Math.random() * .7) * 1.3; a.smart = false; } continue; }
@@ -169,13 +190,15 @@ function hostReadPeers(dt) {
   }
 }
 function hostAct(a, ac) {
-  if (!a.alive || G.state !== 'playing') return;
+  if (G.state !== 'playing') return; if (ac[1] === 'kp') { kofPick(a, ac[2] | 0); return; }
+  if (!a.alive) return;
   if (ac[1] === 'k') {
     if (ericHit(a, String(ac[3]))) return;
     const t = G.actors.find(x => x.alive && x.number === String(ac[3])); if (t && t !== a && t.alive && t.protect <= 0 && t.number === String(ac[3]) && (isDM() || t.team !== a.team)) eliminate(a, t);
   } else if (ac[1] === 'w') { a.redT = 2; a.streak = 0; a.cloak = false; }
   else if (ac[1] === 's') { castSkill(a); }
   else if (ac[1] === 'b') { a.binAt = G.time; }
+  else if (ac[1] === 'kp') { kofPick(a, ac[2] | 0); }
   else if (ac[1] === 'u') {
     const i = ac[2] | 0, it = a.slots && a.slots[i]; if (!it) return;
     if (it.type !== 'cam' && it.type !== 'scope') applyItem(a, it.type);
@@ -211,6 +234,8 @@ function buildSnap() {
     fg: G.mode === 'ctf' ? G.flags.map(f => [f.state === 'home' ? 0 : f.state === 'carried' ? 1 : 2, Math.round(f.x * 10), Math.round(f.z * 10), Math.round(f.y * 10), f.carrier ? A.indexOf(f.carrier) : -1]) : [],
     sk: [Math.round(G.sk.rev.t * 10), G.actors.indexOf(G.sk.rev.by), Math.round(G.sk.scr.t * 10), G.actors.indexOf(G.sk.scr.by), Math.round(G.sk.ink.t * 10), G.actors.indexOf(G.sk.ink.by), Math.round(G.sk.eagle.t * 10), G.actors.indexOf(G.sk.eagle.by), Math.round(G.sk.quake.t * 10), G.actors.indexOf(G.sk.quake.by), G.sk.night.by ? Math.round(G.sk.night.e * 10) : -1, G.actors.indexOf(G.sk.night.by), Math.round(G.sk.rel.t * 10), G.actors.indexOf(G.sk.rel.by)],
     pk: G.pickups.reduce((m, p, i) => m | (p.on ? (1 << i) : 0), 0),
+    ar: G.arena ? [G.arena.stage, G.arena.ph, Math.round(G.arena.t * 10), A.map(a => (a.isPlayer || a.remote) && !a.alive ? Math.round(Math.max(0, Math.min(99, a.respawnT)) * 10) : 0)] : 0,
+    kf: G.mode === 'kof' ? { c: G.kofCd ? 1 : 0, a: A.slice(0, 2).map(a => [a.kcur, a.kout, Math.round(Math.max(0, a.kw || 0) * 10), (a.kroster || []).reduce((m, v, j) => m | ((a.kleft || []).includes(v) ? (1 << j) : 0), 0)]) } : 0,
     fd: G.feed.slice(-4).map(f => [f.seq, f.ki, f.vi, f.st || 0]), hs: G.mode === 'hunt' ? G.actors.map(a => a.score || 0) : 0, ms: NET.msgQ.slice()
   };
   return snap;
@@ -218,6 +243,7 @@ function buildSnap() {
 function hostSend() {
   const base = { r: 'host', n: NET.name, c: S.outfit };
   if (NET.phase === 'lobby') { NET.tr.setMine({ ...base, ph: 'lobby', cfg: { m: S.mode, n: S.count, d: S.diff, b: S.netBots ? 1 : 0, cl: S.codeLen, mp: S.map, tm: S.time || 5, sk: S.skills === false ? 0 : 1, ro: NET.ro } }); return; }
+  if (NET.phase === 'pick' || NET.phase === 'starting') { NET.tr.setMine({ ...base, ph: 'pick', pid: NET.pid, pn: NET.pickMode === 'kof' ? 5 : 1 }); return; }
   const st = { ...base, ph: NET.phase, setup: NET.setup, snap: buildSnap() };
   try { while (JSON.stringify(st).length > 3900 && st.snap.ms.length) st.snap.ms.shift(); } catch (e) { }
   NET.tr.setMine(st);
@@ -226,7 +252,7 @@ function hostSend() {
 /* ---------- 訪客 ---------- */
 function netAct(act) { act.unshift(++NET.seq); NET.acts.push(act); if (NET.acts.length > 8) NET.acts.shift(); }
 function clientSend() {
-  const st = { r: 'guest', n: NET.name, c: S.outfit }, p = G.player;
+  const st = { r: 'guest', n: NET.name, c: S.outfit }, p = G.player; if (NET.pkList && NET.pkId) { st.pk = NET.pkId; st.pr = NET.pkList; }
   if (NET.curG && p && G.netClient) { st.st = [Math.round(p.x * 100), Math.round(p.z * 100), Math.round(p.y * 100), Math.round(p.yaw * 100), Math.round(p.pitch * 100), p.alive ? 1 : 0, Math.round(p.lo * 100), NET.rsMine]; st.a = NET.acts; }
   NET.tr.setMine(st);
 }
@@ -235,7 +261,12 @@ function clientPoll(dt) {
   const h = hostOf(NET.tr.peers());
   if (!h || h.st.bye) { NET.hostMissT += dt; if (h && h.st.bye || NET.hostMissT > (NET.curG ? 3 : 5)) leaveWithNotice('創辦者已經離開了，趕快邀請他回來遊玩吧！'); return; }
   NET.hostMissT = 0; const st = h.st;
-  if (st.ph === 'lobby') { NET.waiting = false; if (NET.curG) { NET.dismissedG = null; clientToLobby(true); } return; }
+  if (st.ph === 'lobby') { NET.waiting = false; if (NET.pickId) { NET.pickId = NET.pkId = NET.pkList = null; closePick(); showLobby(); } if (NET.curG) { NET.dismissedG = null; clientToLobby(true); } return; }
+  if (st.ph === 'pick') {
+    if (NET.pickId !== st.pid) { NET.pickId = st.pid; NET.pkId = null; NET.pkList = null; const need = st.pn || 1;
+      openPick({ need, secs: 40, evIco: '🧩', title: need > 1 ? '選擇 5 位出賽角色（車輪戰）' : '選擇角色', okText: '確認', back: null, onDone: (list, wasRand, ex) => { NET.pkId = st.pid; NET.pkList = list; S.outfit = list[0]; showWait(true); } }); }
+    return;
+  }
   const s = st.setup; if (!s) return;
   if (s.g !== NET.curG) {
     if (s.g === NET.dismissedG) { NET.waiting = true; return; }
@@ -245,11 +276,15 @@ function clientPoll(dt) {
 }
 function clientStartGame(s) {
   const me = myPeer(), idx = s.ac.findIndex(x => x[4] === me && x[3] === 2); if (idx < 0) return false;
+  closePick(); showWait(false); NET.pickId = null;
   World.load(MAPS[s.mp] ? s.mp : 'hb'); G.map = World.id;
   G.multi = true; G.mode = s.m; G.codeLen = s.cl === 0 ? 0 : (s.cl || 4); G.countdown = 3; G.freezeT = 0; NET.prevCd = 3; G.limit = MODES[s.m].limit; G.tleft = (s.tm || 5) * 60; G.skillsOn = s.sk !== 0; G.scores = [0, 0]; G.grenades = []; G.smokes = []; G.lures = []; G.fx = []; G.feed = []; G.feedVer = 1; G.typed = ''; G.lock = 0; G.time = 0; G.demo = false; G.view = null;
   _id = 0; freeActors(G.actors); G.actors = [];
   s.ac.forEach((x, i) => { const a = newActor(x[0], x[1], i === idx); a.team = x[2]; a.alive = false; a.deadT = 99; a.number = '0000'; a.init = false; a.net = true; drawPlate(a); G.actors.push(a); });
-  G.player = G.actors[idx]; G.player.deadT = 0; NET.myIdx = idx; G.netClient = true;
+  G.player = G.actors[idx]; G.player.deadT = 0; NET.myIdx = idx; G.netClient = true; G.arena = s.m === 'arena' ? { stage: 0, ph: 0, t: 10, hum: 1 } : null; G.kofCd = false;
+  if (s.m === 'arena') G.actors.forEach(a => { if (a.team === 1) a.pool = true; });
+  if (s.m === 'kof' && s.kr) G.actors.forEach((a, i) => { if (s.kr[i]) { a.kroster = s.kr[i].slice(); a.kleft = s.kr[i].slice(); a.kcur = s.kr[i][0]; a.kout = 0; a.kw = 0; } });
+  if (s.m === 'arena' || s.m === 'kof') G.tleft = 9e9;
   G.slots = [null, null]; G.bino = false; G.binK = 0; G.energy = 1; G.stam = 1; G.flashT = 0; G.itemCd = 0; G.threat = null;
   G.pickups = World.pickSpots.map(p => ({ x: p[0], z: p[1], y: p[2] ? World.mezz.h : 0, l: p[2] | 0, on: true, t: 0 })); initFlags(); skReset(); G.state = 'playing'; G.fov = 1.2; G.winner = '';
   Object.assign(NET, { curG: s.g, rsMine: -1, killsSeen: -1, feedSeen: -1, msgSeen: -1, acts: [], puffs: [], waiting: false, lastSnap: null, slC: '' });
@@ -258,7 +293,7 @@ function clientStartGame(s) {
 function applySnap(s) {
   const A = G.actors, me = G.player;
   G.tleft = s.tl; G.scores = s.sc;
-  if (NET.prevCd > 0 && s.cd === 0) { Sfx.bell(); UI.goText(); } G.countdown = s.cd / 10; NET.prevCd = s.cd;
+  if (s.kf) G.kofCd = !!s.kf.c; if (NET.prevCd > 0 && s.cd === 0) { if (!G.kofCd) { Sfx.bell(); UI.goText(); } } else if (G.kofCd && NET.prevCd > 10 && s.cd <= 10) Sfx.bell(); G.countdown = s.cd / 10; NET.prevCd = s.cd;
   for (let i = 0; i < A.length; i++) {
     const e = s.ac[i], a = A[i]; if (!e || !a) continue;
     const alive = !!(e[5] & 1);
@@ -291,6 +326,8 @@ function applySnap(s) {
   if (G.mode === 'ctf') G.flags.forEach((f, i) => { const e = s.fg[i]; if (!e) return; f.state = ['home', 'carried', 'dropped'][e[0]]; f.x = e[1] / 10; f.z = e[2] / 10; f.y = e[3] / 10; f.carrier = e[4] >= 0 ? A[e[4]] : null; });
   G.pickups.forEach((p, i) => { p.on = !!(s.pk & (1 << i)); });
   if (s.hs) s.hs.forEach((v, i) => { if (A[i]) A[i].score = v; });
+  if (s.ar) { G.arena = { stage: s.ar[0], ph: s.ar[1], t: s.ar[2] / 10, hum: 1 }; if (me && s.ar[3] && s.ar[3][NET.myIdx] > 0 && !me.alive) me.respawnT = s.ar[3][NET.myIdx] / 10; }
+  if (s.kf) s.kf.a.forEach((x, i) => { const a = A[i]; if (!a) return; a.kout = x[1]; a.kw = x[2] / 10; const r = a.kroster || []; a.kleft = r.filter((v, j) => x[3] & (1 << j)); if (a.kcur !== x[0]) { if (a !== me && a.kcur !== undefined && G.state === 'playing') UI.msg('對手派出了【' + OUTFITS[x[0]].label + '】', 'item'); a.kcur = x[0]; a.outfit = x[0]; a.av = createAvatar(x[0]); } });
   if (s.sk) { G.sk.rev = { t: s.sk[0] / 10, by: A[s.sk[1]] || null, id: 1 }; G.sk.scr = { t: s.sk[2] / 10, by: A[s.sk[3]] || null, id: 1 }; G.sk.ink = { t: (s.sk[4] || 0) / 10, by: A[s.sk[5]] || null, id: 1 }; G.sk.eagle = { t: (s.sk[6] || 0) / 10, by: A[s.sk[7]] || null }; G.sk.quake = { t: (s.sk[8] || 0) / 10, by: A[s.sk[9]] || null }; G.sk.night = { e: s.sk[10] >= 0 ? s.sk[10] / 10 : 0, by: s.sk[10] >= 0 ? (A[s.sk[11]] || null) : null }; G.sk.rel = { t: s.sk[12] === undefined ? -1 : s.sk[12] / 10, by: A[s.sk[13]] || null, id: 1 }; }
   if (NET.feedSeen < 0) NET.feedSeen = s.fd.length ? s.fd[s.fd.length - 1][0] : 0;
   for (const f of s.fd) if (f[0] > NET.feedSeen) { NET.feedSeen = f[0]; const k = A[f[1]], v = A[f[2]]; if (k && v) { G.feed.push({ t: 6, k: k.name, v: v.name, me: k === me || v === me, st: f[3] || 0, seq: f[0] }); if (k === me && f[3] > 1) UI.streak(f[3], STREAK_PTS[Math.min(f[3], 5) - 1]); if (G.feed.length > 5) G.feed.shift(); G.feedVer++; } }
@@ -317,7 +354,7 @@ function updateClientGame(dt) {
   updateCamera(dt);
 }
 function clientToLobby(fromHost) {
-  go(() => { stopGameUI(); NET.dismissedG = fromHost ? null : NET.curG; NET.curG = null; G.netClient = false; NET.waiting = false; showLobby(); });
+  go(() => { closePick(); NET.pickId = NET.pkId = NET.pkList = null; stopGameUI(); NET.dismissedG = fromHost ? null : NET.curG; NET.curG = null; G.netClient = false; NET.waiting = false; showLobby(); });
 }
 function netTick(dt) {
   if (!NET.tr || !NET.mode) return;

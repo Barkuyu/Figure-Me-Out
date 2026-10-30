@@ -126,8 +126,24 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
 .hnote{background:rgba(255,210,74,.12);border-left:3px solid #ffd24a;border-radius:6px;padding:5px 8px;margin:6px 0;font-size:12px}
 .hchars{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px}.hch{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.07);border-radius:10px;padding:5px 8px}.hch img{width:44px;height:44px;border-radius:50%;flex:none;border:2px solid rgba(255,255,255,.4)}.hch b{font-size:12.5px;display:block}.hch u{text-decoration:none;color:var(--yel);font-size:11.5px;font-weight:700;display:block}.hch span{font-size:11px;opacity:.88;line-height:1.4;display:block}
 @media (max-height:430px){.hpanel{max-height:calc(calc(var(--vh)*100) - 170px)}.hsteps{grid-template-columns:repeat(4,1fr)}}
-#sktm{position:absolute;right:8px;top:5px;display:flex;flex-direction:row-reverse;flex-wrap:wrap;gap:4px;max-width:calc(var(--vw)*46);pointer-events:none;z-index:6}#sktm span{display:flex;align-items:center;gap:3px;background:rgba(20,22,36,.78);border:1.5px solid rgba(255,255,255,.55);border-radius:10px;padding:1px 7px;font:700 13px var(--font);color:#fff}#sktm b{color:#ffd24a;min-width:1.2em;text-align:right}
-body.doll .np{background:#000!important;color:#ff1a30!important;border-color:#8c0f1c!important;text-shadow:0 0 6px #ff1a30}body.doll #typed{color:#ff1a30;background:#000;border-radius:10px;padding:2px 14px;text-shadow:0 0 8px #ff1a30}
+#sktm{position:absolute;right:8px;top:5px;display:flex;flex-direction:row-reverse;flex-wrap:wrap;gap:5px;max-width:calc(var(--vw)*60);pointer-events:none;z-index:500}#sktm span{display:flex;align-items:center;gap:4px;background:var(--pbg,#fff);border:2.5px solid #000;border-radius:999px;padding:1px 9px 1px 4px;font:800 15px var(--font);color:#000;box-shadow:0 2px 0 rgba(0,0,0,.35)}#sktm b{min-width:1.3em;text-align:right;color:#000}#sktm .clk{position:relative;width:19px;height:19px;border:2px solid #000;border-radius:50%;background:#fff}#sktm .clk:after{content:'';position:absolute;left:50%;top:50%;width:2px;height:7px;background:#000;transform-origin:50% 0;transform:translate(-50%,0) rotate(0);animation:clkSpin 1s linear infinite}#sktm .ti{font-size:13px}@keyframes clkSpin{to{transform:translate(-50%,0) rotate(360deg)}}
+body.doll .np,body.doll #bBack{background:#000!important;opacity:1!important;color:#ff1a30!important;border-color:#8c0f1c!important;text-shadow:0 0 6px #ff1a30}.hidden{display:none!important}
+#arBanner{position:absolute;left:50%;top:76px;transform:translateX(-50%);background:#1e4fd8;color:#fff;border:2.5px solid #fff;border-radius:12px;padding:6px 18px;font:800 16px var(--font);text-align:center;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,40,.5);z-index:30;pointer-events:none}
+#arBig{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);z-index:35;pointer-events:none;font:900 italic clamp(46px,calc(var(--vh)*14),110px)/1 'Arial Black',Impact,var(--font);white-space:nowrap;text-align:center}
+#arBig.stage{color:#fff;-webkit-text-stroke:7px #000;paint-order:stroke fill;text-shadow:0 6px 0 rgba(0,0,0,.45);animation:arPop .45s cubic-bezier(.2,1.6,.4,1) both}
+#arBig.clear{background:linear-gradient(180deg,#fff7b0,#ffd23a 45%,#f08a00);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:5px #7a3b00;paint-order:stroke fill;filter:drop-shadow(0 0 18px rgba(255,200,40,.9));animation:arClear 1s ease-out both}
+#arBig i{position:absolute;font-style:normal;-webkit-text-stroke:0;color:#ffe27a;background:none;-webkit-background-clip:initial;animation:arSpk 1.4s ease-out infinite}
+@keyframes arPop{from{transform:translate(-50%,-50%) scale(.2) rotate(-8deg);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+@keyframes arClear{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}40%{transform:translate(-50%,-50%) scale(1.25);opacity:1}100%{transform:translate(-50%,-50%) scale(1)}}
+@keyframes arSpk{0%{opacity:0;transform:scale(.2) translateY(0)}30%{opacity:1}100%{opacity:0;transform:scale(1.2) translateY(-40px)}}
+#kofbar{position:absolute;left:0;right:0;top:34px;display:flex;justify-content:space-between;padding:0 10px;pointer-events:none;z-index:12}
+#kofbar .ks{display:flex;align-items:center;gap:3px;background:rgba(10,12,24,.55);border-radius:10px;padding:3px 6px}#kofbar .ks.r{flex-direction:row-reverse}
+#kofbar .ks em{font:700 11px var(--font);font-style:normal;color:#fff;margin:0 4px;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#kofbar .ki{position:relative;width:24px;height:24px;border-radius:50%;border:2px solid #fff;background:#222 center/cover;opacity:1}#kofbar .ki.used{filter:grayscale(1) brightness(.5);opacity:.7}#kofbar .ki.used:after{content:'✖';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ff5a5a;font:900 15px Arial;filter:none}#kofbar .ki.cur{border-color:#ffd24a;box-shadow:0 0 8px #ffd24a;transform:scale(1.18)}
+.hrule{background:rgba(255,255,255,.07);border-radius:10px;padding:6px 10px;margin:6px 0;font-size:12.5px;line-height:1.6}.hsteps.h4{grid-template-columns:repeat(4,1fr)}.htb{width:100%;border-collapse:collapse;font-size:12px;margin:6px 0}.htb th,.htb td{border:1px solid rgba(255,255,255,.2);padding:3px 6px;text-align:center}.htb th{background:rgba(255,255,255,.1);color:var(--yel)}
+.cshint{font-size:12px;opacity:.85;margin:4px 0 6px;min-height:16px}.card{position:relative}.card .pk{position:absolute;right:6px;top:4px;font:800 15px var(--font);color:#ffd24a;text-shadow:0 0 3px #000,0 0 3px #000}#csOk.dis{opacity:.4;filter:grayscale(1);pointer-events:none}
+#waitDlg{position:absolute;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(8,8,16,.7)}#waitDlg .wbox{background:rgba(30,32,52,.96);border:2px solid rgba(255,255,255,.5);border-radius:16px;padding:20px 34px;font:700 20px var(--font);color:#fff}.dots i{font-style:normal;animation:dotB 1.2s infinite;display:inline-block}.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}@keyframes dotB{0%,60%,100%{opacity:.15;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+.btn.locked{opacity:.55;filter:grayscale(.8);cursor:not-allowed}body.doll #typed{color:#ff1a30;background:#000;border-radius:10px;padding:2px 14px;text-shadow:0 0 8px #ff1a30}
 .howto kbd{background:#fff;color:#222;border-radius:4px;padding:0 5px;font:700 11px var(--font)}
 #btnStart{width:100%;margin-top:16px;font-size:22px;padding:13px}
 .err{background:#7a1f1f;padding:12px;border-radius:10px;margin:10px 0;font-size:14px}
@@ -346,9 +362,11 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 <div id="app">
   <canvas id="gl"></canvas>
 
+  <div id="sktm"></div>
   <div id="hud" class="hidden">
     <div id="scorebar"><span class="flagic" id="flagR"></span><div class="sc red" id="scR">0</div><span class="sep">-</span><div class="sc blue" id="scB">0</div><span class="flagic" id="flagB"></span></div>
-    <div id="timer">5:00</div><div id="sktm"></div>
+    <div id="timer">5:00</div>
+    <div id="arBanner" class="hidden">擂台賽將於10秒後正式開始，請做好準備</div><div id="arBig" class="hidden"></div><div id="kofbar" class="hidden"></div>
     <div id="countdown" class="hidden"><div id="cdTxt"></div><div id="cdNum"></div></div><div id="modeName"></div>
     <div id="killfeed"></div>
     <div id="crosshair"></div>
@@ -383,11 +401,12 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 3.5</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 3.6</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
         <button class="btn" id="btnStart">🏆開始遊戲</button>
+        <button class="btn lite locked" id="btnRank">🔒 排位賽（敬請期待）</button>
         <button class="btn lite" id="btnMP">🌐 多人連線（用 4 位數密碼與好友同場）</button>
         <button class="btn alt" id="btnDemo">🎬 電腦示範模式（全 AI 對戰・隨機視角觀戰）</button>
         <button class="btn alt" id="btnHow">📖 玩法操作與說明</button>
@@ -438,7 +457,6 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
       <div class="mpcode">房間 <b id="mpLbCode"></b> <span id="mpKind" style="opacity:.7;font-size:12px"></span></div>
       <div id="mpCount" style="opacity:.8;font-size:13px;margin:4px 0"></div>
       <div id="mpMembers"></div>
-      <div class="row"><label>角色</label><button class="chip" id="mpChar"></button></div>
       <div id="mpHostCtl" class="gstyle">
         <section class="gsec s1"><div class="gt"><i>①</i>對戰規則</div>
           <div class="grow"><label>模式</label><div class="chips" id="chNMode"></div></div>
@@ -458,11 +476,12 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     </div>
   </div></div>
   <div id="charsel" class="hidden"><div class="panel">
-    <h2 style="font:400 30px var(--disp);margin:0 0 10px">選擇角色</h2>
+    <h2 id="csTitle" style="font:400 30px var(--disp);margin:0 0 10px">選擇角色</h2>
     <div class="cards" id="cards"></div>
     <div class="cinfo"><div class="crow"><b>角色</b><span id="cName"></span></div><div class="crow"><b>角色技能</b><span id="cPass"></span></div></div>
-    <div class="btnrow" style="justify-content:flex-start"><button class="btn" id="csOk">確認，開始遊戲</button><button class="btn alt" id="csBack">返回</button></div>
+    <div id="csHint" class="cshint"></div><div class="btnrow" style="justify-content:flex-start"><button class="btn" id="csOk">確認，開始遊戲</button><button class="btn alt" id="csBack">返回</button></div>
   </div></div>
+  <div id="waitDlg" class="hidden"><div class="wbox">等候其他玩家選擇中<span class="dots"><i>.</i><i>.</i><i>.</i></span></div></div>
   <div id="howPick" class="hidden"><div class="sbox" style="max-height:calc(var(--vh)*92);overflow:hidden;width:min(900px,calc(var(--vw)*96))"><h2>玩法操作與說明</h2><div class="howto" id="howto"></div><div class="btnrow"><button class="btn alt" id="howBack">關閉</button></div></div></div>
   <div id="fade"></div>
   <div id="settings" class="hidden"><div class="sbox"><h2>設定</h2>
@@ -499,7 +518,7 @@ function rng(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 10139
 /* ================= 設定 / 裝置偵測 ================= */
 const CODE_OPTS = [3, 4, 5, 6, 'rand', 'mix'];
 const codeLabel = v => v === 'rand' ? '隨機' : v === 'mix' ? '大亂鬥' : v + ' 碼';
-const S = { mode: 'dm', count: 20, diff: 1, outfit: 0, input: 'auto', quality: 'auto', sens: 1, auto: true, fps: true, sound: true, countSet: false, codeLen: 4, trollLv: 3, time: 5, skills: true, demoMode: 'dm', map: 'hb', demoMap: 'hb', layout: {}, layoutV: 0, netBots: true, netName: '' };
+const S = { mode: 'dm', count: 20, diff: 1, outfit: 0, input: 'auto', quality: 'auto', sens: 1, auto: true, fps: true, sound: true, countSet: false, codeLen: 4, trollLv: 3, time: 5, skills: true, rnd: {}, pref: undefined, demoMode: 'dm', map: 'hb', demoMap: 'hb', layout: {}, layoutV: 0, netBots: true, netName: '' };
 try { Object.assign(S, JSON.parse(localStorage.getItem('fmo2') || '{}')); } catch (e) { }
 if (S.layoutV < 2) { S.layout = {}; S.layoutV = 2; }
 const saveS = () => { try { localStorage.setItem('fmo2', JSON.stringify(S)); } catch (e) { } };
@@ -585,6 +604,8 @@ const Sfx = {
   flag() { this.tone(440, .12, 'triangle', .18); this.tone(660, .12, 'triangle', .18, 0, .1); this.tone(880, .2, 'triangle', .18, 0, .2); },
   step() { this.noise(.05, .06, 600); },
   win() { [523, 659, 784, 1047].forEach((f, i) => this.tone(f, .25, 'triangle', .2, 0, i * .12)); },
+  warn() { for (let i = 0; i < 3; i++) this.tone(1200, .12, 'square', .1, 0, i * .33); },
+  arenaGo() { this.bell(); this.tone(180, .5, 'sawtooth', .16, 120, .05); },
   siren() { for (let i = 0; i < 8; i++) { this.tone(i % 2 ? 760 : 1040, .25, 'sawtooth', .13, i % 2 ? 260 : -260, i * .25); } },
   skill() { this.tone(520, .12, 'triangle', .16, 300); this.tone(780, .2, 'sine', .14, 200, .08); this.noise(.12, .12, 3000, 0, true); },
   victory() { // 金色閃光 + 號角式勝利音
@@ -1888,13 +1909,13 @@ OUTFITS.push(
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'nox', label: '夜梟Nox', sub: '', skill: { name: '夜間戰術', desc: '召喚黑雲使全場變暗 30 秒，自己戴夜視鏡看清號碼。冷卻 30 秒。' }, H: 1.78, skin: '#c9a07c', hipX: .095, shX: .235, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#1a1d2a', top2: '#8ff04a', pants: '#14161f', shoe: '#0c0d12', hair: '#1c1c22', style: 'short', acc: ['goggles'], accC: '#3cff6a' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
-  { key: 'derek', label: '德意志Derek', sub: '', skill: { name: '衝鋒陷陣', desc: '按 G 鍵向前衝撞（無 G 道具格）：撞到的人暈眩 2.5 秒並面向你，自己彈退。冷卻 10 秒；只要成功擊殺就立即刷新。' }, H: 1.9, skin: '#f0c9a8', hipX: .105, shX: .29, tz: .5, hair: '#e6c15a', hair2: '#f3dc8c', female: false, gen: { top: '#2b2d33', top2: '#d4a017', pants: '#4b5238', shoe: '#17171a', hair: '#e6c15a', style: 'bald', acc: ['pickel', 'pauldron'], accC: '#d4a017' },
+  { key: 'derek', label: '德意志Derek', sub: '', skill: { name: '衝鋒陷陣', desc: '按 G 鍵朝移動方向衝撞（無 G 道具格）：撞到的人暈眩 2.5 秒並面向你，自己彈退。冷卻 10 秒；只要成功擊殺就立即刷新。' }, H: 1.9, skin: '#f0c9a8', hipX: .105, shX: .29, tz: .5, hair: '#e6c15a', hair2: '#f3dc8c', female: false, gen: { top: '#2b2d33', top2: '#d4a017', pants: '#4b5238', shoe: '#17171a', hair: '#e6c15a', style: 'bald', acc: ['pickel', 'pauldron'], accC: '#d4a017' },
     torso: [[.001, -.1], [.21, -.1], [.22, -.02], [.205, .1], [.215, .22], [.265, .36], [.29, .46], [.28, .53], [.19, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'wukong', label: '悟空MonkeyKing', sub: '', skill: { name: '如來隱身', desc: '被動：輸入擊殺後噴白煙，隱身 6 秒（期間再擊殺重新計時），隱身時跑步與望遠鏡不耗能量。隱身結束後冷卻 10 秒。' }, H: 1.64, skin: '#d9a066', hipX: .09, shX: .2, tz: .56, hair: '#3b2414', hair2: '#6b4526', female: false, passive: true, gen: { top: '#c0392b', top2: '#f1c40f', pants: '#e0902a', shoe: '#5a3a1c', hair: '#3b2414', style: 'spiky', acc: ['headband', 'feathers', 'monkeyears', 'tail', 'staff'], accC: '#f5c518' },
     torso: [[.001, -.1], [.19, -.1], [.195, -.02], [.18, .1], [.185, .22], [.205, .36], [.21, .46], [.205, .53], [.16, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'doll', label: '朵爾Doll', sub: '', skill: { name: '黑紅咒術', desc: '被動：自己畫面上的數字鍵變成「黑底、鮮紅字」。' }, H: 1.6, skin: '#f4e2d6', hipX: .088, shX: .175, tz: .56, hair: '#17101a', hair2: '#3a1f2e', female: true, passive: true, gen: { top: '#15101c', top2: '#c1121f', pants: '#0d0b12', shoe: '#1a0d12', hair: '#17101a', style: 'long', acc: ['twintail', 'bow', 'skirt'], accC: '#d8112a' },
     torso: [[.001, -.1], [.18, -.1], [.185, -.02], [.17, .1], [.17, .22], [.19, .36], [.195, .46], [.19, .53], [.15, .57], [.065, .595], [.05, .63], [.001, .63]] },
-  { key: 'einstein', label: '愛因斯坦Einstein', sub: '', skill: { name: '相對論', desc: '先響 2 秒警笛，接著其他人的左右操作與數字鍵順序全部互換，持續 20 秒。冷卻 30 秒。' }, H: 1.72, skin: '#f1d0b5', hipX: .098, shX: .23, tz: .54, hair: '#f2f2f2', hair2: '#ffffff', female: false, gen: { top: '#f3f4f6', top2: '#8fb8e0', pants: '#3b3a46', shoe: '#4a3426', hair: '#f2f2f2', style: 'bald', acc: ['wildhair', 'mustache', 'bowtie'], accC: '#f7f7f7' },
+  { key: 'einstein', label: '愛因斯坦Einstein', sub: '', skill: { name: '相對論', desc: '先響 2 秒警笛，接著其他人的左右操作與數字鍵順序全部互換，持續 20 秒。技能結束後才開始 30 秒冷卻。' }, H: 1.72, skin: '#f1d0b5', hipX: .098, shX: .23, tz: .54, hair: '#f2f2f2', hair2: '#ffffff', female: false, gen: { top: '#f3f4f6', top2: '#8fb8e0', pants: '#3b3a46', shoe: '#4a3426', hair: '#f2f2f2', style: 'bald', acc: ['wildhair', 'mustache', 'bowtie'], accC: '#f7f7f7' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.195, .1], [.205, .22], [.24, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] }
 );
 const SKINPATCH = [.975, .975];
@@ -2354,7 +2375,7 @@ function drawBlob(a, tint) {
 
 /* ================= 遊戲邏輯 ================= */
 const STEP = .45, RAD = .22, GRAV = 22, EYE = 1.62;
-const isDM = () => G.mode === 'dm' || G.mode === 'hunt';
+const isDM = () => G.mode === 'dm' || G.mode === 'hunt' || G.mode === 'kof';
 const VIS_OUTFITS = OUTFITS.map((o, i) => o.hidden ? -1 : i).filter(i => i >= 0);
 const NAMES = ['Honda', '小明', '阿杰', 'Mia', 'Ken', 'Luna', 'Jay', 'Yuki', '小美', 'Leo', '阿宏', 'Nina', 'Ray', '小雨', 'Zoe', 'Max', '阿德', 'Coco', 'Tom', 'Eli'];
 /* 新增模式只要在這裡加一筆；demo:false 代表電腦無法示範（需真人操作），示範選單會自動排除並提示 */
@@ -2362,8 +2383,8 @@ const MODES = {
   dm: { name: '個人死鬥', sub: '人人為敵', desc: '所有人互相淘汰，最先達到 15 次淘汰者獲勝', time: 300, limit: 15, short: '人人為敵，先淘汰 15 人者獲勝' },
   tdm: { name: '團隊死鬥', sub: '紅 vs 藍', desc: '紅藍兩隊對戰，隊伍先累積 30 次淘汰者獲勝', time: 360, limit: 30, short: '紅藍對戰，隊伍先累積 30 次淘汰者獲勝' },
   hunt: { name: '激鬥追捕', sub: '追殺電腦角色', desc: '玩家頭上沒有號碼，只能追殺電腦角色，連殺積分更高；時間到積分最高或最先 100 分者獲勝', time: 300, limit: 100, demo: false, short: '只追殺電腦、連殺加分，100 分或時間到積分最高者勝' },
-  arena: { name: '擂台逃殺', sub: '🔒 敬請期待', soon: true, desc: '敬請期待，玩法即將公開', time: 300, limit: 1, demo: false, short: '敬請期待，玩法即將公開' },
-  kof: { name: 'KOF大賽', sub: '🔒 敬請期待', soon: true, desc: '敬請期待，玩法即將公開', time: 300, limit: 1, demo: false, short: '敬請期待，玩法即將公開' },
+  arena: { name: '擂台逃殺', sub: '關卡生存・無限挑戰', desc: '玩家（可多人合作）對抗一關比一關強的電腦軍團，電腦之間不會互相攻擊；真人全數被殲滅即結束，看你能撐到第幾關。', time: 0, limit: 0, demo: false, short: '闖關生存，電腦軍團一關比一關多、一關比一關強' },
+  kof: { name: 'KOF大賽', sub: '五人車輪戰・1 對 1', desc: '雙方各選 5 位角色以車輪戰一對一單挑，倒下後再選下一位出戰，先耗盡 5 位角色者落敗。僅限單人（對電腦）或 2 位玩家。', time: 0, limit: 0, demo: false, short: '五人車輪戰，先用完 5 位角色者落敗' },
   ctf: { name: '奪旗', sub: '搶旗帶回基地', desc: '搶走敵方旗幟帶回己方基地得分，先得 3 分獲勝', time: 480, limit: 3, short: '搶走敵方旗幟帶回己方基地，先得 3 分獲勝' }
 };
 const ITEMS = { cam: { ico: '📷', name: '相機' }, quake: { ico: '🌋', name: '地牛控制器' }, scope: { ico: '🔍', name: '偵查鏡' }, fake: { ico: '🎫', name: '假號碼牌' }, spring: { ico: '⛲', name: '神仙泉水' } };
@@ -2473,6 +2494,7 @@ const faceYaw = (a, t) => Math.atan2(-(t.x - a.x), -(t.z - a.z));
 const isStunBy = o => !!o && o.av && (o.av.outfitIdx === 18);
 function startCharge(a, aim) {
   let dir = FWD(a.yaw);
+  if (a.isPlayer) { const f = dir, rx = Math.cos(a.yaw), rz = -Math.sin(a.yaw); let mx = In.mx, my = In.my; if (revActive(a)) { mx = -mx; my = -my; } if (relPhase2(a)) mx = -mx; const l = Math.hypot(mx, my); if (l > .15) dir = [(f[0] * my + rx * mx) / l, (f[1] * my + rz * mx) / l]; } // 依位移鍵方向衝撞
   if (aim && !a.isPlayer && !a.remote) { let best = null, bd = 8; for (const o of G.actors) { if (!enemyOf(a, o) || o.invis) continue; const d = Math.hypot(o.x - a.x, o.z - a.z); if (d < bd) { bd = d; best = o; } } if (best) { dir = [(best.x - a.x) / bd, (best.z - a.z) / bd]; a.yaw = faceYaw(a, best); } }
   a.chg = { ph: 0, t: CH_T, dir, hit: null, vx: dir[0] * CH_V, vz: dir[1] * CH_V };
   if (a.isPlayer || a === G.view) { Sfx.noise(.2, .2, 1800, 0, true); }
@@ -2502,7 +2524,7 @@ function castSkill(a) {
   return runSkill(a, base, true);
 }
 function runSkill(a, k, useCd) {
-  if (k === 'cloak' && a.fake) return false; if (useCd) a.skCd = (k === 'cloak' ? 0 : SKILLS[k].cd) + (k === 'dack' ? DACK_T : k === 'nox' ? 31.5 : 0);
+  if (k === 'cloak' && a.fake) return false; if (useCd) a.skCd = (k === 'cloak' ? 0 : SKILLS[k].cd) + (k === 'dack' ? DACK_T : k === 'nox' ? 31.5 : k === 'rel' ? REL_WARN + REL_DUR : 0);
   if (k === 'rev') { G.sk.rev = { t: 7, by: a, id: ++G.skId }; skMsg(a, '發動【顛倒乾坤】！其他人的移動方向反轉 7 秒'); }
   else if (k === 'scr') { G.sk.scr = { t: 0, by: a, id: ++G.skId }; skMsg(a, '發動【紫電干擾】！其他人的數字鍵錯亂 5 秒'); }
   else if (k === 'ink') { G.sk.ink = { t: 3, by: a, id: ++G.skId }; for (const o of G.actors) if (o !== a && o.alive && !o.isPlayer && !o.remote && !immune(o)) { o.blind = Math.max(o.blind, 3); o.typing = null; } skMsg(a, '發動【烏賊戲法】！其他人的視野被墨汁遮住'); }
@@ -2738,6 +2760,8 @@ function eliminate(k, v) {
   if (k !== v && v.alive && v.shieldT > 0) { blockHit(k, v); return; }
   if (!v.alive || v.protect > 0) return;
   v.alive = false; v.deaths++; v.deadT = 0; v.respawnT = 3.2; v.killedBy = k; v.typing = null; v.lure = null;
+  if (G.mode === 'arena' && (v.isPlayer || v.remote)) v.respawnT = 10 + 2 * (Math.max(1, G.arena ? G.arena.stage : 1) - 1);
+  if (G.mode === 'kof') { v.kout++; v.kleft = v.kleft.filter(i => i !== v.kcur); v.respawnT = 1e9; if (v.kout < 5) { v.kw = 10; v.kbot = rand(2.5, 4.5); } }
   if (skOn() && k !== v) {
     if (isOut(k, 18) && (k.skCd || 0) > 0) { k.skCd = 0; skMsg(k, '擊殺成功，【衝鋒陷陣】立即刷新！'); }
     if (isOut(k, 19)) { if (k.wkT > 0) { k.wkT = 6; } else if (!k.wkPre && (k.skCd || 0) <= 0) { k.wkPre = .3; puffFx(k); } }
@@ -2753,10 +2777,16 @@ function eliminate(k, v) {
   for (const o of G.actors) { if (o.read) o.read[v.id] = 0; }
   if (k.isPlayer) { Sfx.kill(); UI.msg('你淘汰了 ' + v.name + ' (' + v.number + ')', 'good'); UI.killFlash(); }
   if (v.isPlayer) { Sfx.die(); G.typed = ''; G.bino = false; UI.onDeath(k); }
-  UI.dirty = true; checkWin();
+  UI.dirty = true; if (!modeEndCheck(k, v)) checkWin();
+}
+function modeEndCheck(k, v) {
+  if (G.state !== 'playing') return true;
+  if (G.mode === 'arena' && (v.isPlayer || v.remote)) { if (!G.actors.some(a => (a.isPlayer || a.remote) && a.alive)) { G.state = 'ended'; G.winner = ''; G.endT = 0; UI.onEnd(); return true; } }
+  else if (G.mode === 'kof' && v.kout >= 5) { const w = G.actors.find(a => a !== v); G.state = 'ended'; G.winner = w ? w.name : ''; G.endT = 0; UI.onEnd(); return true; }
+  return false;
 }
 function checkWin() {
-  if (G.state !== 'playing') return;
+  if (G.state !== 'playing' || G.mode === 'arena' || G.mode === 'kof') return;
   let over = false, win = '';
   if (G.mode === 'hunt') { const hs = G.actors.filter(a => a.isPlayer || a.remote); const best = hs.reduce((m, a) => (a.score || 0) > (m.score || 0) ? a : m, hs[0]); if ((best.score || 0) >= G.limit || G.tleft <= 0) { G.state = 'ended'; G.winner = best.name; G.endT = 0; UI.onEnd(); } return; }
   if (G.mode === 'dm') { const best = G.actors.reduce((m, a) => a.kills > m.kills ? a : m, G.actors[0]); if (best.kills >= G.limit) { over = true; win = best.name; } }
@@ -2868,7 +2898,7 @@ function updateCamera(dt) {
 
 /* ---------- 機器人 AI ---------- */
 function scanBot(b, dt) {
-  const R2 = b.range * b.range, ex = b.x, ey = b.y + 1.62, ez = b.z, df = DIFF[S.diff], teamMode = !isDM();
+  const R2 = b.range * b.range, ex = b.x, ey = b.y + 1.62, ez = b.z, df = DIFF[b.dix ?? S.diff], teamMode = !isDM();
   let seen = null, seenD = 1e9;
   for (const o of G.actors) {
     if (o === b || !o.alive || o.invis) continue; if (teamMode && o.team === b.team) continue;
@@ -2933,7 +2963,7 @@ function smartThink(b, dt) {
     const ci = b.slots.findIndex(x => x && x.type === 'cam');
     if (ci >= 0 && d > 9 && d < 40 && face > .34 && t.alive && (b.read[t.id] || 0) < .9) {
       botUse(b, ci); b.read[t.id] = Math.min(1, (b.read[t.id] || 0) + .6); b.cd = 3.5;
-      if (b.read[t.id] >= 1 && !b.typing) { b.typing = { target: t, num: t.number, t: DIFF[S.diff].type * 1.1 }; b.read[t.id] = 0; }
+      if (b.read[t.id] >= 1 && !b.typing) { b.typing = { target: t, num: t.number, t: DIFF[b.dix ?? S.diff].type * 1.1 }; b.read[t.id] = 0; }
     }
   }
 }
@@ -2971,7 +3001,7 @@ function updateBot(b, dt) {
   if (b.chg) { b.typing = null; b.vx = b.chg.vx; b.vz = b.chg.vz; moveActor(b, dt); b.sp = clamp(Math.hypot(b.vx, b.vz) / 8.4, 0, 1); b.animT += dt * 14; return; }
   if ((b.ctrlT || 0) > 0 && b.ctrlBy && isStunBy(b.ctrlBy)) { b.typing = null; b.protect = Math.max(0, b.protect - dt); b.cd -= dt; b.vx *= .5; b.vz *= .5; b.yaw = faceYaw(b, b.ctrlBy); moveActor(b, dt); b.sp = 0; return; }
   if ((b.ctrlT || 0) > 0 && b.ctrlBy) { b.typing = null; b.protect = Math.max(0, b.protect - dt); b.cd -= dt; const dx = b.x - b.ctrlBy.x, dz = b.z - b.ctrlBy.z, dd = Math.hypot(dx, dz) || 1, sp0 = b.speed * .3; b.vx += (dx / dd * sp0 - b.vx) * Math.min(1, dt * 9); b.vz += (dz / dd * sp0 - b.vz) * Math.min(1, dt * 9); moveActor(b, dt); b.sp = clamp(Math.hypot(b.vx, b.vz) / 8.4, 0, 1); b.animT += dt * (5 + b.sp * 9); return; }
-  if ((DIFF[S.diff].troll || G.mode === 'hunt') && !G.demo) { updateTroll(b, dt); return; }
+  if ((DIFF[b.dix ?? S.diff].troll || G.mode === 'hunt') && !G.demo && G.mode !== 'arena' && G.mode !== 'kof') { updateTroll(b, dt); return; }
   botSkill(b, dt); if (!b.smart) botItems(b, dt, false);
   b.threatT = Math.max(0, b.threatT - dt); if (b.smart) smartThink(b, dt);
   b.protect = Math.max(0, b.protect - dt); b.blind = Math.max(0, b.blind - dt); b.cd -= dt; b.tgtT -= dt; if (b.tgtT <= 0) b.tgt = null;
@@ -3023,7 +3053,42 @@ function updateBot(b, dt) {
   // 丟道具
   if (!b.smart && b.slots && b.slots.some(x => x && x.type !== 'cam') && b.cd <= 0 && tgt && b.blind <= 0) { const d = Math.hypot(tgt.x - b.x, tgt.z - b.z); if (d > 9 && d < 28 && Math.random() < dt * .6) botThrow(b, tgt); }
 }
+/* ---------- 擂台逃殺 ---------- */
+function arenaSpec(st) { const T = [[2, 0], [3, 0], [5, 0], [7, 0], [1, 1], [3, 1], [5, 1], [7, 1], [9, 1], [1, 2]]; return st <= 10 ? T[st - 1] : [st - 9, 2]; }
+function arenaSpawnStage() {
+  const A = G.arena, [cnt0, dix] = arenaSpec(A.stage), hum = A.hum, want = Math.min(cnt0 * hum, A.cap); let n = 0;
+  for (const b of G.actors) { if (!b.pool || n >= want) continue; b.dix = dix; b.team = 1; spawnActor(b); b.deadT = 0; n++; }
+  A.spawned = true; for (const k of G.pickups) { k.on = true; k.t = 0; } // 每關開始補滿道具箱
+}
+function arenaTick(dt) {
+  const A = G.arena; if (!A) return; A.t -= dt;
+  if (A.ph === 0) { if (!A.warned && A.t <= 3) { A.warned = true; Sfx.warn(); } if (A.t <= 0) { Sfx.arenaGo(); A.stage = 1; A.ph = 1; A.t = 1.8; } }
+  else if (A.ph === 1) { if (A.t <= 0) { arenaSpawnStage(); A.ph = 2; } }
+  else if (A.ph === 2) { if (A.spawned && !G.actors.some(a => a.pool && a.alive)) { A.ph = 3; A.t = 2.6; A.spawned = false; Sfx.victory(); } }
+  else if (A.ph === 3) { if (A.t <= 0) { A.stage++; A.ph = 1; A.t = 1.8; } }
+}
+/* ---------- KOF 大賽 ---------- */
+function resetSkillState(a) { a.skCd = 0; a.shieldT = 0; a.cloak = false; a.invis = false; a.fake = null; a.fakeT = 0; a.fakeOf = null; a.dackE = -1; a.armed = false; a.stolen = null; a.passIdx = -1; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2; a.cleanW = 0; a.chg = null; a.wkT = 0; a.wkPre = 0; a.say = null; a.blind = 0; }
+const kofVisible = (o, x, z, y) => { if (!o || !o.alive) return false; const dx = x - o.x, dz = z - o.z, d = Math.hypot(dx, dz); if (d > 75) return false; const f = FWD(o.yaw); if ((dx * f[0] + dz * f[1]) / (d || 1) < Math.cos(.95)) return false; return los(o.x, o.y + 1.6, o.z, x, y + 1.6, z); };
+function kofSpawnPos(a, o) {
+  let best = null; for (let k = 0; k < 18; k++) { const p = World.pickSpawn(-1, o ? [o] : []) || [0, 0, 0]; if (!kofVisible(o, p[0], p[1], p[2] ? World.mezz.h : 0)) { best = p; break; } if (!best) best = p; }
+  return [best[0], best[1], o ? Math.atan2(-(o.x - best[0]), -(o.z - best[1])) : 0, best[2] | 0];
+}
+function kofPick(a, idx) {
+  if (G.mode !== 'kof' || a.alive || !a.kleft || !a.kleft.includes(idx)) return false;
+  a.kcur = idx; a.outfit = idx; a.av = createAvatar(idx); resetSkillState(a); a.kw = 0; a.kbot = 0;
+  const o = G.actors.find(x => x !== a); spawnActor(a, kofSpawnPos(a, o)); a.protect = 2.2;
+  if (a.isPlayer) { UI.onRespawn(); G.typed = ''; } else if (G.player) UI.msg('對手派出了【' + OUTFITS[idx].label + '】', 'item'); G.countdown = 2; G.kofCd = true; UI.dirty = true; return true;
+}
+function kofTick(dt) {
+  for (const a of G.actors) {
+    if (a.alive || !(a.kw > 0)) continue; a.kw -= dt;
+    if (!a.isPlayer && !a.remote) { a.kbot = (a.kbot || 0) - dt; if (a.kbot <= 0) { kofPick(a, pick(a.kleft)); continue; } }
+    if (a.kw <= 0) kofPick(a, pick(a.kleft));
+  }
+}
 function updateDead(a, dt) {
+  if (G.mode === 'arena' && !a.isPlayer && !a.remote) { a.deadT += dt; a.fall = Math.min(1, a.fall + dt * 3); return; }
   a.deadT += dt; a.respawnT -= dt; a.fall = Math.min(1, a.fall + dt * 3);
   if (a.respawnT <= 0 && G.state === 'playing') { spawnActor(a); if (a.isPlayer) UI.onRespawn(); }
 }
@@ -3035,13 +3100,13 @@ function updateGame(dt) {
   G.time += dt;
   if (G.countdown > 0 && G.state === 'playing') {
     const c0 = Math.ceil(G.countdown); G.countdown -= dt;
-    if (G.countdown <= 0) { G.countdown = 0; Sfx.bell(); UI.goText(); } else if (Math.ceil(G.countdown) !== c0) Sfx.tick();
+    if (G.countdown <= 0) { G.countdown = 0; if (G.kofCd) G.kofCd = false; else if (G.mode !== 'arena') { Sfx.bell(); UI.goText(); } } else if (Math.ceil(G.countdown) !== c0) { if (G.kofCd && Math.ceil(G.countdown) === 1) Sfx.bell(); else Sfx.tick(); }
     for (const a of G.actors) { const f = FWD(a.yaw); a.fx = f[0]; a.fz = f[1]; }
     In.lookX = In.lookY = 0; if (G.player) updateCamera(dt); else if (G.demo) updateDemoCam(dt); return;
   }
   if (G.state === 'playing') {
     G.tleft -= dt; if (G.tleft <= 0) { G.tleft = 0; checkWin(); }
-    skTick(dt);
+    skTick(dt); if (G.mode === 'arena') arenaTick(dt); else if (G.mode === 'kof') kofTick(dt);
     for (const a of G.actors) {
       if (a.isPlayer) { updatePlayer(dt); if (!a.alive && a.respawnT <= 0) { spawnActor(a); UI.onRespawn(); } continue; }
       if (a.remote) { updateRemote(a, dt); continue; }
@@ -3090,17 +3155,21 @@ function startMatch(demo, roster) {
   const mk = (demo && S.demoMode && MODES[S.demoMode]) ? S.demoMode : S.mode, m = MODES[mk]; G.mode = mk; G.codeLen = S.codeLen === 'rand' ? pick([3, 4, 5, 6]) : S.codeLen === 'mix' ? 0 : (S.codeLen | 0) || 4; G.countdown = 3; G.freezeT = 0; G.skillsOn = S.skills !== false; G.tleft = (S.time || 5) * 60; G.limit = m.limit; G.scores = [0, 0]; G.grenades = []; G.smokes = []; G.lures = []; G.fx = []; G.feed = []; G.typed = ''; G.lock = 0; G.time = 0;
   freeActors(G.actors); G.actors = []; _id = 0; G.slots = [null, null]; G.scopeOn = false; G.bino = false; G.binK = 0; G.energy = 1; G.stam = 1; G.flashT = 0; G.itemCd = 0; G.threat = null;
   G.netClient = false; G.multi = !!roster; const hum = roster ? roster.length : 1;
-  const n = roster ? (S.netBots ? clamp(Math.max(S.count, hum), hum, 20) : hum) : clamp(S.count, 4, 20);
+  let n = roster ? (S.netBots ? clamp(Math.max(S.count, hum), hum, 20) : hum) : clamp(S.count, 4, 20);
+  if (mk === 'arena') n = hum + (roster ? Math.max(0, 20 - hum) : 20); else if (mk === 'kof') n = 2;
   G.demo = !!demo; G.view = null; G.player = null; let pl = null;
   if (!demo) { pl = newActor(roster ? NET.name : '你', S.outfit, true); G.player = pl; G.actors.push(pl); }
   if (roster) for (const r of roster.slice(1)) { const a = newActor(r.name, r.outfit, false); a.remote = true; a.peer = r.peer; a.slots = [null, null]; a.speed = 0; G.actors.push(a); }
   const names = NAMES.slice().sort(() => Math.random() - .5);
-  for (let i = demo ? 0 : G.actors.length; i < n; i++) { const b = newActor(names[(demo ? i : i - hum)], pick(VIS_OUTFITS), false); b.role = i % 4 === 0 ? 1 : 0; b.smart = !!demo; if (demo) b.speed *= 1.08; b.scaleBase = .85 + Math.random() * .4; b.range = Math.random() < .15 ? 58 : 34; if (b.range > 50) b.scaleBase *= 1.3; G.actors.push(b); }
-  G.actors.forEach((a, i) => { a.team = isDM() ? -1 : (i % 2); });
-  if ((DIFF[S.diff].troll || G.mode === 'hunt') && !demo) for (const a of G.actors) if (!a.isPlayer && !a.remote) a.av = createAvatar(OUTFITS.findIndex(o => o.key === 'troll'));
+  for (let i = demo ? 0 : G.actors.length; i < n; i++) { const b = newActor(names[(demo ? i : i - hum)], pick(VIS_OUTFITS), false); b.role = i % 4 === 0 ? 1 : 0; b.smart = !!demo; if (demo) b.speed *= 1.08; b.scaleBase = .85 + Math.random() * .4; b.range = Math.random() < .15 ? 58 : 34; if (b.range > 50) b.scaleBase *= 1.3; if (mk === 'arena') b.pool = true; b.dix = Math.min(S.diff, 2); G.actors.push(b); }
+  G.actors.forEach((a, i) => { a.team = isDM() ? -1 : mk === 'arena' ? ((a.isPlayer || a.remote) ? 0 : 1) : (i % 2); });
+  if (mk === 'kof') { const kp = G.kofPre || {}, lists = roster ? [...roster].map(r => r.list) : [kp.me, kp.opp]; G.actors.forEach((a, i) => { const l = (lists[i] && lists[i].length ? lists[i] : kofRandRoster()).slice(0, 5); a.kroster = l; a.kleft = l.slice(); a.kcur = l[0]; a.kout = 0; a.kw = 0; a.av = createAvatar(l[0]); a.outfit = l[0]; }); G.kofPre = null; G.kofCd = false; G.arena = null; }
+  if ((DIFF[S.diff].troll || G.mode === 'hunt') && !demo && mk !== 'arena' && mk !== 'kof') for (const a of G.actors) if (!a.isPlayer && !a.remote) a.av = createAvatar(OUTFITS.findIndex(o => o.key === 'troll'));
   G.actors.forEach(a => { a.score = 0; a.streak = 0; a.lastKillT0 = -99; a.lastStreak = 0; drawPlate(a); });
   for (const a of G.actors) if (!a.isPlayer && !a.remote && speedMul(a) !== 1) a.speed *= speedMul(a);
   skReset(); spawnAll();
+  if (mk === 'arena') { G.arena = { stage: 0, ph: 0, t: 10, warned: false, spawned: false, cap: n - hum, hum }; G.tleft = 9e9; for (const a of G.actors) if (a.pool) { a.alive = false; a.deadT = 99; a.respawnT = 1e9; a.number = ''; } }
+  else if (mk === 'kof') { G.tleft = 9e9; } else G.arena = null;
   G.pickups = World.pickSpots.map(p => ({ x: p[0], z: p[1], y: p[2] ? World.mezz.h : 0, l: p[2] | 0, on: true, t: 0 }));
   initFlags(); G.state = 'playing'; G.fov = 1.2;
   if (demo) { G.view = pick(G.actors); G.viewT = rand(10, 16); G.camY = G.view.y + EYE; G.camYaw = G.view.yaw; R.cam.yaw = G.view.yaw; UI.demoTag && UI.demoTag(); }
@@ -3312,7 +3381,7 @@ function loadScript(src) { return new Promise((res, rej) => { const s = document
 /* ---------- 傳輸層 ---------- */
 function roomTransport(nr) {
   let cb = () => { }; const off = nr.onPeers(() => cb());
-  const KEYS = ['r', 'n', 'c', 'ph', 'cfg', 'setup', 'snap', 'st', 'a', 'bye'];
+  const KEYS = ['r', 'n', 'c', 'ph', 'cfg', 'setup', 'snap', 'st', 'a', 'bye', 'pid', 'pn', 'pk', 'pr'];
   return {
     kind: 'room',
     setMine(o) { const patch = {}; for (const k of KEYS) patch[k] = o[k] === undefined ? null : o[k]; nr.presence(patch).catch(() => { }); },
@@ -3402,8 +3471,8 @@ function renderLobby() {
   if (host) { members = [[myPeer(), NET.name, 1, S.outfit], ...NET.ro.map(r => [r[0], r[1], 0, r[2]])]; cfg = { m: S.mode, n: S.count, d: S.diff, b: S.netBots ? 1 : 0, mp: S.map, tm: S.time || 5, sk: S.skills === false ? 0 : 1 }; }
   else { const h = hostOf(NET.tr.peers()); if (h && h.st.cfg) { cfg = h.st.cfg; members = [[h.peer, cleanName(h.st.n), 1, h.st.c | 0], ...(cfg.ro || []).map(r => [r[0], cleanName(r[1]), 0, r[2]])]; } }
   const list = $('mpMembers'); list.textContent = ''; const me = myPeer();
-  members.forEach(m => { const d = document.createElement('div'); d.className = 'mem'; const o = OUTFITS[clamp(m[3] | 0, 0, OUTFITS.length - 1)]; d.textContent = (m[2] ? '👑 ' : '') + m[1] + (m[0] === me ? '（你）' : '') + ' ・ ' + o.label; list.appendChild(d); });
-  $('mpChar').textContent = '角色：' + OUTFITS[S.outfit].label + '　（點此更換）';
+  members.forEach(m => { const d = document.createElement('div'); d.className = 'mem'; const o = OUTFITS[clamp(m[3] | 0, 0, OUTFITS.length - 1)]; d.textContent = (m[2] ? '👑 ' : '') + m[1] + (m[0] === me ? '（你）' : ''); list.appendChild(d); });
+  { const nm = $('chNMode'); if (nm) [...nm.children].forEach(b => { if (/KOF/.test(b.textContent)) { const lock = members.length > 2; b.classList.toggle('dis', lock); b.title = lock ? 'KOF 大賽最多 2 位玩家' : ''; } }); }
   $('mpHostCtl').classList.toggle('hidden', !host); $('mpStart').classList.toggle('hidden', !host);
   $('mpGuestInfo').textContent = host ? '' : (NET.waiting ? '遊戲進行中，請等待下一場…' : cfg ? `地圖：${MAPS[cfg.mp] ? MAPS[cfg.mp].name : '熱血高校'}　模式：${MODES[cfg.m] ? MODES[cfg.m].name : cfg.m}　號碼：${codeLabel(cfg.cl || 4)}　時間：${cfg.tm || 5} 分　技能：${cfg.sk === 0 ? '關' : '開'}　總人數：${cfg.n}　難度：${DIFF[cfg.d].name}　機器人補位：${cfg.b ? '開' : '關'}　等待房主開始…` : '連線中…');
   if (!host && cfg && MAPS[cfg.mp] && World.id !== cfg.mp) World.load(cfg.mp);
@@ -3414,35 +3483,50 @@ function initNetUI() {
   $('btnMP').onclick = () => go(openMP); $('mpBack').onclick = () => go(() => $('mp').classList.add('hidden'));
   $('mpHost').onclick = netCreate; $('mpJoin').onclick = netJoin; $('mpLeave').onclick = () => go(() => { netLeave(); $('mp').classList.add('hidden'); });
   $('mpStart').onclick = hostStart;
-  chips('chNMap', Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name })), () => S.map, v => { S.map = v; World.load(v); });
-  chips('chNTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v);
-  chips('chNSkill', [{ v: true, l: '是' }, { v: false, l: '否' }], () => S.skills !== false, v => S.skills = v);
-  chips('chNMode', Object.entries(MODES).filter(([k, m]) => !m.soon).map(([k, m]) => ({ v: k, l: m.name })), () => S.mode, v => { S.mode = v; huntLock(); });
+  chips('chNMap', Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name })), () => S.map, v => { S.map = v; World.load(v); }, 'map');
+  chips('chNTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v, 'time');
+  chips('chNSkill', [{ v: true, l: '是' }, { v: false, l: '否' }], () => S.skills !== false, v => S.skills = v, 'skills');
+  chips('chNMode', Object.entries(MODES).filter(([k, m]) => !m.soon).map(([k, m]) => ({ v: k, l: m.name })), () => S.mode, v => { S.mode = v; huntLock(); }, 'mode');
   chips('chNCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
-  $('mpChar').onclick = () => go(() => openCharSelect('mp'));
-  chips('chNCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; });
-  chips('chNDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; $('diffDescN').textContent = DIFF[v].desc; $('trollRowN').classList.toggle('hidden', v !== 3); }); $('diffDescN').textContent = DIFF[S.diff].desc; $('trollRowN').classList.toggle('hidden', S.diff !== 3);
-  chips('chNTroll', [{ v: 1, l: '輕度' }, { v: 2, l: '中度' }, { v: 3, l: '重度' }], () => S.trollLv, v => { S.trollLv = v; });
+  chips('chNCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; }, 'count');
+  chips('chNDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; $('diffDescN').textContent = DIFF[v].desc; $('trollRowN').classList.toggle('hidden', v !== 3); }, 'diff'); $('diffDescN').textContent = DIFF[S.diff].desc; $('trollRowN').classList.toggle('hidden', S.diff !== 3);
+  chips('chNTroll', [{ v: 1, l: '輕度' }, { v: 2, l: '中度' }, { v: 3, l: '重度' }], () => S.trollLv, v => { S.trollLv = v; }, 'troll');
   huntLock();
   chips('chNBots', [{ v: true, l: '機器人補滿人數' }, { v: false, l: '僅限真人' }], () => S.netBots, v => S.netBots = v);
 }
 
 /* ---------- 房主 ---------- */
 function hostStart() {
+  if (NET.phase !== 'lobby') return;
   const humans = 1 + NET.ro.length;
   if (!S.netBots && humans < 2) { lobbyHint('至少需要 2 位真人，或開啟「機器人補滿人數」。'); return; }
-  const roster = [{ peer: myPeer(), name: NET.name, outfit: S.outfit }, ...NET.ro.map(r => ({ peer: r[0], name: r[1], outfit: r[2] }))];
-  roster.map = S.map; NET.gid = (Date.now() % 900000) + 1; NET.phase = 'play'; NET.msgQ = []; NET.msgSeq = 0; G.feedSeq = 0;
+  resolveRandoms(false, humans);
+  if (S.mode === 'kof' && humans > 2) { lobbyHint('KOF 大賽最多只能 2 位玩家，請改選其他模式或請多的玩家離開。'); return; }
+  NET.phase = 'pick'; NET.pid = (Date.now() % 900000) + 1; NET.pickLeft = 40; NET.pickIn = {}; NET.hostPick = null; NET.pickMode = S.mode; const kof = S.mode === 'kof';
+  go(() => {
+    $('mp').classList.add('hidden');
+    openPick({ need: kof ? 5 : 1, secs: 40, evIco: '🧩', title: kof ? '選擇 5 位出賽角色（車輪戰）' : '選擇角色', okText: '確認', back: null, onDone: (list, wasRand, ex) => { NET.hostPick = list; NET.hostRand = ex; S.outfit = list[0]; if (!kof) S.pref = ex ? 'rand' : list[0]; saveS(); if (!hostPickReady()) showWait(true); } });
+  });
+}
+function hostPickReady() { return !!NET.hostPick && NET.ro.every(r => NET.pickIn[r[0]]); }
+function hostLaunch() {
+  if (NET.phase !== 'pick') return; closePick(); const kof = NET.pickMode === 'kof';
+  const rnd = () => pick(VIS_OUTFITS), rl = () => kofRandRoster();
+  if (!NET.hostPick) NET.hostPick = kof ? rl() : [rnd()]; S.outfit = NET.hostPick[0];
+  const roster = [{ peer: myPeer(), name: NET.name, outfit: NET.hostPick[0], list: NET.hostPick }, ...NET.ro.map(r => { const l = NET.pickIn[r[0]] || (kof ? rl() : [rnd()]); return { peer: r[0], name: r[1], outfit: l[0], list: l }; })];
+  if (kof) G.kofPre = { me: roster[0].list, opp: roster[1] ? roster[1].list : kofRandRoster() };
+  roster.map = S.map; NET.gid = (Date.now() % 900000) + 1; NET.phase = 'starting'; NET.msgQ = []; NET.msgSeq = 0; G.feedSeq = 0;
+  showWait(false); UI.preResolved = true;
   go(() => {
   $('mp').classList.add('hidden');
-  beginGame(false, roster);
+  beginGame(false, roster); NET.phase = 'play';
   G.actors[0].peer = myPeer();
-  NET.setup = { tm: S.time || 5, sk: G.skillsOn ? 1 : 0, g: NET.gid, m: G.mode, cl: G.codeLen, mp: G.map, ac: G.actors.map(a => [a.name, a.outfit, a.team, a.isPlayer ? 1 : a.remote ? 2 : 0, a.peer || '']) };
+  NET.setup = { tm: S.time || 5, sk: G.skillsOn ? 1 : 0, g: NET.gid, m: G.mode, cl: G.codeLen, mp: G.map, kr: G.mode === 'kof' ? G.actors.slice(0, 2).map(a => a.kroster) : 0, ac: G.actors.map(a => [a.name, a.outfit, a.team, a.isPlayer ? 1 : a.remote ? 2 : 0, a.peer || '']) };
   NET.curG = NET.gid; NET.sendT = 0;
   });
 }
 function hostToLobby() {
-  go(() => { stopGameUI(); NET.phase = 'lobby'; NET.setup = null; NET.curG = null; showLobby(); });
+  go(() => { closePick(); stopGameUI(); NET.phase = 'lobby'; NET.setup = null; NET.curG = null; showLobby(); });
 }
 function netMsg(text, kind) { if (NET.mode !== 'host') return; NET.msgQ.push([++NET.msgSeq, text, kind || '']); if (NET.msgQ.length > 3) NET.msgQ.shift(); }
 function hostReadPeers(dt) {
@@ -3453,6 +3537,12 @@ function hostReadPeers(dt) {
     NET.ro = NET.order.map(id => { const p = ps.find(x => x.peer === id); return [id, cleanName(p.st.n), clamp(p.st.c | 0, 0, OUTFITS.length - 1)]; });
     return;
   }
+  if (NET.phase === 'starting') return;
+  if (NET.phase === 'pick') {
+    const ids = new Set(ps.map(p => p.peer)); NET.ro = NET.ro.filter(r => ids.has(r[0]));
+    for (const r of NET.ro) { const p = ps.find(x => x.peer === r[0]); if (p && p.st.pk === NET.pid && Array.isArray(p.st.pr)) NET.pickIn[r[0]] = p.st.pr.map(v => clamp(v | 0, 0, OUTFITS.length - 1)); }
+    NET.pickLeft -= dt; if (hostPickReady() || NET.pickLeft <= -1.5) hostLaunch(); return;
+  }
   for (const a of G.actors) {
     if (!a.remote) continue; const p = ps.find(x => x.peer === a.peer);
     if (!p) { a.missT = (a.missT || 0) + dt; if (a.missT > 3) { a.remote = false; a.net = null; a.speed = (4 + Math.random() * .7) * 1.3; a.smart = false; } continue; }
@@ -3462,13 +3552,15 @@ function hostReadPeers(dt) {
   }
 }
 function hostAct(a, ac) {
-  if (!a.alive || G.state !== 'playing') return;
+  if (G.state !== 'playing') return; if (ac[1] === 'kp') { kofPick(a, ac[2] | 0); return; }
+  if (!a.alive) return;
   if (ac[1] === 'k') {
     if (ericHit(a, String(ac[3]))) return;
     const t = G.actors.find(x => x.alive && x.number === String(ac[3])); if (t && t !== a && t.alive && t.protect <= 0 && t.number === String(ac[3]) && (isDM() || t.team !== a.team)) eliminate(a, t);
   } else if (ac[1] === 'w') { a.redT = 2; a.streak = 0; a.cloak = false; }
   else if (ac[1] === 's') { castSkill(a); }
   else if (ac[1] === 'b') { a.binAt = G.time; }
+  else if (ac[1] === 'kp') { kofPick(a, ac[2] | 0); }
   else if (ac[1] === 'u') {
     const i = ac[2] | 0, it = a.slots && a.slots[i]; if (!it) return;
     if (it.type !== 'cam' && it.type !== 'scope') applyItem(a, it.type);
@@ -3504,6 +3596,8 @@ function buildSnap() {
     fg: G.mode === 'ctf' ? G.flags.map(f => [f.state === 'home' ? 0 : f.state === 'carried' ? 1 : 2, Math.round(f.x * 10), Math.round(f.z * 10), Math.round(f.y * 10), f.carrier ? A.indexOf(f.carrier) : -1]) : [],
     sk: [Math.round(G.sk.rev.t * 10), G.actors.indexOf(G.sk.rev.by), Math.round(G.sk.scr.t * 10), G.actors.indexOf(G.sk.scr.by), Math.round(G.sk.ink.t * 10), G.actors.indexOf(G.sk.ink.by), Math.round(G.sk.eagle.t * 10), G.actors.indexOf(G.sk.eagle.by), Math.round(G.sk.quake.t * 10), G.actors.indexOf(G.sk.quake.by), G.sk.night.by ? Math.round(G.sk.night.e * 10) : -1, G.actors.indexOf(G.sk.night.by), Math.round(G.sk.rel.t * 10), G.actors.indexOf(G.sk.rel.by)],
     pk: G.pickups.reduce((m, p, i) => m | (p.on ? (1 << i) : 0), 0),
+    ar: G.arena ? [G.arena.stage, G.arena.ph, Math.round(G.arena.t * 10), A.map(a => (a.isPlayer || a.remote) && !a.alive ? Math.round(Math.max(0, Math.min(99, a.respawnT)) * 10) : 0)] : 0,
+    kf: G.mode === 'kof' ? { c: G.kofCd ? 1 : 0, a: A.slice(0, 2).map(a => [a.kcur, a.kout, Math.round(Math.max(0, a.kw || 0) * 10), (a.kroster || []).reduce((m, v, j) => m | ((a.kleft || []).includes(v) ? (1 << j) : 0), 0)]) } : 0,
     fd: G.feed.slice(-4).map(f => [f.seq, f.ki, f.vi, f.st || 0]), hs: G.mode === 'hunt' ? G.actors.map(a => a.score || 0) : 0, ms: NET.msgQ.slice()
   };
   return snap;
@@ -3511,6 +3605,7 @@ function buildSnap() {
 function hostSend() {
   const base = { r: 'host', n: NET.name, c: S.outfit };
   if (NET.phase === 'lobby') { NET.tr.setMine({ ...base, ph: 'lobby', cfg: { m: S.mode, n: S.count, d: S.diff, b: S.netBots ? 1 : 0, cl: S.codeLen, mp: S.map, tm: S.time || 5, sk: S.skills === false ? 0 : 1, ro: NET.ro } }); return; }
+  if (NET.phase === 'pick' || NET.phase === 'starting') { NET.tr.setMine({ ...base, ph: 'pick', pid: NET.pid, pn: NET.pickMode === 'kof' ? 5 : 1 }); return; }
   const st = { ...base, ph: NET.phase, setup: NET.setup, snap: buildSnap() };
   try { while (JSON.stringify(st).length > 3900 && st.snap.ms.length) st.snap.ms.shift(); } catch (e) { }
   NET.tr.setMine(st);
@@ -3519,7 +3614,7 @@ function hostSend() {
 /* ---------- 訪客 ---------- */
 function netAct(act) { act.unshift(++NET.seq); NET.acts.push(act); if (NET.acts.length > 8) NET.acts.shift(); }
 function clientSend() {
-  const st = { r: 'guest', n: NET.name, c: S.outfit }, p = G.player;
+  const st = { r: 'guest', n: NET.name, c: S.outfit }, p = G.player; if (NET.pkList && NET.pkId) { st.pk = NET.pkId; st.pr = NET.pkList; }
   if (NET.curG && p && G.netClient) { st.st = [Math.round(p.x * 100), Math.round(p.z * 100), Math.round(p.y * 100), Math.round(p.yaw * 100), Math.round(p.pitch * 100), p.alive ? 1 : 0, Math.round(p.lo * 100), NET.rsMine]; st.a = NET.acts; }
   NET.tr.setMine(st);
 }
@@ -3528,7 +3623,12 @@ function clientPoll(dt) {
   const h = hostOf(NET.tr.peers());
   if (!h || h.st.bye) { NET.hostMissT += dt; if (h && h.st.bye || NET.hostMissT > (NET.curG ? 3 : 5)) leaveWithNotice('創辦者已經離開了，趕快邀請他回來遊玩吧！'); return; }
   NET.hostMissT = 0; const st = h.st;
-  if (st.ph === 'lobby') { NET.waiting = false; if (NET.curG) { NET.dismissedG = null; clientToLobby(true); } return; }
+  if (st.ph === 'lobby') { NET.waiting = false; if (NET.pickId) { NET.pickId = NET.pkId = NET.pkList = null; closePick(); showLobby(); } if (NET.curG) { NET.dismissedG = null; clientToLobby(true); } return; }
+  if (st.ph === 'pick') {
+    if (NET.pickId !== st.pid) { NET.pickId = st.pid; NET.pkId = null; NET.pkList = null; const need = st.pn || 1;
+      openPick({ need, secs: 40, evIco: '🧩', title: need > 1 ? '選擇 5 位出賽角色（車輪戰）' : '選擇角色', okText: '確認', back: null, onDone: (list, wasRand, ex) => { NET.pkId = st.pid; NET.pkList = list; S.outfit = list[0]; showWait(true); } }); }
+    return;
+  }
   const s = st.setup; if (!s) return;
   if (s.g !== NET.curG) {
     if (s.g === NET.dismissedG) { NET.waiting = true; return; }
@@ -3538,11 +3638,15 @@ function clientPoll(dt) {
 }
 function clientStartGame(s) {
   const me = myPeer(), idx = s.ac.findIndex(x => x[4] === me && x[3] === 2); if (idx < 0) return false;
+  closePick(); showWait(false); NET.pickId = null;
   World.load(MAPS[s.mp] ? s.mp : 'hb'); G.map = World.id;
   G.multi = true; G.mode = s.m; G.codeLen = s.cl === 0 ? 0 : (s.cl || 4); G.countdown = 3; G.freezeT = 0; NET.prevCd = 3; G.limit = MODES[s.m].limit; G.tleft = (s.tm || 5) * 60; G.skillsOn = s.sk !== 0; G.scores = [0, 0]; G.grenades = []; G.smokes = []; G.lures = []; G.fx = []; G.feed = []; G.feedVer = 1; G.typed = ''; G.lock = 0; G.time = 0; G.demo = false; G.view = null;
   _id = 0; freeActors(G.actors); G.actors = [];
   s.ac.forEach((x, i) => { const a = newActor(x[0], x[1], i === idx); a.team = x[2]; a.alive = false; a.deadT = 99; a.number = '0000'; a.init = false; a.net = true; drawPlate(a); G.actors.push(a); });
-  G.player = G.actors[idx]; G.player.deadT = 0; NET.myIdx = idx; G.netClient = true;
+  G.player = G.actors[idx]; G.player.deadT = 0; NET.myIdx = idx; G.netClient = true; G.arena = s.m === 'arena' ? { stage: 0, ph: 0, t: 10, hum: 1 } : null; G.kofCd = false;
+  if (s.m === 'arena') G.actors.forEach(a => { if (a.team === 1) a.pool = true; });
+  if (s.m === 'kof' && s.kr) G.actors.forEach((a, i) => { if (s.kr[i]) { a.kroster = s.kr[i].slice(); a.kleft = s.kr[i].slice(); a.kcur = s.kr[i][0]; a.kout = 0; a.kw = 0; } });
+  if (s.m === 'arena' || s.m === 'kof') G.tleft = 9e9;
   G.slots = [null, null]; G.bino = false; G.binK = 0; G.energy = 1; G.stam = 1; G.flashT = 0; G.itemCd = 0; G.threat = null;
   G.pickups = World.pickSpots.map(p => ({ x: p[0], z: p[1], y: p[2] ? World.mezz.h : 0, l: p[2] | 0, on: true, t: 0 })); initFlags(); skReset(); G.state = 'playing'; G.fov = 1.2; G.winner = '';
   Object.assign(NET, { curG: s.g, rsMine: -1, killsSeen: -1, feedSeen: -1, msgSeen: -1, acts: [], puffs: [], waiting: false, lastSnap: null, slC: '' });
@@ -3551,7 +3655,7 @@ function clientStartGame(s) {
 function applySnap(s) {
   const A = G.actors, me = G.player;
   G.tleft = s.tl; G.scores = s.sc;
-  if (NET.prevCd > 0 && s.cd === 0) { Sfx.bell(); UI.goText(); } G.countdown = s.cd / 10; NET.prevCd = s.cd;
+  if (s.kf) G.kofCd = !!s.kf.c; if (NET.prevCd > 0 && s.cd === 0) { if (!G.kofCd) { Sfx.bell(); UI.goText(); } } else if (G.kofCd && NET.prevCd > 10 && s.cd <= 10) Sfx.bell(); G.countdown = s.cd / 10; NET.prevCd = s.cd;
   for (let i = 0; i < A.length; i++) {
     const e = s.ac[i], a = A[i]; if (!e || !a) continue;
     const alive = !!(e[5] & 1);
@@ -3584,6 +3688,8 @@ function applySnap(s) {
   if (G.mode === 'ctf') G.flags.forEach((f, i) => { const e = s.fg[i]; if (!e) return; f.state = ['home', 'carried', 'dropped'][e[0]]; f.x = e[1] / 10; f.z = e[2] / 10; f.y = e[3] / 10; f.carrier = e[4] >= 0 ? A[e[4]] : null; });
   G.pickups.forEach((p, i) => { p.on = !!(s.pk & (1 << i)); });
   if (s.hs) s.hs.forEach((v, i) => { if (A[i]) A[i].score = v; });
+  if (s.ar) { G.arena = { stage: s.ar[0], ph: s.ar[1], t: s.ar[2] / 10, hum: 1 }; if (me && s.ar[3] && s.ar[3][NET.myIdx] > 0 && !me.alive) me.respawnT = s.ar[3][NET.myIdx] / 10; }
+  if (s.kf) s.kf.a.forEach((x, i) => { const a = A[i]; if (!a) return; a.kout = x[1]; a.kw = x[2] / 10; const r = a.kroster || []; a.kleft = r.filter((v, j) => x[3] & (1 << j)); if (a.kcur !== x[0]) { if (a !== me && a.kcur !== undefined && G.state === 'playing') UI.msg('對手派出了【' + OUTFITS[x[0]].label + '】', 'item'); a.kcur = x[0]; a.outfit = x[0]; a.av = createAvatar(x[0]); } });
   if (s.sk) { G.sk.rev = { t: s.sk[0] / 10, by: A[s.sk[1]] || null, id: 1 }; G.sk.scr = { t: s.sk[2] / 10, by: A[s.sk[3]] || null, id: 1 }; G.sk.ink = { t: (s.sk[4] || 0) / 10, by: A[s.sk[5]] || null, id: 1 }; G.sk.eagle = { t: (s.sk[6] || 0) / 10, by: A[s.sk[7]] || null }; G.sk.quake = { t: (s.sk[8] || 0) / 10, by: A[s.sk[9]] || null }; G.sk.night = { e: s.sk[10] >= 0 ? s.sk[10] / 10 : 0, by: s.sk[10] >= 0 ? (A[s.sk[11]] || null) : null }; G.sk.rel = { t: s.sk[12] === undefined ? -1 : s.sk[12] / 10, by: A[s.sk[13]] || null, id: 1 }; }
   if (NET.feedSeen < 0) NET.feedSeen = s.fd.length ? s.fd[s.fd.length - 1][0] : 0;
   for (const f of s.fd) if (f[0] > NET.feedSeen) { NET.feedSeen = f[0]; const k = A[f[1]], v = A[f[2]]; if (k && v) { G.feed.push({ t: 6, k: k.name, v: v.name, me: k === me || v === me, st: f[3] || 0, seq: f[0] }); if (k === me && f[3] > 1) UI.streak(f[3], STREAK_PTS[Math.min(f[3], 5) - 1]); if (G.feed.length > 5) G.feed.shift(); G.feedVer++; } }
@@ -3610,7 +3716,7 @@ function updateClientGame(dt) {
   updateCamera(dt);
 }
 function clientToLobby(fromHost) {
-  go(() => { stopGameUI(); NET.dismissedG = fromHost ? null : NET.curG; NET.curG = null; G.netClient = false; NET.waiting = false; showLobby(); });
+  go(() => { closePick(); NET.pickId = NET.pkId = NET.pkList = null; stopGameUI(); NET.dismissedG = fromHost ? null : NET.curG; NET.curG = null; G.netClient = false; NET.waiting = false; showLobby(); });
 }
 function netTick(dt) {
   if (!NET.tr || !NET.mode) return;
@@ -3644,7 +3750,7 @@ const UI = {
     const p = G.player, tok = this.endTok = (this.endTok || 0) + 1; let res = null;
     if (G.sk) { G.sk.rev.t = 0; G.sk.scr.t = -1; G.sk.rel.t = -1; } this.endScramble(); this._ph2 = false; this._pf = false; $('numL').classList.remove('purple'); $('numR').classList.remove('purple'); $('pflash').classList.remove('on');
     if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
-    if (p && !G.demo) { if (isDM()) res = G.winner === p.name ? 'win' : 'lose'; else res = G.winner === -1 ? 'draw' : (G.winner === p.team ? 'win' : 'lose'); }
+    if (p && !G.demo) { if (G.mode === 'arena') res = 'lose'; else if (isDM()) res = G.winner === p.name ? 'win' : 'lose'; else res = G.winner === -1 ? 'draw' : (G.winner === p.team ? 'win' : 'lose'); }
     if (!res) { this.showEnd(false); return; }
     const f = $('fin'); f.className = res === 'win' ? 'win' : 'lose'; f.innerHTML = '<div class="finBg"></div><div class="finRays"></div><div class="finTxt">' + (res === 'win' ? 'Victory' : res === 'draw' ? 'Draw' : 'Defeat') + '</div>';
     if (res === 'win') { for (let k = 0; k < 18; k++) { const i = document.createElement('i'); i.textContent = '✦'; i.style.left = (Math.random() * 96) + '%'; i.style.top = (Math.random() * 90) + '%'; i.style.fontSize = (14 + Math.random() * 26) + 'px'; i.style.animationDelay = (.2 + Math.random() * 1.6) + 's'; f.appendChild(i); } Sfx.victory(); } else Sfx.defeat();
@@ -3655,15 +3761,16 @@ const UI = {
     }, wait);
   },
   showEnd(flip) {
-    const hunt = G.mode === 'hunt', sorted = (hunt ? G.actors.filter(a => a.isPlayer || a.remote) : G.actors).slice().sort((a, b) => hunt ? (b.score || 0) - (a.score || 0) : b.kills - a.kills || a.deaths - b.deaths), p = G.player || {};
+    const hunt = G.mode === 'hunt', arena = G.mode === 'arena', sorted = (hunt || arena ? G.actors.filter(a => a.isPlayer || a.remote) : G.actors).slice().sort((a, b) => hunt ? (b.score || 0) - (a.score || 0) : b.kills - a.kills || a.deaths - b.deaths), p = G.player || {};
     let title = '', col = '#fff';
-    if (isDM()) { title = G.winner === p.name ? '🏆 你贏了！' : `${G.winner} 獲勝`; }
+    if (arena) { title = `💀 全員陣亡　最終抵達 Stage ${(G.arena && G.arena.stage) || 1}`; col = '#ffd24a'; }
+    else if (isDM()) { title = G.winner === p.name ? '🏆 你贏了！' : `${G.winner} 獲勝`; }
     else { const w = G.winner; if (w === -1) title = '平手'; else { title = (w === p.team ? '🏆 你的隊伍獲勝！' : '對手隊伍獲勝'); col = w === 0 ? '#ff7a7a' : '#7aa5ff'; } }
     let rows = sorted.map((a, i) => `<tr class="${a.isPlayer ? 'me' : ''}"><td class="n">${i + 1}</td><td><span class="dot" style="background:${a.team === 0 ? '#d93a3a' : a.team === 1 ? '#3a6fd9' : '#999'}"></span>${a.name}</td><td class="n">${a.kills}</td><td class="n">${hunt ? (a.score || 0) : a.deaths}</td></tr>`).join('');
-    const sc = isDM() ? '' : `<div style="font-size:20px;margin-bottom:6px"><span style="color:#ff7a7a">紅 ${G.scores[0]}</span>　-　<span style="color:#7aa5ff">${G.scores[1]} 藍</span></div>`;
+    const sc = isDM() || arena ? '' : `<div style="font-size:20px;margin-bottom:6px"><span style="color:#ff7a7a">紅 ${G.scores[0]}</span>　-　<span style="color:#7aa5ff">${G.scores[1]} 藍</span></div>`;
     this.els.end.innerHTML = `<h2 style="color:${col}">${title}</h2>${sc}<table><tr><th class="n">#</th><th>玩家</th><th class="n">淘汰</th><th class="n">${hunt ? '積分' : '被淘汰'}</th></tr>${rows}</table><div class="btnrow"><button class="btn" id="btnAgain">再來一場</button><button class="btn alt" id="btnMenu">回主選單</button></div>`;
     this.els.end.classList.remove('hidden', 'flipin'); if (flip) { void this.els.end.offsetWidth; this.els.end.classList.add('flipin'); }
-    $('btnAgain').onclick = () => { const d = G.demo; this.hideEnd(); beginGame(d); };
+    $('btnAgain').onclick = () => { const d = G.demo; this.hideEnd(); if (G.mode === 'kof' && !d) { go(() => { resetToMenuUI(); startPickFlow(); }); } else beginGame(d); };
     $('btnMenu').onclick = () => { this.hideEnd(); toMenu(); };
     if (NET.mode) { if (NET.mode === 'host') NET.phase = 'end'; $('btnAgain').textContent = '回到大廳'; $('btnAgain').onclick = () => { this.hideEnd(); if (NET.mode === 'host') hostToLobby(); else clientToLobby(false); }; $('btnMenu').textContent = '離開房間'; }
     if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
@@ -3682,6 +3789,32 @@ const UI = {
     ico.textContent = ITEMS[s.type].ico; n.textContent = s.n > 1 ? s.n : ''; el.classList.add('has');
   },
   /* 角色技能鍵：圓形倒數環 + 秒數；艾伯特技能的預警閃光與按鍵錯亂 */
+  setEv(key, rem, ico) { const e = this.ev || (this.ev = {}); if (!e[key]) e[key] = { seq: (this.evSeq = (this.evSeq || 0) + 1) }; e[key].rem = rem; e[key].ico = ico || '⏱'; },
+  clrEv(key) { if (this.ev) delete this.ev[key]; },
+  renderPills() { // 右上角倒數時鐘：事件倒數在前、技能倒數在後；第一個白底，其餘依序換底色
+    const L = Object.values(this.ev || {}).sort((a, b) => a.seq - b.seq).filter(x => x.rem > .02).map(x => [x.ico, x.rem]).concat(G.state === 'playing' && !document.getElementById('hud').classList.contains('hidden') ? (this.skPills || []) : []);
+    const key = L.map(x => x[0] + Math.ceil(x[1])).join('|'); if (key === this._pk) return; this._pk = key;
+    const COL = ['#ffffff', '#ffe27a', '#9fe3ff', '#ffb3c8', '#c3f5a6', '#e0c3ff'];
+    $('sktm').innerHTML = L.map((x, i) => `<span style="--pbg:${COL[i % COL.length]}"><i class="clk"></i><i class="ti">${x[0]}</i><b>${Math.ceil(x[1])}</b></span>`).join('');
+  },
+  modeHUD(dt, p) {
+    const A = G.arena, ar = G.mode === 'arena' && !!A && !G.demo, bn = $('arBanner'), bg = $('arBig');
+    const intro = ar && A.ph === 0 && G.countdown <= 0; bn.classList.toggle('hidden', !intro);
+    if (intro) this.setEv('ar', A.t, '🏟️'); else this.clrEv('ar');
+    let key = ''; if (ar) { if (A.ph === 1) key = 's' + A.stage; else if (A.ph === 3) key = 'c' + A.stage; }
+    if (key !== this._arK) { this._arK = key; if (!key) bg.classList.add('hidden'); else { bg.className = key[0] === 's' ? 'stage' : 'clear'; bg.innerHTML = key[0] === 's' ? 'Stage ' + A.stage : 'Clear！！' + [[-6, 10], [105, -4], [30, 95], [80, 88], [-10, 70], [50, -22]].map((q, i) => `<i style="left:${q[0]}%;top:${q[1]}%;animation-delay:${i * .15}s;font-size:${22 + i * 4}px">✦</i>`).join(''); } }
+    if (ar && p && !p.alive && p.respawnT > 0 && p.respawnT < 1e8 && G.state === 'playing') this.setEv('rs', p.respawnT, '💀'); else this.clrEv('rs');
+    const kof = G.mode === 'kof' && G.actors.length >= 2, kb = $('kofbar'); kb.classList.toggle('hidden', !kof);
+    if (kof) {
+      const me = G.player || G.actors[0], ot = G.actors.find(a => a !== me), key2 = [me, ot].map(a => (a.kroster || []).join() + '/' + (a.kleft || []).join() + '/' + a.kcur + (a.alive ? 1 : 0)).join('#');
+      if (key2 !== this._kk) { this._kk = key2; const side = (a, cls) => `<div class="ks ${cls}"><em>${a === me ? '你' : a.name}</em>` + (a.kroster || []).map(i => `<i class="ki${(a.kleft || []).includes(i) ? '' : ' used'}${a.alive && a.kcur === i ? ' cur' : ''}" style="background-image:url(${outfitIcon(i)})"></i>`).join('') + '</div>'; kb.innerHTML = side(me, '') + side(ot, 'r'); }
+      if (p && !p.alive && p.kw > 0 && p.kleft && p.kleft.length && !CS.o && G.state === 'playing') {
+        try { if (document.exitPointerLock) document.exitPointerLock(); } catch (e) { }
+        openPick({ need: 1, allowed: p.kleft.slice(), secs: Math.max(1, p.kw), evIco: '⏳', title: `選擇下一位出戰角色（剩 ${p.kleft.length} 位）`, okText: '確認出戰', back: null, kofChoose: true, noPrev: true, onDone: list => { if (G.netClient) netAct(['kp', list[0]]); else kofPick(G.player, list[0]); } });
+      }
+    }
+    if (CS.o && CS.o.kofChoose && (!p || p.alive || G.state !== 'playing' || G.mode !== 'kof')) closePick();
+  },
   skTimers(p) {
     const K = G.sk, L = [], add = (ico, r) => { if (r > .05) L.push([ico, r]); }, cd = p.skCd || 0, c = G.netClient;
     if (K) {
@@ -3697,8 +3830,7 @@ const UI = {
     add('🌫️', p.dackE >= 0 ? DACK_T - p.dackE : (c && SKILL_OF[p.av.outfitIdx] === 'dack' && cd > 15 ? cd - 15 : 0));
     if (p.cloak) add('🐱', 5 - p.cloakE); else if (c && SKILL_OF[p.av.outfitIdx] === 'lydia' && cd > 15) add('🐱', cd - 15);
     add('🐵', p.wkT || 0);
-    const key = L.map(x => x[0] + Math.ceil(x[1])).join('|'); if (key === this._tmk) return; this._tmk = key;
-    $('sktm').innerHTML = L.map(x => `<span>${x[0]}<b>${Math.ceil(x[1])}</b></span>`).join('');
+    this.skPills = L;
   },
   skillHUD(dt, p) {
     { const rl = G.sk && G.sk.rel, rt = rl ? rl.t : -1; if (rt >= 0 && (this._rlp === undefined || this._rlp < 0 || rt < this._rlp)) { Sfx.siren(); if (rl.by !== p) this.msg('⚠ 相對論發動！操作即將左右互換', 'bad'); } this._rlp = rt;
@@ -3738,9 +3870,10 @@ const UI = {
     this.cdUpdate(dt);
     // 計分
     if (G.mode === 'hunt') { const others = G.actors.filter(a => a !== p && (a.isPlayer || a.remote)).reduce((m, a) => Math.max(m, a.score || 0), 0); e.scR.textContent = p.score || 0; e.scB.textContent = others; e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
-    else if (G.mode === 'dm') { const others = G.actors.filter(a => a !== p).reduce((m, a) => Math.max(m, a.kills), 0); e.scR.textContent = p.kills; e.scB.textContent = others; e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
+    else if (G.mode === 'arena') { e.scR.textContent = p.kills; e.scB.textContent = 'S' + ((G.arena && G.arena.stage) || 0); e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
+    else if (G.mode === 'dm' || G.mode === 'kof') { const others = G.actors.filter(a => a !== p).reduce((m, a) => Math.max(m, a.kills), 0); e.scR.textContent = p.kills; e.scB.textContent = others; e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
     else { e.scR.textContent = G.scores[0]; e.scB.textContent = G.scores[1]; e.scR.className = 'sc red'; e.scB.className = 'sc blue'; }
-    const ts = Math.max(0, Math.ceil(G.tleft)), tstr = Math.floor(ts / 60) + ':' + String(ts % 60).padStart(2, '0'); if (tstr !== this.lastTimer) { e.timer.textContent = tstr; this.lastTimer = tstr; }
+    const ts = Math.max(0, Math.ceil(G.tleft)), tstr = Math.floor(ts / 60) + ':' + String(ts % 60).padStart(2, '0'); if (G.mode === 'arena' || G.mode === 'kof') { const A = G.arena, t = G.mode === 'kof' ? '🥊 KOF 大賽' : (A && A.stage ? 'Stage ' + A.stage + (A.ph === 2 ? ' ・ 剩 ' + G.actors.filter(a => a.pool && a.alive).length + ' 名' : '') : '擂台準備中'); if (t !== this.lastTimer) { e.timer.textContent = t; this.lastTimer = t; } } else if (tstr !== this.lastTimer) { e.timer.textContent = tstr; this.lastTimer = tstr; }
     if (G.mode === 'ctf') { const f0 = G.flags[0], f1 = G.flags[1]; e.flagR.textContent = f0 && f0.state !== 'home' ? '🚩' : ''; e.flagB.textContent = f1 && f1.state !== 'home' ? '🏴' : ''; } else { e.flagR.textContent = ''; e.flagB.textContent = ''; }
     // 輸入
     if (this.dirty || this.lastTyped !== G.typed) {
@@ -3748,7 +3881,7 @@ const UI = {
       this.slotHTML(e.slotF, G.slots[0]); this.slotHTML(e.slotG, G.slots[1]);
       this.dirty = false;
     }
-    this.skillHUD(dt, p);
+    this.skillHUD(dt, p); this.modeHUD(dt, p);
     e.slotF.classList.toggle('cd', G.itemCd > 0); e.slotG.classList.toggle('cd', G.itemCd > 0);
     if (Math.abs(G.stam - (this._st ?? -1)) > .004) { this._st = G.stam; e.stamFill.style.transform = `scaleX(${G.stam.toFixed(3)})`; }
     if (Math.abs(G.energy - (this._en ?? -1)) > .004) { this._en = G.energy; e.binFill.style.transform = `scaleX(${G.energy.toFixed(3)})`; }
@@ -3778,7 +3911,7 @@ const UI = {
   goText() { this.goT = 1; this._cd = 0; $('cdNum').textContent = '開始！'; $('cdTxt').textContent = '戰鬥開始'; this.els.countdown.classList.remove('hidden'); },
   cdUpdate(dt) {
     const e = this.els.countdown, c = Math.ceil(G.countdown || 0);
-    if (c > 0) { if (c !== this._cd) { this._cd = c; const n = $('cdNum'); n.textContent = c; n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; $('cdTxt').textContent = '遊戲將在 ' + c + ' 秒後開始・請先觀察四周'; } e.classList.remove('hidden'); }
+    if (c > 0) { if (c !== this._cd) { this._cd = c; const n = $('cdNum'); n.textContent = G.kofCd ? (c > 1 ? 'Ready…' : 'Go！') : c; n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; $('cdTxt').textContent = G.kofCd ? '下一位出戰角色登場' : '遊戲將在 ' + c + ' 秒後開始・請先觀察四周'; } e.classList.remove('hidden'); }
     else if (this.goT > 0) { this.goT -= dt; if (this.goT <= 0) e.classList.add('hidden'); } else e.classList.add('hidden');
   },
   demoTag() { const v = G.view; if (v) { this.els.demoTag.textContent = '🎬 示範模式・目前視角：' + v.name; this.els.demoTag.classList.remove('hidden'); } },
@@ -3972,7 +4105,7 @@ function resumeGame() { UI.menuOpen = false; setPause(false); if (!Device.mobile
 
 /* ---------- 選單 ---------- */
 /* ---------- 遊戲說明（分頁＋圖示） ---------- */
-const HOW_TABS = [['go', '🎯 怎麼玩'], ['ctl', '🎮 操作'], ['item', '🎁 道具'], ['chr', '🧑 角色技能'], ['mode', '🗺️ 模式地圖']];
+const HOW_TABS = [['go', '🎯 怎麼玩'], ['ctl', '🎮 操作'], ['item', '🎁 道具'], ['chr', '🧑 角色技能'], ['mode', '🗺️ 模式地圖'], ['spec', '🏟️ 擂台・KOF']];
 const hStep = (n, ico, t, d) => `<div class="hstep"><i>${n}</i><div class="hic">${ico}</div><b>${t}</b><span>${d}</span></div>`;
 const hCard = (ico, t, d, cls) => `<div class="hcard ${cls || ''}"><div class="hic">${ico}</div><div><b>${t}</b><span>${d}</span></div></div>`;
 const hKey = (k, d) => `<div class="hkey"><span class="kc">${k}</span><em>${d}</em></div>`;
@@ -3985,6 +4118,16 @@ function howPanel(id) {
 <div class="hnote">🔋 衝刺會消耗體力條；望遠鏡有能量條，用完需等待回復。</div>`;
   if (id === 'item') return `<div class="hnote">開局沒有道具，走過地圖上的 <b>？箱</b> 才會取得；兩格已滿時不會更換。</div><div class="hgrid">${Object.entries({ cam: '拍照後照片短暫停留，方便看清號碼', quake: '讓其他人畫面劇烈橫向晃動 2 秒', scope: '約 13° 超遠距放大，再按一次＝拍照', fake: '頭上號碼偽裝成別的數字 7 秒', spring: '立即刷新角色技能冷卻' }).map(([k, d]) => hCard(ITEMS[k].ico, ITEMS[k].name, d, 'big')).join('')}${hCard('🔭', '望遠鏡（內建）', '遠距離讀碼，有能量限制', 'big')}</div>`;
   if (id === 'chr') { return `<div class="hnote">按 <span class="kc">R</span>（手機：技能鍵）施放，圓環顯示冷卻。可在「遊戲設定」整體關閉技能。</div><div class="hchars">${OUTFITS.map((o, i) => o.hidden ? '' : `<div class="hch"><img src="${outfitIcon(i)}"><div><b>${o.label}</b><u>${o.skill.name}</u><span>${o.skill.desc}</span></div></div>`).join('')}</div>`; }
+  if (id === 'spec') return `<h3>🏟️ 擂台逃殺（單人／多人合作）</h3>
+<div class="hrule">玩家方對抗一波強過一波的電腦軍團；電腦同屬一國，彼此不會互相攻擊。多人遊玩時，電腦人數會依真人人數成倍增加（場上總人數上限 20 人）。</div>
+<div class="hsteps h4">${hStep(1, '⏱️', '3 秒倒數', '進入畫面後先倒數 3 秒')}${hStep(2, '📢', '10 秒準備', '藍底通知＋右上角倒數，剩 3 秒響提示音')}${hStep(3, '🔔', 'Stage 1', '鳴響開賽聲，電腦登場')}${hStep(4, '🏆', 'Clear！！', '全數擊倒後進入下一關')}</div>
+<div class="hrule">每一關<b>沒有時間限制</b>。<b>單人</b>：被電腦擊殺即視同全員陣亡，直接結束。<b>多人</b>：倒下的玩家進入復活等待（Stage 1 為 10 秒，之後每關多 2 秒）；只有當場上<b>沒有任何一位真人存活</b>時才算全數殲滅，顯示 Defeat 並進入結算（列出擊殺數與被殺數）。</div>
+<table class="htb"><tr><th>關卡</th><th>電腦（單人）</th><th>關卡</th><th>電腦（單人）</th></tr><tr><td>Stage 1</td><td>2 名輕鬆</td><td>Stage 6</td><td>3 名普通</td></tr><tr><td>Stage 2</td><td>3 名輕鬆</td><td>Stage 7</td><td>5 名普通</td></tr><tr><td>Stage 3</td><td>5 名輕鬆</td><td>Stage 8</td><td>7 名普通</td></tr><tr><td>Stage 4</td><td>7 名輕鬆</td><td>Stage 9</td><td>9 名普通</td></tr><tr><td>Stage 5</td><td>1 名普通</td><td>Stage 10</td><td>1 名困難</td></tr></table>
+<div class="hnote">Stage 10 之後，每進入下一關就多 1 名困難電腦，直到玩家方被殲滅為止。多人模式依真人人數倍增。</div>
+<h3>🥊 KOF 大賽（單人對電腦／2 位玩家）</h3>
+<div class="hrule">以<b>車輪戰</b>進行的一對一單挑：雙方各自挑選 5 位出賽角色（限時 40 秒，逾時由系統補滿），選定後依一般模式的開場倒數開戰。超過 2 位玩家的房間無法進行此模式。</div>
+<div class="hsteps h4">${hStep(1, '🧩', '選 5 位', '雙方各 40 秒選出出賽名單')}${hStep(2, '⚔️', '單挑', '場上一對一，先被淘汰者換人')}${hStep(3, '⏳', '10 秒選角', '倒下方從剩餘角色中選下一位')}${hStep(4, '🚦', 'Ready… Go！', '雙方各 1 秒，鳴響開賽聲後繼續')}</div>
+<div class="hrule">倒下的玩家有 <b>10 秒</b>挑選下一位出戰角色，這段時間另一位玩家仍可在地圖上自由行動；選定後雙方畫面顯示「Ready…」與「Go！」再繼續。重新登場的角色<b>一定生成在對手視野之外</b>，確保公平。最先耗盡 5 位角色的一方顯示 Defeat，另一方顯示 Victory，隨後進入結算畫面。</div>`;
   return `<h3>🏆 模式</h3><div class="hgrid">${hCard('⚔️', '個人死鬥', '人人為敵，先淘汰 15 人獲勝。領先者號碼變大變亮＝賞金目標。')}${hCard('🔴🔵', '團隊死鬥', '紅藍對戰，隊伍先 30 淘汰獲勝；隊友無法淘汰。')}${hCard('🎯', '激鬥追捕', '只追殺電腦角色，連殺積分更高；落後者技能冷卻縮短 50%。')}${hCard('🚩', '奪旗', '搶敵方旗帶回基地，先得 3 分。')}</div>
 <h3>🗺️ 地圖</h3><div class="hgrid">${hCard('🏫', '熱血高校', '白天校園，標準面積。')}${hCard('🌙', '詭譎學苑', '黑夜版，遠處沒入黑暗，要靠近才看得到。')}${hCard('🛍️', '追逃商城', '1.4 倍大，電扶梯通二樓，可從欄杆跳下。')}</div>
 <h3>🤖 對手</h3><div class="hgrid">${hCard('👥', '人數', '含你最多 20 人，不足由電腦補上。')}${hCard('🔢', '號碼位數', '3～5 碼，越多越難記。')}${hCard('😈', '干擾者', '輕／中／重＝靈活度 25%／55%／100%。')}</div>`;
@@ -4000,30 +4143,41 @@ function huntLock() {
   if ($('chMode')) [...$('chMode').children].forEach((b, i) => { const m = Object.values(MODES)[i]; if (UI.gDemo && m && m.demo === false) b.classList.add('dis'); else if (!m || !m.soon) b.classList.remove('dis'); });
   const h = S.mode === 'hunt'; if (h) { if (S.count !== 16 && S.count !== 20) S.count = 20; S.diff = 3; S.countSet = true; }
   const CN = [4, 8, 12, 16, 20];
-  for (const id of ['chCount', 'chNCount']) { const el = $(id); if (!el) continue; [...el.children].forEach(b => { const v = parseInt(b.textContent); b.classList.toggle('dis', h && v !== 16 && v !== 20); b.classList.toggle('on', v === S.count); }); }
+  for (const id of ['chCount', 'chNCount']) { const el = $(id); if (!el) continue; [...el.children].forEach(b => { const v = parseInt(b.textContent); if (isNaN(v)) { b.classList.toggle('dis', h); return; } b.classList.toggle('dis', h && v !== 16 && v !== 20); b.classList.toggle('on', v === S.count); }); }
   if (window.updTroll) window.updTroll(); if ($('diffDesc')) $('diffDesc').textContent = DIFF[S.diff].desc; if ($('diffDescN')) $('diffDescN').textContent = DIFF[S.diff].desc;
-  for (const id of ['chDiff', 'chNDiff']) { const el = $(id); if (!el) continue; [...el.children].forEach((b, i) => { b.classList.toggle('dis', h && i !== 3); b.classList.toggle('on', i === S.diff); }); }
+  for (const id of ['chDiff', 'chNDiff']) { const el = $(id); if (!el) continue; [...el.children].forEach((b, i) => { if (i >= DIFF.length) { b.classList.toggle('dis', h); return; } b.classList.toggle('dis', h && i !== 3); b.classList.toggle('on', i === S.diff); }); }
+  refreshRand();
 }
-function chips(id, items, get, set, fmt) {
-  const el = $(id); el.innerHTML = '';
-  items.forEach(it => { const b = document.createElement('button'); b.className = 'chip' + (get() === it.v ? ' on' : ''); b.innerHTML = it.l; if (it.dis) b.classList.add('dis', 'soon'); b.onclick = () => { if (it.dis) return; set(it.v); saveS(); [...el.children].forEach((c, i) => c.classList.toggle('on', items[i].v === it.v)); }; el.appendChild(b); });
+const RAND_IDS = {}; // 容器 id -> 隨機類別
+function chips(id, items, get, set, rk) {
+  const el = $(id); el.innerHTML = ''; if (rk) { RAND_IDS[id] = rk; items = items.concat([{ v: '__r', l: '🎲 隨機', rnd: 1 }]); const g0 = get, s0 = set; get = () => (S.rnd && S.rnd[rk]) ? '__r' : g0(); set = v => { S.rnd = S.rnd || {}; if (v === '__r') S.rnd[rk] = true; else { S.rnd[rk] = false; s0(v); } }; }
+  items.forEach(it => { const b = document.createElement('button'); b.className = 'chip' + (get() === it.v ? ' on' : ''); b.innerHTML = it.l; if (it.dis) b.classList.add('dis', 'soon'); b.onclick = () => { if (it.dis) return; set(it.v); saveS(); [...el.children].forEach((c, i) => c.classList.toggle('on', items[i].v === it.v)); if (it.rnd || (rk && !it.rnd)) huntLock(); }; el.appendChild(b); });
+}
+function refreshRand() { for (const id in RAND_IDS) { const el = $(id); if (!el) continue; const on = !!(S.rnd && S.rnd[RAND_IDS[id]]), ch = [...el.children]; ch.forEach((c, i) => { if (on) c.classList.toggle('on', i === ch.length - 1); else if (i === ch.length - 1) c.classList.remove('on'); }); } }
+function resolveRandoms(demo, humans) { // 開局時把「隨機」類別換成實際值
+  const r = S.rnd || {}, vis = Object.entries(MODES).filter(([k, m]) => !m.soon && !(demo && m.demo === false) && !(k === 'kof' && humans > 2)).map(x => x[0]);
+  if (r.mode) { const k = pick(vis); if (demo) S.demoMode = k; else S.mode = k; }
+  if (r.map) { const k = pick(Object.keys(MAPS)); if (demo) S.demoMap = k; else S.map = k; }
+  if (r.time) S.time = pick([4, 5, 8, 10]); if (r.skills) S.skills = Math.random() < .5;
+  if (r.diff) S.diff = randi(0, 3); if (r.troll) S.trollLv = randi(1, 3); if (r.count) { S.count = pick([4, 8, 12, 16, 20]); S.countSet = true; }
+  const mk = demo ? S.demoMode : S.mode; if (mk === 'hunt') { if (S.count !== 16 && S.count !== 20) S.count = 20; S.diff = 3; S.countSet = true; }
 }
 function buildMenu() {
   buildHowto(); if (!MAPS[S.map]) S.map = 'hb';
   const mapItems = Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), updMap = () => { $('mapDesc').textContent = MAPS[S.map].desc; };
-  chips('chMap', mapItems, () => S.map, v => { S.map = v; updMap(); World.load(v); }); updMap();
+  chips('chMap', mapItems, () => S.map, v => { S.map = v; updMap(); World.load(v); }, 'map'); updMap();
   const updMode = () => { $('modeDescG').textContent = MODES[S.mode] ? MODES[S.mode].short : ''; };
-  chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, dis: !!m.soon, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => { S.mode = v; updMode(); huntLock(); }); updMode();
+  chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, dis: !!m.soon, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => { S.mode = v; updMode(); huntLock(); }, 'mode'); updMode();
   chips('chCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
-  chips('chCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; });
-  chips('chTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v);
+  chips('chCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; }, 'count');
+  chips('chTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v, 'time');
   const updSk = () => { $('skDesc').textContent = S.skills === false ? '所有角色的主動、被動技能都停用，純粹比拼眼力與手速。' : '角色技能全部啟用（含主動技能與被動能力）。'; };
-  chips('chSkill', [{ v: true, l: '是' }, { v: false, l: '否' }], () => S.skills !== false, v => { S.skills = v; updSk(); }); updSk();
+  chips('chSkill', [{ v: true, l: '是' }, { v: false, l: '否' }], () => S.skills !== false, v => { S.skills = v; updSk(); }, 'skills'); updSk();
   const TL = [{ v: 1, l: '輕度', d: '靈活度降為標準的 25%，動作遲緩、很少搗亂。' }, { v: 2, l: '中度', d: '靈活度降為標準的 55%，動作與搗亂頻率適中。' }, { v: 3, l: '重度', d: '維持標準靈活度，全場亂跑、積極搗亂。' }];
   const updTroll = () => { $('trollRow').classList.toggle('hidden', S.diff !== 3); $('trollDesc').textContent = (TL.find(t => t.v === S.trollLv) || TL[2]).d; };
-  chips('chTroll', TL.map(t => ({ v: t.v, l: t.l })), () => S.trollLv, v => { S.trollLv = v; updTroll(); }); window.updTroll = updTroll;
+  chips('chTroll', TL.map(t => ({ v: t.v, l: t.l })), () => S.trollLv, v => { S.trollLv = v; updTroll(); }, 'troll'); window.updTroll = updTroll;
   const updDiff = () => { $('diffDesc').textContent = DIFF[S.diff].desc; updTroll(); };
-  chips('chDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; updDiff(); }); updDiff();
+  chips('chDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; updDiff(); }, 'diff'); updDiff();
   chips('chInput', [{ v: 'auto', l: '自動偵測' }, { v: 'desktop', l: '🖥️ 電腦' }, { v: 'mobile', l: '📱 手機' }], () => S.input, v => { S.input = v; Device.update(); refreshBadge(); });
   chips('chQual', [{ v: 'auto', l: '自動' }, { v: 'high', l: '高' }, { v: 'mid', l: '中' }, { v: 'low', l: '低（最順）' }], () => S.quality, v => { S.quality = v; Perf.profile(); Perf.apply(); });
   chips('chAuto', [{ v: true, l: '輸入滿位數自動送出' }, { v: false, l: '需按 Enter' }], () => S.auto, v => S.auto = v);
@@ -4034,7 +4188,7 @@ function buildMenu() {
 function refreshBadge() { $('devbadge').textContent = Device.label() + ' ／ 預設 ' + (S.countSet ? S.count : defaultCount()) + ' 人'; }
 function defaultCount() { return Device.mobile ? 12 : 20; }
 window.onDeviceChange = () => { applyLayout(); if (UI.els.menu) { refreshBadge(); updateRotate(); } if (G.state === 'menu' && !S.countSet) { S.count = defaultCount(); buildMenuCounts(); } if (R.gl) { Perf.profile(); Perf.apply(); } };
-function buildMenuCounts() { chips('chCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; }); }
+function buildMenuCounts() { chips('chCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; }, 'count'); }
 function setPreview() { G.preview = { x: 0, y: 0, z: 0, yaw: 0, animT: 0, sp: 0, av: createAvatar(S.outfit), team: -1, number: '4827', plateScale: 1 }; makePlate(G.preview); }
 function tryLandscape() { try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => { }); } catch (e) { } }
 function updateRotate() { VP.update(); if (Device.mobile) tryLandscape(); UI.els.rotate.classList.add('hidden'); }
@@ -4068,6 +4222,7 @@ function showTut(freeze) {
 function hideTut() { const t = $('tut'); if (t) t.classList.add('hidden'); UI.tutOpen = false; G.tut = false; }
 function beginGame(demo, roster) {
   demo = demo === true;
+  if (!roster && !UI.preResolved) resolveRandoms(demo); UI.preResolved = false;
   Sfx.init(); Sfx.resume(); if (!S.countSet) S.count = defaultCount();
   UI.els.menu.classList.add('hidden'); UI.els.hud.classList.remove('hidden'); document.body.classList.add('playing'); document.body.classList.toggle('demo', demo);
   UI.hideEnd(); UI.endScramble(); UI._ph2 = false; In.sprintT = false; $('bRun').classList.remove('tog'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.els.demoTag.classList.add('hidden');
@@ -4083,6 +4238,7 @@ function beginGame(demo, roster) {
 function toMenu() { go(() => { netLeave(); resetToMenuUI(); }); }
 function stopGameUI() { resetToMenuUI(); UI.els.menu.classList.add('hidden'); }
 function resetToMenuUI() {
+  UI.ev = {}; UI._pk = null; closePick(); G.arena = null; G.kofCd = false;
   hideTut(); if (G.sk) { G.sk.night = { e: 0, by: null }; G.sk.ink.t = 0; G.sk.rev.t = 0; G.sk.rel.t = -1; G.sk.quake.t = 0; G.sk.eagle.t = 0; } G.scopeOn = false; applyNightEnv(null); $('dfog').style.opacity = 0; $('dself').style.opacity = 0; $('ink').classList.remove('on'); $('gset').classList.add('hidden');
   G.state = 'menu'; G.demo = false; G.view = null; document.body.classList.remove('playing', 'demo'); UI.els.hud.classList.add('hidden'); UI.els.menu.classList.remove('hidden'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.hideEnd(); UI.els.bino.style.display = 'none'; UI.els.flash.style.opacity = 0;
   $('settings').classList.add('hidden'); updateRotate(); if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
@@ -4099,17 +4255,52 @@ function beginNetClientUI() {
   showTut(false);
 }
 /* ---------- 角色選擇 / 示範模式選單 ---------- */
-function showCharInfo() { const o = OUTFITS[S.outfit]; $('cName').textContent = o.label; $('cPass').textContent = '【' + o.skill.name + '】' + o.skill.desc; if (G.preview) G.preview.fake = null; }
-function buildCards() {
+/* ---------- 選角（單選／五選／從剩餘角色選下一位） ---------- */
+let _qi = null;
+function qIcon() { if (_qi) return _qi; const c = cv(96, 96), g = c.getContext('2d'); g.fillStyle = '#2c2f4a'; g.beginPath(); g.arc(48, 48, 48, 0, TAU); g.fill(); g.font = '900 66px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = 6; g.strokeStyle = '#7a4a00'; g.strokeText('?', 48, 53); g.fillStyle = '#ffd24a'; g.fillText('?', 48, 53); return (_qi = c.toDataURL()); }
+const CS = { o: null, picks: [], rand: false, end: 0, tm: null };
+function csPool() { return CS.o && CS.o.allowed ? CS.o.allowed : VIS_OUTFITS; }
+function showCharInfo(i) {
+  if (CS.rand && CS.o && CS.o.need === 1) { $('cName').textContent = '隨機'; $('cPass').textContent = '【驚喜】開始前由系統隨機指派一位角色。'; return; }
+  const o = OUTFITS[i === undefined ? S.outfit : i]; $('cName').textContent = o.label; $('cPass').textContent = '【' + o.skill.name + '】' + o.skill.desc;
+}
+function setPreview(idx) { if (CS.o && CS.o.noPrev) return; if (idx === null) { G.preview = null; return; } G.preview = { x: 0, y: 0, z: 0, yaw: 0, animT: 0, sp: 0, av: createAvatar(idx === undefined ? S.outfit : idx), team: -1, number: '4827', plateScale: 1 }; makePlate(G.preview); }
+function csRefresh(last) {
+  const o = CS.o; if (!o) return; const multi = o.need > 1;
+  [...$('cards').children].forEach(c => { if (c.dataset.r) { c.classList.toggle('on', CS.rand && !multi); return; } const i = +c.dataset.i, k = CS.picks.indexOf(i), on = multi ? k >= 0 : (!CS.rand && CS.picks[0] === i); c.classList.toggle('on', on); const b = c.querySelector('.pk'); if (b) b.textContent = multi && k >= 0 ? k + 1 : ''; });
+  $('csHint').textContent = multi ? `已選 ${CS.picks.length} / ${o.need}　（點選順序＝出賽順序，可點已選角色取消）` : (o.hint || '');
+  $('csOk').classList.toggle('dis', multi && CS.picks.length < o.need);
+  if (CS.rand && !multi) { setPreview(null); showCharInfo(); } else { const v = last !== undefined ? last : CS.picks[CS.picks.length - 1]; if (v !== undefined) { setPreview(v); showCharInfo(v); } }
+}
+function openPick(o) {
+  CS.o = o; CS.rand = false; $('csTitle').textContent = o.title || '選擇角色'; $('csOk').textContent = o.okText || '確認'; $('csBack').style.display = o.back ? '' : 'none';
+  const pool = o.allowed || VIS_OUTFITS;
+  if (o.need === 1) { const pf = S.pref === 'rand' ? 'rand' : (pool.includes(S.outfit) ? S.outfit : pool[0]); CS.rand = pf === 'rand' && !o.allowed; CS.picks = CS.rand ? [] : [pf]; } else CS.picks = [];
   const cards = $('cards'); cards.innerHTML = '';
-  OUTFITS.forEach((o, i) => { if (o.hidden) return; const c = document.createElement('div'); c.dataset.i = i; c.className = 'card' + (S.outfit === i ? ' on' : ''); c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + o.label; c.onclick = () => { S.outfit = i; saveS(); [...cards.children].forEach(k => k.classList.toggle('on', +k.dataset.i === i)); setPreview(); showCharInfo(); }; cards.appendChild(c); });
-  showCharInfo();
+  const rc = document.createElement('div'); rc.className = 'card'; rc.dataset.r = 1; rc.innerHTML = '<img class="cav" src="' + qIcon() + '">隨機'; rc.onclick = () => { if (o.need === 1) { CS.rand = true; CS.picks = []; csRefresh(); } else { const rest = pool.filter(i => !CS.picks.includes(i)).sort(() => Math.random() - .5); while (CS.picks.length < o.need && rest.length) CS.picks.push(rest.pop()); csRefresh(); } }; cards.appendChild(rc);
+  pool.forEach(i => { const ou = OUTFITS[i], c = document.createElement('div'); c.dataset.i = i; c.className = 'card'; c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + ou.label + '<b class="pk"></b>'; c.onclick = () => { CS.rand = false; if (o.need === 1) CS.picks = [i]; else { const k = CS.picks.indexOf(i); if (k >= 0) CS.picks.splice(k, 1); else if (CS.picks.length < o.need) CS.picks.push(i); } csRefresh(i); }; cards.appendChild(c); });
+  UI.els.menu.classList.add('hidden'); $('mp').classList.add('hidden'); $('gset').classList.add('hidden'); $('charsel').classList.remove('hidden'); showWait(false);
+  csRefresh(); clearInterval(CS.tm); UI.clrEv('cs');
+  if (o.secs) { CS.end = performance.now() + o.secs * 1000; const tick = () => { const rem = (CS.end - performance.now()) / 1000; UI.setEv('cs', rem, o.evIco || '🕒'); if (rem <= 0) csFinish(true); }; tick(); CS.tm = setInterval(tick, 150); }
 }
-function openCharSelect(origin) {
-  UI.csOrigin = origin; $('csOk').textContent = origin === 'mp' ? '確認' : '確認，開始遊戲'; buildCards(); setPreview();
-  UI.els.menu.classList.add('hidden'); $('mp').classList.add('hidden'); $('charsel').classList.remove('hidden');
+function csFinish(auto) {
+  const o = CS.o; if (!o) return; clearInterval(CS.tm); UI.clrEv('cs'); const pool = csPool(); let list, wasRand = false; const ex = CS.rand && !auto;
+  if (o.need === 1) { wasRand = CS.rand || auto || CS.picks[0] === undefined; list = [wasRand ? pick(pool) : CS.picks[0]]; }
+  else { list = CS.picks.slice(); const rest = pool.filter(i => !list.includes(i)).sort(() => Math.random() - .5); while (list.length < o.need && rest.length) list.push(rest.pop()); }
+  $('charsel').classList.add('hidden'); CS.o = null; if (G.state === 'playing' && !G.demo && !Device.mobile) { try { Input.lock(); } catch (e) { } } o.onDone(list, wasRand, ex);
 }
-function closeCharSelect() { $('charsel').classList.add('hidden'); if (UI.csOrigin === 'mp') { $('mp').classList.remove('hidden'); renderLobby(); } else $('gset').classList.remove('hidden'); }
+function closePick() { clearInterval(CS.tm); UI.clrEv('cs'); CS.o = null; $('charsel').classList.add('hidden'); showWait(false); }
+function showWait(on) { $('waitDlg').classList.toggle('hidden', !on); }
+/* 單人／房主：設定完成後才選角 */
+function startPickFlow() {
+  resolveRandoms(false); UI.preResolved = true; const kof = S.mode === 'kof';
+  openPick({
+    need: kof ? 5 : 1, secs: kof ? 40 : 0, evIco: '🧩', title: kof ? '選擇 5 位出賽角色（車輪戰）' : '選擇角色', okText: kof ? '確認出賽名單' : '確認，開始遊戲',
+    back: () => { closePick(); $('gset').classList.remove('hidden'); UI.preResolved = false; },
+    onDone: (list, wasRand, ex) => { if (kof) G.kofPre = { me: list, opp: kofRandRoster() }; else S.pref = ex ? 'rand' : list[0]; S.outfit = list[0]; saveS(); beginGame(false); }
+  });
+}
+function kofRandRoster() { return VIS_OUTFITS.slice().sort(() => Math.random() - .5).slice(0, 5); }
 function openGset(demo) {
   UI.gDemo = !!demo; const g = $('gset');
   if (demo) { UI.gSaved = { mode: S.mode, map: S.map }; if (MODES[S.demoMode] && MODES[S.demoMode].demo !== false) S.mode = S.demoMode; else S.mode = 'dm'; if (MAPS[S.demoMap]) S.map = S.demoMap; buildMenu(); }
@@ -4243,9 +4434,9 @@ function boot() {
   $('btnFs').onclick = fs; $('btnFs2').onclick = fs;
   $('btnStart').onclick = () => go(() => openGset(false));
   $('gBack').onclick = () => go(() => { const was = UI.gDemo; closeGset(); UI.els.menu.classList.remove('hidden'); });
-  $('gGo').onclick = () => go(() => { if (UI.gDemo) { closeGset(); beginGame(true); } else { $('gset').classList.add('hidden'); openCharSelect('start'); } }); $('btnDemo').onclick = () => go(() => openGset(true)); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
-  $('csBack').onclick = () => go(closeCharSelect);
-  $('csOk').onclick = () => go(() => { $('charsel').classList.add('hidden'); if (UI.csOrigin === 'mp') { $('mp').classList.remove('hidden'); renderLobby(); } else beginGame(false); });
+  $('gGo').onclick = () => go(() => { if (UI.gDemo) { closeGset(); beginGame(true); } else { $('gset').classList.add('hidden'); startPickFlow(); } }); $('btnDemo').onclick = () => go(() => openGset(true)); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
+  $('csBack').onclick = () => go(() => { const o = CS.o; if (o && o.back) o.back(); });
+  $('csOk').onclick = () => { if ($('csOk').classList.contains('dis')) return; go(() => csFinish(false)); };
   $('btnSet').onclick = () => go(openSettings); $('btnSet2').onclick = () => go(openSettings); $('btnSetClose').onclick = () => go(closeSettings); $('dbSet').onclick = () => go(openSettings); $('dbPause').onclick = () => setPause(true);
   $('btnLayout').onclick = () => go(openLayoutEditor); $('btnLayoutReset').onclick = () => { S.layout = {}; saveS(); applyLayout(); UI.msg('已重設按鍵配置', 'item'); };
   initLayoutEditor(); applyLayout(); initNetUI(); $('hostLeftOk').onclick = () => $('hostLeft').classList.add('hidden');
@@ -4255,7 +4446,8 @@ function boot() {
   updateRotate(); requestAnimationFrame(frame); startIntro();
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
-window.__G = { relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+setInterval(() => { try { UI.renderPills(); } catch (e) { } }, 120);
+window.__G = { kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 
 })();

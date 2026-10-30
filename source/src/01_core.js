@@ -16,7 +16,7 @@ function rng(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 10139
 /* ================= 設定 / 裝置偵測 ================= */
 const CODE_OPTS = [3, 4, 5, 6, 'rand', 'mix'];
 const codeLabel = v => v === 'rand' ? '隨機' : v === 'mix' ? '大亂鬥' : v + ' 碼';
-const S = { mode: 'dm', count: 20, diff: 1, outfit: 0, input: 'auto', quality: 'auto', sens: 1, auto: true, fps: true, sound: true, countSet: false, codeLen: 4, trollLv: 3, time: 5, skills: true, demoMode: 'dm', map: 'hb', demoMap: 'hb', layout: {}, layoutV: 0, netBots: true, netName: '' };
+const S = { mode: 'dm', count: 20, diff: 1, outfit: 0, input: 'auto', quality: 'auto', sens: 1, auto: true, fps: true, sound: true, countSet: false, codeLen: 4, trollLv: 3, time: 5, skills: true, rnd: {}, pref: undefined, demoMode: 'dm', map: 'hb', demoMap: 'hb', layout: {}, layoutV: 0, netBots: true, netName: '' };
 try { Object.assign(S, JSON.parse(localStorage.getItem('fmo2') || '{}')); } catch (e) { }
 if (S.layoutV < 2) { S.layout = {}; S.layoutV = 2; }
 const saveS = () => { try { localStorage.setItem('fmo2', JSON.stringify(S)); } catch (e) { } };
@@ -102,6 +102,8 @@ const Sfx = {
   flag() { this.tone(440, .12, 'triangle', .18); this.tone(660, .12, 'triangle', .18, 0, .1); this.tone(880, .2, 'triangle', .18, 0, .2); },
   step() { this.noise(.05, .06, 600); },
   win() { [523, 659, 784, 1047].forEach((f, i) => this.tone(f, .25, 'triangle', .2, 0, i * .12)); },
+  warn() { for (let i = 0; i < 3; i++) this.tone(1200, .12, 'square', .1, 0, i * .33); },
+  arenaGo() { this.bell(); this.tone(180, .5, 'sawtooth', .16, 120, .05); },
   siren() { for (let i = 0; i < 8; i++) { this.tone(i % 2 ? 760 : 1040, .25, 'sawtooth', .13, i % 2 ? 260 : -260, i * .25); } },
   skill() { this.tone(520, .12, 'triangle', .16, 300); this.tone(780, .2, 'sine', .14, 200, .08); this.noise(.12, .12, 3000, 0, true); },
   victory() { // 金色閃光 + 號角式勝利音
