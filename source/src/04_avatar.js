@@ -41,7 +41,11 @@ OUTFITS.push(
   { key: 'dack', label: '戴克Dack', sub: '', skill: { name: '生化操作', desc: '戴上透視鏡後釋放濃霧 20 秒（右上角倒數）。冷卻 15 秒。' }, H: 1.76, skin: '#e0b896', hipX: .095, shX: .23, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#e8eef0', top2: '#3fbf6a', pants: '#2b3a40', shoe: '#1a2226', hair: '#2f8a5a', style: 'spiky', acc: ['goggles'], accC: '#6fe0a0' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'nox', label: '夜梟Nox', sub: '', skill: { name: '夜間戰術', desc: '召喚黑雲使全場變暗 30 秒，自己戴夜視鏡看清號碼。冷卻 30 秒。' }, H: 1.78, skin: '#c9a07c', hipX: .095, shX: .235, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#1a1d2a', top2: '#8ff04a', pants: '#14161f', shoe: '#0c0d12', hair: '#1c1c22', style: 'short', acc: ['goggles'], accC: '#3cff6a' },
-    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] }
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'derek', label: '德意志Derek', sub: '', skill: { name: '衝鋒陷陣', desc: '按 G 鍵向前衝撞（無 G 道具格）：撞到的人暈眩 2.5 秒並面向你，自己彈退。冷卻 10 秒；暈眩期間擊殺則立即刷新。' }, H: 1.9, skin: '#f0c9a8', hipX: .105, shX: .29, tz: .5, hair: '#e6c15a', hair2: '#f3dc8c', female: false, gen: { top: '#2b2d33', top2: '#d4a017', pants: '#4b5238', shoe: '#17171a', hair: '#e6c15a', style: 'bald', acc: ['pickel', 'pauldron'], accC: '#d4a017' },
+    torso: [[.001, -.1], [.21, -.1], [.22, -.02], [.205, .1], [.215, .22], [.265, .36], [.29, .46], [.28, .53], [.19, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'wukong', label: '悟空MonkeyKing', sub: '', skill: { name: '如來隱身', desc: '被動：輸入擊殺後噴白煙，隱身 6 秒（期間再擊殺重新計時），隱身時跑步與望遠鏡不耗能量。隱身結束後冷卻 10 秒。' }, H: 1.64, skin: '#d9a066', hipX: .09, shX: .2, tz: .56, hair: '#3b2414', hair2: '#6b4526', female: false, passive: true, gen: { top: '#c0392b', top2: '#f1c40f', pants: '#e0902a', shoe: '#5a3a1c', hair: '#3b2414', style: 'spiky', acc: ['headband', 'feathers', 'monkeyears', 'tail', 'staff'], accC: '#f5c518' },
+    torso: [[.001, -.1], [.19, -.1], [.195, -.02], [.18, .1], [.185, .22], [.205, .36], [.21, .46], [.205, .53], [.16, .57], [.07, .595], [.056, .63], [.001, .63]] }
 );
 const SKINPATCH = [.975, .975];
 
@@ -259,6 +263,9 @@ function buildOutfit(i) {
     if (st === 'ponytail') { hairP.push({ g: gSphere(.05, 8, 6), t: [0, hc + .02, -hw * 1.25], c: h1 }); hairP.push({ g: gCyl(.04, .02, .3, 8, 2), t: [0, hc - .12, -hw * 1.35], r: [-.25, 0, 0], c: shade(h1, 1.1) }); }
     if (ac.includes('beret')) { hairP.push({ g: gCyl(hw * 1.3, hw * 1.15, .035, 20, 1), t: [.02, hc + hh * .48, -.01], r: [0, 0, -.1], c: accC }); hairP.push({ g: gSphere(.012, 6, 5), t: [.02, hc + hh * .52, -.01], c: accC }); }
     if (ac.includes('goggles')) { hairP.push({ g: gCyl(hw * 1.1, hw * 1.1, .018, 20, 1, true), t: [0, hc + hh * .3, -.004], s: [1, 1, 1.18], c: [.15, .15, .17] }); for (const sg of [-1, 1]) hairP.push({ g: gCyl(.025, .025, .012, 10, 1), t: [sg * .035, hc + hh * .34, hw * 1.2], r: [PI / 2 - .15, 0, 0], c: accC }); }
+    if (ac.includes('pickel')) { hairP.push({ g: gSphere(1, 20, 12, 0, TAU, 0, 1.5), t: [0, hc + .02, -.006], s: [hw * 1.14, hh * .82, hw * 1.14 * 1.18], c: [.56, .58, .62] }); hairP.push({ g: gCyl(hw * 1.15, hw * 1.15, .03, 22, 1, true), t: [0, hc + hh * .12, -.004], s: [1, 1, 1.18], c: accC }); hairP.push({ g: gCyl(0, .024, .11, 8, 1), t: [0, hc + hh * .98 + .03, -.006], c: accC }); hairP.push({ g: gBox(hw * 1.5, .03, .03), t: [0, hc + hh * .12, hw * 1.28], c: accC }); }
+    if (ac.includes('feathers')) for (const sg of [-1, 1]) { hairP.push({ g: gBox(.012, .26, .008), t: [sg * .045, hc + hh * .55 + .13, -.02], r: [0, 0, -sg * .3], c: [.85, .18, .18] }); hairP.push({ g: gBox(.008, .2, .006), t: [sg * .07, hc + hh * .55 + .1, -.025], r: [0, 0, -sg * .45], c: [.95, .8, .2] }); }
+    if (ac.includes('monkeyears')) for (const sg of [-1, 1]) { hairP.push({ g: gSphere(.042, 8, 6), t: [sg * hw * 1.12, hc - hh * .02, 0], s: [.55, 1, 1], c: [.78, .55, .32] }); hairP.push({ g: gSphere(.026, 8, 6), t: [sg * hw * 1.18, hc - hh * .02, .004], s: [.4, 1, 1], c: [.95, .75, .6] }); }
     if (ac.includes('catears')) for (const sg of [-1, 1]) hairP.push({ g: gCyl(0, .035, .08, 4, 1), t: [sg * hw * .7, hc + hh * .62, .0], r: [0, 0, -sg * .25], c: [.1, .09, .12] });
     if (ac.includes('headband')) hairP.push({ g: gCyl(hw * 1.09, hw * 1.09, .022, 22, 1, true), t: [0, hc + hh * .22, -.004], s: [1, 1, 1.18], c: accC });
     if (ac.includes('flower')) { hairP.push({ g: gSphere(.022, 8, 6), t: [hw * .9, hc + hh * .35, hw * .5], c: accC }); hairP.push({ g: gSphere(.01, 6, 5), t: [hw * .9, hc + hh * .35, hw * .5 + .018], c: [1, .9, .3] }); }
@@ -390,6 +397,9 @@ function buildOutfit(i) {
   }
   if (O.gen) {
     const ac = O.gen.acc || [], accC = rgb(O.gen.accC || '#fff');
+    if (ac.includes('pauldron')) for (const sg of [-1, 1]) { ex.push({ g: gSphere(.12, 10, 8), t: [sg * (O.shX + .035), shY - .005, 0], s: [1, .62, 1.1], c: [.82, .65, .15] }); ex.push({ g: gSphere(.095, 10, 8), t: [sg * (O.shX + .05), shY + .02, 0], s: [1, .5, 1], c: [.5, .52, .56] }); }
+    if (ac.includes('tail')) for (let k = 0; k < 8; k++) ex.push({ g: gSphere(.032 - k * .0016, 7, 5), t: [0, hipY - .03 + k * .052 + Math.max(0, k - 4) * .035, -.15 - k * .03], c: k > 6 ? [.95, .8, .3] : [.8, .52, .2] });
+    if (ac.includes('staff')) { ex.push({ g: gCyl(.02, .02, 1.45, 8, 1), t: [.04, hipY + .46, -.24], r: [0, 0, .55], c: [.95, .72, .12] }); for (const e2 of [-1, 1]) ex.push({ g: gCyl(.03, .03, .13, 8, 1), t: [.04 + e2 * Math.sin(.55) * .72, hipY + .46 + e2 * Math.cos(.55) * .72, -.24], r: [0, 0, .55], c: [.75, .12, .12] }); }
     if (ac.includes('scarf')) ex.push({ g: gCyl(.16, .17, .07, 16, 1, true), t: [0, shY - .0, .0], s: [1.1, 1, 1], c: accC });
     if (ac.includes('skullbelt')) { ex.push({ g: gBox(.4, .08, .22), t: [0, hipY + .06, 0], c: [.14, .14, .16] }); ex.push({ g: gBox(.13, .1, .02), t: [0, hipY + .06, .125], c: [.8, .8, .85] }); }
     if (O.key === 'ray') ex.push({ g: gBox(.26, .02, .02), t: [0, hipY + .3, .21], c: [.22, .82, 1] });
