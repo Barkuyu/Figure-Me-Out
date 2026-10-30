@@ -324,6 +324,7 @@ const MENU_HOWTO = `<p><b>目標：</b>每個人額頭都戴著一組數字牌�
 <p><b>模式：</b>個人死鬥（15 淘汰）／團隊死鬥（30 淘汰）／奪旗（3 次）。團隊模式的隊友額頭牌邊框與臂章為同色，無法淘汰。</p>
 <p><b>提示：</b>畫面中央的紅色箭頭代表「有人正在讀你的號碼」，進度條滿了就會被淘汰——快移動、轉身或躲到掩體後。輸錯號碼會被鎖定輸入約 1 秒。</p>`;
 function huntLock() {
+  if ($('chMode')) [...$('chMode').children].forEach((b, i) => { const m = Object.values(MODES)[i]; if (UI.gDemo && m && m.demo === false) b.classList.add('dis'); else if (!m || !m.soon) b.classList.remove('dis'); });
   const h = S.mode === 'hunt'; if (h) { if (S.count !== 16 && S.count !== 20) S.count = 20; S.diff = 3; S.countSet = true; }
   const CN = [4, 8, 12, 16, 20];
   for (const id of ['chCount', 'chNCount']) { const el = $(id); if (!el) continue; [...el.children].forEach(b => { const v = parseInt(b.textContent); b.classList.toggle('dis', h && v !== 16 && v !== 20); b.classList.toggle('on', v === S.count); }); }
@@ -437,16 +438,15 @@ function openCharSelect(origin) {
   UI.els.menu.classList.add('hidden'); $('mp').classList.add('hidden'); $('charsel').classList.remove('hidden');
 }
 function closeCharSelect() { $('charsel').classList.add('hidden'); if (UI.csOrigin === 'mp') { $('mp').classList.remove('hidden'); renderLobby(); } else $('gset').classList.remove('hidden'); }
-function openDemoPick() {
-  const list = Object.entries(MODES).filter(([k, m]) => m.demo !== false), bad = Object.entries(MODES).filter(([k, m]) => m.demo === false);
-  if (!list.some(([k]) => k === S.demoMode)) S.demoMode = list.length ? list[0][0] : 'dm';
-  if (!MAPS[S.demoMap]) S.demoMap = S.map;
-  const updM = () => { $('demoMapDesc').textContent = MAPS[S.demoMap].desc; };
-  chips('chDemoMap', Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), () => S.demoMap, v => { S.demoMap = v; updM(); }); updM();
-  const upd = () => { $('demoDesc').textContent = MODES[S.demoMode] ? MODES[S.demoMode].desc : ''; };
-  chips('chDemoMode', list.map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), () => S.demoMode, v => { S.demoMode = v; upd(); });
-  $('demoNote').textContent = bad.length ? '以下模式需要真人操作，電腦無法示範：' + bad.map(([k, m]) => m.name).join('、') : ''; upd();
-  $('demoPick').classList.remove('hidden');
+function openGset(demo) {
+  UI.gDemo = !!demo; const g = $('gset');
+  if (demo) { UI.gSaved = { mode: S.mode, map: S.map }; if (MODES[S.demoMode] && MODES[S.demoMode].demo !== false) S.mode = S.demoMode; else S.mode = 'dm'; if (MAPS[S.demoMap]) S.map = S.demoMap; buildMenu(); }
+  $('gTitle').textContent = demo ? '🎬 電腦示範設定' : '🏆 遊戲設定'; $('gSub').textContent = demo ? '全部由電腦對戰，你以觀戰視角隨機切換' : '依序選好三個區塊，再按「進入遊戲」'; $('gGoT').textContent = demo ? '🎬 開始示範' : '🔥 進入遊戲';
+  UI.els.menu.classList.add('hidden'); g.classList.remove('hidden'); huntLock();
+}
+function closeGset(go2) {
+  const demo = UI.gDemo; $('gset').classList.add('hidden');
+  if (demo) { S.demoMode = S.mode; S.demoMap = S.map; if (UI.gSaved) { S.mode = UI.gSaved.mode; S.map = UI.gSaved.map; } UI.gSaved = null; saveS(); buildMenu(); UI.gDemo = false; }
 }
 /* ---------- 設定視窗 / 按鍵配置 ---------- */
 const LAYOUT_IDS = ['bJump', 'bBino', 'bBino2', 'bBack', 'bRun', 'bLeanL', 'bLeanR', 'slotF', 'slotG', 'slotS', 'pauseBtn', 'joyHint', 'numL', 'numR'];
@@ -569,12 +569,11 @@ function boot() {
   window.addEventListener('orientationchange', () => setTimeout(() => { updateRotate(); Perf.apply(); sizeBinoculars(); }, 250));
   const fs = () => { try { const el = document.documentElement; if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) { const r = el.requestFullscreen(); if (r && r.catch) r.catch(() => UI.msg('此環境不允許全螢幕', 'bad')); } else UI.msg('此裝置不支援全螢幕', 'bad'); } catch (e) { } };
   $('btnFs').onclick = fs; $('btnFs2').onclick = fs;
-  $('btnStart').onclick = () => go(() => { UI.els.menu.classList.add('hidden'); $('gset').classList.remove('hidden'); huntLock(); });
-  $('gBack').onclick = () => go(() => { $('gset').classList.add('hidden'); UI.els.menu.classList.remove('hidden'); });
-  $('gGo').onclick = () => go(() => { $('gset').classList.add('hidden'); openCharSelect('start'); }); $('btnDemo').onclick = () => go(openDemoPick); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
+  $('btnStart').onclick = () => go(() => openGset(false));
+  $('gBack').onclick = () => go(() => { const was = UI.gDemo; closeGset(); UI.els.menu.classList.remove('hidden'); });
+  $('gGo').onclick = () => go(() => { if (UI.gDemo) { closeGset(); beginGame(true); } else { $('gset').classList.add('hidden'); openCharSelect('start'); } }); $('btnDemo').onclick = () => go(() => openGset(true)); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
   $('csBack').onclick = () => go(closeCharSelect);
   $('csOk').onclick = () => go(() => { $('charsel').classList.add('hidden'); if (UI.csOrigin === 'mp') { $('mp').classList.remove('hidden'); renderLobby(); } else beginGame(false); });
-  $('dpBack').onclick = () => go(() => $('demoPick').classList.add('hidden')); $('dpOk').onclick = () => go(() => { $('demoPick').classList.add('hidden'); beginGame(true); });
   $('btnSet').onclick = () => go(openSettings); $('btnSet2').onclick = () => go(openSettings); $('btnSetClose').onclick = () => go(closeSettings); $('dbSet').onclick = () => go(openSettings); $('dbPause').onclick = () => setPause(true);
   $('btnLayout').onclick = () => go(openLayoutEditor); $('btnLayoutReset').onclick = () => { S.layout = {}; saveS(); applyLayout(); UI.msg('已重設按鍵配置', 'item'); };
   initLayoutEditor(); applyLayout(); initNetUI(); $('hostLeftOk').onclick = () => $('hostLeft').classList.add('hidden');

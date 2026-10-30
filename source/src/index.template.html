@@ -298,14 +298,15 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 .gsec.s1{--ac:#ee1c2e}.gsec.s2{--ac:#3a8fe8}.gsec.s3{--ac:#2fbf71}
 .gt{font:700 14px var(--font);letter-spacing:.08em;margin-bottom:6px;color:#fff}.gt i{font-style:normal;display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--ac);align-items:center;justify-content:center;font-size:12px;margin-right:6px}
 .grow{display:flex;align-items:center;gap:8px;margin:5px 0}.grow label{flex:0 0 58px;font-size:12px;color:#cfd3dc;letter-spacing:.04em}
-.grow .chips{gap:5px;justify-content:flex-start;flex:1}.gbox2 .chip{padding:5px 9px;font-size:13px;border-radius:9px}.gbox2 .chip small{display:none}
-.gsec.s2 .chip small{display:block;font-size:10px}
+.grow .chips{gap:5px;justify-content:flex-start;flex:1}.gstyle .chip,.gbox2 .chip{padding:5px 9px;font-size:13px;border-radius:9px}.gstyle .chip small,.gbox2 .chip small{display:none}
+.gstyle .gsec.s2 .chip small,.gsec.s2 .chip small{display:block;font-size:10px}
 .gsec.s2 .chip.on{background:linear-gradient(180deg,#6fb4ff,#2a73cc 45%,#1c55a0);border-color:#d4e8ff;box-shadow:0 3px 0 #123a70}
 .gsec.s3 .chip.on{background:linear-gradient(180deg,#6fe6a4,#27a862 45%,#17804a);border-color:#d4ffe6;box-shadow:0 3px 0 #0e5a33}
-.gbox2 .gnote{text-align:left;font-size:11.5px;color:#d8dbe3;margin:1px 0 4px 66px;min-height:0}
+.gstyle .gnote,.gbox2 .gstyle{display:flex;flex-direction:column;gap:8px;text-align:left}.gstyle .gsec{padding:6px 9px 4px}
+.gnote{text-align:left;font-size:11.5px;color:#d8dbe3;margin:1px 0 4px 66px;min-height:0}
 .gsec.s2 .gnote{margin-left:2px}
 .gfoot{position:sticky;bottom:-12px;margin:10px -16px -10px;padding:8px 0 10px;gap:16px;justify-content:center;background:linear-gradient(180deg,rgba(32,24,18,0),rgba(32,24,18,.97) 35%);z-index:3}
-@media (max-height:430px){.gbox2{padding:8px 12px 6px}.ghead h2{font-size:22px}.gsec{padding:5px 8px 3px}.gt{margin-bottom:3px;font-size:13px}.grow{margin:3px 0}.gbox2 .chip{padding:3px 7px;font-size:12px}.grow label{flex-basis:52px;font-size:11px}.gbox2 .gnote{font-size:10.5px;margin-left:60px}.gcol{gap:6px}.gfoot .btn{font-size:15px;padding:7px 18px}}
+@media (max-height:430px){.gbox2{padding:8px 12px 6px}.ghead h2{font-size:22px}.gsec{padding:5px 8px 3px}.gt{margin-bottom:3px;font-size:13px}.grow{margin:3px 0}.gstyle .chip,.gbox2 .chip{padding:3px 7px;font-size:12px}.grow label{flex-basis:52px;font-size:11px}.gstyle .gnote,.gbox2 .gnote{font-size:10.5px;margin-left:60px}.gcol{gap:6px}.gfoot .btn{font-size:15px;padding:7px 18px}}
 .gnote{font-size:12px;color:#fff;margin:4px 0 0;min-height:16px}
 .slot .cdn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:900 clamp(16px,2.6vw,22px) var(--font);color:#fff;text-shadow:0 0 5px #000,0 0 3px #000;pointer-events:none}
 .slot .ring{position:absolute;inset:-5px;border-radius:50%;pointer-events:none;opacity:0;background:conic-gradient(#ffd84a var(--p,0deg),rgba(255,255,255,.12) 0);-webkit-mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px));mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px))}
@@ -371,7 +372,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
   </div>
 
   <div id="gset" class="hidden"><div class="sbox gbox2">
-    <div class="ghead"><h2>🏆 遊戲設定</h2><span class="gsub">依序選好三個區塊，再按「進入遊戲」</span></div>
+    <div class="ghead"><h2 id="gTitle">🏆 遊戲設定</h2><span class="gsub" id="gSub">依序選好三個區塊，再按「進入遊戲」</span></div>
     <div class="gcols">
       <div class="gcol">
         <section class="gsec s1"><div class="gt"><i>①</i>對戰規則</div>
@@ -392,7 +393,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
         </section>
       </div>
     </div>
-    <div class="btnrow gfoot"><button class="btn gray" id="gBack">🔙 回上一頁</button><button class="btn" id="gGo">🔥 進入遊戲</button></div>
+    <div class="btnrow gfoot"><button class="btn gray" id="gBack">🔙 回上一頁</button><button class="btn" id="gGo"><span id="gGoT">🔥 進入遊戲</span></button></div>
   </div></div>
   <div id="hostLeft" class="hidden"><div class="sbox" style="text-align:center;max-width:420px"><div id="hostLeftMsg" style="font-size:18px;line-height:1.6;margin-bottom:12px"></div><button class="btn" id="hostLeftOk">確認</button></div></div>
   <div id="tut" class="hidden"></div>
@@ -413,15 +414,18 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
       <div id="mpCount" style="opacity:.8;font-size:13px;margin:4px 0"></div>
       <div id="mpMembers"></div>
       <div class="row"><label>角色</label><button class="chip" id="mpChar"></button></div>
-      <div id="mpHostCtl">
-        <div class="row"><label>地圖</label><div class="chips" id="chNMap"></div></div>
-        <div class="row"><label>模式</label><div class="chips" id="chNMode"></div></div>
-        <div class="row"><label>時間</label><div class="chips" id="chNTime"></div></div>
-        <div class="row"><label>技能</label><div class="chips" id="chNSkill"></div></div>
-        <div class="row"><label>總人數</label><div class="chips" id="chNCount"></div></div>
-        <div class="row"><label>號碼位數</label><div class="chips" id="chNCode"></div></div>
-        <div class="row"><label>難度</label><div class="chips" id="chNDiff"></div></div><div id="diffDescN" class="gnote" style="margin:-4px 0 6px"></div><div id="trollRowN" class="row hidden"><label>程度</label><div class="chips" id="chNTroll"></div></div>
-        <div class="row"><label>補位</label><div class="chips" id="chNBots"></div></div>
+      <div id="mpHostCtl" class="gstyle">
+        <section class="gsec s1"><div class="gt"><i>①</i>對戰規則</div>
+          <div class="grow"><label>模式</label><div class="chips" id="chNMode"></div></div>
+          <div class="grow"><label>時間</label><div class="chips" id="chNTime"></div></div>
+          <div class="grow"><label>技能</label><div class="chips" id="chNSkill"></div></div></section>
+        <section class="gsec s2"><div class="gt"><i>②</i>戰場地圖</div><div class="grow"><div class="chips" id="chNMap"></div></div></section>
+        <section class="gsec s3"><div class="gt"><i>③</i>對手與難度</div>
+          <div class="grow"><label>總人數</label><div class="chips" id="chNCount"></div></div>
+          <div class="grow"><label>號碼位數</label><div class="chips" id="chNCode"></div></div>
+          <div class="grow"><label>電腦難度</label><div class="chips" id="chNDiff"></div></div><div id="diffDescN" class="gnote"></div>
+          <div id="trollRowN" class="hidden"><div class="grow"><label>干擾程度</label><div class="chips" id="chNTroll"></div></div></div>
+          <div class="grow"><label>補位</label><div class="chips" id="chNBots"></div></div></section>
       </div>
       <div id="mpGuestInfo" class="mpnote"></div>
       <div id="mpHint" class="mpmsg"></div>
@@ -435,12 +439,6 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <div class="btnrow" style="justify-content:flex-start"><button class="btn" id="csOk">確認，開始遊戲</button><button class="btn alt" id="csBack">返回</button></div>
   </div></div>
   <div id="howPick" class="hidden"><div class="sbox" style="max-height:86vh;overflow:auto"><h2>玩法操作與說明</h2><div class="howto" id="howto"></div><div class="btnrow"><button class="btn alt" id="howBack">關閉</button></div></div></div>
-  <div id="demoPick" class="hidden"><div class="sbox"><h2>電腦示範模式</h2>
-    <div class="mpnote" style="margin:0 0 8px">先選擇要讓電腦示範的遊戲模式。人數、號碼位數與難度沿用主畫面的設定。</div>
-    <div class="mpnote" style="margin:0 0 4px">地圖</div><div class="chips" id="chDemoMap"></div><div id="demoMapDesc" class="mpnote"></div>
-    <div class="mpnote" style="margin:6px 0 4px">遊戲模式</div><div class="chips" id="chDemoMode"></div><div id="demoDesc" class="mpnote"></div><div id="demoNote" class="mpnote" style="color:#ffb27a"></div>
-    <div class="btnrow"><button class="btn" id="dpOk">開始示範</button><button class="btn alt" id="dpBack">返回</button></div>
-  </div></div>
   <div id="fade"></div>
   <div id="settings" class="hidden"><div class="sbox"><h2>設定</h2>
 <div class="row"><label>控制模式</label><div class="chips" id="chInput"></div></div>

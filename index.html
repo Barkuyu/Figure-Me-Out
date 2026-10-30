@@ -307,14 +307,15 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 .gsec.s1{--ac:#ee1c2e}.gsec.s2{--ac:#3a8fe8}.gsec.s3{--ac:#2fbf71}
 .gt{font:700 14px var(--font);letter-spacing:.08em;margin-bottom:6px;color:#fff}.gt i{font-style:normal;display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--ac);align-items:center;justify-content:center;font-size:12px;margin-right:6px}
 .grow{display:flex;align-items:center;gap:8px;margin:5px 0}.grow label{flex:0 0 58px;font-size:12px;color:#cfd3dc;letter-spacing:.04em}
-.grow .chips{gap:5px;justify-content:flex-start;flex:1}.gbox2 .chip{padding:5px 9px;font-size:13px;border-radius:9px}.gbox2 .chip small{display:none}
-.gsec.s2 .chip small{display:block;font-size:10px}
+.grow .chips{gap:5px;justify-content:flex-start;flex:1}.gstyle .chip,.gbox2 .chip{padding:5px 9px;font-size:13px;border-radius:9px}.gstyle .chip small,.gbox2 .chip small{display:none}
+.gstyle .gsec.s2 .chip small,.gsec.s2 .chip small{display:block;font-size:10px}
 .gsec.s2 .chip.on{background:linear-gradient(180deg,#6fb4ff,#2a73cc 45%,#1c55a0);border-color:#d4e8ff;box-shadow:0 3px 0 #123a70}
 .gsec.s3 .chip.on{background:linear-gradient(180deg,#6fe6a4,#27a862 45%,#17804a);border-color:#d4ffe6;box-shadow:0 3px 0 #0e5a33}
-.gbox2 .gnote{text-align:left;font-size:11.5px;color:#d8dbe3;margin:1px 0 4px 66px;min-height:0}
+.gstyle .gnote,.gbox2 .gstyle{display:flex;flex-direction:column;gap:8px;text-align:left}.gstyle .gsec{padding:6px 9px 4px}
+.gnote{text-align:left;font-size:11.5px;color:#d8dbe3;margin:1px 0 4px 66px;min-height:0}
 .gsec.s2 .gnote{margin-left:2px}
 .gfoot{position:sticky;bottom:-12px;margin:10px -16px -10px;padding:8px 0 10px;gap:16px;justify-content:center;background:linear-gradient(180deg,rgba(32,24,18,0),rgba(32,24,18,.97) 35%);z-index:3}
-@media (max-height:430px){.gbox2{padding:8px 12px 6px}.ghead h2{font-size:22px}.gsec{padding:5px 8px 3px}.gt{margin-bottom:3px;font-size:13px}.grow{margin:3px 0}.gbox2 .chip{padding:3px 7px;font-size:12px}.grow label{flex-basis:52px;font-size:11px}.gbox2 .gnote{font-size:10.5px;margin-left:60px}.gcol{gap:6px}.gfoot .btn{font-size:15px;padding:7px 18px}}
+@media (max-height:430px){.gbox2{padding:8px 12px 6px}.ghead h2{font-size:22px}.gsec{padding:5px 8px 3px}.gt{margin-bottom:3px;font-size:13px}.grow{margin:3px 0}.gstyle .chip,.gbox2 .chip{padding:3px 7px;font-size:12px}.grow label{flex-basis:52px;font-size:11px}.gstyle .gnote,.gbox2 .gnote{font-size:10.5px;margin-left:60px}.gcol{gap:6px}.gfoot .btn{font-size:15px;padding:7px 18px}}
 .gnote{font-size:12px;color:#fff;margin:4px 0 0;min-height:16px}
 .slot .cdn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:900 clamp(16px,calc(var(--vw)*2.6),22px) var(--font);color:#fff;text-shadow:0 0 5px #000,0 0 3px #000;pointer-events:none}
 .slot .ring{position:absolute;inset:-5px;border-radius:50%;pointer-events:none;opacity:0;background:conic-gradient(#ffd84a var(--p,0deg),rgba(255,255,255,.12) 0);-webkit-mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px));mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px))}
@@ -385,7 +386,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
   </div>
 
   <div id="gset" class="hidden"><div class="sbox gbox2">
-    <div class="ghead"><h2>🏆 遊戲設定</h2><span class="gsub">依序選好三個區塊，再按「進入遊戲」</span></div>
+    <div class="ghead"><h2 id="gTitle">🏆 遊戲設定</h2><span class="gsub" id="gSub">依序選好三個區塊，再按「進入遊戲」</span></div>
     <div class="gcols">
       <div class="gcol">
         <section class="gsec s1"><div class="gt"><i>①</i>對戰規則</div>
@@ -406,7 +407,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
         </section>
       </div>
     </div>
-    <div class="btnrow gfoot"><button class="btn gray" id="gBack">🔙 回上一頁</button><button class="btn" id="gGo">🔥 進入遊戲</button></div>
+    <div class="btnrow gfoot"><button class="btn gray" id="gBack">🔙 回上一頁</button><button class="btn" id="gGo"><span id="gGoT">🔥 進入遊戲</span></button></div>
   </div></div>
   <div id="hostLeft" class="hidden"><div class="sbox" style="text-align:center;max-width:420px"><div id="hostLeftMsg" style="font-size:18px;line-height:1.6;margin-bottom:12px"></div><button class="btn" id="hostLeftOk">確認</button></div></div>
   <div id="tut" class="hidden"></div>
@@ -427,15 +428,18 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
       <div id="mpCount" style="opacity:.8;font-size:13px;margin:4px 0"></div>
       <div id="mpMembers"></div>
       <div class="row"><label>角色</label><button class="chip" id="mpChar"></button></div>
-      <div id="mpHostCtl">
-        <div class="row"><label>地圖</label><div class="chips" id="chNMap"></div></div>
-        <div class="row"><label>模式</label><div class="chips" id="chNMode"></div></div>
-        <div class="row"><label>時間</label><div class="chips" id="chNTime"></div></div>
-        <div class="row"><label>技能</label><div class="chips" id="chNSkill"></div></div>
-        <div class="row"><label>總人數</label><div class="chips" id="chNCount"></div></div>
-        <div class="row"><label>號碼位數</label><div class="chips" id="chNCode"></div></div>
-        <div class="row"><label>難度</label><div class="chips" id="chNDiff"></div></div><div id="diffDescN" class="gnote" style="margin:-4px 0 6px"></div><div id="trollRowN" class="row hidden"><label>程度</label><div class="chips" id="chNTroll"></div></div>
-        <div class="row"><label>補位</label><div class="chips" id="chNBots"></div></div>
+      <div id="mpHostCtl" class="gstyle">
+        <section class="gsec s1"><div class="gt"><i>①</i>對戰規則</div>
+          <div class="grow"><label>模式</label><div class="chips" id="chNMode"></div></div>
+          <div class="grow"><label>時間</label><div class="chips" id="chNTime"></div></div>
+          <div class="grow"><label>技能</label><div class="chips" id="chNSkill"></div></div></section>
+        <section class="gsec s2"><div class="gt"><i>②</i>戰場地圖</div><div class="grow"><div class="chips" id="chNMap"></div></div></section>
+        <section class="gsec s3"><div class="gt"><i>③</i>對手與難度</div>
+          <div class="grow"><label>總人數</label><div class="chips" id="chNCount"></div></div>
+          <div class="grow"><label>號碼位數</label><div class="chips" id="chNCode"></div></div>
+          <div class="grow"><label>電腦難度</label><div class="chips" id="chNDiff"></div></div><div id="diffDescN" class="gnote"></div>
+          <div id="trollRowN" class="hidden"><div class="grow"><label>干擾程度</label><div class="chips" id="chNTroll"></div></div></div>
+          <div class="grow"><label>補位</label><div class="chips" id="chNBots"></div></div></section>
       </div>
       <div id="mpGuestInfo" class="mpnote"></div>
       <div id="mpHint" class="mpmsg"></div>
@@ -449,12 +453,6 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <div class="btnrow" style="justify-content:flex-start"><button class="btn" id="csOk">確認，開始遊戲</button><button class="btn alt" id="csBack">返回</button></div>
   </div></div>
   <div id="howPick" class="hidden"><div class="sbox" style="max-height:calc(var(--vh)*86);overflow:auto"><h2>玩法操作與說明</h2><div class="howto" id="howto"></div><div class="btnrow"><button class="btn alt" id="howBack">關閉</button></div></div></div>
-  <div id="demoPick" class="hidden"><div class="sbox"><h2>電腦示範模式</h2>
-    <div class="mpnote" style="margin:0 0 8px">先選擇要讓電腦示範的遊戲模式。人數、號碼位數與難度沿用主畫面的設定。</div>
-    <div class="mpnote" style="margin:0 0 4px">地圖</div><div class="chips" id="chDemoMap"></div><div id="demoMapDesc" class="mpnote"></div>
-    <div class="mpnote" style="margin:6px 0 4px">遊戲模式</div><div class="chips" id="chDemoMode"></div><div id="demoDesc" class="mpnote"></div><div id="demoNote" class="mpnote" style="color:#ffb27a"></div>
-    <div class="btnrow"><button class="btn" id="dpOk">開始示範</button><button class="btn alt" id="dpBack">返回</button></div>
-  </div></div>
   <div id="fade"></div>
   <div id="settings" class="hidden"><div class="sbox"><h2>設定</h2>
 <div class="row"><label>控制模式</label><div class="chips" id="chInput"></div></div>
@@ -3103,7 +3101,7 @@ function drawWorldFrame() {
   // 掉落物
   const t = G.time;
   for (const p of G.pickups) { if (!p.on) continue; if (!R.visible(p.x, p.y + .9, p.z, .8)) continue; M4.trs(SPR.tmp2, p.x, p.y + .75 + Math.sin(t * 2 + p.x) * .08, p.z, .3, t * 1.4, 0, 1, 1, 1); R.draw(SPR.crate, SPR.tmp2, SPR.crateMat); }
-  for (const g of G.grenades) { M4.trs(SPR.tmp2, g.x, g.y, g.z, g.spin, g.spin * .6, 0, 1, 1, 1); R.draw(SPR.gren, SPR.tmp2, SPR.grenMat[g.type]); }
+  for (const g of G.grenades) { M4.trs(SPR.tmp2, g.x, g.y, g.z, g.spin, g.spin * .6, 0, 1, 1, 1); R.draw(SPR.gren, SPR.tmp2, SPR.grenMat[g.type] || SPR.grenMat.flash); }
   if (G.mode === 'ctf') for (const f of G.flags) {
     if (!f.carrier) { M4.trs(SPR.tmp2, f.hx, 0, f.hz, 0, 0, 0, 1, 1, 1); R.draw(SPR.ring, SPR.tmp2, SPR.ringMat[f.team]); }
     const sway = Math.sin(t * 3 + f.team) * .15; let x = f.x, y = f.y, z = f.z, sc = 1;
@@ -3860,6 +3858,7 @@ const MENU_HOWTO = `<p><b>目標：</b>每個人額頭都戴著一組數字牌�
 <p><b>模式：</b>個人死鬥（15 淘汰）／團隊死鬥（30 淘汰）／奪旗（3 次）。團隊模式的隊友額頭牌邊框與臂章為同色，無法淘汰。</p>
 <p><b>提示：</b>畫面中央的紅色箭頭代表「有人正在讀你的號碼」，進度條滿了就會被淘汰——快移動、轉身或躲到掩體後。輸錯號碼會被鎖定輸入約 1 秒。</p>`;
 function huntLock() {
+  if ($('chMode')) [...$('chMode').children].forEach((b, i) => { const m = Object.values(MODES)[i]; if (UI.gDemo && m && m.demo === false) b.classList.add('dis'); else if (!m || !m.soon) b.classList.remove('dis'); });
   const h = S.mode === 'hunt'; if (h) { if (S.count !== 16 && S.count !== 20) S.count = 20; S.diff = 3; S.countSet = true; }
   const CN = [4, 8, 12, 16, 20];
   for (const id of ['chCount', 'chNCount']) { const el = $(id); if (!el) continue; [...el.children].forEach(b => { const v = parseInt(b.textContent); b.classList.toggle('dis', h && v !== 16 && v !== 20); b.classList.toggle('on', v === S.count); }); }
@@ -3973,16 +3972,15 @@ function openCharSelect(origin) {
   UI.els.menu.classList.add('hidden'); $('mp').classList.add('hidden'); $('charsel').classList.remove('hidden');
 }
 function closeCharSelect() { $('charsel').classList.add('hidden'); if (UI.csOrigin === 'mp') { $('mp').classList.remove('hidden'); renderLobby(); } else $('gset').classList.remove('hidden'); }
-function openDemoPick() {
-  const list = Object.entries(MODES).filter(([k, m]) => m.demo !== false), bad = Object.entries(MODES).filter(([k, m]) => m.demo === false);
-  if (!list.some(([k]) => k === S.demoMode)) S.demoMode = list.length ? list[0][0] : 'dm';
-  if (!MAPS[S.demoMap]) S.demoMap = S.map;
-  const updM = () => { $('demoMapDesc').textContent = MAPS[S.demoMap].desc; };
-  chips('chDemoMap', Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), () => S.demoMap, v => { S.demoMap = v; updM(); }); updM();
-  const upd = () => { $('demoDesc').textContent = MODES[S.demoMode] ? MODES[S.demoMode].desc : ''; };
-  chips('chDemoMode', list.map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), () => S.demoMode, v => { S.demoMode = v; upd(); });
-  $('demoNote').textContent = bad.length ? '以下模式需要真人操作，電腦無法示範：' + bad.map(([k, m]) => m.name).join('、') : ''; upd();
-  $('demoPick').classList.remove('hidden');
+function openGset(demo) {
+  UI.gDemo = !!demo; const g = $('gset');
+  if (demo) { UI.gSaved = { mode: S.mode, map: S.map }; if (MODES[S.demoMode] && MODES[S.demoMode].demo !== false) S.mode = S.demoMode; else S.mode = 'dm'; if (MAPS[S.demoMap]) S.map = S.demoMap; buildMenu(); }
+  $('gTitle').textContent = demo ? '🎬 電腦示範設定' : '🏆 遊戲設定'; $('gSub').textContent = demo ? '全部由電腦對戰，你以觀戰視角隨機切換' : '依序選好三個區塊，再按「進入遊戲」'; $('gGoT').textContent = demo ? '🎬 開始示範' : '🔥 進入遊戲';
+  UI.els.menu.classList.add('hidden'); g.classList.remove('hidden'); huntLock();
+}
+function closeGset(go2) {
+  const demo = UI.gDemo; $('gset').classList.add('hidden');
+  if (demo) { S.demoMode = S.mode; S.demoMap = S.map; if (UI.gSaved) { S.mode = UI.gSaved.mode; S.map = UI.gSaved.map; } UI.gSaved = null; saveS(); buildMenu(); UI.gDemo = false; }
 }
 /* ---------- 設定視窗 / 按鍵配置 ---------- */
 const LAYOUT_IDS = ['bJump', 'bBino', 'bBino2', 'bBack', 'bRun', 'bLeanL', 'bLeanR', 'slotF', 'slotG', 'slotS', 'pauseBtn', 'joyHint', 'numL', 'numR'];
@@ -4105,12 +4103,11 @@ function boot() {
   window.addEventListener('orientationchange', () => setTimeout(() => { updateRotate(); Perf.apply(); sizeBinoculars(); }, 250));
   const fs = () => { try { const el = document.documentElement; if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) { const r = el.requestFullscreen(); if (r && r.catch) r.catch(() => UI.msg('此環境不允許全螢幕', 'bad')); } else UI.msg('此裝置不支援全螢幕', 'bad'); } catch (e) { } };
   $('btnFs').onclick = fs; $('btnFs2').onclick = fs;
-  $('btnStart').onclick = () => go(() => { UI.els.menu.classList.add('hidden'); $('gset').classList.remove('hidden'); huntLock(); });
-  $('gBack').onclick = () => go(() => { $('gset').classList.add('hidden'); UI.els.menu.classList.remove('hidden'); });
-  $('gGo').onclick = () => go(() => { $('gset').classList.add('hidden'); openCharSelect('start'); }); $('btnDemo').onclick = () => go(openDemoPick); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
+  $('btnStart').onclick = () => go(() => openGset(false));
+  $('gBack').onclick = () => go(() => { const was = UI.gDemo; closeGset(); UI.els.menu.classList.remove('hidden'); });
+  $('gGo').onclick = () => go(() => { if (UI.gDemo) { closeGset(); beginGame(true); } else { $('gset').classList.add('hidden'); openCharSelect('start'); } }); $('btnDemo').onclick = () => go(() => openGset(true)); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
   $('csBack').onclick = () => go(closeCharSelect);
   $('csOk').onclick = () => go(() => { $('charsel').classList.add('hidden'); if (UI.csOrigin === 'mp') { $('mp').classList.remove('hidden'); renderLobby(); } else beginGame(false); });
-  $('dpBack').onclick = () => go(() => $('demoPick').classList.add('hidden')); $('dpOk').onclick = () => go(() => { $('demoPick').classList.add('hidden'); beginGame(true); });
   $('btnSet').onclick = () => go(openSettings); $('btnSet2').onclick = () => go(openSettings); $('btnSetClose').onclick = () => go(closeSettings); $('dbSet').onclick = () => go(openSettings); $('dbPause').onclick = () => setPause(true);
   $('btnLayout').onclick = () => go(openLayoutEditor); $('btnLayoutReset').onclick = () => { S.layout = {}; saveS(); applyLayout(); UI.msg('已重設按鍵配置', 'item'); };
   initLayoutEditor(); applyLayout(); initNetUI(); $('hostLeftOk').onclick = () => $('hostLeft').classList.add('hidden');

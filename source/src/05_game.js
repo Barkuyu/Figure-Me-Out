@@ -779,7 +779,7 @@ function drawWorldFrame() {
   // 掉落物
   const t = G.time;
   for (const p of G.pickups) { if (!p.on) continue; if (!R.visible(p.x, p.y + .9, p.z, .8)) continue; M4.trs(SPR.tmp2, p.x, p.y + .75 + Math.sin(t * 2 + p.x) * .08, p.z, .3, t * 1.4, 0, 1, 1, 1); R.draw(SPR.crate, SPR.tmp2, SPR.crateMat); }
-  for (const g of G.grenades) { M4.trs(SPR.tmp2, g.x, g.y, g.z, g.spin, g.spin * .6, 0, 1, 1, 1); R.draw(SPR.gren, SPR.tmp2, SPR.grenMat[g.type]); }
+  for (const g of G.grenades) { M4.trs(SPR.tmp2, g.x, g.y, g.z, g.spin, g.spin * .6, 0, 1, 1, 1); R.draw(SPR.gren, SPR.tmp2, SPR.grenMat[g.type] || SPR.grenMat.flash); }
   if (G.mode === 'ctf') for (const f of G.flags) {
     if (!f.carrier) { M4.trs(SPR.tmp2, f.hx, 0, f.hz, 0, 0, 0, 1, 1, 1); R.draw(SPR.ring, SPR.tmp2, SPR.ringMat[f.team]); }
     const sway = Math.sin(t * 3 + f.team) * .15; let x = f.x, y = f.y, z = f.z, sc = 1;
