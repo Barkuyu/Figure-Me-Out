@@ -102,6 +102,7 @@ const Sfx = {
   flag() { this.tone(440, .12, 'triangle', .18); this.tone(660, .12, 'triangle', .18, 0, .1); this.tone(880, .2, 'triangle', .18, 0, .2); },
   step() { this.noise(.05, .06, 600); },
   win() { [523, 659, 784, 1047].forEach((f, i) => this.tone(f, .25, 'triangle', .2, 0, i * .12)); },
+  siren() { for (let i = 0; i < 8; i++) { this.tone(i % 2 ? 760 : 1040, .25, 'sawtooth', .13, i % 2 ? 260 : -260, i * .25); } },
   skill() { this.tone(520, .12, 'triangle', .16, 300); this.tone(780, .2, 'sine', .14, 200, .08); this.noise(.12, .12, 3000, 0, true); },
   victory() { // 金色閃光 + 號角式勝利音
     this.noise(.5, .25, 6000, 0, true); [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => { this.tone(f, .5, 'triangle', .2, 0, .1 + i * .11); this.tone(f * 2, .4, 'sine', .07, 0, .1 + i * .11); });

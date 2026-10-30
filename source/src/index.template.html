@@ -117,7 +117,8 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
 .hnote{background:rgba(255,210,74,.12);border-left:3px solid #ffd24a;border-radius:6px;padding:5px 8px;margin:6px 0;font-size:12px}
 .hchars{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px}.hch{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.07);border-radius:10px;padding:5px 8px}.hch img{width:44px;height:44px;border-radius:50%;flex:none;border:2px solid rgba(255,255,255,.4)}.hch b{font-size:12.5px;display:block}.hch u{text-decoration:none;color:var(--yel);font-size:11.5px;font-weight:700;display:block}.hch span{font-size:11px;opacity:.88;line-height:1.4;display:block}
 @media (max-height:430px){.hpanel{max-height:calc(100vh - 170px)}.hsteps{grid-template-columns:repeat(4,1fr)}}
-#dtimer{position:absolute;right:12px;top:22%;display:none;align-items:center;gap:6px;background:rgba(40,40,60,.72);border:2px solid #9fe8ff;border-radius:12px;padding:3px 10px;font:700 15px var(--font);color:#dff7ff;pointer-events:none}#dtimer.on{display:flex}
+#sktm{position:absolute;right:8px;top:5px;display:flex;flex-direction:row-reverse;flex-wrap:wrap;gap:4px;max-width:46vw;pointer-events:none;z-index:6}#sktm span{display:flex;align-items:center;gap:3px;background:rgba(20,22,36,.78);border:1.5px solid rgba(255,255,255,.55);border-radius:10px;padding:1px 7px;font:700 13px var(--font);color:#fff}#sktm b{color:#ffd24a;min-width:1.2em;text-align:right}
+body.doll .np{background:#000!important;color:#ff1a30!important;border-color:#8c0f1c!important;text-shadow:0 0 6px #ff1a30}body.doll #typed{color:#ff1a30;background:#000;border-radius:10px;padding:2px 14px;text-shadow:0 0 8px #ff1a30}
 .howto kbd{background:#fff;color:#222;border-radius:4px;padding:0 5px;font:700 11px var(--font)}
 #btnStart{width:100%;margin-top:16px;font-size:22px;padding:13px}
 .err{background:#7a1f1f;padding:12px;border-radius:10px;margin:10px 0;font-size:14px}
@@ -166,9 +167,8 @@ body.mobile #photo canvas{width:300px;height:225px}
 #fin.lose .finTxt{color:#a3a9b2;text-shadow:0 4px 0 #2a2d33,0 0 18px rgba(0,0,0,.6);animation:riseUp 1.5s .3s cubic-bezier(.2,.8,.3,1) both}
 @keyframes riseUp{from{transform:translateY(45vh);opacity:0}to{transform:translateY(0);opacity:1}}
 #bJump{left:95.3%;top:89.9%;width:clamp(56px,9.3vw,108px);height:clamp(56px,9.3vw,108px);font-size:16px;font-weight:700}
-#bBino{left:11.5%;top:40.6%}
 #bRun{left:85.6%;top:90.2%;width:clamp(56px,9.1vw,106px);height:clamp(56px,9.1vw,106px);font-size:17px;font-weight:700}
-#bLeanL{left:88.6%;top:71.4%;font-size:20px}#bLeanR{left:95.8%;top:71.4%;font-size:20px}#bBino2{left:95.8%;top:54%}
+#bBino2{left:92.2%;top:71.4%}
 #bBack{left:auto;right:0;top:calc(48px + 13vh + .8vh);transform:none;width:8.8vw;height:9vh;border-radius:8px;opacity:.6;font-size:20px}
 body.mobile #slots{position:absolute;inset:0;transform:none;display:block;pointer-events:none}
 body.mobile .slot{position:absolute;width:clamp(44px,6.4vw,66px);height:clamp(44px,6.4vw,66px);transform:translate(-50%,-50%);pointer-events:auto}
@@ -334,7 +334,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="hud" class="hidden">
     <div id="scorebar"><span class="flagic" id="flagR"></span><div class="sc red" id="scR">0</div><span class="sep">-</span><div class="sc blue" id="scB">0</div><span class="flagic" id="flagB"></span></div>
-    <div id="timer">5:00</div><div id="dtimer">🌫️ 濃霧 <b id="dtN">20</b>s</div>
+    <div id="timer">5:00</div><div id="sktm"></div>
     <div id="countdown" class="hidden"><div id="cdTxt"></div><div id="cdNum"></div></div><div id="modeName"></div>
     <div id="killfeed"></div>
     <div id="crosshair"></div>
@@ -343,7 +343,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <div id="warn" class="hidden"><svg id="warnArrow" viewBox="0 0 24 24"><path d="M12 2 L22 21 L12 16 L2 21 Z" fill="currentColor"/></svg></div>
     <div id="warnBox" class="hidden"><div id="warnTxt">⚠ 有人正在讀你的號碼！</div><div class="bar"><i id="warnFill"></i></div></div>
     <div id="typed" class="empty">____</div>
-    <div id="hints"><div>輸入數字 <b>0-9</b></div><div>送出 <b>ENTER</b></div><div>刪除 <b>BACKSPACE</b></div><div>望遠鏡 <b>Q / 右鍵</b></div><div>探頭 <b>Z / C</b></div></div>
+    <div id="hints"><div>輸入數字 <b>0-9</b></div><div>送出 <b>ENTER</b></div><div>刪除 <b>BACKSPACE</b></div><div>望遠鏡 <b>Q / 右鍵</b></div></div>
     <div id="stamwrap"><span class="ic">⚡</span><div class="bar"><i id="stamFill"></i></div></div>
     <div id="binwrap"><span class="ic" style="font-size:15px">🔭</span><div class="bar"><i id="binFill"></i></div></div>
     <div id="slots"><div class="slot" id="slotF"><span class="ico"></span><em>F</em><small></small></div><div class="slot" id="slotG"><span class="ico"></span><em>G</em><small></small></div><div class="slot" id="slotS"><span class="ico"></span><em>R</em><b class="cdn"></b><i class="ring"></i></div></div>
@@ -361,9 +361,8 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <div id="joyHint">移動</div>
     <div id="joyBase"><div id="joyKnob"></div></div>
     <div class="tbtn" id="bJump">跳躍</div>
-    <div class="tbtn" id="bBino">🔭</div><div class="tbtn" id="bBino2">🔭</div><div class="tbtn" id="bBack">🔙</div>
+    <div class="tbtn" id="bBino2">🔭</div><div class="tbtn" id="bBack">🔙</div>
     <div class="tbtn" id="bRun">跑</div>
-    <div class="tbtn" id="bLeanL">↖️</div><div class="tbtn" id="bLeanR">↗️</div>
     <div class="numcol" id="numL"><div class="np" data-k="1">1</div><div class="np" data-k="2">2</div><div class="np" data-k="3">3</div><div class="np" data-k="4">4</div><div class="np" data-k="5">5</div></div>
     <div class="numcol" id="numR"><div class="np" data-k="6">6</div><div class="np" data-k="7">7</div><div class="np" data-k="8">8</div><div class="np" data-k="9">9</div><div class="np" data-k="0">0</div></div>
   </div>

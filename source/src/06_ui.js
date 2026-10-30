@@ -18,7 +18,7 @@ const UI = {
   /* 結算流程：全場暫停 → 勝利(金光)/落敗(灰暗) 過場 3 秒 → 翻牌顯示結算表 */
   onEnd() {
     const p = G.player, tok = this.endTok = (this.endTok || 0) + 1; let res = null;
-    if (G.sk) { G.sk.rev.t = 0; G.sk.scr.t = -1; } this.endScramble(); this._ph2 = false; this._pf = false; $('numL').classList.remove('purple'); $('numR').classList.remove('purple'); $('pflash').classList.remove('on');
+    if (G.sk) { G.sk.rev.t = 0; G.sk.scr.t = -1; G.sk.rel.t = -1; } this.endScramble(); this._ph2 = false; this._pf = false; $('numL').classList.remove('purple'); $('numR').classList.remove('purple'); $('pflash').classList.remove('on');
     if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
     if (p && !G.demo) { if (isDM()) res = G.winner === p.name ? 'win' : 'lose'; else res = G.winner === -1 ? 'draw' : (G.winner === p.team ? 'win' : 'lose'); }
     if (!res) { this.showEnd(false); return; }
@@ -58,27 +58,55 @@ const UI = {
     ico.textContent = ITEMS[s.type].ico; n.textContent = s.n > 1 ? s.n : ''; el.classList.add('has');
   },
   /* 角色技能鍵：圓形倒數環 + 秒數；艾伯特技能的預警閃光與按鍵錯亂 */
+  skTimers(p) {
+    const K = G.sk, L = [], add = (ico, r) => { if (r > .05) L.push([ico, r]); }, cd = p.skCd || 0, c = G.netClient;
+    if (K) {
+      if (K.rev.by === p && K.rev.t > 0) add('🔄', K.rev.t);
+      if (K.scr.by === p && K.scr.t >= 0) add('⚡', SCR_TOTAL - K.scr.t);
+      if (K.ink.by === p && K.ink.t > 0) add('🦑', K.ink.t);
+      if (K.eagle.by === p && K.eagle.t > 0) add('🎯', K.eagle.t);
+      if (K.night.by === p) add('🌑', Math.min(30, 31.5 - K.night.e));
+      if (K.rel && K.rel.by === p && K.rel.t >= 0) add('🔀', REL_WARN + REL_DUR - K.rel.t);
+    }
+    add('🛡️', p.shieldT || 0);
+    if (p.fake && p.fakeOf) add('🎭', p.fakeT); else if (c && p.fakeT > 0) add('🎭', p.fakeT);
+    add('🌫️', p.dackE >= 0 ? DACK_T - p.dackE : (c && SKILL_OF[p.av.outfitIdx] === 'dack' && cd > 15 ? cd - 15 : 0));
+    if (p.cloak) add('🐱', 5 - p.cloakE); else if (c && SKILL_OF[p.av.outfitIdx] === 'lydia' && cd > 15) add('🐱', cd - 15);
+    add('🐵', p.wkT || 0);
+    const key = L.map(x => x[0] + Math.ceil(x[1])).join('|'); if (key === this._tmk) return; this._tmk = key;
+    $('sktm').innerHTML = L.map(x => `<span>${x[0]}<b>${Math.ceil(x[1])}</b></span>`).join('');
+  },
   skillHUD(dt, p) {
-    { const dk = $('dtimer'); let rem = p.dackE >= 0 ? DACK_T - p.dackE : (G.netClient && SKILL_OF[p.av.outfitIdx] === 'dack' && p.skCd > 15 ? p.skCd - 15 : 0); const on = rem > 0.05 && p.alive; if (on !== this._dk) { this._dk = on; dk.classList.toggle('on', on); } if (on) $('dtN').textContent = Math.ceil(rem); }
+    { const rl = G.sk && G.sk.rel, rt = rl ? rl.t : -1; if (rt >= 0 && (this._rlp === undefined || this._rlp < 0 || rt < this._rlp)) { Sfx.siren(); if (rl.by !== p) this.msg('⚠ 相對論發動！操作即將左右互換', 'bad'); } this._rlp = rt;
+      const r2 = relPhase2(p); if (r2 !== this._rl2) { this._rl2 = r2; this.numLayout(); } }
+    { const dl = isOut(p, 20); if (dl !== this._dl) { this._dl = dl; document.body.classList.toggle('doll', dl); } }
+    this.skTimers(p);
     { const dr = p.av.outfitIdx === 18; if (dr !== this._dr) { this._dr = dr; document.body.classList.toggle('derek', dr); $('slotG').style.display = dr ? 'none' : ''; $('slotS').querySelector('em').textContent = dr ? 'G' : 'R'; } }
     const s = $('slotS'), sk = skillOf(p), cd = p.skCd || 0, show = !!sk && skOn(); s.style.display = show ? '' : 'none'; s.classList.toggle('boost', !!p.boost && cd > 0);
     { let f = 0; for (const o of G.actors) if (o !== p && o.alive && o.dackE >= 1) { const d = Math.hypot(o.x - p.x, o.z - p.z); if (d < 12) f = Math.max(f, .8 + .2 * (1 - d / 12)); } const df = $('dfog'); $('dself').style.opacity = (p.dackE >= 1) ? .2 : 0; if (Math.abs((this._df || 0) - f) > .02) { this._df = f; df.style.opacity = f; } }
     $('stamwrap').style.visibility = isOut(p, 12) ? 'hidden' : ''; $('binwrap').style.visibility = isOut(p, 13) ? 'hidden' : '';
     { const ik = $('ink'), on = inkActive(p); if (on !== this._ink) { this._ink = on; ik.classList.toggle('on', on); } if (on && G.sk.ink.t < .5) ik.style.opacity = G.sk.ink.t * 2; else if (on) ik.style.opacity = 1; }
     const dash = isSumi(p) && p.dashReady && !p.onGround, jb = $('bJump'); if (jb) { const tx = dash ? '突進' : '跳躍'; if (jb.textContent !== tx) jb.textContent = tx; }
-    if (!show) { this._ph2 = false; return; }
+    if (show) {
     const ico = p.stolen ? SKILLS[p.stolen].ico : p.armed ? '🪄' : sk.ico; if (this._skIco !== ico) { this._skIco = ico; s.querySelector('.ico').textContent = ico; }
     s.classList.toggle('cd', cd > 0); s.classList.toggle('on', (p.shieldT || 0) > 0 || !!p.stolen || !!p.armed); s.style.setProperty('--p', Math.min(360, cd / sk.cd * 360).toFixed(1) + 'deg');
     const sec = cd > 0 ? String(Math.ceil(cd)) : ''; if (this._skSec !== sec) { this._skSec = sec; s.querySelector('.cdn').textContent = sec; }
+    }
     const sc = G.sk.scr, t = sc.t; let on = false;
     this._pf = on; $('numL').classList.toggle('purple', on); $('numR').classList.toggle('purple', on); $('pflash').classList.toggle('on', on);
-    const ph2 = scrPhase2(p); if (ph2 && !this._ph2) this.startScramble(); if (!ph2 && this._ph2) this.endScramble(); this._ph2 = ph2;
+    const ph2 = scrPhase2(p); if (ph2 && !this._ph2) { this._ph2 = true; this.startScramble(); } if (!ph2 && this._ph2) this.endScramble(); this._ph2 = ph2;
+  },
+  numLayout() { // 手機數字鍵排列：正常／錯亂（艾伯特）／相反（愛因斯坦）
+    const all = [...document.querySelectorAll('.np')], norm = [...all].sort((a, b) => ((+a.dataset.k + 9) % 10) - ((+b.dataset.k + 9) % 10));
+    const order = this._ph2 ? [...all].sort(() => Math.random() - .5) : this._rl2 ? norm.slice().reverse() : norm;
+    if (Device.mobile) order.forEach((b, i) => (i < 5 ? $('numL') : $('numR')).appendChild(b));
+    if (!this._ph2) G.keyMap = null;
   },
   startScramble() {
-    if (Device.mobile) { const bs = [...document.querySelectorAll('.np')].sort(() => Math.random() - .5), L = $('numL'), R = $('numR'); bs.forEach((b, i) => (i < 5 ? L : R).appendChild(b)); }
+    if (Device.mobile) this.numLayout();
     else { let m; do { m = '0123456789'.split('').sort(() => Math.random() - .5); } while (m.some((v, i) => v === String(i))); G.keyMap = {}; for (let i = 0; i < 10; i++) G.keyMap[String(i)] = m[i]; }
   },
-  endScramble() { G.keyMap = null; const bs = [...document.querySelectorAll('.np')].sort((a, b) => ((+a.dataset.k + 9) % 10) - ((+b.dataset.k + 9) % 10)); bs.forEach((b, i) => (i < 5 ? $('numL') : $('numR')).appendChild(b)); },
+  endScramble() { G.keyMap = null; this._ph2 = false; this.numLayout(); },
   updateHUD(dt) {
     const e = this.els, p = G.player;
     if (!p && G.demo) { this.cdUpdate(dt); this.demoHUD(dt); return; }
@@ -224,7 +252,7 @@ const Input = {
       keys[e.code] = true; if (/^(Space|ArrowUp|ArrowDown|Tab)$/.test(e.code)) e.preventDefault();
     });
     window.addEventListener('keyup', e => { keys[e.code] = false; });
-    window.addEventListener('blur', () => { for (const k in keys) keys[k] = false; In.leanL = In.leanR = false; });
+    window.addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
     document.addEventListener('pointerdown', e => { const t = e.target.closest && e.target.closest('button,.btn,.chip,.card,.tbtn,.slot'); if (t && !t.classList.contains('np')) { Sfx.init(); Sfx.resume(); Sfx.click(); } }, true);
     const cvs = $('gl');
     document.addEventListener('mousemove', e => {
@@ -279,13 +307,19 @@ const Input = {
     layer.addEventListener('touchend', end); layer.addEventListener('touchcancel', end);
     // 按鈕
     const press = (el, down, up) => { let lt = 0; el.addEventListener('touchstart', e => { lt = performance.now(); e.preventDefault(); e.stopPropagation(); Sfx.init(); Sfx.resume(); el.classList.add('act'); down(); if (navigator.vibrate) try { navigator.vibrate(8); } catch (x) { } }, { passive: false }); const u = e => { e.preventDefault(); el.classList.remove('act'); if (up) up(); }; el.addEventListener('touchend', u); el.addEventListener('touchcancel', u); el.addEventListener('mousedown', e => { if (Device.mobile && performance.now() - lt > 900) { e.stopPropagation(); down(); } }); };
-    document.addEventListener('touchend', e => { if (!e.touches.length) { In.leanL = In.leanR = false; In.jump = false; } }, true); document.addEventListener('touchcancel', () => { In.leanL = In.leanR = false; In.jump = false; }, true);
+    document.addEventListener('touchend', e => { if (!e.touches.length) { In.jump = false; } }, true); document.addEventListener('touchcancel', () => { In.jump = false; }, true);
     document.querySelectorAll('.np').forEach(b => press(b, () => typeDigit(b.dataset.k)));
     press($('bJump'), () => { In.jump = true; }, () => { In.jump = false; });
-    press($('bBino'), () => toggleBino()); press($('bBino2'), () => toggleBino()); press($('bBack'), () => backspace());
+    { // 望遠鏡（手機）：壓住使用、放開取消；壓住期間滑動＝轉視角
+      const bb = $('bBino2'); let bid = null, bx = 0, by = 0;
+      const off = () => { bid = null; bb.classList.remove('act'); if (G.bino) { G.bino = false; } };
+      bb.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); Sfx.init(); Sfx.resume(); const t = e.changedTouches[0]; bid = t.identifier; bx = TX(t); by = TY(t); bb.classList.add('act'); if (!G.bino) toggleBino(); }, { passive: false });
+      bb.addEventListener('touchmove', e => { for (const t of e.changedTouches) if (t.identifier === bid) { const s = .0046 * S.sens * lookScale(); In.lookX -= (TX(t) - bx) * s; In.lookY -= (TY(t) - by) * s; bx = TX(t); by = TY(t); } e.preventDefault(); e.stopPropagation(); }, { passive: false });
+      for (const ev of ['touchend', 'touchcancel']) bb.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); off(); }, { passive: false });
+    }
+    press($('bBack'), () => backspace());
     { const ss = $('slotS'); press(ss, () => castSkillPlayer()); ss.addEventListener('click', () => { if (!Device.mobile) castSkillPlayer(); }); }
     press($('bRun'), () => { In.sprintT = !In.sprintT; In.sprint = In.sprintT; $('bRun').classList.toggle('tog', In.sprintT); }, () => { });
-    press($('bLeanL'), () => { In.leanL = true; }, () => { In.leanL = false; }); press($('bLeanR'), () => { In.leanR = true; }, () => { In.leanR = false; });
     for (const [id, i] of [['slotF', 0], ['slotG', 1]]) { const el = $(id); press(el, () => useItem(i)); el.addEventListener('click', () => { if (!Device.mobile) useItem(i); }); }
     press($('pauseBtn'), () => setPause(true));
   },
@@ -294,7 +328,7 @@ const Input = {
   poll() {
     if (!Device.mobile) {
       const f = (keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0), s = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
-      In.mx = s; In.my = f; In.jump = !!keys.Space; In.sprint = !!(keys.ShiftLeft || keys.ShiftRight); In.leanL = !!keys.KeyZ; In.leanR = !!keys.KeyC;
+      In.mx = s; In.my = f; In.jump = !!keys.Space; In.sprint = !!(keys.ShiftLeft || keys.ShiftRight);
     }
   }
 };
@@ -322,8 +356,8 @@ function howPanel(id) {
   if (id === 'go') return `<div class="hhero"><svg viewBox="0 0 120 70" class="hplate"><circle cx="60" cy="22" r="14" fill="#e8c7a6" stroke="#5a3a22" stroke-width="2"/><rect x="26" y="34" width="68" height="26" rx="5" fill="#fff6d8" stroke="#c0392b" stroke-width="3"/><text x="60" y="53" text-anchor="middle" font-size="19" font-weight="800" fill="#c0392b" font-family="monospace">48 213</text></svg><p>每個人額頭都有一組<b>數字牌</b>。<br>先讀到、先輸入，對方就<b>淘汰</b>！</p></div>
 <div class="hsteps">${hStep(1, '👀', '看', '靠近、對準額頭')}${hStep(2, '🧠', '記', '記下整組數字')}${hStep(3, '⌨️', '輸入', '按數字鍵 → Enter')}${hStep(4, '💥', '淘汰', '對方出局、你得分')}</div>
 <div class="hgrid">${hCard('🔴', '被讀到了？', '畫面中央紅箭頭＝有人在讀你。快<b>背對、躲掩體、移動</b>。')}${hCard('❌', '輸錯號碼', '定身 2 秒，視角也鎖住，千萬別亂按。')}${hCard('♻️', '擊殺後', '你的號碼立刻換新，別人讀到的作廢。')}${hCard('🛡️', '重生保護', '剛重生短時間無法被淘汰。')}</div>`;
-  if (id === 'ctl') return `<h3>🖥️ 電腦</h3><div class="hkeys">${hKey('W A S D', '移動')}${hKey('Shift', '衝刺')}${hKey('Space', '跳（空中再按＝二段跳）')}${hKey('滑鼠', '轉視角（先點畫面）')}${hKey('0-9', '輸入號碼')}${hKey('Enter', '送出')}${hKey('⌫', '刪除一碼')}${hKey('R', '角色技能')}${hKey('F / G', '使用道具（Derek 的 G＝衝鋒）')}${hKey('Q／右鍵', '望遠鏡')}${hKey('Z / C', '左／右探頭')}${hKey('Esc', '暫停')}</div>
-<h3>📱 手機（橫向）</h3><div class="hgrid">${hCard('🕹️', '左半邊拖曳', '搖桿移動')}${hCard('🏃', '右側「跑」鍵', '按住衝刺（耗體力）')}${hCard('👆', '右側空白拖曳', '轉視角')}${hCard('🔢', '左右數字鍵', '輸滿位數自動送出')}${hCard('⬆️', '跳躍鍵', '空中再按＝二段跳')}${hCard('🔭', '望遠鏡／道具格', '點按使用')}</div>
+  if (id === 'ctl') return `<h3>🖥️ 電腦</h3><div class="hkeys">${hKey('W A S D', '移動')}${hKey('Shift', '衝刺')}${hKey('Space', '跳（空中再按＝二段跳）')}${hKey('滑鼠', '轉視角（先點畫面）')}${hKey('0-9', '輸入號碼')}${hKey('Enter', '送出')}${hKey('⌫', '刪除一碼')}${hKey('R', '角色技能')}${hKey('F / G', '使用道具（Derek 的 G＝衝鋒）')}${hKey('Q／右鍵', '望遠鏡')}${hKey('Esc', '暫停')}</div>
+<h3>📱 手機（橫向）</h3><div class="hgrid">${hCard('🕹️', '左半邊拖曳', '搖桿移動')}${hCard('🏃', '右側「跑」鍵', '按住衝刺（耗體力）')}${hCard('👆', '右側空白拖曳', '轉視角')}${hCard('🔢', '左右數字鍵', '輸滿位數自動送出')}${hCard('⬆️', '跳躍鍵', '空中再按＝二段跳')}${hCard('🔭', '望遠鏡', '壓住使用、放開取消，壓住時滑動轉視角')}${hCard('🎒', '道具格', '點按使用')}</div>
 <div class="hnote">🔋 衝刺會消耗體力條；望遠鏡有能量條，用完需等待回復。</div>`;
   if (id === 'item') return `<div class="hnote">開局沒有道具，走過地圖上的 <b>？箱</b> 才會取得；兩格已滿時不會更換。</div><div class="hgrid">${Object.entries({ cam: '拍照後照片短暫停留，方便看清號碼', quake: '讓其他人畫面劇烈橫向晃動 2 秒', scope: '約 13° 超遠距放大，再按一次＝拍照', fake: '頭上號碼偽裝成別的數字 7 秒', spring: '立即刷新角色技能冷卻' }).map(([k, d]) => hCard(ITEMS[k].ico, ITEMS[k].name, d, 'big')).join('')}${hCard('🔭', '望遠鏡（內建）', '遠距離讀碼，有能量限制', 'big')}</div>`;
   if (id === 'chr') { return `<div class="hnote">按 <span class="kc">R</span>（手機：技能鍵）施放，圓環顯示冷卻。可在「遊戲設定」整體關閉技能。</div><div class="hchars">${OUTFITS.map((o, i) => o.hidden ? '' : `<div class="hch"><img src="${outfitIcon(i)}"><div><b>${o.label}</b><u>${o.skill.name}</u><span>${o.skill.desc}</span></div></div>`).join('')}</div>`; }
@@ -389,16 +423,15 @@ function tutHTML(mobile) {
 <div class="tcard"><b>🖱 視角</b>滑鼠移動＝轉視角（先點一下畫面鎖定）<br>右鍵／<span class="kc">Q</span> 望遠鏡（放大、移動變慢）</div>
 <div class="tcard"><b>🔢 輸入號碼</b>看清對手額頭的數字後：<br><span class="kc">0</span>–<span class="kc">9</span> 輸入　<span class="kc">Enter</span> 送出<br><span class="kc">Backspace</span> 刪除（輸入滿位數可自動送出）</div>
 <div class="tcard"><b>🎒 道具</b><span class="kc">F</span> 道具 1　<span class="kc">G</span> 道具 2　<span class="kc">R</span> 角色技能<br>開局沒有道具，撿地圖上的橘色「?」箱取得；欄位滿了就不會更換</div>
-<div class="tcard"><b>👀 探頭</b>躲在掩體後按住 <span class="kc">Z</span>（左）／<span class="kc">C</span>（右）<br>探頭看一眼就縮回，別被讀到號碼</div>
 <div class="tcard"><b>⚠ 小心</b>紅色箭頭＝有人正在讀你的號碼<br>輸入錯誤會被定身 2 秒（視角也不能轉）<br><span class="kc">Esc</span> 暫停</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
   const P = (l, t, w, cls, txt, st) => `<i class="${cls || ''}" style="left:${l}%;top:${t}%;${w ? 'width:' + w + '%;aspect-ratio:1;' : ''}${st || ''}">${txt}</i>`;
   return `<h2>操作說明</h2><div class="tphone">
 ${P(23, 19.5, 0, 'col', '1 2 3 4 5')}${P(77, 19.5, 0, 'col', '6 7 8 9 0')}${P(95.6, 34, 0, 'col', '🔙', 'width:8.8%;height:9%;top:33%')}
-${P(16.3, 78.4, 12, 'c', '移動')}${P(11.5, 40.6, 6.6, 'c', '🔭')}${P(80.2, 74.3, 6.2, 'c', 'F')}${P(76.6, 92.6, 6.2, 'c', 'G')}${P(69.4, 92.6, 6.2, 'c', 'R')}${P(95.8, 54, 6.6, 'c', '🔭')}
-${P(88.6, 71.4, 6.6, 'c', '↖')}${P(95.8, 71.4, 6.6, 'c', '↗')}${P(85.6, 90.2, 9.1, 'c', '跑')}${P(95.3, 89.9, 9.3, 'c', '跳')}${P(59.6, 8, 3.8, 'c', '⏸')}
-<div class="tx" style="left:16.3%;top:62%;width:20%">左側拖曳＝移動</div><div class="tx" style="left:11.5%;top:53%;width:14%">望遠鏡</div>
+${P(16.3, 78.4, 12, 'c', '移動')}${P(80.2, 74.3, 6.2, 'c', 'F')}${P(76.6, 92.6, 6.2, 'c', 'G')}${P(69.4, 92.6, 6.2, 'c', 'R')}${P(92.2, 71.4, 6.6, 'c', '🔭')}
+${P(85.6, 90.2, 9.1, 'c', '跑')}${P(95.3, 89.9, 9.3, 'c', '跳')}${P(59.6, 8, 3.8, 'c', '⏸')}
+<div class="tx" style="left:16.3%;top:62%;width:20%">左側拖曳＝移動</div><div class="tx" style="left:88%;top:60%;width:22%">壓住望遠鏡＝放大，滑動轉視角，放開取消</div>
 <div class="tx" style="left:50%;top:48%;width:40%">右側空白處拖曳＝轉視角</div><div class="tx" style="left:50%;top:36%;width:60%">上方數字鍵輸入號碼（滿位數自動送出）</div>
-<div class="tx" style="left:46%;top:76%;width:34%;line-height:1.6">F／G＝道具　↖／↗＝探頭（按住）<br>跑＝點一下開關衝刺<br>跳＝跳躍，空中再按＝二段跳</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
+<div class="tx" style="left:46%;top:76%;width:34%;line-height:1.6">F／G＝道具<br>跑＝點一下開關衝刺<br>跳＝跳躍，空中再按＝二段跳</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
 }
 function showTut(freeze) {
   const t = $('tut'); t.innerHTML = tutHTML(Device.mobile); t.classList.remove('hidden'); G.tut = !!freeze; UI.tutOpen = true; const t0 = performance.now();
@@ -426,7 +459,7 @@ function beginGame(demo, roster) {
 function toMenu() { go(() => { netLeave(); resetToMenuUI(); }); }
 function stopGameUI() { resetToMenuUI(); UI.els.menu.classList.add('hidden'); }
 function resetToMenuUI() {
-  hideTut(); if (G.sk) { G.sk.night = { e: 0, by: null }; G.sk.ink.t = 0; G.sk.rev.t = 0; G.sk.quake.t = 0; G.sk.eagle.t = 0; } G.scopeOn = false; applyNightEnv(null); $('dfog').style.opacity = 0; $('dself').style.opacity = 0; $('ink').classList.remove('on'); $('gset').classList.add('hidden');
+  hideTut(); if (G.sk) { G.sk.night = { e: 0, by: null }; G.sk.ink.t = 0; G.sk.rev.t = 0; G.sk.rel.t = -1; G.sk.quake.t = 0; G.sk.eagle.t = 0; } G.scopeOn = false; applyNightEnv(null); $('dfog').style.opacity = 0; $('dself').style.opacity = 0; $('ink').classList.remove('on'); $('gset').classList.add('hidden');
   G.state = 'menu'; G.demo = false; G.view = null; document.body.classList.remove('playing', 'demo'); UI.els.hud.classList.add('hidden'); UI.els.menu.classList.remove('hidden'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.hideEnd(); UI.els.bino.style.display = 'none'; UI.els.flash.style.opacity = 0;
   $('settings').classList.add('hidden'); updateRotate(); if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
   { const ids = Object.keys(MAPS).filter(k => k !== World.id); World.load(pick(ids)); G.orbitSeed = Math.random() * 6.28; }
@@ -464,7 +497,7 @@ function closeGset(go2) {
   if (demo) { S.demoMode = S.mode; S.demoMap = S.map; if (UI.gSaved) { S.mode = UI.gSaved.mode; S.map = UI.gSaved.map; } UI.gSaved = null; saveS(); buildMenu(); UI.gDemo = false; }
 }
 /* ---------- 設定視窗 / 按鍵配置 ---------- */
-const LAYOUT_IDS = ['bJump', 'bBino', 'bBino2', 'bBack', 'bRun', 'bLeanL', 'bLeanR', 'slotF', 'slotG', 'slotS', 'pauseBtn', 'joyHint', 'numL', 'numR'];
+const LAYOUT_IDS = ['bJump', 'bBino2', 'bBack', 'bRun', 'slotF', 'slotG', 'slotS', 'pauseBtn', 'joyHint', 'numL', 'numR'];
 function lay(id) { return S.layout[id] || (S.layout[id] = { x: 0, y: 0, s: 1 }); }
 function applyLayout() {
   const on = Device.mobile || document.body.classList.contains('editing');
@@ -488,7 +521,7 @@ function closeSettings() {
   $('settings').classList.add('hidden');
   if (UI.setAuto) { UI.setAuto = false; setPause(false); if (!G.demo && !Device.mobile) Input.lock(); }
 }
-const NAMES_UI = { bRun: '跑步鍵', bLeanL: '向左探頭鍵', bLeanR: '向右探頭鍵', bJump: '跳躍鍵', bBino: '望遠鏡鍵', bBino2: '望遠鏡鍵 2', bBack: '退回一個數字鍵', slotF: '道具 F（相機）', slotG: '道具 G', slotS: '角色技能 R', pauseBtn: '暫停鍵', joyHint: '移動搖桿', numL: '數字鍵 0–4', numR: '數字鍵 5–9' };
+const NAMES_UI = { bRun: '跑步鍵', bJump: '跳躍鍵', bBino2: '望遠鏡鍵（壓住使用）', bBack: '退回一個數字鍵', slotF: '道具 F（相機）', slotG: '道具 G', slotS: '角色技能 R', pauseBtn: '暫停鍵', joyHint: '移動搖桿', numL: '數字鍵 0–4', numR: '數字鍵 5–9' };
 let edSel = null, edDrag = null, edPrev = null;
 function edSelect(id) {
   edSel = id; LAYOUT_IDS.forEach(k => $(k).classList.toggle('sel', k === id));
@@ -598,5 +631,5 @@ function boot() {
   updateRotate(); requestAnimationFrame(frame); startIntro();
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
-window.__G = { ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+window.__G = { relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
