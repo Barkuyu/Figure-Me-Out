@@ -417,6 +417,9 @@ function huntLock() {
   if (window.updTroll) window.updTroll(); if ($('diffDesc')) $('diffDesc').textContent = DIFF[S.diff].desc; if ($('diffDescN')) $('diffDescN').textContent = DIFF[S.diff].desc;
   for (const id of ['chDiff', 'chNDiff']) { const el = $(id); if (!el) continue; [...el.children].forEach((b, i) => { if (i >= DIFF.length) { b.classList.toggle('dis', h); return; } b.classList.toggle('dis', h && i !== 3); b.classList.toggle('on', i === S.diff); }); }
   refreshRand();
+  const ar = (UI.gDemo ? S.demoMode : S.mode) === 'arena' && !(S.rnd && S.rnd.mode); // 擂台逃殺：時間／技能／人數／難度依固定規則，全部上鎖
+  if (ar) S.skills = true;
+  for (const id of ['chTime', 'chSkill', 'chCount', 'chDiff', 'chTroll', 'chNTime', 'chNSkill', 'chNCount', 'chNDiff', 'chNTroll']) { const el = $(id); if (!el) continue; [...el.children].forEach(b => b.classList.toggle('dis', ar || (b.classList.contains('dis') && !ar && !/^ch(Time|Skill|NTime|NSkill|Troll|NTroll)$/.test(id)))); if (ar && /Skill/.test(id)) [...el.children].forEach((b, i) => b.classList.toggle('on', i === 0)); }
 }
 const RAND_IDS = {}; // 容器 id -> 隨機類別
 function chips(id, items, get, set, rk) {
@@ -428,8 +431,9 @@ function resolveRandoms(demo, humans) { // 開局時把「隨機」類別換成�
   const r = S.rnd || {}, vis = Object.entries(MODES).filter(([k, m]) => !m.soon && !(demo && m.demo === false) && !(k === 'kof' && humans > 2)).map(x => x[0]);
   if (r.mode) { const k = pick(vis); if (demo) S.demoMode = k; else S.mode = k; }
   if (r.map) { const k = pick(Object.keys(MAPS)); if (demo) S.demoMap = k; else S.map = k; }
-  if (r.time) S.time = pick([4, 5, 8, 10]); if (r.skills) S.skills = Math.random() < .5;
-  if (r.diff) S.diff = randi(0, 3); if (r.troll) S.trollLv = randi(1, 3); if (r.count) { S.count = pick([4, 8, 12, 16, 20]); S.countSet = true; }
+  const arenaFix = (demo ? S.demoMode : S.mode) === 'arena';
+  if (!arenaFix) { if (r.time) S.time = pick([4, 5, 8, 10]); if (r.skills) S.skills = Math.random() < .5;
+  if (r.diff) S.diff = randi(0, 3); if (r.troll) S.trollLv = randi(1, 3); if (r.count) { S.count = pick([4, 8, 12, 16, 20]); S.countSet = true; } } else S.skills = true;
   const mk = demo ? S.demoMode : S.mode; if (mk === 'hunt') { if (S.count !== 16 && S.count !== 20) S.count = 20; S.diff = 3; S.countSet = true; }
 }
 function buildMenu() {
