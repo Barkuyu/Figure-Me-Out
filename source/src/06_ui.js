@@ -59,6 +59,7 @@ const UI = {
   },
   /* 角色技能鍵：圓形倒數環 + 秒數；艾伯特技能的預警閃光與按鍵錯亂 */
   skillHUD(dt, p) {
+    { const dk = $('dtimer'); let rem = p.dackE >= 0 ? DACK_T - p.dackE : (G.netClient && SKILL_OF[p.av.outfitIdx] === 'dack' && p.skCd > 15 ? p.skCd - 15 : 0); const on = rem > 0.05 && p.alive; if (on !== this._dk) { this._dk = on; dk.classList.toggle('on', on); } if (on) $('dtN').textContent = Math.ceil(rem); }
     const s = $('slotS'), sk = skillOf(p), cd = p.skCd || 0, show = !!sk && skOn(); s.style.display = show ? '' : 'none'; s.classList.toggle('boost', !!p.boost && cd > 0);
     { let f = 0; for (const o of G.actors) if (o !== p && o.alive && o.dackE >= 1) { const d = Math.hypot(o.x - p.x, o.z - p.z); if (d < 12) f = Math.max(f, .8 + .2 * (1 - d / 12)); } const df = $('dfog'); $('dself').style.opacity = (p.dackE >= 1) ? .2 : 0; if (Math.abs((this._df || 0) - f) > .02) { this._df = f; df.style.opacity = f; } }
     $('stamwrap').style.visibility = isOut(p, 12) ? 'hidden' : ''; $('binwrap').style.visibility = isOut(p, 13) ? 'hidden' : '';
@@ -311,18 +312,31 @@ function togglePause() { setPause(!(UI.paused || UI.menuOpen)); }
 function resumeGame() { UI.menuOpen = false; setPause(false); if (!Device.mobile) { Input.lock(); } }
 
 /* ---------- 選單 ---------- */
-const MENU_HOWTO = `<p><b>目標：</b>每個人額頭都戴著一組數字牌（3～5 碼，可在主畫面選擇）。<b>看清楚 → 記住 → 輸入 → Enter</b>，對方就被淘汰。你自己的號碼別人也讀得到——背對、躲掩體、丟煙霧彈，別讓人讀完。</p>
-<p><b>電腦：</b><kbd>WASD</kbd> 移動　<kbd>Shift</kbd> 衝刺　<kbd>Space</kbd> 跳（空中再按一次＝二段跳）　滑鼠轉視角（先點畫面鎖定）　<kbd>0-9</kbd> 輸入　<kbd>Enter</kbd> 送出　<kbd>Backspace</kbd> 刪除　<kbd>F</kbd>/<kbd>G</kbd> 使用道具　<kbd>Q</kbd> 或右鍵 望遠鏡　<kbd>Esc</kbd> 暫停</p>
-<p><b>手機：</b>左半邊拖曳＝搖桿（走路）、右側「跑」鍵按住＝衝刺、跳躍鍵可在空中再按一次二段跳、右側空白處拖曳＝轉視角、左右兩側的數字鍵輸入（輸入滿位數自動送出）、跳躍／望遠鏡／道具格為按鈕。建議橫向持機。</p>
-<p><b>道具：</b>開局沒有任何道具，必須靠走過地圖上的 <b>?</b> 箱才能取得；道具欄（兩格）已滿時不會更換，要先用掉一個再撿新的。<br>📷 相機：拍照後照片短暫停留，方便看清號碼。　🌋 地牛控制器：使其他人的畫面劇烈橫向晃動 2 秒並逐漸減弱。　🔍 偵查鏡：約 10° 長距離放大，再按一次道具鍵即拍照。　🎫 假號碼牌：頭上號碼偽裝成別的數字 7 秒。　⛲ 神仙泉水：立即刷新角色技能冷卻。　🔭 望遠鏡（內建）：遠距離讀碼，有能量限制。</p>
-<p><b>地圖：</b>熱血高校（白天校園，標準面積）／詭譎學苑（黑夜版，遠處會沒入黑暗、要靠近才看得到對手）／追逃商城（1.4 倍大，兩座電扶梯通往二樓，可從欄杆直接跳下一樓、不會摔傷）。</p>
-<p><b>人數：</b>含你在內最多 20 人，不足的人數由電腦補上；手機預設 12 人較順。<b>號碼位數：</b>頭上數字的位數（3～5 碼），位數越多讀得越久、也越難記。</p>
-<p><b>角色技能：</b>按 <kbd>R</kbd>（手機為 G 左邊的技能鍵）施放，圓環與秒數顯示冷卻。蘇蘇【顛倒乾坤】反轉其他人移動 5 秒；艾迪【銅牆鐵壁】3 秒內擋下一次輸入攻擊並刷新號碼；艾伯特【紫電干擾】讓其他人的數字鍵錯亂 5 秒。</p>
-<p><b>探頭：</b>躲在掩體後可按住 <kbd>Z</kbd>（左）／<kbd>C</kbd>（右）將上半身探出去看（手機為右側 ↖／↗ 鍵）；探出去時你的頭也會露出來，可能被對手讀到。</p>
-<p><b>角色技能（新增）：</b>穆法沙【命運拷貝】——發動後竊取下一個擊殺對象的技能，主動技能用完不進冷卻，被動技能可持續使用，並可繼續偷取（偷到不同被動技能才會覆蓋）；戴克【生化操作】——戴上透視鏡後噴發 15 秒濃霧，大幅降低周圍敵人視力，自己不受影響；夜梟【夜間戰術】——黑雲使全場亮度降低 60% 持續 30 秒，自己戴夜視鏡、其他人的號碼發出紅橘黃光；夜梟被淘汰會提前結束。另有貝雷特、鷹眼、雷柏爾、貓女、王心靈、蕾西亞、柏、迪倫等角色，詳見選角畫面。技能可在「遊戲設定」中整體關閉。</p>
-<p><b>賞金：</b>個人死鬥中，淘汰數領先者頭上的號碼牌會隨殺人數變得更大、更亮，成為眾人圍剿的目標。<b>逆轉：</b>激鬥追捕中，積分排名落在後半的玩家，主動技能冷卻縮短 50%。<b>干擾者：</b>可選輕度（25%）、中度（55%）、重度（100%）靈活度。</p>
-<p><b>模式：</b>個人死鬥（15 淘汰）／團隊死鬥（30 淘汰）／奪旗（3 次）。團隊模式的隊友額頭牌邊框與臂章為同色，無法淘汰。</p>
-<p><b>提示：</b>畫面中央的紅色箭頭代表「有人正在讀你的號碼」，進度條滿了就會被淘汰——快移動、轉身或躲到掩體後。輸錯號碼會被鎖定輸入約 1 秒。</p>`;
+/* ---------- 遊戲說明（分頁＋圖示） ---------- */
+const HOW_TABS = [['go', '🎯 怎麼玩'], ['ctl', '🎮 操作'], ['item', '🎁 道具'], ['chr', '🧑 角色技能'], ['mode', '🗺️ 模式地圖']];
+const hStep = (n, ico, t, d) => `<div class="hstep"><i>${n}</i><div class="hic">${ico}</div><b>${t}</b><span>${d}</span></div>`;
+const hCard = (ico, t, d, cls) => `<div class="hcard ${cls || ''}"><div class="hic">${ico}</div><div><b>${t}</b><span>${d}</span></div></div>`;
+const hKey = (k, d) => `<div class="hkey"><span class="kc">${k}</span><em>${d}</em></div>`;
+function howPanel(id) {
+  if (id === 'go') return `<div class="hhero"><svg viewBox="0 0 120 70" class="hplate"><circle cx="60" cy="22" r="14" fill="#e8c7a6" stroke="#5a3a22" stroke-width="2"/><rect x="26" y="34" width="68" height="26" rx="5" fill="#fff6d8" stroke="#c0392b" stroke-width="3"/><text x="60" y="53" text-anchor="middle" font-size="19" font-weight="800" fill="#c0392b" font-family="monospace">48 213</text></svg><p>每個人額頭都有一組<b>數字牌</b>。<br>先讀到、先輸入，對方就<b>淘汰</b>！</p></div>
+<div class="hsteps">${hStep(1, '👀', '看', '靠近、對準額頭')}${hStep(2, '🧠', '記', '記下整組數字')}${hStep(3, '⌨️', '輸入', '按數字鍵 → Enter')}${hStep(4, '💥', '淘汰', '對方出局、你得分')}</div>
+<div class="hgrid">${hCard('🔴', '被讀到了？', '畫面中央紅箭頭＝有人在讀你。快<b>背對、躲掩體、移動</b>。')}${hCard('❌', '輸錯號碼', '定身 2 秒，視角也鎖住，千萬別亂按。')}${hCard('♻️', '擊殺後', '你的號碼立刻換新，別人讀到的作廢。')}${hCard('🛡️', '重生保護', '剛重生短時間無法被淘汰。')}</div>`;
+  if (id === 'ctl') return `<h3>🖥️ 電腦</h3><div class="hkeys">${hKey('W A S D', '移動')}${hKey('Shift', '衝刺')}${hKey('Space', '跳（空中再按＝二段跳）')}${hKey('滑鼠', '轉視角（先點畫面）')}${hKey('0-9', '輸入號碼')}${hKey('Enter', '送出')}${hKey('⌫', '刪除一碼')}${hKey('R', '角色技能')}${hKey('F / G', '使用道具')}${hKey('Q／右鍵', '望遠鏡')}${hKey('Z / C', '左／右探頭')}${hKey('Esc', '暫停')}</div>
+<h3>📱 手機（橫向）</h3><div class="hgrid">${hCard('🕹️', '左半邊拖曳', '搖桿移動')}${hCard('🏃', '右側「跑」鍵', '按住衝刺（耗體力）')}${hCard('👆', '右側空白拖曳', '轉視角')}${hCard('🔢', '左右數字鍵', '輸滿位數自動送出')}${hCard('⬆️', '跳躍鍵', '空中再按＝二段跳')}${hCard('🔭', '望遠鏡／道具格', '點按使用')}</div>
+<div class="hnote">🔋 衝刺會消耗體力條；望遠鏡有能量條，用完需等待回復。</div>`;
+  if (id === 'item') return `<div class="hnote">開局沒有道具，走過地圖上的 <b>？箱</b> 才會取得；兩格已滿時不會更換。</div><div class="hgrid">${Object.entries({ cam: '拍照後照片短暫停留，方便看清號碼', quake: '讓其他人畫面劇烈橫向晃動 2 秒', scope: '約 13° 超遠距放大，再按一次＝拍照', fake: '頭上號碼偽裝成別的數字 7 秒', spring: '立即刷新角色技能冷卻' }).map(([k, d]) => hCard(ITEMS[k].ico, ITEMS[k].name, d, 'big')).join('')}${hCard('🔭', '望遠鏡（內建）', '遠距離讀碼，有能量限制', 'big')}</div>`;
+  if (id === 'chr') { return `<div class="hnote">按 <span class="kc">R</span>（手機：技能鍵）施放，圓環顯示冷卻。可在「遊戲設定」整體關閉技能。</div><div class="hchars">${OUTFITS.map((o, i) => o.hidden ? '' : `<div class="hch"><img src="${outfitIcon(i)}"><div><b>${o.label}</b><u>${o.skill.name}</u><span>${o.skill.desc}</span></div></div>`).join('')}</div>`; }
+  return `<h3>🏆 模式</h3><div class="hgrid">${hCard('⚔️', '個人死鬥', '人人為敵，先淘汰 15 人獲勝。領先者號碼變大變亮＝賞金目標。')}${hCard('🔴🔵', '團隊死鬥', '紅藍對戰，隊伍先 30 淘汰獲勝；隊友無法淘汰。')}${hCard('🎯', '激鬥追捕', '只追殺電腦角色，連殺積分更高；落後者技能冷卻縮短 50%。')}${hCard('🚩', '奪旗', '搶敵方旗帶回基地，先得 3 分。')}</div>
+<h3>🗺️ 地圖</h3><div class="hgrid">${hCard('🏫', '熱血高校', '白天校園，標準面積。')}${hCard('🌙', '詭譎學苑', '黑夜版，遠處沒入黑暗，要靠近才看得到。')}${hCard('🛍️', '追逃商城', '1.4 倍大，電扶梯通二樓，可從欄杆跳下。')}</div>
+<h3>🤖 對手</h3><div class="hgrid">${hCard('👥', '人數', '含你最多 20 人，不足由電腦補上。')}${hCard('🔢', '號碼位數', '3～5 碼，越多越難記。')}${hCard('😈', '干擾者', '輕／中／重＝靈活度 25%／55%／100%。')}</div>`;
+}
+function buildHowto() {
+  const box = $('howto'); box.innerHTML = '<div class="htabs"></div><div class="hpanel"></div>';
+  const tabs = box.firstChild, panel = box.lastChild;
+  const show = id => { [...tabs.children].forEach(b => b.classList.toggle('on', b.dataset.id === id)); panel.innerHTML = howPanel(id); panel.scrollTop = 0; };
+  HOW_TABS.forEach(([id, t]) => { const b = document.createElement('button'); b.className = 'chip'; b.dataset.id = id; b.textContent = t; b.onclick = () => show(id); tabs.appendChild(b); });
+  show('go');
+}
 function huntLock() {
   if ($('chMode')) [...$('chMode').children].forEach((b, i) => { const m = Object.values(MODES)[i]; if (UI.gDemo && m && m.demo === false) b.classList.add('dis'); else if (!m || !m.soon) b.classList.remove('dis'); });
   const h = S.mode === 'hunt'; if (h) { if (S.count !== 16 && S.count !== 20) S.count = 20; S.diff = 3; S.countSet = true; }
@@ -336,7 +350,7 @@ function chips(id, items, get, set, fmt) {
   items.forEach(it => { const b = document.createElement('button'); b.className = 'chip' + (get() === it.v ? ' on' : ''); b.innerHTML = it.l; if (it.dis) b.classList.add('dis', 'soon'); b.onclick = () => { if (it.dis) return; set(it.v); saveS(); [...el.children].forEach((c, i) => c.classList.toggle('on', items[i].v === it.v)); }; el.appendChild(b); });
 }
 function buildMenu() {
-  $('howto').innerHTML = MENU_HOWTO; if (!MAPS[S.map]) S.map = 'hb';
+  buildHowto(); if (!MAPS[S.map]) S.map = 'hb';
   const mapItems = Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), updMap = () => { $('mapDesc').textContent = MAPS[S.map].desc; };
   chips('chMap', mapItems, () => S.map, v => { S.map = v; updMap(); World.load(v); }); updMap();
   const updMode = () => { $('modeDescG').textContent = MODES[S.mode] ? MODES[S.mode].short : ''; };
@@ -583,5 +597,5 @@ function boot() {
   updateRotate(); requestAnimationFrame(frame); startIntro();
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
-window.__G = { MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+window.__G = { ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();

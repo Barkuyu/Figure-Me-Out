@@ -105,7 +105,19 @@ details{margin-top:12px;background:rgba(255,255,255,.06);border-radius:10px;padd
 summary{cursor:pointer;font-weight:700;font-size:14px}
 .row{display:flex;align-items:center;gap:10px;margin:9px 0;font-size:13.5px;flex-wrap:wrap}
 .row label{min-width:78px;opacity:.9}.row input[type=range]{flex:1;min-width:120px;touch-action:pan-x}
-.howto{font-size:12.5px;line-height:1.65;opacity:.95}.howto b{color:var(--yel)}
+.howto{font-size:12.5px;line-height:1.55;opacity:.97}.howto b{color:var(--yel)}
+.htabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;position:sticky;top:0;z-index:2;background:rgba(30,24,20,.96);padding:4px 0}
+.hpanel{max-height:calc(100vh - 215px);min-height:140px;overflow:auto;padding-right:2px}.hpanel h3{font:700 14px var(--font);margin:10px 0 6px;color:#fff}
+.hhero{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.08);border-radius:12px;padding:8px 12px;margin-bottom:8px}.hhero p{margin:0;font-size:14px;line-height:1.6}.hplate{width:120px;flex:none}
+.hsteps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+.hstep{position:relative;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.2);border-radius:12px;padding:8px 4px 6px;text-align:center;display:flex;flex-direction:column;gap:2px}.hstep i{position:absolute;left:6px;top:4px;font:700 11px var(--font);color:#ffd24a;font-style:normal}.hstep .hic{font-size:28px}.hstep b{font-size:14px;color:var(--yel)}.hstep span{font-size:11px;opacity:.85}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px}
+.hcard{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.07);border-radius:10px;padding:6px 8px}.hcard .hic{font-size:24px;flex:none;width:38px;text-align:center}.hcard.big .hic{font-size:32px}.hcard b{display:block;color:var(--yel);font-size:13px}.hcard span{font-size:11.5px;opacity:.9}
+.hkeys{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:5px}.hkey{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border-radius:8px;padding:4px 6px}.hkey em{font-style:normal;font-size:11.5px;opacity:.92}
+.hnote{background:rgba(255,210,74,.12);border-left:3px solid #ffd24a;border-radius:6px;padding:5px 8px;margin:6px 0;font-size:12px}
+.hchars{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px}.hch{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.07);border-radius:10px;padding:5px 8px}.hch img{width:44px;height:44px;border-radius:50%;flex:none;border:2px solid rgba(255,255,255,.4)}.hch b{font-size:12.5px;display:block}.hch u{text-decoration:none;color:var(--yel);font-size:11.5px;font-weight:700;display:block}.hch span{font-size:11px;opacity:.88;line-height:1.4;display:block}
+@media (max-height:430px){.hpanel{max-height:calc(100vh - 170px)}.hsteps{grid-template-columns:repeat(4,1fr)}}
+#dtimer{position:absolute;right:12px;top:22%;display:none;align-items:center;gap:6px;background:rgba(40,40,60,.72);border:2px solid #9fe8ff;border-radius:12px;padding:3px 10px;font:700 15px var(--font);color:#dff7ff;pointer-events:none}#dtimer.on{display:flex}
 .howto kbd{background:#fff;color:#222;border-radius:4px;padding:0 5px;font:700 11px var(--font)}
 #btnStart{width:100%;margin-top:16px;font-size:22px;padding:13px}
 .err{background:#7a1f1f;padding:12px;border-radius:10px;margin:10px 0;font-size:14px}
@@ -322,7 +334,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="hud" class="hidden">
     <div id="scorebar"><span class="flagic" id="flagR"></span><div class="sc red" id="scR">0</div><span class="sep">-</span><div class="sc blue" id="scB">0</div><span class="flagic" id="flagB"></span></div>
-    <div id="timer">5:00</div>
+    <div id="timer">5:00</div><div id="dtimer">🌫️ 濃霧 <b id="dtN">20</b>s</div>
     <div id="countdown" class="hidden"><div id="cdTxt"></div><div id="cdNum"></div></div><div id="modeName"></div>
     <div id="killfeed"></div>
     <div id="crosshair"></div>
@@ -438,7 +450,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <div class="cinfo"><div class="crow"><b>角色</b><span id="cName"></span></div><div class="crow"><b>角色技能</b><span id="cPass"></span></div></div>
     <div class="btnrow" style="justify-content:flex-start"><button class="btn" id="csOk">確認，開始遊戲</button><button class="btn alt" id="csBack">返回</button></div>
   </div></div>
-  <div id="howPick" class="hidden"><div class="sbox" style="max-height:86vh;overflow:auto"><h2>玩法操作與說明</h2><div class="howto" id="howto"></div><div class="btnrow"><button class="btn alt" id="howBack">關閉</button></div></div></div>
+  <div id="howPick" class="hidden"><div class="sbox" style="max-height:92vh;overflow:hidden;width:min(900px,96vw)"><h2>玩法操作與說明</h2><div class="howto" id="howto"></div><div class="btnrow"><button class="btn alt" id="howBack">關閉</button></div></div></div>
   <div id="fade"></div>
   <div id="settings" class="hidden"><div class="sbox"><h2>設定</h2>
 <div class="row"><label>控制模式</label><div class="chips" id="chInput"></div></div>

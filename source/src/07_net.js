@@ -171,9 +171,11 @@ function hostReadPeers(dt) {
 function hostAct(a, ac) {
   if (!a.alive || G.state !== 'playing') return;
   if (ac[1] === 'k') {
+    if (ericHit(a, String(ac[3]))) return;
     const t = G.actors.find(x => x.alive && x.number === String(ac[3])); if (t && t !== a && t.alive && t.protect <= 0 && t.number === String(ac[3]) && (isDM() || t.team !== a.team)) eliminate(a, t);
   } else if (ac[1] === 'w') { a.redT = 2; a.streak = 0; a.cloak = false; }
   else if (ac[1] === 's') { castSkill(a); }
+  else if (ac[1] === 'b') { a.binAt = G.time; }
   else if (ac[1] === 'u') {
     const i = ac[2] | 0, it = a.slots && a.slots[i]; if (!it) return;
     if (it.type !== 'cam' && it.type !== 'scope') applyItem(a, it.type);
