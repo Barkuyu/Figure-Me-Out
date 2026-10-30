@@ -187,7 +187,7 @@ const UI = {
   },
   demoTag() { const v = G.view; if (v) { this.els.demoTag.textContent = '🎬 示範模式・目前視角：' + v.name; this.els.demoTag.classList.remove('hidden'); } },
   keysOverlay(v) {
-    const el = $('keysov'); if (!el.firstChild) { const rows = ['1 2 3 4 5 6 7 8 9 0', 'Z Q W R _ F G C _ _', 'Shift:2 A S D _ Space:3']; el.innerHTML = rows.map(r => r.split(' ').map(t => { const [k, w] = t.split(':'); return k === '_' ? '<b class="sp"></b>' : `<b data-k="${k}"${w ? ' class="w' + w + '"' : ''}>${k}</b>`; }).join('')).join(''); this.kb = {}; el.querySelectorAll('b[data-k]').forEach(b => this.kb[b.dataset.k] = b); }
+    const el = $('keysov'); if (!el.firstChild) { const rows = ['1 2 3 4 5 6 7 8 9 0', '_ Q W R _ F G _ _ _', 'Shift:2 A S D _ Space:3']; el.innerHTML = rows.map(r => r.split(' ').map(t => { const [k, w] = t.split(':'); return k === '_' ? '<b class="sp"></b>' : `<b data-k="${k}"${w ? ' class="w' + w + '"' : ''}>${k}</b>`; }).join('')).join(''); this.kb = {}; el.querySelectorAll('b[data-k]').forEach(b => this.kb[b.dataset.k] = b); }
     el.classList.toggle('hidden', !v || !G.demo); if (!v) return;
     const on = {}, sp = Math.hypot(v.vx, v.vz), fw = FWD(v.yaw), rx = Math.cos(v.yaw), rz = -Math.sin(v.yaw);
     if (v.alive && sp > 1) { const d = (v.vx * fw[0] + v.vz * fw[1]) / sp, r = (v.vx * rx + v.vz * rz) / sp; if (d > .3) on.W = 1; if (d < -.3) on.S = 1; if (r > .3) on.D = 1; if (r < -.3) on.A = 1; if (sp > v.speed * 1.2) on.Shift = 1; }
@@ -257,7 +257,7 @@ const keys = {};
 const Input = {
   joy: { id: null, ox: 0, oy: 0 }, look: { id: null, lx: 0, ly: 0 }, binHold: false,
   init() {
-    const lookScale = () => (R.cam.fov / 1.28);
+    const lookScale = () => (R.cam.fov / 1.28), sensNow = () => (G.bino ? 1.7 : S.sens); // 開望遠鏡時靈敏度 1.70
     window.addEventListener('keydown', e => {
       if (e.repeat && e.code !== 'Backspace') { if (e.code === 'Tab' || e.code === 'Space') e.preventDefault(); return; }
       if (Device.auto && S.input === 'auto' && performance.now() - Device.lastTouch > 3000 && /^(Key|Digit|Arrow|Space|Shift|Tab)/.test(e.code)) { Device.auto = false; Device.update(); }
@@ -285,7 +285,7 @@ const Input = {
     const cvs = $('gl');
     document.addEventListener('mousemove', e => {
       if (G.state !== 'playing' && G.state !== 'ended') return; if (UI.paused || UI.menuOpen) return;
-      if (this.pointerLocked() || UI.dragLookActive) { const s = .0022 * S.sens * lookScale(); In.lookX -= e.movementX * s; In.lookY -= e.movementY * s; }
+      if (this.pointerLocked() || UI.dragLookActive) { const s = .0022 * sensNow() * lookScale(); In.lookX -= e.movementX * s; In.lookY -= e.movementY * s; }
     });
     cvs.addEventListener('mousedown', e => {
       Sfx.init(); Sfx.resume();
@@ -322,7 +322,7 @@ const Input = {
           joyKnob.style.transform = `translate(${dx / js}px,${dy / js}px)`; In.mx = dx / R0; In.my = -dy / R0;
           this.joy.ox += (TX(t) - this.joy.ox - dx) * .02 * 0; e.preventDefault();
         } else if (t.identifier === this.look.id) {
-          const s = .0046 * S.sens * lookScale(); In.lookX -= (TX(t) - this.look.lx) * s; In.lookY -= (TY(t) - this.look.ly) * s; this.look.lx = TX(t); this.look.ly = TY(t); e.preventDefault();
+          const s = .0046 * sensNow() * lookScale(); In.lookX -= (TX(t) - this.look.lx) * s; In.lookY -= (TY(t) - this.look.ly) * s; this.look.lx = TX(t); this.look.ly = TY(t); e.preventDefault();
         }
       }
     }, { passive: false });
@@ -342,7 +342,7 @@ const Input = {
       const bb = $('bBino2'); let bid = null, bx = 0, by = 0;
       const off = () => { bid = null; bb.classList.remove('act'); if (G.bino) { G.bino = false; } };
       bb.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); Sfx.init(); Sfx.resume(); const t = e.changedTouches[0]; bid = t.identifier; bx = TX(t); by = TY(t); bb.classList.add('act'); if (!G.bino) toggleBino(); }, { passive: false });
-      bb.addEventListener('touchmove', e => { for (const t of e.changedTouches) if (t.identifier === bid) { const s = .0046 * S.sens * lookScale(); In.lookX -= (TX(t) - bx) * s; In.lookY -= (TY(t) - by) * s; bx = TX(t); by = TY(t); } e.preventDefault(); e.stopPropagation(); }, { passive: false });
+      bb.addEventListener('touchmove', e => { for (const t of e.changedTouches) if (t.identifier === bid) { const s = .0046 * sensNow() * lookScale(); In.lookX -= (TX(t) - bx) * s; In.lookY -= (TY(t) - by) * s; bx = TX(t); by = TY(t); } e.preventDefault(); e.stopPropagation(); }, { passive: false });
       for (const ev of ['touchend', 'touchcancel']) bb.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); off(); }, { passive: false });
     }
     press($('bBack'), () => backspace());
@@ -500,7 +500,7 @@ function beginGame(demo, roster) {
   if (!roster && !UI.preResolved) resolveRandoms(demo); UI.preResolved = false;
   Sfx.init(); Sfx.resume(); if (!S.countSet) S.count = defaultCount();
   UI.els.menu.classList.add('hidden'); UI.els.hud.classList.remove('hidden'); document.body.classList.add('playing'); document.body.classList.toggle('demo', demo);
-  UI.hideEnd(); UI.endScramble(); UI._ph2 = false; In.sprintT = false; $('bRun').classList.remove('tog'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.els.demoTag.classList.add('hidden');
+  $('keysov').classList.add('hidden'); UI.hideEnd(); UI.endScramble(); UI._ph2 = false; In.sprintT = false; $('bRun').classList.remove('tog'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.els.demoTag.classList.add('hidden');
   $('btnResume').textContent = demo ? '繼續示範' : '繼續'; $('btnQuit').textContent = demo ? '退出示範模式' : NET.mode ? '離開房間' : '回主選單'; $('pauseTitle').textContent = demo ? '示範模式已暫停' : '已暫停';
   startMatch(demo, roster); UI.els.modeName.textContent = (demo ? '示範 · ' : '') + MAPS[G.map].name + ' · ' + MODES[G.mode].name + ' · ' + (G.codeLen ? G.codeLen + ' 碼' : '大亂鬥') + ' · ' + DIFF[S.diff].name; UI._cd = 0; UI.goT = 0; UI.lastFeed = -1; UI.dirty = true; UI.onRespawn(); Perf.profile(); Perf.apply(); updateRotate();
   UI.els.hints.style.display = Device.mobile ? 'none' : '';
@@ -513,6 +513,7 @@ function beginGame(demo, roster) {
 function toMenu() { go(() => { netLeave(); resetToMenuUI(); }); }
 function stopGameUI() { resetToMenuUI(); UI.els.menu.classList.add('hidden'); }
 function resetToMenuUI() {
+  $('keysov').classList.add('hidden');
   UI.ev = {}; UI._pk = null; closePick(); G.arena = null; G.kofCd = false;
   hideTut(); if (G.sk) { G.sk.night = { e: 0, by: null }; G.sk.ink.t = 0; G.sk.rev.t = 0; G.sk.rel.t = -1; G.sk.quake.t = 0; G.sk.eagle.t = 0; } G.scopeOn = false; applyNightEnv(null); $('dfog').style.opacity = 0; $('dself').style.opacity = 0; $('ink').classList.remove('on'); $('gset').classList.add('hidden');
   G.state = 'menu'; G.demo = false; G.view = null; document.body.classList.remove('playing', 'demo'); UI.els.hud.classList.add('hidden'); UI.els.menu.classList.remove('hidden'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.hideEnd(); UI.els.bino.style.display = 'none'; UI.els.flash.style.opacity = 0;
