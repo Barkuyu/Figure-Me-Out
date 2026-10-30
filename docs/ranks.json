@@ -1,0 +1,170 @@
+{
+ "note": "排位系統段位表（積分／升降規則尚未訂定，待使用者補充）",
+ "tiers": [
+  {
+   "order": 1,
+   "name": "初火",
+   "key": "chuhuo",
+   "icon": "assets/ranks/01_chuhuo.png",
+   "divisions": "III~I",
+   "stars": null,
+   "type": "division"
+  },
+  {
+   "order": 2,
+   "name": "鐵衛",
+   "key": "tiewei",
+   "icon": "assets/ranks/02_tiewei.png",
+   "divisions": "III~I",
+   "stars": null,
+   "type": "division"
+  },
+  {
+   "order": 3,
+   "name": "赤金",
+   "key": "chijin",
+   "icon": "assets/ranks/03_chijin.png",
+   "divisions": "IV~I",
+   "stars": null,
+   "type": "division"
+  },
+  {
+   "order": 4,
+   "name": "蒼晶",
+   "key": "cangjing",
+   "icon": "assets/ranks/04_cangjing.png",
+   "divisions": "V~I",
+   "stars": null,
+   "type": "division"
+  },
+  {
+   "order": 5,
+   "name": "曜鑽",
+   "key": "yaozuan",
+   "icon": "assets/ranks/05_yaozuan.png",
+   "divisions": "V~I",
+   "stars": null,
+   "type": "division"
+  },
+  {
+   "order": 6,
+   "name": "天衡",
+   "key": "tianheng",
+   "icon": "assets/ranks/06_tianheng.png",
+   "divisions": "V~I",
+   "stars": null,
+   "type": "division"
+  },
+  {
+   "order": 7,
+   "name": "征界者",
+   "key": "zhengjiezhe",
+   "icon": "assets/ranks/07_zhengjiezhe.png",
+   "divisions": null,
+   "stars": [
+    0,
+    9
+   ],
+   "type": "star"
+  },
+  {
+   "order": 8,
+   "name": "破曉者・晨光",
+   "key": "pomei_chenguang",
+   "icon": "assets/ranks/08_pomei_chenguang.png",
+   "divisions": null,
+   "stars": [
+    10,
+    19
+   ],
+   "type": "star"
+  },
+  {
+   "order": 9,
+   "name": "破曉者・蒼穹",
+   "key": "pomei_cangqiong",
+   "icon": "assets/ranks/09_pomei_cangqiong.png",
+   "divisions": null,
+   "stars": [
+    20,
+    29
+   ],
+   "type": "star"
+  },
+  {
+   "order": 10,
+   "name": "破曉者・蝕月",
+   "key": "pomei_shiyue",
+   "icon": "assets/ranks/10_pomei_shiyue.png",
+   "divisions": null,
+   "stars": [
+    30,
+    39
+   ],
+   "type": "star"
+  },
+  {
+   "order": 11,
+   "name": "破曉者・星環",
+   "key": "pomei_xinghuan",
+   "icon": "assets/ranks/11_pomei_xinghuan.png",
+   "divisions": null,
+   "stars": [
+    40,
+    49
+   ],
+   "type": "star"
+  },
+  {
+   "order": 12,
+   "name": "耀世者",
+   "key": "yaoshizhe",
+   "icon": "assets/ranks/12_yaoshizhe.png",
+   "divisions": null,
+   "stars": [
+    50,
+    99
+   ],
+   "type": "star"
+  },
+  {
+   "order": 13,
+   "name": "冠世者",
+   "key": "guanshizhe",
+   "icon": "assets/ranks/13_guanshizhe.png",
+   "divisions": null,
+   "stars": [
+    100,
+    null
+   ],
+   "type": "star"
+  },
+  {
+   "order": 14,
+   "name": "神座",
+   "key": "shenzuo",
+   "icon": "assets/ranks/14_shenzuo.png",
+   "divisions": null,
+   "stars": null,
+   "type": "server_top100"
+  },
+  {
+   "order": 15,
+   "name": "至高神座",
+   "key": "zhigaoshenzuo",
+   "icon": "assets/ranks/15_zhigaoshenzuo.png",
+   "divisions": null,
+   "stars": null,
+   "type": "server_top10"
+  },
+  {
+   "order": 16,
+   "name": "唯一王座",
+   "key": "weiyiwangzuo",
+   "icon": "assets/ranks/16_weiyiwangzuo.png",
+   "divisions": null,
+   "stars": null,
+   "type": "server_top1"
+  }
+ ]
+}
