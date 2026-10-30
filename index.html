@@ -401,7 +401,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 3.7</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 3.8</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -2998,6 +2998,7 @@ function updateTroll(b, dt) {
   botItems(b, dt, false); if (b.cd <= 0) b.cd = (.6 + Math.random() * 1.2) / Math.max(.2, trollF());
 }
 function updateBot(b, dt) {
+  if (b.kfz > 0) { b.kfz -= dt; b.typing = null; b.vx = b.vz = 0; moveActor(b, dt); b.sp = 0; return; }
   if (b.chg) { b.typing = null; b.vx = b.chg.vx; b.vz = b.chg.vz; moveActor(b, dt); b.sp = clamp(Math.hypot(b.vx, b.vz) / 8.4, 0, 1); b.animT += dt * 14; return; }
   if ((b.ctrlT || 0) > 0 && b.ctrlBy && isStunBy(b.ctrlBy)) { b.typing = null; b.protect = Math.max(0, b.protect - dt); b.cd -= dt; b.vx *= .5; b.vz *= .5; b.yaw = faceYaw(b, b.ctrlBy); moveActor(b, dt); b.sp = 0; return; }
   if ((b.ctrlT || 0) > 0 && b.ctrlBy) { b.typing = null; b.protect = Math.max(0, b.protect - dt); b.cd -= dt; const dx = b.x - b.ctrlBy.x, dz = b.z - b.ctrlBy.z, dd = Math.hypot(dx, dz) || 1, sp0 = b.speed * .3; b.vx += (dx / dd * sp0 - b.vx) * Math.min(1, dt * 9); b.vz += (dz / dd * sp0 - b.vz) * Math.min(1, dt * 9); moveActor(b, dt); b.sp = clamp(Math.hypot(b.vx, b.vz) / 8.4, 0, 1); b.animT += dt * (5 + b.sp * 9); return; }
@@ -3078,10 +3079,13 @@ function kofPick(a, idx) {
   if (G.mode !== 'kof' || a.alive || !a.kleft || !a.kleft.includes(idx)) return false;
   a.kcur = idx; a.outfit = idx; a.av = createAvatar(idx); resetSkillState(a); a.kw = 0; a.kbot = 0;
   const o = G.actors.find(x => x !== a); spawnActor(a, kofSpawnPos(a, o)); a.protect = 2.2;
-  if (a.isPlayer) { UI.onRespawn(); G.typed = ''; } else if (G.player) UI.msg('對手派出了【' + OUTFITS[idx].label + '】', 'item'); G.countdown = 2; G.kofCd = true; UI.dirty = true; return true;
+  if (a.isPlayer) { UI.onRespawn(); G.typed = ''; } else if (G.player) UI.msg('對手派出了【' + OUTFITS[idx].label + '】', 'item'); G.kofT = 2; G.kofCd = true; a.kfz = 2; if (a.isPlayer) { G.freezeT = 2; G.lock = 2; } // 只定住剛登場的那一位，另一位照常行動
+  UI.dirty = true; return true;
 }
 function kofTick(dt) {
+  if (G.kofT > 0) { const p0 = G.kofT; G.kofT -= dt; if (p0 > 1 && G.kofT <= 1) Sfx.bell(); if (G.kofT <= 0) { G.kofT = 0; G.kofCd = false; } }
   for (const a of G.actors) {
+    if (a.kfz > 0 && (a.isPlayer || a.remote)) a.kfz -= dt;
     if (a.alive || !(a.kw > 0)) continue; a.kw -= dt;
     if (!a.isPlayer && !a.remote) { a.kbot = (a.kbot || 0) - dt; if (a.kbot <= 0) { kofPick(a, pick(a.kleft)); continue; } }
     if (a.kw <= 0) kofPick(a, pick(a.kleft));
@@ -3100,7 +3104,7 @@ function updateGame(dt) {
   G.time += dt;
   if (G.countdown > 0 && G.state === 'playing') {
     const c0 = Math.ceil(G.countdown); G.countdown -= dt;
-    if (G.countdown <= 0) { G.countdown = 0; if (G.kofCd) G.kofCd = false; else if (G.mode !== 'arena') { Sfx.bell(); UI.goText(); } } else if (Math.ceil(G.countdown) !== c0) { if (G.kofCd && Math.ceil(G.countdown) === 1) Sfx.bell(); else Sfx.tick(); }
+    if (G.countdown <= 0) { G.countdown = 0; if (G.mode !== 'arena') { Sfx.bell(); UI.goText(); } } else if (Math.ceil(G.countdown) !== c0) Sfx.tick();
     for (const a of G.actors) { const f = FWD(a.yaw); a.fx = f[0]; a.fz = f[1]; }
     In.lookX = In.lookY = 0; if (G.player) updateCamera(dt); else if (G.demo) updateDemoCam(dt); return;
   }
@@ -3163,7 +3167,7 @@ function startMatch(demo, roster) {
   const names = NAMES.slice().sort(() => Math.random() - .5);
   for (let i = demo ? 0 : G.actors.length; i < n; i++) { const b = newActor(names[(demo ? i : i - hum)], pick(VIS_OUTFITS), false); b.role = i % 4 === 0 ? 1 : 0; b.smart = !!demo; if (demo) b.speed *= 1.08; b.scaleBase = .85 + Math.random() * .4; b.range = Math.random() < .15 ? 58 : 34; if (b.range > 50) b.scaleBase *= 1.3; if (mk === 'arena') b.pool = true; b.dix = Math.min(S.diff, 2); G.actors.push(b); }
   G.actors.forEach((a, i) => { a.team = isDM() ? -1 : mk === 'arena' ? ((a.isPlayer || a.remote) ? 0 : 1) : (i % 2); });
-  if (mk === 'kof') { const kp = G.kofPre || {}, lists = roster ? [...roster].map(r => r.list) : [kp.me, kp.opp]; G.actors.forEach((a, i) => { const l = (lists[i] && lists[i].length ? lists[i] : kofRandRoster()).slice(0, 5); a.kroster = l; a.kleft = l.slice(); a.kcur = l[0]; a.kout = 0; a.kw = 0; a.av = createAvatar(l[0]); a.outfit = l[0]; }); G.kofPre = null; G.kofCd = false; G.arena = null; }
+  if (mk === 'kof') { const kp = G.kofPre || {}, lists = roster ? [...roster].map(r => r.list) : [kp.me, kp.opp]; G.actors.forEach((a, i) => { const l = (lists[i] && lists[i].length ? lists[i] : kofRandRoster()).slice(0, 5); a.kroster = l; a.kleft = l.slice(); a.kcur = l[0]; a.kout = 0; a.kw = 0; a.av = createAvatar(l[0]); a.outfit = l[0]; }); G.kofPre = null; G.kofCd = false; G.kofT = 0; G.arena = null; }
   if ((DIFF[S.diff].troll || G.mode === 'hunt') && !demo && mk !== 'arena' && mk !== 'kof') for (const a of G.actors) if (!a.isPlayer && !a.remote) a.av = createAvatar(OUTFITS.findIndex(o => o.key === 'troll'));
   G.actors.forEach(a => { a.score = 0; a.streak = 0; a.lastKillT0 = -99; a.lastStreak = 0; drawPlate(a); });
   for (const a of G.actors) if (!a.isPlayer && !a.remote && speedMul(a) !== 1) a.speed *= speedMul(a);
@@ -3597,7 +3601,7 @@ function buildSnap() {
     sk: [Math.round(G.sk.rev.t * 10), G.actors.indexOf(G.sk.rev.by), Math.round(G.sk.scr.t * 10), G.actors.indexOf(G.sk.scr.by), Math.round(G.sk.ink.t * 10), G.actors.indexOf(G.sk.ink.by), Math.round(G.sk.eagle.t * 10), G.actors.indexOf(G.sk.eagle.by), Math.round(G.sk.quake.t * 10), G.actors.indexOf(G.sk.quake.by), G.sk.night.by ? Math.round(G.sk.night.e * 10) : -1, G.actors.indexOf(G.sk.night.by), Math.round(G.sk.rel.t * 10), G.actors.indexOf(G.sk.rel.by)],
     pk: G.pickups.reduce((m, p, i) => m | (p.on ? (1 << i) : 0), 0),
     ar: G.arena ? [G.arena.stage, G.arena.ph, Math.round(G.arena.t * 10), A.map(a => (a.isPlayer || a.remote) && !a.alive ? Math.round(Math.max(0, Math.min(99, a.respawnT)) * 10) : 0)] : 0,
-    kf: G.mode === 'kof' ? { c: G.kofCd ? 1 : 0, a: A.slice(0, 2).map(a => [a.kcur, a.kout, Math.round(Math.max(0, a.kw || 0) * 10), (a.kroster || []).reduce((m, v, j) => m | ((a.kleft || []).includes(v) ? (1 << j) : 0), 0)]) } : 0,
+    kf: G.mode === 'kof' ? { c: Math.round(Math.max(0, G.kofT || 0) * 10), a: A.slice(0, 2).map(a => [a.kcur, a.kout, Math.round(Math.max(0, a.kw || 0) * 10), (a.kroster || []).reduce((m, v, j) => m | ((a.kleft || []).includes(v) ? (1 << j) : 0), 0), Math.round(Math.max(0, a.kfz || 0) * 10)]) } : 0,
     fd: G.feed.slice(-4).map(f => [f.seq, f.ki, f.vi, f.st || 0]), hs: G.mode === 'hunt' ? G.actors.map(a => a.score || 0) : 0, ms: NET.msgQ.slice()
   };
   return snap;
@@ -3655,7 +3659,7 @@ function clientStartGame(s) {
 function applySnap(s) {
   const A = G.actors, me = G.player;
   G.tleft = s.tl; G.scores = s.sc;
-  if (s.kf) G.kofCd = !!s.kf.c; if (NET.prevCd > 0 && s.cd === 0) { if (!G.kofCd) { Sfx.bell(); UI.goText(); } } else if (G.kofCd && NET.prevCd > 10 && s.cd <= 10) Sfx.bell(); G.countdown = s.cd / 10; NET.prevCd = s.cd;
+  if (s.kf) { const kt = s.kf.c / 10; if (NET.prevKt > 1 && kt <= 1 && kt > 0) Sfx.bell(); NET.prevKt = kt; G.kofT = kt; G.kofCd = kt > 0; } if (NET.prevCd > 0 && s.cd === 0) { Sfx.bell(); UI.goText(); } G.countdown = s.cd / 10; NET.prevCd = s.cd;
   for (let i = 0; i < A.length; i++) {
     const e = s.ac[i], a = A[i]; if (!e || !a) continue;
     const alive = !!(e[5] & 1);
@@ -3689,7 +3693,7 @@ function applySnap(s) {
   G.pickups.forEach((p, i) => { p.on = !!(s.pk & (1 << i)); });
   if (s.hs) s.hs.forEach((v, i) => { if (A[i]) A[i].score = v; });
   if (s.ar) { G.arena = { stage: s.ar[0], ph: s.ar[1], t: s.ar[2] / 10, hum: 1 }; if (me && s.ar[3] && s.ar[3][NET.myIdx] > 0 && !me.alive) me.respawnT = s.ar[3][NET.myIdx] / 10; }
-  if (s.kf) s.kf.a.forEach((x, i) => { const a = A[i]; if (!a) return; a.kout = x[1]; a.kw = x[2] / 10; const r = a.kroster || []; a.kleft = r.filter((v, j) => x[3] & (1 << j)); if (a.kcur !== x[0]) { if (a !== me && a.kcur !== undefined && G.state === 'playing') UI.msg('對手派出了【' + OUTFITS[x[0]].label + '】', 'item'); a.kcur = x[0]; a.outfit = x[0]; a.av = createAvatar(x[0]); } });
+  if (s.kf) s.kf.a.forEach((x, i) => { const a = A[i]; if (!a) return; a.kout = x[1]; a.kw = x[2] / 10; if (a === me && x[4] > 0 && !(me.kfz > 0)) { G.freezeT = x[4] / 10; G.lock = x[4] / 10; } me.kfz = a === me ? x[4] / 10 : 0; const r = a.kroster || []; a.kleft = r.filter((v, j) => x[3] & (1 << j)); if (a.kcur !== x[0]) { if (a !== me && a.kcur !== undefined && G.state === 'playing') UI.msg('對手派出了【' + OUTFITS[x[0]].label + '】', 'item'); a.kcur = x[0]; a.outfit = x[0]; a.av = createAvatar(x[0]); } });
   if (s.sk) { G.sk.rev = { t: s.sk[0] / 10, by: A[s.sk[1]] || null, id: 1 }; G.sk.scr = { t: s.sk[2] / 10, by: A[s.sk[3]] || null, id: 1 }; G.sk.ink = { t: (s.sk[4] || 0) / 10, by: A[s.sk[5]] || null, id: 1 }; G.sk.eagle = { t: (s.sk[6] || 0) / 10, by: A[s.sk[7]] || null }; G.sk.quake = { t: (s.sk[8] || 0) / 10, by: A[s.sk[9]] || null }; G.sk.night = { e: s.sk[10] >= 0 ? s.sk[10] / 10 : 0, by: s.sk[10] >= 0 ? (A[s.sk[11]] || null) : null }; G.sk.rel = { t: s.sk[12] === undefined ? -1 : s.sk[12] / 10, by: A[s.sk[13]] || null, id: 1 }; }
   if (NET.feedSeen < 0) NET.feedSeen = s.fd.length ? s.fd[s.fd.length - 1][0] : 0;
   for (const f of s.fd) if (f[0] > NET.feedSeen) { NET.feedSeen = f[0]; const k = A[f[1]], v = A[f[2]]; if (k && v) { G.feed.push({ t: 6, k: k.name, v: v.name, me: k === me || v === me, st: f[3] || 0, seq: f[0] }); if (k === me && f[3] > 1) UI.streak(f[3], STREAK_PTS[Math.min(f[3], 5) - 1]); if (G.feed.length > 5) G.feed.shift(); G.feedVer++; } }
@@ -3699,6 +3703,7 @@ function applySnap(s) {
 }
 function updateClientGame(dt) {
   if (G.state === 'ended') { G.time += dt; In.lookX = In.lookY = 0; return; } // 結算：全場暫停
+  if (G.kofT > 0) { G.kofT = Math.max(0, G.kofT - dt); if (G.kofT <= 0) G.kofCd = false; }
   G.time += dt; if (G.state === 'playing' && G.countdown <= 0) { G.tleft = Math.max(0, G.tleft - dt); const me0 = G.player; if (me0) me0.skCd = Math.max(0, me0.skCd - dt); if (G.sk.rev.t > 0) G.sk.rev.t -= dt; if (G.sk.scr.t >= 0) G.sk.scr.t += dt; if (G.sk.ink.t > 0) G.sk.ink.t -= dt; if (G.sk.eagle.t > 0) G.sk.eagle.t -= dt; if (G.sk.quake.t > 0) G.sk.quake.t -= dt; if (G.sk.night.by) G.sk.night.e += dt; if (me0) { me0.ctrlT = Math.max(0, (me0.ctrlT || 0) - dt); if (isOut(me0, 11)) { me0.cleanT = (me0.cleanT ?? 2.5) - dt; if (me0.cleanT <= 0) { me0.cleanT = 2.5; G.flashT = 0; G.freezeT = 0; G.lock = 0; me0.redT = 0; me0.ctrlT = 0; UI.cleanse(); } } } }
   if (G.countdown > 0) { G.countdown = Math.max(0, G.countdown - dt); In.lookX = In.lookY = 0; } else if (G.player) updatePlayer(dt);
   const k = 1 - Math.exp(-dt * 14);
@@ -3910,7 +3915,8 @@ const UI = {
   stunFx(sec) { const e = this.els.deadv; e.style.opacity = .75; clearTimeout(this._st); this._st = setTimeout(() => { if (G.player && G.player.alive) e.style.opacity = 0; }, sec * 1000); },
   goText() { this.goT = 1; this._cd = 0; $('cdNum').textContent = '開始！'; $('cdTxt').textContent = '戰鬥開始'; this.els.countdown.classList.remove('hidden'); },
   cdUpdate(dt) {
-    const e = this.els.countdown, c = Math.ceil(G.countdown || 0);
+    const e = this.els.countdown; if (G.kofCd && G.kofT > 0 && !(G.countdown > 0)) { const k = Math.ceil(G.kofT), n = $('cdNum'); if (k !== this._kk2) { this._kk2 = k; n.textContent = k > 1 ? 'Ready…' : 'Go！'; n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; $('cdTxt').textContent = '下一位出戰角色登場'; } e.classList.remove('hidden'); return; } if (this._kk2) { this._kk2 = 0; e.classList.add('hidden'); }
+    const c = Math.ceil(G.countdown || 0);
     if (c > 0) { if (c !== this._cd) { this._cd = c; const n = $('cdNum'); n.textContent = G.kofCd ? (c > 1 ? 'Ready…' : 'Go！') : c; n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; $('cdTxt').textContent = G.kofCd ? '下一位出戰角色登場' : '遊戲將在 ' + c + ' 秒後開始・請先觀察四周'; } e.classList.remove('hidden'); }
     else if (this.goT > 0) { this.goT -= dt; if (this.goT <= 0) e.classList.add('hidden'); } else e.classList.add('hidden');
   },

@@ -623,6 +623,7 @@ function updateTroll(b, dt) {
   botItems(b, dt, false); if (b.cd <= 0) b.cd = (.6 + Math.random() * 1.2) / Math.max(.2, trollF());
 }
 function updateBot(b, dt) {
+  if (b.kfz > 0) { b.kfz -= dt; b.typing = null; b.vx = b.vz = 0; moveActor(b, dt); b.sp = 0; return; }
   if (b.chg) { b.typing = null; b.vx = b.chg.vx; b.vz = b.chg.vz; moveActor(b, dt); b.sp = clamp(Math.hypot(b.vx, b.vz) / 8.4, 0, 1); b.animT += dt * 14; return; }
   if ((b.ctrlT || 0) > 0 && b.ctrlBy && isStunBy(b.ctrlBy)) { b.typing = null; b.protect = Math.max(0, b.protect - dt); b.cd -= dt; b.vx *= .5; b.vz *= .5; b.yaw = faceYaw(b, b.ctrlBy); moveActor(b, dt); b.sp = 0; return; }
   if ((b.ctrlT || 0) > 0 && b.ctrlBy) { b.typing = null; b.protect = Math.max(0, b.protect - dt); b.cd -= dt; const dx = b.x - b.ctrlBy.x, dz = b.z - b.ctrlBy.z, dd = Math.hypot(dx, dz) || 1, sp0 = b.speed * .3; b.vx += (dx / dd * sp0 - b.vx) * Math.min(1, dt * 9); b.vz += (dz / dd * sp0 - b.vz) * Math.min(1, dt * 9); moveActor(b, dt); b.sp = clamp(Math.hypot(b.vx, b.vz) / 8.4, 0, 1); b.animT += dt * (5 + b.sp * 9); return; }
@@ -703,10 +704,13 @@ function kofPick(a, idx) {
   if (G.mode !== 'kof' || a.alive || !a.kleft || !a.kleft.includes(idx)) return false;
   a.kcur = idx; a.outfit = idx; a.av = createAvatar(idx); resetSkillState(a); a.kw = 0; a.kbot = 0;
   const o = G.actors.find(x => x !== a); spawnActor(a, kofSpawnPos(a, o)); a.protect = 2.2;
-  if (a.isPlayer) { UI.onRespawn(); G.typed = ''; } else if (G.player) UI.msg('對手派出了【' + OUTFITS[idx].label + '】', 'item'); G.countdown = 2; G.kofCd = true; UI.dirty = true; return true;
+  if (a.isPlayer) { UI.onRespawn(); G.typed = ''; } else if (G.player) UI.msg('對手派出了【' + OUTFITS[idx].label + '】', 'item'); G.kofT = 2; G.kofCd = true; a.kfz = 2; if (a.isPlayer) { G.freezeT = 2; G.lock = 2; } // 只定住剛登場的那一位，另一位照常行動
+  UI.dirty = true; return true;
 }
 function kofTick(dt) {
+  if (G.kofT > 0) { const p0 = G.kofT; G.kofT -= dt; if (p0 > 1 && G.kofT <= 1) Sfx.bell(); if (G.kofT <= 0) { G.kofT = 0; G.kofCd = false; } }
   for (const a of G.actors) {
+    if (a.kfz > 0 && (a.isPlayer || a.remote)) a.kfz -= dt;
     if (a.alive || !(a.kw > 0)) continue; a.kw -= dt;
     if (!a.isPlayer && !a.remote) { a.kbot = (a.kbot || 0) - dt; if (a.kbot <= 0) { kofPick(a, pick(a.kleft)); continue; } }
     if (a.kw <= 0) kofPick(a, pick(a.kleft));
@@ -725,7 +729,7 @@ function updateGame(dt) {
   G.time += dt;
   if (G.countdown > 0 && G.state === 'playing') {
     const c0 = Math.ceil(G.countdown); G.countdown -= dt;
-    if (G.countdown <= 0) { G.countdown = 0; if (G.kofCd) G.kofCd = false; else if (G.mode !== 'arena') { Sfx.bell(); UI.goText(); } } else if (Math.ceil(G.countdown) !== c0) { if (G.kofCd && Math.ceil(G.countdown) === 1) Sfx.bell(); else Sfx.tick(); }
+    if (G.countdown <= 0) { G.countdown = 0; if (G.mode !== 'arena') { Sfx.bell(); UI.goText(); } } else if (Math.ceil(G.countdown) !== c0) Sfx.tick();
     for (const a of G.actors) { const f = FWD(a.yaw); a.fx = f[0]; a.fz = f[1]; }
     In.lookX = In.lookY = 0; if (G.player) updateCamera(dt); else if (G.demo) updateDemoCam(dt); return;
   }
@@ -788,7 +792,7 @@ function startMatch(demo, roster) {
   const names = NAMES.slice().sort(() => Math.random() - .5);
   for (let i = demo ? 0 : G.actors.length; i < n; i++) { const b = newActor(names[(demo ? i : i - hum)], pick(VIS_OUTFITS), false); b.role = i % 4 === 0 ? 1 : 0; b.smart = !!demo; if (demo) b.speed *= 1.08; b.scaleBase = .85 + Math.random() * .4; b.range = Math.random() < .15 ? 58 : 34; if (b.range > 50) b.scaleBase *= 1.3; if (mk === 'arena') b.pool = true; b.dix = Math.min(S.diff, 2); G.actors.push(b); }
   G.actors.forEach((a, i) => { a.team = isDM() ? -1 : mk === 'arena' ? ((a.isPlayer || a.remote) ? 0 : 1) : (i % 2); });
-  if (mk === 'kof') { const kp = G.kofPre || {}, lists = roster ? [...roster].map(r => r.list) : [kp.me, kp.opp]; G.actors.forEach((a, i) => { const l = (lists[i] && lists[i].length ? lists[i] : kofRandRoster()).slice(0, 5); a.kroster = l; a.kleft = l.slice(); a.kcur = l[0]; a.kout = 0; a.kw = 0; a.av = createAvatar(l[0]); a.outfit = l[0]; }); G.kofPre = null; G.kofCd = false; G.arena = null; }
+  if (mk === 'kof') { const kp = G.kofPre || {}, lists = roster ? [...roster].map(r => r.list) : [kp.me, kp.opp]; G.actors.forEach((a, i) => { const l = (lists[i] && lists[i].length ? lists[i] : kofRandRoster()).slice(0, 5); a.kroster = l; a.kleft = l.slice(); a.kcur = l[0]; a.kout = 0; a.kw = 0; a.av = createAvatar(l[0]); a.outfit = l[0]; }); G.kofPre = null; G.kofCd = false; G.kofT = 0; G.arena = null; }
   if ((DIFF[S.diff].troll || G.mode === 'hunt') && !demo && mk !== 'arena' && mk !== 'kof') for (const a of G.actors) if (!a.isPlayer && !a.remote) a.av = createAvatar(OUTFITS.findIndex(o => o.key === 'troll'));
   G.actors.forEach(a => { a.score = 0; a.streak = 0; a.lastKillT0 = -99; a.lastStreak = 0; drawPlate(a); });
   for (const a of G.actors) if (!a.isPlayer && !a.remote && speedMul(a) !== 1) a.speed *= speedMul(a);
