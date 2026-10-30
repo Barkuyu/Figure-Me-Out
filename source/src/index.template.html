@@ -132,6 +132,7 @@ body.doll .np,body.doll #bBack{background:#000!important;opacity:1!important;col
 #kofbar .ks em{font:700 11px var(--font);font-style:normal;color:#fff;margin:0 4px;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #kofbar .ki{position:relative;width:24px;height:24px;border-radius:50%;border:2px solid #fff;background:#222 center/cover;opacity:1}#kofbar .ki.used{filter:grayscale(1) brightness(.5);opacity:.7}#kofbar .ki.used:after{content:'✖';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ff5a5a;font:900 15px Arial;filter:none}#kofbar .ki.cur{border-color:#ffd24a;box-shadow:0 0 8px #ffd24a;transform:scale(1.18)}
 .hrule{background:rgba(255,255,255,.07);border-radius:10px;padding:6px 10px;margin:6px 0;font-size:12.5px;line-height:1.6}.hsteps.h4{grid-template-columns:repeat(4,1fr)}.htb{width:100%;border-collapse:collapse;font-size:12px;margin:6px 0}.htb th,.htb td{border:1px solid rgba(255,255,255,.2);padding:3px 6px;text-align:center}.htb th{background:rgba(255,255,255,.1);color:var(--yel)}
+.slot.felix{background:#d10a1c!important;border-color:#fff!important;box-shadow:0 0 12px #ff2a3c}.slot.felix .ico{filter:drop-shadow(0 0 3px #000)}
 .cshint{font-size:12px;opacity:.85;margin:4px 0 6px;min-height:16px}.card{position:relative}.card .pk{position:absolute;right:6px;top:4px;font:800 15px var(--font);color:#ffd24a;text-shadow:0 0 3px #000,0 0 3px #000}#csOk.dis{opacity:.4;filter:grayscale(1);pointer-events:none}
 #waitDlg{position:absolute;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(8,8,16,.7)}#waitDlg .wbox{background:rgba(30,32,52,.96);border:2px solid rgba(255,255,255,.5);border-radius:16px;padding:20px 34px;font:700 20px var(--font);color:#fff}.dots i{font-style:normal;animation:dotB 1.2s infinite;display:inline-block}.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}@keyframes dotB{0%,60%,100%{opacity:.15;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
 .btn.locked{opacity:.55;filter:grayscale(.8);cursor:not-allowed}body.doll #typed{color:#ff1a30;background:#000;border-radius:10px;padding:2px 14px;text-shadow:0 0 8px #ff1a30}
@@ -462,9 +463,9 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     </div>
   </div></div>
   <div id="charsel" class="hidden"><div class="panel">
-    <h2 id="csTitle" style="font:400 30px var(--disp);margin:0 0 10px">選擇角色</h2>
+    <h2 id="csTitle" style="font:400 30px var(--disp);margin:0 0 10px">選擇英雄</h2>
     <div class="cards" id="cards"></div>
-    <div class="cinfo"><div class="crow"><b>角色</b><span id="cName"></span></div><div class="crow"><b>角色技能</b><span id="cPass"></span></div></div>
+    <div class="cinfo"><div class="crow"><b>英雄</b><span id="cName"></span></div><div class="crow"><b>英雄技能</b><span id="cPass"></span></div></div>
     <div id="csHint" class="cshint"></div><div class="btnrow" style="justify-content:flex-start"><button class="btn" id="csOk">確認，開始遊戲</button><button class="btn alt" id="csBack">返回</button></div>
   </div></div>
   <div id="waitDlg" class="hidden"><div class="wbox">等候其他玩家選擇中<span class="dots"><i>.</i><i>.</i><i>.</i></span></div></div>

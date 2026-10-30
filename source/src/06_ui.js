@@ -55,10 +55,10 @@ const UI = {
   cleanse() { const c = $('cleanse'); c.classList.remove('on'); void c.offsetWidth; c.classList.add('on'); },
   slotHTML(el, s) {
     const ico = el.querySelector('.ico'), n = el.querySelector('small');
-    if (!s) { ico.textContent = ''; n.textContent = ''; el.classList.remove('has'); return; }
-    ico.textContent = ITEMS[s.type].ico; n.textContent = s.n > 1 ? s.n : ''; el.classList.add('has');
+    if (!s) { ico.textContent = ''; n.textContent = ''; el.classList.remove('has', 'felix'); return; }
+    ico.textContent = ITEMS[s.type].ico; n.textContent = s.n > 1 ? s.n : ''; el.classList.add('has'); el.classList.toggle('felix', s.type === 'cam' && !!G.player && isOut(G.player, 28));
   },
-  /* 角色技能鍵：圓形倒數環 + 秒數；艾伯特技能的預警閃光與按鍵錯亂 */
+  /* 英雄技能鍵：圓形倒數環 + 秒數；艾伯特技能的預警閃光與按鍵錯亂 */
   setEv(key, rem, ico) { const e = this.ev || (this.ev = {}); if (!e[key]) e[key] = { seq: (this.evSeq = (this.evSeq || 0) + 1) }; e[key].rem = rem; e[key].ico = ico || '⏱'; },
   clrEv(key) { if (this.ev) delete this.ev[key]; },
   renderPills() { // 右上角倒數時鐘：事件倒數在前、技能倒數在後；第一個白底，其餘依序換底色
@@ -80,7 +80,7 @@ const UI = {
       if (key2 !== this._kk) { this._kk = key2; const side = (a, cls) => `<div class="ks ${cls}"><em>${a === me ? '你' : a.name}</em>` + (a.kroster || []).map(i => `<i class="ki${(a.kleft || []).includes(i) ? '' : ' used'}${a.alive && a.kcur === i ? ' cur' : ''}" style="background-image:url(${outfitIcon(i)})"></i>`).join('') + '</div>'; kb.innerHTML = side(me, '') + side(ot, 'r'); }
       if (p && !p.alive && p.kw > 0 && p.kleft && p.kleft.length && !CS.o && G.state === 'playing') {
         try { if (document.exitPointerLock) document.exitPointerLock(); } catch (e) { }
-        openPick({ need: 1, allowed: p.kleft.slice(), secs: Math.max(1, p.kw), evIco: '⏳', title: `選擇下一位出戰角色（剩 ${p.kleft.length} 位）`, okText: '確認出戰', back: null, kofChoose: true, noPrev: true, onDone: list => { if (G.netClient) netAct(['kp', list[0]]); else kofPick(G.player, list[0]); } });
+        openPick({ need: 1, allowed: p.kleft.slice(), secs: Math.max(1, p.kw), evIco: '⏳', title: `選擇下一位出戰英雄（剩 ${p.kleft.length} 位）`, okText: '確認出戰', back: null, kofChoose: true, noPrev: true, onDone: list => { if (G.netClient) netAct(['kp', list[0]]); else kofPick(G.player, list[0]); } });
       }
     }
     if (CS.o && CS.o.kofChoose && (!p || p.alive || G.state !== 'playing' || G.mode !== 'kof')) closePick();
@@ -100,6 +100,9 @@ const UI = {
     add('🌫️', p.dackE >= 0 ? DACK_T - p.dackE : (c && SKILL_OF[p.av.outfitIdx] === 'dack' && cd > 15 ? cd - 15 : 0));
     if (p.cloak) add('🐱', 5 - p.cloakE); else if (c && SKILL_OF[p.av.outfitIdx] === 'lydia' && cd > 15) add('🐱', cd - 15);
     add('🐵', p.wkT || 0);
+    if (p.chant) add('🔮', p.chant.t);
+    if (K) { add('🕊️', K.ban.t); add('🎞️', K.neg.t); if (K.gis.by === p) add('💖', K.gis.t); }
+    if (c && SKILL_OF[p.av.outfitIdx] === 'gis' && cd > 15) add('💖', cd - 15);
     this.skPills = L;
   },
   skillHUD(dt, p) {
@@ -107,16 +110,17 @@ const UI = {
       const r2 = relPhase2(p); if (r2 !== this._rl2) { this._rl2 = r2; this.numLayout(); } }
     { const dl = isOut(p, 20); if (dl !== this._dl) { this._dl = dl; document.body.classList.toggle('doll', dl); } }
     this.skTimers(p);
-    { const dr = p.av.outfitIdx === 18; if (dr !== this._dr) { this._dr = dr; document.body.classList.toggle('derek', dr); $('slotG').style.display = dr ? 'none' : ''; $('slotS').querySelector('em').textContent = dr ? 'G' : 'R'; } }
-    const s = $('slotS'), sk = skillOf(p), cd = p.skCd || 0, show = !!sk && skOn(); s.style.display = show ? '' : 'none'; s.classList.toggle('boost', !!p.boost && cd > 0);
+    { const dr = GKEY_HEROES.includes(p.av.outfitIdx); if (dr !== this._dr) { this._dr = dr; document.body.classList.toggle('derek', dr); $('slotG').style.display = dr ? 'none' : ''; $('slotS').querySelector('em').textContent = dr ? 'G' : 'R'; } }
+    const s = $('slotS'), sk = skillOf(p), cd = p.skCd || 0, show = !!sk && G.skillsOn !== false; s.style.display = show ? '' : 'none'; s.classList.toggle('boost', !!p.boost && cd > 0);
     { let f = 0; for (const o of G.actors) if (o !== p && o.alive && o.dackE >= 1) { const d = Math.hypot(o.x - p.x, o.z - p.z); if (d < 12) f = Math.max(f, .8 + .2 * (1 - d / 12)); } const df = $('dfog'); $('dself').style.opacity = (p.dackE >= 1) ? .2 : 0; if (Math.abs((this._df || 0) - f) > .02) { this._df = f; df.style.opacity = f; } }
     $('stamwrap').style.visibility = isOut(p, 12) ? 'hidden' : ''; $('binwrap').style.visibility = isOut(p, 13) ? 'hidden' : '';
     { const ik = $('ink'), on = inkActive(p); if (on !== this._ink) { this._ink = on; ik.classList.toggle('on', on); } if (on && G.sk.ink.t < .5) ik.style.opacity = G.sk.ink.t * 2; else if (on) ik.style.opacity = 1; }
     const dash = isSumi(p) && p.dashReady && !p.onGround, jb = $('bJump'); if (jb) { const tx = dash ? '突進' : '跳躍'; if (jb.textContent !== tx) jb.textContent = tx; }
     if (show) {
     const ico = p.stolen ? SKILLS[p.stolen].ico : p.armed ? '🪄' : sk.ico; if (this._skIco !== ico) { this._skIco = ico; s.querySelector('.ico').textContent = ico; }
-    s.classList.toggle('cd', cd > 0); s.classList.toggle('on', (p.shieldT || 0) > 0 || !!p.stolen || !!p.armed); s.style.setProperty('--p', Math.min(360, cd / sk.cd * 360).toFixed(1) + 'deg');
-    const sec = cd > 0 ? String(Math.ceil(cd)) : ''; if (this._skSec !== sec) { this._skSec = sec; s.querySelector('.cdn').textContent = sec; }
+    const ace = p.av.outfitIdx === 22, locked = !skOn() || (ace ? !(p.windowT > 0) : cd > 0);
+    s.classList.toggle('cd', locked); s.classList.toggle('on', (p.shieldT || 0) > 0 || !!p.stolen || !!p.armed || !!p.chant); s.style.setProperty('--p', (sk.cd ? Math.min(360, cd / sk.cd * 360) : 0).toFixed(1) + 'deg');
+    const sec = ace ? (p.windowT > 0 ? String(Math.ceil(p.windowT)) : '') : cd > 0 ? String(Math.ceil(cd)) : ''; if (this._skSec !== sec) { this._skSec = sec; s.querySelector('.cdn').textContent = sec; }
     }
     const sc = G.sk.scr, t = sc.t; let on = false;
     this._pf = on; $('numL').classList.toggle('purple', on); $('numR').classList.toggle('purple', on); $('pflash').classList.toggle('on', on);
@@ -180,9 +184,10 @@ const UI = {
   stunFx(sec) { const e = this.els.deadv; e.style.opacity = .75; clearTimeout(this._st); this._st = setTimeout(() => { if (G.player && G.player.alive) e.style.opacity = 0; }, sec * 1000); },
   goText() { this.goT = 1; this._cd = 0; $('cdNum').textContent = '開始！'; $('cdTxt').textContent = '戰鬥開始'; this.els.countdown.classList.remove('hidden'); },
   cdUpdate(dt) {
-    const e = this.els.countdown; if (G.kofCd && G.kofT > 0 && !(G.countdown > 0)) { const k = Math.ceil(G.kofT), n = $('cdNum'); if (k !== this._kk2) { this._kk2 = k; n.textContent = k > 1 ? 'Ready…' : 'Go！'; n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; $('cdTxt').textContent = '下一位出戰角色登場'; } e.classList.remove('hidden'); return; } if (this._kk2) { this._kk2 = 0; e.classList.add('hidden'); }
+    { const neg = !!(G.sk && G.sk.neg && G.sk.neg.t > 0); if (neg !== this._neg) { this._neg = neg; $('gl').style.filter = neg ? 'invert(1)' : ''; } }
+    const e = this.els.countdown; if (G.kofCd && G.kofT > 0 && !(G.countdown > 0)) { const k = Math.ceil(G.kofT), n = $('cdNum'); if (k !== this._kk2) { this._kk2 = k; n.textContent = k > 1 ? 'Ready…' : 'Go！'; n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; $('cdTxt').textContent = '下一位出戰英雄登場'; } e.classList.remove('hidden'); return; } if (this._kk2) { this._kk2 = 0; e.classList.add('hidden'); }
     const c = Math.ceil(G.countdown || 0);
-    if (c > 0) { if (c !== this._cd) { this._cd = c; const n = $('cdNum'); n.textContent = G.kofCd ? (c > 1 ? 'Ready…' : 'Go！') : c; n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; $('cdTxt').textContent = G.kofCd ? '下一位出戰角色登場' : '遊戲將在 ' + c + ' 秒後開始・請先觀察四周'; } e.classList.remove('hidden'); }
+    if (c > 0) { if (c !== this._cd) { this._cd = c; const n = $('cdNum'); n.textContent = G.kofCd ? (c > 1 ? 'Ready…' : 'Go！') : c; n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; $('cdTxt').textContent = G.kofCd ? '下一位出戰英雄登場' : '遊戲將在 ' + c + ' 秒後開始・請先觀察四周'; } e.classList.remove('hidden'); }
     else if (this.goT > 0) { this.goT -= dt; if (this.goT <= 0) e.classList.add('hidden'); } else e.classList.add('hidden');
   },
   demoTag() { const v = G.view; if (v) { this.els.demoTag.textContent = '🎬 示範模式・目前視角：' + v.name; this.els.demoTag.classList.remove('hidden'); } },
@@ -270,7 +275,7 @@ const Input = {
         if (e.code === 'Backspace') { backspace(); e.preventDefault(); return; }
         if (e.code === 'Enter' || e.code === 'NumpadEnter') { submitNumber(); e.preventDefault(); return; }
         if (e.code === 'KeyF') { useItem(0); return; }
-        if (e.code === 'KeyG') { if (G.player && G.player.av.outfitIdx === 18) castSkillPlayer(); else useItem(1); return; }
+        if (e.code === 'KeyG') { if (G.player && GKEY_HEROES.includes(G.player.av.outfitIdx)) castSkillPlayer(); else useItem(1); return; }
         if (e.code === 'KeyR') { castSkillPlayer(); return; }
         if (e.code === 'KeyQ') { toggleBino(); return; }
         if (e.code === 'Escape') { if (!this.pointerLocked()) togglePause(); return; }
@@ -376,7 +381,7 @@ function resumeGame() { UI.menuOpen = false; setPause(false); if (!Device.mobile
 
 /* ---------- 選單 ---------- */
 /* ---------- 遊戲說明（分頁＋圖示） ---------- */
-const HOW_TABS = [['go', '🎯 怎麼玩'], ['ctl', '🎮 操作'], ['item', '🎁 道具'], ['chr', '🧑 角色技能'], ['mode', '🗺️ 模式地圖'], ['spec', '🏟️ 擂台・KOF']];
+const HOW_TABS = [['go', '🎯 怎麼玩'], ['ctl', '🎮 操作'], ['item', '🎁 道具'], ['chr', '🧑 英雄技能'], ['mode', '🗺️ 模式地圖'], ['spec', '🏟️ 擂台・KOF']];
 const hStep = (n, ico, t, d) => `<div class="hstep"><i>${n}</i><div class="hic">${ico}</div><b>${t}</b><span>${d}</span></div>`;
 const hCard = (ico, t, d, cls) => `<div class="hcard ${cls || ''}"><div class="hic">${ico}</div><div><b>${t}</b><span>${d}</span></div></div>`;
 const hKey = (k, d) => `<div class="hkey"><span class="kc">${k}</span><em>${d}</em></div>`;
@@ -384,11 +389,11 @@ function howPanel(id) {
   if (id === 'go') return `<div class="hhero"><svg viewBox="0 0 120 70" class="hplate"><circle cx="60" cy="22" r="14" fill="#e8c7a6" stroke="#5a3a22" stroke-width="2"/><rect x="26" y="34" width="68" height="26" rx="5" fill="#fff6d8" stroke="#c0392b" stroke-width="3"/><text x="60" y="53" text-anchor="middle" font-size="19" font-weight="800" fill="#c0392b" font-family="monospace">48 213</text></svg><p>每個人額頭都有一組<b>數字牌</b>。<br>先讀到、先輸入，對方就<b>淘汰</b>！</p></div>
 <div class="hsteps">${hStep(1, '👀', '看', '靠近、對準額頭')}${hStep(2, '🧠', '記', '記下整組數字')}${hStep(3, '⌨️', '輸入', '按數字鍵 → Enter')}${hStep(4, '💥', '淘汰', '對方出局、你得分')}</div>
 <div class="hgrid">${hCard('🔴', '被讀到了？', '畫面中央紅箭頭＝有人在讀你。快<b>背對、躲掩體、移動</b>。')}${hCard('❌', '輸錯號碼', '定身 2 秒，視角也鎖住，千萬別亂按。')}${hCard('♻️', '擊殺後', '你的號碼立刻換新，別人讀到的作廢。')}${hCard('🛡️', '重生保護', '剛重生短時間無法被淘汰。')}</div>`;
-  if (id === 'ctl') return `<h3>🖥️ 電腦</h3><div class="hkeys">${hKey('W A S D', '移動')}${hKey('Shift', '衝刺')}${hKey('Space', '跳（空中再按＝二段跳）')}${hKey('滑鼠', '轉視角（先點畫面）')}${hKey('0-9', '輸入號碼')}${hKey('Enter', '送出')}${hKey('⌫', '刪除一碼')}${hKey('R', '角色技能')}${hKey('F / G', '使用道具（Derek 的 G＝衝鋒）')}${hKey('Q／右鍵', '望遠鏡')}${hKey('Esc', '暫停')}</div>
+  if (id === 'ctl') return `<h3>🖥️ 電腦</h3><div class="hkeys">${hKey('W A S D', '移動')}${hKey('Shift', '衝刺')}${hKey('Space', '跳（空中再按＝二段跳）')}${hKey('滑鼠', '轉視角（先點畫面）')}${hKey('0-9', '輸入號碼')}${hKey('Enter', '送出')}${hKey('⌫', '刪除一碼')}${hKey('R', '英雄技能')}${hKey('F / G', '使用道具（Derek 的 G＝衝鋒）')}${hKey('Q／右鍵', '望遠鏡')}${hKey('Esc', '暫停')}</div>
 <h3>📱 手機（橫向）</h3><div class="hgrid">${hCard('🕹️', '左半邊拖曳', '搖桿移動')}${hCard('🏃', '右側「跑」鍵', '按住衝刺（耗體力）')}${hCard('👆', '右側空白拖曳', '轉視角')}${hCard('🔢', '左右數字鍵', '輸滿位數自動送出')}${hCard('⬆️', '跳躍鍵', '空中再按＝二段跳')}${hCard('🔭', '望遠鏡', '壓住使用、放開取消，壓住時滑動轉視角')}${hCard('🎒', '道具格', '點按使用')}</div>
 <div class="hnote">🔋 衝刺會消耗體力條；望遠鏡有能量條，用完需等待回復。</div>`;
-  if (id === 'item') return `<div class="hnote">開局沒有道具，走過地圖上的 <b>？箱</b> 才會取得；兩格已滿時不會更換。</div><div class="hgrid">${Object.entries({ cam: '拍照後照片短暫停留，方便看清號碼', quake: '讓其他人畫面劇烈橫向晃動 2 秒', scope: '約 13° 超遠距放大，再按一次＝拍照', fake: '頭上號碼偽裝成別的數字 7 秒', spring: '立即刷新角色技能冷卻' }).map(([k, d]) => hCard(ITEMS[k].ico, ITEMS[k].name, d, 'big')).join('')}${hCard('🔭', '望遠鏡（內建）', '遠距離讀碼，有能量限制', 'big')}</div>`;
-  if (id === 'chr') { return `<div class="hnote">按 <span class="kc">R</span>（手機：技能鍵）施放，圓環顯示冷卻。可在「遊戲設定」整體關閉技能。</div><div class="hchars">${OUTFITS.map((o, i) => o.hidden ? '' : `<div class="hch"><img src="${outfitIcon(i)}"><div><b>${o.label}</b><u>${o.skill.name}</u><span>${o.skill.desc}</span></div></div>`).join('')}</div>`; }
+  if (id === 'item') return `<div class="hnote">開局沒有道具，走過地圖上的 <b>？箱</b> 才會取得；兩格已滿時不會更換。</div><div class="hgrid">${Object.entries({ cam: '拍照後照片短暫停留，方便看清號碼', quake: '讓其他人畫面劇烈橫向晃動 2 秒', scope: '約 13° 超遠距放大，再按一次＝拍照', fake: '頭上號碼偽裝成別的數字 7 秒', spring: '立即刷新英雄技能冷卻' }).map(([k, d]) => hCard(ITEMS[k].ico, ITEMS[k].name, d, 'big')).join('')}${hCard('🔭', '望遠鏡（內建）', '遠距離讀碼，有能量限制', 'big')}</div>`;
+  if (id === 'chr') { return `<div class="hnote">按 <span class="kc">R</span>（手機：技能鍵）施放，圓環顯示冷卻。可在「遊戲設定」整體關閉技能。 Derek、快克、安琪沒有 G 道具格，其技能改由 <span class="kc">G</span> 鍵施放。</div><div class="hchars">${OUTFITS.map((o, i) => o.hidden ? '' : `<div class="hch"><img src="${outfitIcon(i)}"><div><b>${o.label}</b><u>${o.skill.name}</u><span>${o.skill.desc}</span></div></div>`).join('')}</div>`; }
   if (id === 'spec') return `<h3>🏟️ 擂台逃殺（單人／多人合作）</h3>
 <div class="hrule">玩家方對抗一波強過一波的電腦軍團；電腦同屬一國，彼此不會互相攻擊。多人遊玩時，電腦人數會依真人人數成倍增加（場上總人數上限 20 人）。</div>
 <div class="hsteps h4">${hStep(1, '⏱️', '3 秒倒數', '進入畫面後先倒數 3 秒')}${hStep(2, '📢', '10 秒準備', '藍底通知＋右上角倒數，剩 3 秒響提示音')}${hStep(3, '🔔', 'Stage 1', '鳴響開賽聲，電腦登場')}${hStep(4, '🏆', 'Clear！！', '全數擊倒後進入下一關')}</div>
@@ -396,10 +401,10 @@ function howPanel(id) {
 <table class="htb"><tr><th>關卡</th><th>電腦（單人）</th><th>關卡</th><th>電腦（單人）</th></tr><tr><td>Stage 1</td><td>2 名輕鬆</td><td>Stage 6</td><td>3 名普通</td></tr><tr><td>Stage 2</td><td>3 名輕鬆</td><td>Stage 7</td><td>5 名普通</td></tr><tr><td>Stage 3</td><td>5 名輕鬆</td><td>Stage 8</td><td>7 名普通</td></tr><tr><td>Stage 4</td><td>7 名輕鬆</td><td>Stage 9</td><td>9 名普通</td></tr><tr><td>Stage 5</td><td>1 名普通</td><td>Stage 10</td><td>1 名困難</td></tr></table>
 <div class="hnote">Stage 10 之後，每進入下一關就多 1 名困難電腦，直到玩家方被殲滅為止。多人模式依真人人數倍增。</div>
 <h3>🥊 KOF 大賽（單人對電腦／2 位玩家）</h3>
-<div class="hrule">以<b>車輪戰</b>進行的一對一單挑：雙方各自挑選 5 位出賽角色（限時 40 秒，逾時由系統補滿），選定後依一般模式的開場倒數開戰。超過 2 位玩家的房間無法進行此模式。</div>
-<div class="hsteps h4">${hStep(1, '🧩', '選 5 位', '雙方各 40 秒選出出賽名單')}${hStep(2, '⚔️', '單挑', '場上一對一，先被淘汰者換人')}${hStep(3, '⏳', '10 秒選角', '倒下方從剩餘角色中選下一位')}${hStep(4, '🚦', 'Ready… Go！', '雙方各 1 秒，鳴響開賽聲後繼續')}</div>
-<div class="hrule">倒下的玩家有 <b>10 秒</b>挑選下一位出戰角色，這段時間另一位玩家仍可在地圖上自由行動；選定後雙方畫面顯示「Ready…」與「Go！」再繼續。重新登場的角色<b>一定生成在對手視野之外</b>，確保公平。最先耗盡 5 位角色的一方顯示 Defeat，另一方顯示 Victory，隨後進入結算畫面。</div>`;
-  return `<h3>🏆 模式</h3><div class="hgrid">${hCard('⚔️', '個人死鬥', '人人為敵，先淘汰 15 人獲勝。領先者號碼變大變亮＝賞金目標。')}${hCard('🔴🔵', '團隊死鬥', '紅藍對戰，隊伍先 30 淘汰獲勝；隊友無法淘汰。')}${hCard('🎯', '激鬥追捕', '只追殺電腦角色，連殺積分更高；落後者技能冷卻縮短 50%。')}${hCard('🚩', '奪旗', '搶敵方旗帶回基地，先得 3 分。')}</div>
+<div class="hrule">以<b>車輪戰</b>進行的一對一單挑：雙方各自挑選 5 位出賽英雄（限時 40 秒，逾時由系統補滿），選定後依一般模式的開場倒數開戰。超過 2 位玩家的房間無法進行此模式。</div>
+<div class="hsteps h4">${hStep(1, '🧩', '選 5 位', '雙方各 40 秒選出出賽名單')}${hStep(2, '⚔️', '單挑', '場上一對一，先被淘汰者換人')}${hStep(3, '⏳', '10 秒選英雄', '倒下方從剩餘英雄中選下一位')}${hStep(4, '🚦', 'Ready… Go！', '雙方各 1 秒，鳴響開賽聲後繼續')}</div>
+<div class="hrule">倒下的玩家有 <b>10 秒</b>挑選下一位出戰英雄，這段時間另一位玩家仍可在地圖上自由行動；選定後雙方畫面顯示「Ready…」與「Go！」再繼續。重新登場的英雄<b>一定生成在對手視野之外</b>，確保公平。最先耗盡 5 位英雄的一方顯示 Defeat，另一方顯示 Victory，隨後進入結算畫面。</div>`;
+  return `<h3>🏆 模式</h3><div class="hgrid">${hCard('⚔️', '個人死鬥', '人人為敵，先淘汰 15 人獲勝。領先者號碼變大變亮＝賞金目標。')}${hCard('🔴🔵', '團隊死鬥', '紅藍對戰，隊伍先 30 淘汰獲勝；隊友無法淘汰。')}${hCard('🎯', '激鬥追捕', '只追殺電腦玩家，連殺積分更高；落後者技能冷卻縮短 50%。')}${hCard('🚩', '奪旗', '搶敵方旗帶回基地，先得 3 分。')}</div>
 <h3>🗺️ 地圖</h3><div class="hgrid">${hCard('🏫', '熱血高校', '白天校園，標準面積。')}${hCard('🌙', '詭譎學苑', '黑夜版，遠處沒入黑暗，要靠近才看得到。')}${hCard('🛍️', '追逃商城', '1.4 倍大，電扶梯通二樓，可從欄杆跳下。')}</div>
 <h3>🤖 對手</h3><div class="hgrid">${hCard('👥', '人數', '含你最多 20 人，不足由電腦補上。')}${hCard('🔢', '號碼位數', '3～5 碼，越多越難記。')}${hCard('😈', '干擾者', '輕／中／重＝靈活度 25%／55%／100%。')}</div>`;
 }
@@ -446,7 +451,7 @@ function buildMenu() {
   chips('chCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
   chips('chCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; }, 'count');
   chips('chTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v, 'time');
-  const updSk = () => { $('skDesc').textContent = S.skills === false ? '所有角色的主動、被動技能都停用，純粹比拼眼力與手速。' : '角色技能全部啟用（含主動技能與被動能力）。'; };
+  const updSk = () => { $('skDesc').textContent = S.skills === false ? '所有英雄的主動、被動技能都停用，純粹比拼眼力與手速。' : '英雄技能全部啟用（含主動技能與被動能力）。'; };
   chips('chSkill', [{ v: true, l: '是' }, { v: false, l: '否' }], () => S.skills !== false, v => { S.skills = v; updSk(); }, 'skills'); updSk();
   const TL = [{ v: 1, l: '輕度', d: '靈活度降為標準的 25%，動作遲緩、很少搗亂。' }, { v: 2, l: '中度', d: '靈活度降為標準的 55%，動作與搗亂頻率適中。' }, { v: 3, l: '重度', d: '維持標準靈活度，全場亂跑、積極搗亂。' }];
   const updTroll = () => { $('trollRow').classList.toggle('hidden', S.diff !== 3); $('trollDesc').textContent = (TL.find(t => t.v === S.trollLv) || TL[2]).d; };
@@ -475,7 +480,7 @@ function tutHTML(mobile) {
 <div class="tcard"><b>🚶 移動</b><span class="kc">W</span><span class="kc">A</span><span class="kc">S</span><span class="kc">D</span> 走路<br><span class="kc">Shift</span> 按住衝刺（耗體力）<br><span class="kc">Space</span> 跳躍，空中再按＝二段跳</div>
 <div class="tcard"><b>🖱 視角</b>滑鼠移動＝轉視角（先點一下畫面鎖定）<br>右鍵／<span class="kc">Q</span> 望遠鏡（放大、移動變慢）</div>
 <div class="tcard"><b>🔢 輸入號碼</b>看清對手額頭的數字後：<br><span class="kc">0</span>–<span class="kc">9</span> 輸入　<span class="kc">Enter</span> 送出<br><span class="kc">Backspace</span> 刪除（輸入滿位數可自動送出）</div>
-<div class="tcard"><b>🎒 道具</b><span class="kc">F</span> 道具 1　<span class="kc">G</span> 道具 2　<span class="kc">R</span> 角色技能<br>開局沒有道具，撿地圖上的橘色「?」箱取得；欄位滿了就不會更換</div>
+<div class="tcard"><b>🎒 道具</b><span class="kc">F</span> 道具 1　<span class="kc">G</span> 道具 2　<span class="kc">R</span> 英雄技能<br>開局沒有道具，撿地圖上的橘色「?」箱取得；欄位滿了就不會更換</div>
 <div class="tcard"><b>⚠ 小心</b>紅色箭頭＝有人正在讀你的號碼<br>輸入錯誤會被定身 2 秒（視角也不能轉）<br><span class="kc">Esc</span> 暫停</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
   const P = (l, t, w, cls, txt, st) => `<i class="${cls || ''}" style="left:${l}%;top:${t}%;${w ? 'width:' + w + '%;aspect-ratio:1;' : ''}${st || ''}">${txt}</i>`;
   return `<h2>操作說明</h2><div class="tphone">
@@ -513,6 +518,7 @@ function beginGame(demo, roster) {
 function toMenu() { go(() => { netLeave(); resetToMenuUI(); }); }
 function stopGameUI() { resetToMenuUI(); UI.els.menu.classList.add('hidden'); }
 function resetToMenuUI() {
+  $('gl').style.filter = ''; UI._neg = false;
   $('keysov').classList.add('hidden');
   UI.ev = {}; UI._pk = null; closePick(); G.arena = null; G.kofCd = false;
   hideTut(); if (G.sk) { G.sk.night = { e: 0, by: null }; G.sk.ink.t = 0; G.sk.rev.t = 0; G.sk.rel.t = -1; G.sk.quake.t = 0; G.sk.eagle.t = 0; } G.scopeOn = false; applyNightEnv(null); $('dfog').style.opacity = 0; $('dself').style.opacity = 0; $('ink').classList.remove('on'); $('gset').classList.add('hidden');
@@ -530,26 +536,26 @@ function beginNetClientUI() {
   UI._wasLocked = false;
   showTut(false);
 }
-/* ---------- 角色選擇 / 示範模式選單 ---------- */
-/* ---------- 選角（單選／五選／從剩餘角色選下一位） ---------- */
+/* ---------- 英雄選擇 / 示範模式選單 ---------- */
+/* ---------- 選英雄（單選／五選／從剩餘英雄選下一位） ---------- */
 let _qi = null;
 function qIcon() { if (_qi) return _qi; const c = cv(96, 96), g = c.getContext('2d'); g.fillStyle = '#2c2f4a'; g.beginPath(); g.arc(48, 48, 48, 0, TAU); g.fill(); g.font = '900 66px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = 6; g.strokeStyle = '#7a4a00'; g.strokeText('?', 48, 53); g.fillStyle = '#ffd24a'; g.fillText('?', 48, 53); return (_qi = c.toDataURL()); }
 const CS = { o: null, picks: [], rand: false, end: 0, tm: null };
 function csPool() { return CS.o && CS.o.allowed ? CS.o.allowed : VIS_OUTFITS; }
 function showCharInfo(i) {
-  if (CS.rand && CS.o && CS.o.need === 1) { $('cName').textContent = '隨機'; $('cPass').textContent = '【驚喜】開始前由系統隨機指派一位角色。'; return; }
+  if (CS.rand && CS.o && CS.o.need === 1) { $('cName').textContent = '隨機'; $('cPass').textContent = '【驚喜】開始前由系統隨機指派一位英雄。'; return; }
   const o = OUTFITS[i === undefined ? S.outfit : i]; $('cName').textContent = o.label; $('cPass').textContent = '【' + o.skill.name + '】' + o.skill.desc;
 }
 function setPreview(idx) { if (CS.o && CS.o.noPrev) return; if (idx === null) { G.preview = null; return; } G.preview = { x: 0, y: 0, z: 0, yaw: 0, animT: 0, sp: 0, av: createAvatar(idx === undefined ? S.outfit : idx), team: -1, number: '4827', plateScale: 1 }; makePlate(G.preview); }
 function csRefresh(last) {
   const o = CS.o; if (!o) return; const multi = o.need > 1;
   [...$('cards').children].forEach(c => { if (c.dataset.r) { c.classList.toggle('on', CS.rand && !multi); return; } const i = +c.dataset.i, k = CS.picks.indexOf(i), on = multi ? k >= 0 : (!CS.rand && CS.picks[0] === i); c.classList.toggle('on', on); const b = c.querySelector('.pk'); if (b) b.textContent = multi && k >= 0 ? k + 1 : ''; });
-  $('csHint').textContent = multi ? `已選 ${CS.picks.length} / ${o.need}　（點選順序＝出賽順序，可點已選角色取消）` : (o.hint || '');
+  $('csHint').textContent = multi ? `已選 ${CS.picks.length} / ${o.need}　（點選順序＝出賽順序，可點已選英雄取消）` : (o.hint || '');
   $('csOk').classList.toggle('dis', multi && CS.picks.length < o.need);
   if (CS.rand && !multi) { setPreview(null); showCharInfo(); } else { const v = last !== undefined ? last : CS.picks[CS.picks.length - 1]; if (v !== undefined) { setPreview(v); showCharInfo(v); } }
 }
 function openPick(o) {
-  CS.o = o; CS.rand = false; $('csTitle').textContent = o.title || '選擇角色'; $('csOk').textContent = o.okText || '確認'; $('csBack').style.display = o.back ? '' : 'none';
+  CS.o = o; CS.rand = false; $('csTitle').textContent = o.title || '選擇英雄'; $('csOk').textContent = o.okText || '確認'; $('csBack').style.display = o.back ? '' : 'none';
   const pool = o.allowed || VIS_OUTFITS;
   if (o.need === 1) { const pf = S.pref === 'rand' ? 'rand' : (pool.includes(S.outfit) ? S.outfit : pool[0]); CS.rand = pf === 'rand' && !o.allowed; CS.picks = CS.rand ? [] : [pf]; } else CS.picks = [];
   const cards = $('cards'); cards.innerHTML = '';
@@ -567,11 +573,11 @@ function csFinish(auto) {
 }
 function closePick() { clearInterval(CS.tm); UI.clrEv('cs'); CS.o = null; $('charsel').classList.add('hidden'); showWait(false); }
 function showWait(on) { $('waitDlg').classList.toggle('hidden', !on); }
-/* 單人／房主：設定完成後才選角 */
+/* 單人／房主：設定完成後才選英雄 */
 function startPickFlow() {
   resolveRandoms(false); UI.preResolved = true; const kof = S.mode === 'kof';
   openPick({
-    need: kof ? 5 : 1, secs: kof ? 40 : 0, evIco: '🧩', title: kof ? '選擇 5 位出賽角色（車輪戰）' : '選擇角色', okText: kof ? '確認出賽名單' : '確認，開始遊戲',
+    need: kof ? 5 : 1, secs: kof ? 40 : 0, evIco: '🧩', title: kof ? '選擇 5 位出賽英雄（車輪戰）' : '選擇英雄', okText: kof ? '確認出賽名單' : '確認，開始遊戲',
     back: () => { closePick(); $('gset').classList.remove('hidden'); UI.preResolved = false; },
     onDone: (list, wasRand, ex) => { if (kof) G.kofPre = { me: list, opp: kofRandRoster() }; else S.pref = ex ? 'rand' : list[0]; S.outfit = list[0]; saveS(); beginGame(false); }
   });
@@ -612,7 +618,7 @@ function closeSettings() {
   $('settings').classList.add('hidden');
   if (UI.setAuto) { UI.setAuto = false; setPause(false); if (!G.demo && !Device.mobile) Input.lock(); }
 }
-const NAMES_UI = { bRun: '跑步鍵', bJump: '跳躍鍵', bBino2: '望遠鏡鍵（壓住使用）', bBack: '退回一個數字鍵', slotF: '道具 F（相機）', slotG: '道具 G', slotS: '角色技能 R', pauseBtn: '暫停鍵', joyHint: '移動搖桿', numL: '數字鍵 0–4', numR: '數字鍵 5–9' };
+const NAMES_UI = { bRun: '跑步鍵', bJump: '跳躍鍵', bBino2: '望遠鏡鍵（壓住使用）', bBack: '退回一個數字鍵', slotF: '道具 F（相機）', slotG: '道具 G', slotS: '英雄技能 R', pauseBtn: '暫停鍵', joyHint: '移動搖桿', numL: '數字鍵 0–4', numR: '數字鍵 5–9' };
 let edSel = null, edDrag = null, edPrev = null;
 function edSelect(id) {
   edSel = id; LAYOUT_IDS.forEach(k => $(k).classList.toggle('sel', k === id));
@@ -723,5 +729,5 @@ function boot() {
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
 setInterval(() => { try { UI.renderPills(); } catch (e) { } }, 120);
-window.__G = { kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+window.__G = { killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();

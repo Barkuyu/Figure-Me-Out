@@ -1,4 +1,4 @@
-/* ================= 角色（依參考圖：白襯衫牛仔寬褲／黑T黑長褲／紫帽T工裝褲） ================= */
+/* ================= 英雄（依參考圖：白襯衫牛仔寬褲／黑T黑長褲／紫帽T工裝褲） ================= */
 const OUTFITS = [
   { key: 'f', label: '蘇蘇Susu', sub: '', skill: { name: '顛倒乾坤', desc: '揮動魔法，讓其他玩家的移動方向顛倒 7 秒。冷卻 20 秒。' }, H: 1.66, skin: '#efcbb0', hipX: .088, shX: .185, tz: .56, hair: '#4a2f22', hair2: '#8d5c3b', female: true,
     torso: [[.001, -.16], [.205, -.16], [.195, -.08], [.162, .05], [.15, .17], [.152, .28], [.17, .38], [.182, .46], [.172, .51], [.12, .545], [.056, .56], [.05, .595], [.001, .595]] },
@@ -12,7 +12,7 @@ OUTFITS.push(
     torso: [[.001, -.12], [.15, -.1], [.19, .0], [.2, .1], [.19, .22], [.17, .34], [.13, .46], [.08, .54], [.001, .56]] },
   { key: 'eric', label: '艾瑞克Eric', sub: '', skill: { name: '幻影易容', desc: '號碼偽裝成最近玩家，最長 20 秒。偽裝號碼一被輸入就解除並冷卻 25 秒；輸入自己號碼者淘汰（不計分）。' }, H: 1.78, skin: '#d2a27c', hipX: .1, shX: .235, tz: .52, hair: '#2d2824', hair2: '#6d6760',
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
-  { key: 'mike', label: '麥克Mike', sub: '', skill: { name: '疾風之速', desc: '移動速度是一般角色的 2.5 倍。' }, H: 1.74, skin: '#e2b896', hipX: .1, shX: .235, tz: .54, hair: '#b0702f', hair2: '#d89b52', passive: true,
+  { key: 'mike', label: '麥克Mike', sub: '', skill: { name: '疾風之速', desc: '移動速度是一般英雄的 2.5 倍。' }, H: 1.74, skin: '#e2b896', hipX: .1, shX: .235, tz: .54, hair: '#b0702f', hair2: '#d89b52', passive: true,
     torso: [[.001, -.1], [.22, -.1], [.235, -.02], [.225, .1], [.23, .24], [.26, .38], [.275, .47], [.26, .54], [.18, .575], [.075, .6], [.06, .63], [.001, .63]] }
 );
 OUTFITS.push(
@@ -49,7 +49,23 @@ OUTFITS.push(
   { key: 'doll', label: '朵爾Doll', sub: '', skill: { name: '黑紅咒術', desc: '被動：自己畫面上的數字鍵變成「黑底、鮮紅字」。' }, H: 1.6, skin: '#f4e2d6', hipX: .088, shX: .175, tz: .56, hair: '#17101a', hair2: '#3a1f2e', female: true, passive: true, gen: { top: '#15101c', top2: '#c1121f', pants: '#0d0b12', shoe: '#1a0d12', hair: '#17101a', style: 'long', acc: ['twintail', 'bow', 'skirt'], accC: '#d8112a' },
     torso: [[.001, -.1], [.18, -.1], [.185, -.02], [.17, .1], [.17, .22], [.19, .36], [.195, .46], [.19, .53], [.15, .57], [.065, .595], [.05, .63], [.001, .63]] },
   { key: 'einstein', label: '愛因斯坦Einstein', sub: '', skill: { name: '相對論', desc: '先響 2 秒警笛，接著其他人的左右操作與數字鍵順序全部互換，持續 20 秒。技能結束後才開始 30 秒冷卻。' }, H: 1.72, skin: '#f1d0b5', hipX: .098, shX: .23, tz: .54, hair: '#f2f2f2', hair2: '#ffffff', female: false, gen: { top: '#f3f4f6', top2: '#8fb8e0', pants: '#3b3a46', shoe: '#4a3426', hair: '#f2f2f2', style: 'bald', acc: ['wildhair', 'mustache', 'bowtie'], accC: '#f7f7f7' },
-    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.195, .1], [.205, .22], [.24, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] }
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.195, .1], [.205, .22], [.24, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'ace', label: '艾Ace', sub: '', skill: { name: '逆流術士', desc: '僅在重生後 3 秒內可施放：吟唱 0.5 秒，將剛擊殺你的玩家頭上號碼回溯為更新前的那一組。' }, H: 1.76, skin: '#e9c9ab', hipX: .095, shX: .235, tz: .54, hair: '#cfd8e6', hair2: '#e8eef7', female: false, gen: { top: '#12333f', top2: '#e0b64a', pants: '#1b2230', shoe: '#2a2018', hair: '#cfd8e6', style: 'short', acc: ['clockhalo', 'cape'], accC: '#e0b64a' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'gisselle', label: '吉賽兒Gisselle', sub: '', skill: { name: '連號甜心', desc: '吟唱 1 秒後，全場玩家頭上號碼隨機變成連號（如 0000、7777），持續 4 秒後復原。冷卻 20 秒。' }, H: 1.6, skin: '#fbe0d0', hipX: .088, shX: .175, tz: .56, hair: '#ff8fb8', hair2: '#ffc2d8', female: true, gen: { top: '#ffd1e3', top2: '#ffffff', pants: '#f6c9da', shoe: '#e0457b', hair: '#ff8fb8', style: 'bob', acc: ['buns', 'hearts', 'skirt'], accC: '#ff4f93', skirtC: '#ff9cc4', hemC: '#ffffff' },
+    torso: [[.001, -.1], [.18, -.1], [.185, -.02], [.17, .1], [.17, .22], [.19, .36], [.195, .46], [.19, .53], [.15, .57], [.065, .595], [.05, .63], [.001, .63]] },
+  { key: 'fin', label: '芬Fin', sub: '', skill: { name: '藐視罰則', desc: '被動：輸錯號碼時不會被定身，也不受任何懲罰。' }, H: 1.74, skin: '#c98f68', hipX: .098, shX: .235, tz: .54, hair: '#1d1d22', hair2: '#33333a', female: false, passive: true, gen: { top: '#5e6b78', top2: '#f08a24', pants: '#2f3a52', shoe: '#f2f2f2', hair: '#1d1d22', style: 'short', acc: ['cap', 'shades'], accC: '#18b6a4' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'senior', label: '長者Senior', sub: '', skill: { name: '負領域展開', desc: '吟唱 1.5 秒後，全場玩家（含自己）的視角轉為負片效果，持續 7 秒。冷卻 20 秒。' }, H: 1.6, skin: '#d6a98a', hipX: .09, shX: .2, tz: .6, hair: '#f4f4f4', hair2: '#ffffff', female: false, gen: { top: '#5a3d6e', top2: '#d9b86a', pants: '#3d2b4a', shoe: '#2a1d1a', hair: '#f4f4f4', style: 'bald', acc: ['beard', 'sidehair', 'cane'], accC: '#f6f6f6' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'quick', label: '快克Quick', sub: '', skill: { name: '瞬影瞬行', desc: '按 G 鍵朝移動方向瞬移約 4 個身位，途中穿越對手並使其定身 1.5 秒；成功定身即刻刷新冷卻。冷卻 0.5 秒。（無 G 道具格）' }, H: 1.72, skin: '#d9b08c', hipX: .092, shX: .22, tz: .54, hair: '#2b2a5e', hair2: '#4a49a0', female: false, gen: { top: '#2b2a5e', top2: '#7cf0ff', pants: '#1b1b3a', shoe: '#7cf0ff', hair: '#2b2a5e', style: 'hood', acc: ['scarf', 'scarftail'], accC: '#7cf0ff' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'ange', label: '安琪Ange', sub: '', skill: { name: '天使之息', desc: '按 G 鍵：刷新範圍內友軍的跑步與望遠鏡能量、並使其技能冷卻減半；1 秒內自己與範圍內友軍免疫一切攻擊與技能。冷卻 3 秒。（無 G 道具格）' }, H: 1.64, skin: '#f7ddc8', hipX: .088, shX: .18, tz: .56, hair: '#f6d878', hair2: '#fff1b0', female: true, gen: { top: '#ffffff', top2: '#ffd86b', pants: '#f2f2f8', shoe: '#ffd86b', hair: '#f6d878', style: 'long', acc: ['halo', 'wings', 'skirt'], accC: '#ffd86b', skirtC: '#fbfbff', hemC: '#ffd86b' },
+    torso: [[.001, -.1], [.18, -.1], [.185, -.02], [.17, .1], [.17, .22], [.19, .36], [.195, .46], [.19, .53], [.15, .57], [.065, .595], [.05, .63], [.001, .63]] },
+  { key: 'felix', label: '費列克斯Felix', sub: '', skill: { name: '致命快門', desc: '被動：持有的相機升級為「致命相機」（紅色按鈕）。拍到可清楚讀取完整號碼的對手，1 秒後自動輸入擊殺（多人入鏡取最近者）；開望遠鏡時同樣可拍。' }, H: 1.78, skin: '#e2b896', hipX: .098, shX: .235, tz: .54, hair: '#4a2f1c', hair2: '#6b4a2e', female: false, passive: true, gen: { top: '#8a5a2b', top2: '#f2e2b8', pants: '#3a3226', shoe: '#2a1d12', hair: '#4a2f1c', style: 'short', acc: ['fedora', 'camera'], accC: '#6e4a24' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'peace', label: '和平使者Peace', sub: '', skill: { name: '停戰宣告', desc: '立即終止全場所有英雄的主動與被動技能，並使全場 5 秒內無法使用任何技能。冷卻 15 秒。' }, H: 1.8, skin: '#e6c4a0', hipX: .098, shX: .23, tz: .54, hair: '#8b6a3e', hair2: '#b08a55', female: false, gen: { top: '#f2ecd0', top2: '#5aa05a', pants: '#e8e2c8', shoe: '#8b6a3e', hair: '#8b6a3e', style: 'long', acc: ['laurel', 'dovestaff', 'skirt'], accC: '#58b05a', skirtC: '#efe9cc', hemC: '#5aa05a' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] }
 );
 const SKINPATCH = [.975, .975];
 
@@ -274,6 +290,16 @@ function buildOutfit(i) {
     if (ac.includes('bow')) { for (const sg of [-1, 1]) hairP.push({ g: gSphere(.04, 8, 6), t: [sg * .045, hc + hh * .72, .03], s: [1.2, .7, .6], c: accC }); hairP.push({ g: gSphere(.02, 6, 5), t: [0, hc + hh * .72, .035], c: [.6, .05, .1] }); }
     if (ac.includes('wildhair')) for (let k = 0; k < 18; k++) { const a = k * 2.4 + 1; hairP.push({ g: gCyl(0, .034, .13 + (k % 3) * .03, 6, 1), t: [Math.sin(a) * hw * .9, hc + hh * (.3 + (k % 4) * .08), Math.cos(a) * hw * 1.0], r: [.9 + (k % 3) * .25, a, 0], c: k % 2 ? [.95, .95, .95] : [.82, .82, .84] }); }
     if (ac.includes('mustache')) for (const sg of [-1, 1]) hairP.push({ g: gBox(.075, .026, .03), t: [sg * .042, hc - hh * .3, hw * 1.2], r: [0, 0, -sg * .35], c: [.96, .96, .96] });
+    if (ac.includes('clockhalo')) { hairP.push({ g: gCyl(.2, .2, .012, 26, 1, true), t: [0, hc + hh * .1, -hw * 1.7], r: [PI / 2, 0, 0], c: accC }); for (let k = 0; k < 4; k++) { const a = k * PI / 2; hairP.push({ g: gBox(.012, .045, .014), t: [Math.sin(a) * .17, hc + hh * .1 + Math.cos(a) * .17, -hw * 1.7], r: [0, 0, -a], c: [.95, .95, .98] }); } }
+    if (ac.includes('buns')) for (const sg of [-1, 1]) { hairP.push({ g: gSphere(.062, 10, 8), t: [sg * hw * .95, hc + hh * .62, -.01], c: h1 }); hairP.push({ g: gSphere(.026, 8, 6), t: [sg * hw * .95, hc + hh * .62 + .055, -.01], c: accC }); }
+    if (ac.includes('hearts')) for (const sg of [-1, 1]) { hairP.push({ g: gSphere(.024, 8, 6), t: [sg * .05, hc + hh * .2, hw * 1.18], s: [1, .9, .4], c: accC }); }
+    if (ac.includes('cap')) { hairP.push({ g: gSphere(1, 20, 12, 0, TAU, 0, 1.45), t: [0, hc + .02, -.006], s: [hw * 1.14, hh * .78, hw * 1.14 * 1.18], c: accC }); hairP.push({ g: gBox(hw * 1.5, .014, .1), t: [0, hc + hh * .12, hw * 1.55], r: [-.12, 0, 0], c: shade(accC, .8) }); }
+    if (ac.includes('shades')) { hairP.push({ g: gBox(hw * 1.7, .036, .018), t: [0, hc - hh * .06, hw * 1.2], c: [.05, .05, .07] }); }
+    if (ac.includes('sidehair')) for (const sg of [-1, 1]) hairP.push({ g: gSphere(.045, 8, 6), t: [sg * hw * 1.1, hc - hh * .08, -.01], s: [.8, 1.3, 1], c: [.96, .96, .96] });
+    if (ac.includes('beard')) { hairP.push({ g: gCyl(hw * .95, .02, .2, 12, 3), t: [0, hc - hh * .62, hw * .55], r: [.15, 0, 0], c: [.97, .97, .97] }); hairP.push({ g: gBox(.09, .02, .03), t: [0, hc - hh * .3, hw * 1.22], c: [.97, .97, .97] }); }
+    if (ac.includes('halo')) hairP.push({ g: gCyl(.115, .115, .014, 24, 1, true), t: [0, hc + hh * 1.05, -.01], c: accC });
+    if (ac.includes('fedora')) { hairP.push({ g: gCyl(hw * 1.9, hw * 1.9, .016, 22, 1), t: [0, hc + hh * .3, -.004], c: accC }); hairP.push({ g: gCyl(hw * 1.05, hw * 1.2, .09, 18, 1), t: [0, hc + hh * .3 + .05, -.004], c: shade(accC, 1.1) }); hairP.push({ g: gCyl(hw * 1.22, hw * 1.22, .022, 18, 1, true), t: [0, hc + hh * .3 + .03, -.004], c: [.15, .1, .06] }); }
+    if (ac.includes('laurel')) for (let k = 0; k < 10; k++) { const a = k * .63 + .3; hairP.push({ g: gSphere(.02, 6, 5), t: [Math.sin(a) * hw * 1.05, hc + hh * .32, Math.cos(a) * hw * 1.15], s: [1, .6, 1.4], c: accC }); }
     if (ac.includes('catears')) for (const sg of [-1, 1]) hairP.push({ g: gCyl(0, .035, .08, 4, 1), t: [sg * hw * .7, hc + hh * .62, .0], r: [0, 0, -sg * .25], c: [.1, .09, .12] });
     if (ac.includes('headband')) hairP.push({ g: gCyl(hw * 1.09, hw * 1.09, .022, 22, 1, true), t: [0, hc + hh * .22, -.004], s: [1, 1, 1.18], c: accC });
     if (ac.includes('flower')) { hairP.push({ g: gSphere(.022, 8, 6), t: [hw * .9, hc + hh * .35, hw * .5], c: accC }); hairP.push({ g: gSphere(.01, 6, 5), t: [hw * .9, hc + hh * .35, hw * .5 + .018], c: [1, .9, .3] }); }
@@ -405,7 +431,13 @@ function buildOutfit(i) {
   }
   if (O.gen) {
     const ac = O.gen.acc || [], accC = rgb(O.gen.accC || '#fff');
-    if (ac.includes('skirt')) { ex.push({ g: gCyl(.17, .31, .24, 20, 1), t: [0, hipY - .07, 0], c: [.08, .06, .11] }); ex.push({ g: gCyl(.31, .315, .035, 20, 1), t: [0, hipY - .185, 0], c: [.76, .07, .13] }); ex.push({ g: gBox(.1, .03, .02), t: [0, hipY + .12, .17], c: [.76, .07, .13] }); }
+    if (ac.includes('skirt')) { const sc = O.gen.skirtC ? rgb(O.gen.skirtC) : [.08, .06, .11], hc2 = O.gen.hemC ? rgb(O.gen.hemC) : [.76, .07, .13]; ex.push({ g: gCyl(.17, .31, .24, 20, 1), t: [0, hipY - .07, 0], c: sc }); ex.push({ g: gCyl(.31, .315, .035, 20, 1), t: [0, hipY - .185, 0], c: hc2 }); ex.push({ g: gBox(.1, .03, .02), t: [0, hipY + .12, .17], c: [.76, .07, .13] }); }
+    if (ac.includes('cape')) { ex.push({ g: gBox(.42, .66, .03), t: [0, shY - .3, -.19], r: [.12, 0, 0], c: [.1, .27, .33] }); ex.push({ g: gBox(.44, .04, .035), t: [0, shY - .02, -.185], c: accC }); }
+    if (ac.includes('wings')) for (const sg of [-1, 1]) { ex.push({ g: gBox(.04, .5, .2), t: [sg * .17, shY - .12, -.2], r: [.25, 0, sg * .45], c: [1, 1, 1] }); ex.push({ g: gBox(.03, .34, .16), t: [sg * .27, shY - .28, -.21], r: [.3, 0, sg * .6], c: [.97, .95, .85] }); }
+    if (ac.includes('scarftail')) { ex.push({ g: gBox(.09, .5, .02), t: [.1, shY - .3, -.17], r: [.2, 0, .15], c: accC }); ex.push({ g: gBox(.08, .38, .02), t: [-.04, shY - .26, -.18], r: [.25, 0, -.1], c: shade(accC, .8) }); }
+    if (ac.includes('cane')) { ex.push({ g: gCyl(.016, .016, .85, 8, 1), t: [.3, .43, .16], c: [.42, .27, .15] }); ex.push({ g: gSphere(.035, 8, 6), t: [.3, .86, .16], c: [.9, .72, .2] }); }
+    if (ac.includes('camera')) { ex.push({ g: gBox(.15, .1, .07), t: [0, shY - .22, .2], c: [.08, .08, .1] }); ex.push({ g: gCyl(.034, .038, .05, 12, 1), t: [0, shY - .22, .245], r: [PI / 2, 0, 0], c: [.7, .7, .74] }); ex.push({ g: gBox(.06, .012, .03), t: [.04, shY - .165, .2], c: [.85, .1, .1] }); }
+    if (ac.includes('dovestaff')) { ex.push({ g: gCyl(.018, .018, 1.55, 8, 1), t: [-.34, .78, .12], c: [.62, .45, .25] }); ex.push({ g: gSphere(.05, 8, 6), t: [-.34, 1.58, .12], s: [1.2, .9, 1.4], c: [1, 1, 1] }); ex.push({ g: gBox(.14, .02, .06), t: [-.34, 1.6, .12], r: [0, 0, .3], c: [.95, .95, .95] }); }
     if (ac.includes('bowtie')) { for (const sg of [-1, 1]) ex.push({ g: gSphere(.035, 8, 6), t: [sg * .035, shY + .02, .12], s: [1.3, .8, .6], c: [.75, .12, .12] }); ex.push({ g: gSphere(.016, 6, 5), t: [0, shY + .02, .125], c: [.5, .08, .08] }); }
     if (ac.includes('pauldron')) for (const sg of [-1, 1]) { ex.push({ g: gSphere(.12, 10, 8), t: [sg * (O.shX + .035), shY - .005, 0], s: [1, .62, 1.1], c: [.82, .65, .15] }); ex.push({ g: gSphere(.095, 10, 8), t: [sg * (O.shX + .05), shY + .02, 0], s: [1, .5, 1], c: [.5, .52, .56] }); }
     if (ac.includes('tail')) for (let k = 0; k < 8; k++) ex.push({ g: gSphere(.032 - k * .0016, 7, 5), t: [0, hipY - .03 + k * .052 + Math.max(0, k - 4) * .035, -.15 - k * .03], c: k > 6 ? [.95, .8, .3] : [.8, .52, .2] });
@@ -465,7 +497,7 @@ function drawPlate(a) {
 }
 function createAvatar(outfitIdx) { return { outfit: getOutfit(outfitIdx), outfitIdx }; }
 
-/* 繪製一名角色（Q 版比例：大頭、短腿、圓潤身體） */
+/* 繪製一名英雄（Q 版比例：大頭、短腿、圓潤身體） */
 const CHIBI = { legS: .52, torS: .72, armS: .74, wide: 1.26, head: 2.0 };
 const _m1 = M4.create(), _m2 = M4.create(), _U = M4.create();
 function placeM(out, base, tx, ty, tz, rx, rz, sx, sy, sz, ox, oy, oz) { // out = base * T(t)*R*S(s) * T(o)
