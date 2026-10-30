@@ -299,6 +299,22 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 #slotS.boost .ring{background:conic-gradient(#7dff9a var(--p,0deg),rgba(255,255,255,.12) 0)}
 .chip.soon{opacity:.5;filter:grayscale(1) brightness(1.4);background:rgba(255,255,255,.08)}
 #hostLeft{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:12px}
+.gbox2{width:min(900px,100%);max-height:96%;padding:12px 16px 10px;text-align:left}
+.ghead{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}.ghead h2{margin:0}.gsub{font-size:12px;opacity:.7}
+.gcols{display:grid;grid-template-columns:1.15fr 1fr;gap:12px}.gcol{display:flex;flex-direction:column;gap:10px}
+@media (max-width:640px){.gcols{grid-template-columns:1fr}}
+.gsec{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.14);border-left:5px solid var(--ac,#ee1c2e);border-radius:12px;padding:8px 10px 6px}
+.gsec.s1{--ac:#ee1c2e}.gsec.s2{--ac:#3a8fe8}.gsec.s3{--ac:#2fbf71}
+.gt{font:700 14px var(--font);letter-spacing:.08em;margin-bottom:6px;color:#fff}.gt i{font-style:normal;display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--ac);align-items:center;justify-content:center;font-size:12px;margin-right:6px}
+.grow{display:flex;align-items:center;gap:8px;margin:5px 0}.grow label{flex:0 0 58px;font-size:12px;color:#cfd3dc;letter-spacing:.04em}
+.grow .chips{gap:5px;justify-content:flex-start;flex:1}.gbox2 .chip{padding:5px 9px;font-size:13px;border-radius:9px}.gbox2 .chip small{display:none}
+.gsec.s2 .chip small{display:block;font-size:10px}
+.gsec.s2 .chip.on{background:linear-gradient(180deg,#6fb4ff,#2a73cc 45%,#1c55a0);border-color:#d4e8ff;box-shadow:0 3px 0 #123a70}
+.gsec.s3 .chip.on{background:linear-gradient(180deg,#6fe6a4,#27a862 45%,#17804a);border-color:#d4ffe6;box-shadow:0 3px 0 #0e5a33}
+.gbox2 .gnote{text-align:left;font-size:11.5px;color:#d8dbe3;margin:1px 0 4px 66px;min-height:0}
+.gsec.s2 .gnote{margin-left:2px}
+.gfoot{position:sticky;bottom:-12px;margin:10px -16px -10px;padding:8px 0 10px;gap:16px;justify-content:center;background:linear-gradient(180deg,rgba(32,24,18,0),rgba(32,24,18,.97) 35%);z-index:3}
+@media (max-height:430px){.gbox2{padding:8px 12px 6px}.ghead h2{font-size:22px}.gsec{padding:5px 8px 3px}.gt{margin-bottom:3px;font-size:13px}.grow{margin:3px 0}.gbox2 .chip{padding:3px 7px;font-size:12px}.grow label{flex-basis:52px;font-size:11px}.gbox2 .gnote{font-size:10.5px;margin-left:60px}.gcol{gap:6px}.gfoot .btn{font-size:15px;padding:7px 18px}}
 .gnote{font-size:12px;color:#fff;margin:4px 0 0;min-height:16px}
 .slot .cdn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:900 clamp(16px,calc(var(--vw)*2.6),22px) var(--font);color:#fff;text-shadow:0 0 5px #000,0 0 3px #000;pointer-events:none}
 .slot .ring{position:absolute;inset:-5px;border-radius:50%;pointer-events:none;opacity:0;background:conic-gradient(#ffd84a var(--p,0deg),rgba(255,255,255,.12) 0);-webkit-mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px));mask:radial-gradient(circle,transparent calc(50% - 4px),#000 calc(50% - 3px))}
@@ -355,7 +371,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 3.1</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 3.2</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -368,15 +384,29 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     </div>
   </div>
 
-  <div id="gset" class="hidden"><div class="sbox gbox"><h2>🏆 遊戲設定</h2>
-    <h4>遊戲模式</h4><div class="chips" id="chMode"></div><div id="modeDescG" class="gnote"></div>
-    <h4>地圖</h4><div class="chips" id="chMap"></div><div id="mapDesc" class="mpnote" style="margin:2px 0 4px"></div>
-    <h4>人數</h4><div class="chips" id="chCount"></div>
-    <h4>時間</h4><div class="chips" id="chTime"></div>
-    <h4>是否允許使用技能</h4><div class="chips" id="chSkill"></div><div id="skDesc" class="gnote"></div>
-    <h4>難度</h4><div class="chips" id="chCode"></div>
-    <h4>機器人難度</h4><div class="chips" id="chDiff"></div><div id="diffDesc" class="gnote"></div><div id="trollRow" class="hidden"><h4>干擾者程度</h4><div class="chips" id="chTroll"></div><div id="trollDesc" class="gnote"></div></div>
-    <div class="btnrow"><button class="btn gray" id="gBack">🔙 回上一頁</button><button class="btn" id="gGo">🔥 進入遊戲</button></div>
+  <div id="gset" class="hidden"><div class="sbox gbox2">
+    <div class="ghead"><h2>🏆 遊戲設定</h2><span class="gsub">依序選好三個區塊，再按「進入遊戲」</span></div>
+    <div class="gcols">
+      <div class="gcol">
+        <section class="gsec s1"><div class="gt"><i>①</i>對戰規則</div>
+          <div class="grow"><label>模式</label><div class="chips" id="chMode"></div></div><div id="modeDescG" class="gnote"></div>
+          <div class="grow"><label>時間</label><div class="chips" id="chTime"></div></div>
+          <div class="grow"><label>技能</label><div class="chips" id="chSkill"></div></div><div id="skDesc" class="gnote"></div>
+        </section>
+        <section class="gsec s2"><div class="gt"><i>②</i>戰場地圖</div>
+          <div class="grow"><div class="chips" id="chMap"></div></div><div id="mapDesc" class="gnote"></div>
+        </section>
+      </div>
+      <div class="gcol">
+        <section class="gsec s3"><div class="gt"><i>③</i>對手與難度</div>
+          <div class="grow"><label>人數</label><div class="chips" id="chCount"></div></div>
+          <div class="grow"><label>號碼位數</label><div class="chips" id="chCode"></div></div>
+          <div class="grow"><label>電腦難度</label><div class="chips" id="chDiff"></div></div><div id="diffDesc" class="gnote"></div>
+          <div id="trollRow" class="hidden"><div class="grow"><label>干擾程度</label><div class="chips" id="chTroll"></div></div><div id="trollDesc" class="gnote"></div></div>
+        </section>
+      </div>
+    </div>
+    <div class="btnrow gfoot"><button class="btn gray" id="gBack">🔙 回上一頁</button><button class="btn" id="gGo">🔥 進入遊戲</button></div>
   </div></div>
   <div id="hostLeft" class="hidden"><div class="sbox" style="text-align:center;max-width:420px"><div id="hostLeftMsg" style="font-size:18px;line-height:1.6;margin-bottom:12px"></div><button class="btn" id="hostLeftOk">確認</button></div></div>
   <div id="tut" class="hidden"></div>
