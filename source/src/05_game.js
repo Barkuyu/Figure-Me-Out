@@ -379,21 +379,22 @@ function applyItem(a, type) {
 }
 function felixShot(p) { // 致命相機：照片中能清楚讀到完整號碼的最近對手，1 秒後自動輸入擊殺
   const c = R.cam, asp = c.asp || 1.8, fw = G.binK > .5 ? .8 : .42, th = Math.tan(c.fov / 2), hx = th * asp * fw, hy = th * fw * .75 * asp;
-  const sy = Math.sin(c.yaw), cy = Math.cos(c.yaw), sp = Math.sin(c.pitch), cp = Math.cos(c.pitch), f = [-sy * cp, sp, -cy * cp], r = [cy, 0, -sy], u = [sy * sp, cp, cy * sp], maxD = G.binK > .5 ? 70 : 34;
+  const sy = Math.sin(c.yaw), cy = Math.cos(c.yaw), sp = Math.sin(c.pitch), cp = Math.cos(c.pitch), f = [-sy * cp, sp, -cy * cp], r = [cy, 0, -sy], u = [sy * sp, cp, cy * sp], maxD = 10; // 致命相機：10 公尺內才有效
   let best = null, bd = 1e9;
   for (const o of G.actors) {
     if (o === p || !o.alive || o.invis || !o.number || !enemyOf(p, o)) continue;
     const dx = o.x - c.x, dy = o.y + 1.85 - c.y, dz = o.z - c.z, dep = dx * f[0] + dy * f[1] + dz * f[2]; if (dep < .5) continue;
     if (Math.abs((dx * r[0] + dz * r[2]) / dep) > hx || Math.abs((dx * u[0] + dy * u[1] + dz * u[2]) / dep) > hy) continue;
-    const d = Math.hypot(dx, dz); if (d > maxD) continue;
-    const face = (o.fx * -dx + o.fz * -dz) / (d || 1); if (face < .2) continue;
+    const d = Math.hypot(dx, dz), dF = Math.hypot(o.x - p.x, o.z - p.z); if (dF > maxD || d > 14) continue;
+    const face = (o.fx * -dx + o.fz * -dz) / (d || 1); if (face < .45) continue; // 號碼牌需大致正對鏡頭才能識別
     if (!los(c.x, c.y, c.z, o.x, o.y + 1.85, o.z)) continue;
     const dp = Math.hypot(o.x - p.x, o.z - p.z); if (dp < bd) { bd = dp; best = o; }
   }
-  if (!best) { UI.msg('致命相機：畫面中沒有可清楚讀取的號碼', 'bad'); return; }
-  UI.msg('致命相機鎖定 ' + best.name + '，1 秒後自動輸入！', 'good'); G.typed = best.number; UI.dirty = true;
-  if (G.netClient) { netAct(['fk', G.actors.indexOf(best), best.number]); setTimeout(() => { if (G.typed === best.number) { G.typed = ''; UI.dirty = true; } }, 1100); }
-  else p.fk = { t: 1, target: best, num: best.number };
+  if (!best) { UI.msg('致命相機：10 公尺內沒有可清楚辨識號碼的對手', 'bad'); return; }
+  UI.msg('致命相機鎖定 ' + best.name + '，1.5 秒自動輸入中…', 'good'); G.typed = '';
+  const L = best.number.length; for (let k = 1; k <= L; k++) setTimeout(() => { if (G.state === 'playing' && p.alive) { G.typed = best.number.slice(0, k); UI.dirty = true; Sfx.key(); } }, 1500 * (k - 1) / L + 40);
+  setTimeout(() => { if (G.typed === best.number) { G.typed = ''; UI.dirty = true; } }, 1560);
+  if (G.netClient) netAct(['fk', G.actors.indexOf(best), best.number]); else p.fk = { t: 1.5, target: best, num: best.number };
 }
 function useItem(i) {
   const p = G.player; if (!p || !p.alive || G.state !== 'playing' || G.countdown > 0) return;

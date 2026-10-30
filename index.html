@@ -402,7 +402,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 4.0</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 4.1</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -1930,7 +1930,7 @@ OUTFITS.push(
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'ange', label: '安琪Ange', sub: '', skill: { name: '天使之息', desc: '按 G 鍵：刷新範圍內友軍的跑步與望遠鏡能量、並使其技能冷卻減半；1 秒內自己與範圍內友軍免疫一切攻擊與技能。冷卻 3 秒。（無 G 道具格）' }, H: 1.64, skin: '#f7ddc8', hipX: .088, shX: .18, tz: .56, hair: '#f6d878', hair2: '#fff1b0', female: true, gen: { top: '#ffffff', top2: '#ffd86b', pants: '#f2f2f8', shoe: '#ffd86b', hair: '#f6d878', style: 'long', acc: ['halo', 'wings', 'skirt'], accC: '#ffd86b', skirtC: '#fbfbff', hemC: '#ffd86b' },
     torso: [[.001, -.1], [.18, -.1], [.185, -.02], [.17, .1], [.17, .22], [.19, .36], [.195, .46], [.19, .53], [.15, .57], [.065, .595], [.05, .63], [.001, .63]] },
-  { key: 'felix', label: '費列克斯Felix', sub: '', skill: { name: '致命快門', desc: '被動：持有的相機升級為「致命相機」（紅色按鈕）。拍到可清楚讀取完整號碼的對手，1 秒後自動輸入擊殺（多人入鏡取最近者）；開望遠鏡時同樣可拍。' }, H: 1.78, skin: '#e2b896', hipX: .098, shX: .235, tz: .54, hair: '#4a2f1c', hair2: '#6b4a2e', female: false, passive: true, gen: { top: '#8a5a2b', top2: '#f2e2b8', pants: '#3a3226', shoe: '#2a1d12', hair: '#4a2f1c', style: 'short', acc: ['fedora', 'camera'], accC: '#6e4a24' },
+  { key: 'felix', label: '費列克斯Felix', sub: '', skill: { name: '致命快門', desc: '被動：持有的相機升級為「致命相機」（紅色按鈕）。拍攝時，10 公尺內且能清楚辨識頭上號碼的對手，會以 1.5 秒自動逐位輸入並擊殺（多人入鏡取最近者）；開望遠鏡時同樣可拍。' }, H: 1.78, skin: '#e2b896', hipX: .098, shX: .235, tz: .54, hair: '#4a2f1c', hair2: '#6b4a2e', female: false, passive: true, gen: { top: '#8a5a2b', top2: '#f2e2b8', pants: '#3a3226', shoe: '#2a1d12', hair: '#4a2f1c', style: 'short', acc: ['fedora', 'camera'], accC: '#6e4a24' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'peace', label: '和平使者Peace', sub: '', skill: { name: '停戰宣告', desc: '立即終止全場所有英雄的主動與被動技能，並使全場 5 秒內無法使用任何技能。冷卻 15 秒。' }, H: 1.8, skin: '#e6c4a0', hipX: .098, shX: .23, tz: .54, hair: '#8b6a3e', hair2: '#b08a55', female: false, gen: { top: '#f2ecd0', top2: '#5aa05a', pants: '#e8e2c8', shoe: '#8b6a3e', hair: '#8b6a3e', style: 'long', acc: ['laurel', 'dovestaff', 'skirt'], accC: '#58b05a', skirtC: '#efe9cc', hemC: '#5aa05a' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] }
@@ -2787,21 +2787,22 @@ function applyItem(a, type) {
 }
 function felixShot(p) { // 致命相機：照片中能清楚讀到完整號碼的最近對手，1 秒後自動輸入擊殺
   const c = R.cam, asp = c.asp || 1.8, fw = G.binK > .5 ? .8 : .42, th = Math.tan(c.fov / 2), hx = th * asp * fw, hy = th * fw * .75 * asp;
-  const sy = Math.sin(c.yaw), cy = Math.cos(c.yaw), sp = Math.sin(c.pitch), cp = Math.cos(c.pitch), f = [-sy * cp, sp, -cy * cp], r = [cy, 0, -sy], u = [sy * sp, cp, cy * sp], maxD = G.binK > .5 ? 70 : 34;
+  const sy = Math.sin(c.yaw), cy = Math.cos(c.yaw), sp = Math.sin(c.pitch), cp = Math.cos(c.pitch), f = [-sy * cp, sp, -cy * cp], r = [cy, 0, -sy], u = [sy * sp, cp, cy * sp], maxD = 10; // 致命相機：10 公尺內才有效
   let best = null, bd = 1e9;
   for (const o of G.actors) {
     if (o === p || !o.alive || o.invis || !o.number || !enemyOf(p, o)) continue;
     const dx = o.x - c.x, dy = o.y + 1.85 - c.y, dz = o.z - c.z, dep = dx * f[0] + dy * f[1] + dz * f[2]; if (dep < .5) continue;
     if (Math.abs((dx * r[0] + dz * r[2]) / dep) > hx || Math.abs((dx * u[0] + dy * u[1] + dz * u[2]) / dep) > hy) continue;
-    const d = Math.hypot(dx, dz); if (d > maxD) continue;
-    const face = (o.fx * -dx + o.fz * -dz) / (d || 1); if (face < .2) continue;
+    const d = Math.hypot(dx, dz), dF = Math.hypot(o.x - p.x, o.z - p.z); if (dF > maxD || d > 14) continue;
+    const face = (o.fx * -dx + o.fz * -dz) / (d || 1); if (face < .45) continue; // 號碼牌需大致正對鏡頭才能識別
     if (!los(c.x, c.y, c.z, o.x, o.y + 1.85, o.z)) continue;
     const dp = Math.hypot(o.x - p.x, o.z - p.z); if (dp < bd) { bd = dp; best = o; }
   }
-  if (!best) { UI.msg('致命相機：畫面中沒有可清楚讀取的號碼', 'bad'); return; }
-  UI.msg('致命相機鎖定 ' + best.name + '，1 秒後自動輸入！', 'good'); G.typed = best.number; UI.dirty = true;
-  if (G.netClient) { netAct(['fk', G.actors.indexOf(best), best.number]); setTimeout(() => { if (G.typed === best.number) { G.typed = ''; UI.dirty = true; } }, 1100); }
-  else p.fk = { t: 1, target: best, num: best.number };
+  if (!best) { UI.msg('致命相機：10 公尺內沒有可清楚辨識號碼的對手', 'bad'); return; }
+  UI.msg('致命相機鎖定 ' + best.name + '，1.5 秒自動輸入中…', 'good'); G.typed = '';
+  const L = best.number.length; for (let k = 1; k <= L; k++) setTimeout(() => { if (G.state === 'playing' && p.alive) { G.typed = best.number.slice(0, k); UI.dirty = true; Sfx.key(); } }, 1500 * (k - 1) / L + 40);
+  setTimeout(() => { if (G.typed === best.number) { G.typed = ''; UI.dirty = true; } }, 1560);
+  if (G.netClient) netAct(['fk', G.actors.indexOf(best), best.number]); else p.fk = { t: 1.5, target: best, num: best.number };
 }
 function useItem(i) {
   const p = G.player; if (!p || !p.alive || G.state !== 'playing' || G.countdown > 0) return;
@@ -3669,7 +3670,7 @@ function hostAct(a, ac) {
   else if (ac[1] === 's') { castSkill(a); }
   else if (ac[1] === 'b') { a.binAt = G.time; }
   else if (ac[1] === 'kp') { kofPick(a, ac[2] | 0); }
-  else if (ac[1] === 'fk') { const t = G.actors[ac[2] | 0]; if (t && t.alive && isOut(a, 28) && t.number === String(ac[3]) && Math.hypot(t.x - a.x, t.z - a.z) < 80) a.fk = { t: 1, target: t, num: t.number }; }
+  else if (ac[1] === 'fk') { const t = G.actors[ac[2] | 0]; if (t && t.alive && isOut(a, 28) && t.number === String(ac[3]) && Math.hypot(t.x - a.x, t.z - a.z) < 12) a.fk = { t: 1.5, target: t, num: t.number }; }
   else if (ac[1] === 'u') {
     const i = ac[2] | 0, it = a.slots && a.slots[i]; if (!it) return;
     if (it.type !== 'cam' && it.type !== 'scope') applyItem(a, it.type);
