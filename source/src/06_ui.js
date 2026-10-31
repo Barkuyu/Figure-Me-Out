@@ -108,6 +108,7 @@ const UI = {
   skillHUD(dt, p) {
     { const rl = G.sk && G.sk.rel, rt = rl ? rl.t : -1; if (rt >= 0 && (this._rlp === undefined || this._rlp < 0 || rt < this._rlp)) { Sfx.siren(); if (rl.by !== p) this.msg('⚠ 相對論發動！操作即將左右互換', 'bad'); } this._rlp = rt;
       const r2 = relPhase2(p); if (r2 !== this._rl2) { this._rl2 = r2; this.numLayout(); } }
+    { const ix = p.av.outfitIdx, kk = ix + '|' + G.skillsOn + '|' + Device.mobile; if (kk !== this._hk) { this._hk = kk; const o = OUTFITS[ix], act = !!SKILL_OF[ix], key = GKEY_HEROES.includes(ix) ? 'G' : (Device.mobile ? '技能鍵' : 'R'); $('heroSk').innerHTML = G.skillsOn === false ? '技能已關閉' : o.label + '・' + (act ? '主動' : '被動') + '【' + o.skill.name + '】' + (act ? '（' + key + '）' : '') + '<small>' + o.skill.desc + '</small>'; } }
     { const dl = isOut(p, 20); if (dl !== this._dl) { this._dl = dl; document.body.classList.toggle('doll', dl); } }
     this.skTimers(p);
     { const dr = GKEY_HEROES.includes(p.av.outfitIdx); if (dr !== this._dr) { this._dr = dr; document.body.classList.toggle('derek', dr); $('slotG').style.display = dr ? 'none' : ''; $('slotS').querySelector('em').textContent = dr ? 'G' : 'R'; } }
@@ -460,6 +461,7 @@ function buildMenu() {
   chips('chDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; updDiff(); }, 'diff'); updDiff();
   chips('chInput', [{ v: 'auto', l: '自動偵測' }, { v: 'desktop', l: '🖥️ 電腦' }, { v: 'mobile', l: '📱 手機' }], () => S.input, v => { S.input = v; Device.update(); refreshBadge(); });
   chips('chQual', [{ v: 'auto', l: '自動' }, { v: 'high', l: '高' }, { v: 'mid', l: '中' }, { v: 'low', l: '低（最順）' }], () => S.quality, v => { S.quality = v; Perf.profile(); Perf.apply(); });
+  chips('chLay', [{ v: 1, l: '預設 1<small>目前版面</small>' }, { v: 2, l: '預設 2<small>右側方格</small>' }, { v: 3, l: '預設 3<small>左右直列</small>' }, { v: 4, l: '預設 4<small>中央雙組</small>' }], () => S.lp || 1, v => { S.lp = v; if (v > 1) for (const id of ['numL', 'numR', 'bBack', 'bJump', 'bRun', 'bBino2', 'slotF', 'slotG', 'slotS']) delete S.layout[id]; applyLayout(); updLay(); }); const updLay = () => { $('layNote').textContent = ['保留原本的按鍵位置（可再用「按鍵配置」自行拖曳）。', '數字鍵與 🔙 排成 3×4 方格靠右，其餘按鍵不受影響。', '數字鍵直列在螢幕左右兩側，右側按鍵自動往中央收攏。', '1～5 與 6～0 分兩組擺在畫面中央左右，中央留空不擋視線。'][(S.lp || 1) - 1]; }; updLay();
   chips('chAuto', [{ v: true, l: '輸入滿位數自動送出' }, { v: false, l: '需按 Enter' }], () => S.auto, v => S.auto = v);
   chips('chSnd', [{ v: true, l: '開' }, { v: false, l: '關' }], () => S.sound, v => S.sound = v);
   const sens = $('sens'); sens.value = S.sens; $('sensV').textContent = (+S.sens).toFixed(2) + '×'; sens.oninput = () => { S.sens = +sens.value; $('sensV').textContent = S.sens.toFixed(2) + '×'; saveS(); };
@@ -600,6 +602,7 @@ function closeGset(go2) {
 const LAYOUT_IDS = ['bJump', 'bBino2', 'bBack', 'bRun', 'slotF', 'slotG', 'slotS', 'pauseBtn', 'joyHint', 'numL', 'numR'];
 function lay(id) { return S.layout[id] || (S.layout[id] = { x: 0, y: 0, s: 1 }); }
 function applyLayout() {
+  for (let k = 2; k <= 4; k++) document.body.classList.toggle('lay' + k, (S.lp || 1) === k);
   const on = Device.mobile || document.body.classList.contains('editing');
   for (const id of LAYOUT_IDS) { const el = $(id); if (!el) continue; const l = on ? S.layout[id] : null; if (l) { el.style.translate = l.x + 'px ' + l.y + 'px'; el.style.scale = l.s || 1; } else { el.style.translate = ''; el.style.scale = ''; } }
 }
@@ -732,5 +735,5 @@ function boot() {
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
 setInterval(() => { try { UI.renderPills(); } catch (e) { } }, 120);
-window.__G = { killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+window.__G = { applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
