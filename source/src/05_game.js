@@ -1054,9 +1054,9 @@ function drawPreview() {
   // 選單：旋轉的英雄 + 環繞鏡頭
   const a = G.preview; if (!a) return; const c = R.cam, t = G.time * .35, pv = World.cur.preview || [4, 15], cx = pv[0], cz = pv[1];
   a.x = cx; a.z = cz; a.y = 0; a.sp = 0; a.team = -1; a.plateScale = 1.0;
-  const ang = .3 + Math.sin(G.time * .45) * .55, dist = 3.5;
+  const ang = .3 + Math.sin(G.time * .45) * .55, dist = 4.9;
   a.yaw = Math.atan2(Math.sin(ang + .2), -Math.cos(ang + .2)) + Math.sin(G.time * .9) * .3; // 英雄始終朝向鏡頭附近，臉一直看得到
-  c.x = cx - Math.sin(ang + .2) * dist; c.z = cz + Math.cos(ang + .2) * dist; c.y = 1.05; c.fov = .9; { const th = Math.tan(.45), asp = c.asp || 1.8; c.yaw = Math.atan2(-(cx - c.x), -(cz - c.z)) + Math.atan(.64 * th * asp); c.pitch = -.06 + Math.atan(.1 * th); } c.roll = 0;
+  c.x = cx - Math.sin(ang + .2) * dist; c.z = cz + Math.cos(ang + .2) * dist; c.y = 1.05; c.fov = .9; { const th = Math.tan(.45), asp = c.asp || 1.8; c.yaw = Math.atan2(-(cx - c.x), -(cz - c.z)) + Math.atan(.64 * th * asp); c.pitch = -.06 + Math.atan(.55 * th); } c.roll = 0;
   R.begin(); drawSkyDome(c); World.draw();
   a.plateScale = 1; drawAvatar(a); R.polyOffset(true); a.blobS = 1.3; drawBlob(a); R.polyOffset(false);
   drawSkyFx(c, G.time);

@@ -243,6 +243,7 @@ body.editing #touch *{pointer-events:none!important}
 #fps{display:none!important}
 #charsel{position:absolute;inset:0;z-index:57;display:flex;pointer-events:none}
 #charsel .panel{pointer-events:auto}
+.cinfoR{position:absolute;right:10px;top:46px;width:min(38vw,340px);margin:0;z-index:2;pointer-events:none;background:rgba(14,12,22,.8);border:1.5px solid rgba(255,255,255,.25);box-shadow:0 4px 16px rgba(0,0,0,.45);padding:5px 10px}.cinfoR .crow{font-size:12.5px;gap:8px;padding:3px 0;line-height:1.45}.cinfoR .crow b{min-width:34px}.cinfoR .crow span:first-of-type{font-weight:700}
 .cinfo{margin:14px 0 6px;background:rgba(255,255,255,.07);border-radius:12px;padding:8px 12px}
 .crow{display:flex;gap:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px}.crow:last-child{border:0}.crow b{min-width:68px;color:var(--yel)}
 .logo{display:flex;align-items:center;gap:18px}.logo .z{font-size:40px;font-weight:900}.logo .zh .l2{margin-left:10px}
@@ -466,9 +467,8 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
   <div id="charsel" class="hidden"><div class="panel">
     <h2 id="csTitle" style="font:400 30px var(--disp);margin:0 0 10px">選擇英雄</h2>
     <div class="cards" id="cards"></div>
-    <div class="cinfo"><div class="crow"><b>英雄</b><span id="cName"></span></div><div class="crow"><b>英雄技能</b><span id="cPass"></span></div></div>
     <div id="csHint" class="cshint"></div><div class="btnrow" style="justify-content:flex-start"><button class="btn" id="csOk">確認，開始遊戲</button><button class="btn alt" id="csBack">返回</button></div>
-  </div></div>
+  </div><div class="cinfo cinfoR"><div class="crow"><b>英雄</b><span id="cName"></span></div><div class="crow"><b>技能</b><span id="cPass"></span></div></div></div>
   <div id="waitDlg" class="hidden"><div class="wbox">等候其他玩家選擇中<span class="dots"><i>.</i><i>.</i><i>.</i></span></div></div>
   <div id="howPick" class="hidden"><div class="sbox" style="max-height:92vh;overflow:hidden;width:min(900px,96vw)"><h2>玩法操作與說明</h2><div class="howto" id="howto"></div><div class="btnrow"><button class="btn alt" id="howBack">關閉</button></div></div></div>
   <div id="fade"></div>

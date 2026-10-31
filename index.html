@@ -252,6 +252,7 @@ body.editing #touch *{pointer-events:none!important}
 #fps{display:none!important}
 #charsel{position:absolute;inset:0;z-index:57;display:flex;pointer-events:none}
 #charsel .panel{pointer-events:auto}
+.cinfoR{position:absolute;right:10px;top:46px;width:min(calc(var(--vw)*38),340px);margin:0;z-index:2;pointer-events:none;background:rgba(14,12,22,.8);border:1.5px solid rgba(255,255,255,.25);box-shadow:0 4px 16px rgba(0,0,0,.45);padding:5px 10px}.cinfoR .crow{font-size:12.5px;gap:8px;padding:3px 0;line-height:1.45}.cinfoR .crow b{min-width:34px}.cinfoR .crow span:first-of-type{font-weight:700}
 .cinfo{margin:14px 0 6px;background:rgba(255,255,255,.07);border-radius:12px;padding:8px 12px}
 .crow{display:flex;gap:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px}.crow:last-child{border:0}.crow b{min-width:68px;color:var(--yel)}
 .logo{display:flex;align-items:center;gap:18px}.logo .z{font-size:40px;font-weight:900}.logo .zh .l2{margin-left:10px}
@@ -403,7 +404,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 4.2</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 4.3</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -480,9 +481,8 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
   <div id="charsel" class="hidden"><div class="panel">
     <h2 id="csTitle" style="font:400 30px var(--disp);margin:0 0 10px">選擇英雄</h2>
     <div class="cards" id="cards"></div>
-    <div class="cinfo"><div class="crow"><b>英雄</b><span id="cName"></span></div><div class="crow"><b>英雄技能</b><span id="cPass"></span></div></div>
     <div id="csHint" class="cshint"></div><div class="btnrow" style="justify-content:flex-start"><button class="btn" id="csOk">確認，開始遊戲</button><button class="btn alt" id="csBack">返回</button></div>
-  </div></div>
+  </div><div class="cinfo cinfoR"><div class="crow"><b>英雄</b><span id="cName"></span></div><div class="crow"><b>技能</b><span id="cPass"></span></div></div></div>
   <div id="waitDlg" class="hidden"><div class="wbox">等候其他玩家選擇中<span class="dots"><i>.</i><i>.</i><i>.</i></span></div></div>
   <div id="howPick" class="hidden"><div class="sbox" style="max-height:calc(var(--vh)*92);overflow:hidden;width:min(900px,calc(var(--vw)*96))"><h2>玩法操作與說明</h2><div class="howto" id="howto"></div><div class="btnrow"><button class="btn alt" id="howBack">關閉</button></div></div></div>
   <div id="fade"></div>
@@ -3463,9 +3463,9 @@ function drawPreview() {
   // 選單：旋轉的英雄 + 環繞鏡頭
   const a = G.preview; if (!a) return; const c = R.cam, t = G.time * .35, pv = World.cur.preview || [4, 15], cx = pv[0], cz = pv[1];
   a.x = cx; a.z = cz; a.y = 0; a.sp = 0; a.team = -1; a.plateScale = 1.0;
-  const ang = .3 + Math.sin(G.time * .45) * .55, dist = 3.5;
+  const ang = .3 + Math.sin(G.time * .45) * .55, dist = 4.9;
   a.yaw = Math.atan2(Math.sin(ang + .2), -Math.cos(ang + .2)) + Math.sin(G.time * .9) * .3; // 英雄始終朝向鏡頭附近，臉一直看得到
-  c.x = cx - Math.sin(ang + .2) * dist; c.z = cz + Math.cos(ang + .2) * dist; c.y = 1.05; c.fov = .9; { const th = Math.tan(.45), asp = c.asp || 1.8; c.yaw = Math.atan2(-(cx - c.x), -(cz - c.z)) + Math.atan(.64 * th * asp); c.pitch = -.06 + Math.atan(.1 * th); } c.roll = 0;
+  c.x = cx - Math.sin(ang + .2) * dist; c.z = cz + Math.cos(ang + .2) * dist; c.y = 1.05; c.fov = .9; { const th = Math.tan(.45), asp = c.asp || 1.8; c.yaw = Math.atan2(-(cx - c.x), -(cz - c.z)) + Math.atan(.64 * th * asp); c.pitch = -.06 + Math.atan(.55 * th); } c.roll = 0;
   R.begin(); drawSkyDome(c); World.draw();
   a.plateScale = 1; drawAvatar(a); R.polyOffset(true); a.blobS = 1.3; drawBlob(a); R.polyOffset(false);
   drawSkyFx(c, G.time);
