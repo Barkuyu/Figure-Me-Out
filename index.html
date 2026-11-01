@@ -158,6 +158,8 @@ body.lay4 #numL{left:calc(var(--vw)*22);right:auto}body.lay4 #numR{left:calc(var
 body.lay4 #bBack{left:calc(var(--vw)*71.4);right:auto;top:calc(calc(var(--vh)*34) + calc(var(--vh)*11) + calc(var(--vh)*.6));width:calc(var(--vw)*6.6);height:calc(var(--vh)*11);transform:none;opacity:.85}
 #heroSk{position:absolute;top:84px;left:50%;transform:translateX(-50%);max-width:calc(var(--vw)*40);text-align:center;color:#fff;font:700 11px/1.35 var(--font);text-shadow:0 1px 3px #000,0 0 2px #000;pointer-events:none;opacity:.95;z-index:3}#heroSk small{display:block;font-weight:400;font-size:10px;opacity:.88}body.demo #heroSk{display:none}
 .cshd{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}.csview{display:flex;gap:6px}.csview button{font:700 12.5px var(--font);color:#fff;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.4);border-radius:999px;padding:4px 12px;cursor:pointer}.csview button.on{background:#e0262f;border-color:#fff;box-shadow:0 0 8px rgba(224,38,47,.7)}
+#voiceBar{position:absolute;left:50%;bottom:26%;transform:translateX(-50%);background:rgba(30,10,60,.8);border:2px solid #ff4fa3;color:#fff;border-radius:999px;padding:4px 16px;font:700 14px var(--font);z-index:40;pointer-events:none;white-space:nowrap;max-width:calc(var(--vw)*80);overflow:hidden;text-overflow:ellipsis}#voiceBar b{color:#ffd24a;letter-spacing:.1em}
+.card.dis{opacity:.4;filter:grayscale(1);pointer-events:none}.card small.nov{display:block;font-size:10px;font-weight:400;color:#ffb3b3}
 .cshint{font-size:12px;opacity:.85;margin:4px 0 6px;min-height:16px}.card{position:relative}.card .pk{position:absolute;right:6px;top:4px;font:800 15px var(--font);color:#ffd24a;text-shadow:0 0 3px #000,0 0 3px #000}#csOk.dis{opacity:.4;filter:grayscale(1);pointer-events:none}
 #waitDlg{position:absolute;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(8,8,16,.7)}#waitDlg .wbox{background:rgba(30,32,52,.96);border:2px solid rgba(255,255,255,.5);border-radius:16px;padding:20px 34px;font:700 20px var(--font);color:#fff}.dots i{font-style:normal;animation:dotB 1.2s infinite;display:inline-block}.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}@keyframes dotB{0%,60%,100%{opacity:.15;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
 .btn.locked{opacity:.55;filter:grayscale(.8);cursor:not-allowed}body.doll #typed{color:#ff1a30;background:#000;border-radius:10px;padding:2px 14px;text-shadow:0 0 8px #ff1a30}
@@ -384,7 +386,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
   <div id="hud" class="hidden">
     <div id="scorebar"><span class="flagic" id="flagR"></span><div class="sc red" id="scR">0</div><span class="sep">-</span><div class="sc blue" id="scB">0</div><span class="flagic" id="flagB"></span></div>
     <div id="timer">5:00</div>
-    <div id="heroSk"></div><div id="arBanner" class="hidden">擂台賽將於10秒後正式開始，請做好準備</div><div id="arBig" class="hidden"></div><div id="kofbar" class="hidden"></div>
+    <div id="heroSk"></div><div id="voiceBar" class="hidden"></div><div id="arBanner" class="hidden">擂台賽將於10秒後正式開始，請做好準備</div><div id="arBig" class="hidden"></div><div id="kofbar" class="hidden"></div>
     <div id="countdown" class="hidden"><div id="cdTxt"></div><div id="cdNum"></div></div><div id="modeName"></div>
     <div id="killfeed"></div>
     <div id="crosshair"></div>
@@ -419,7 +421,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 4.9</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 5.0</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -1968,7 +1970,9 @@ OUTFITS.push(
   { key: 'drummer', label: '鼓手Drummer', sub: '', skill: { name: '戰鼓鼓舞', desc: '啟動後，自己與 12 公尺內友軍移動速度 +45%，持續 8 秒。冷卻 15 秒。' }, H: 1.72, skin: '#c98f68', hipX: 0.095, shX: 0.23, tz: 0.54, hair: '#ff7a1a', hair2: '#ff7a1a', female: false, gen: { top: '#e0262f', top2: '#ffd24a', pants: '#2a2a3a', shoe: '#ffd24a', hair: '#ff7a1a', style: 'bald', acc: ['mohawk', 'drum'], accC: '#ff7a1a' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'guardian', label: '旮Guardian', sub: '', skill: { name: '替身契約', desc: '啟動後 6 秒內，我方玩家受到的輸入攻擊改由你承擔；且重生後 20 秒內跑步與望遠鏡不消耗能量。冷卻 15 秒。' }, H: 1.82, skin: '#d8b08a', hipX: 0.105, shX: 0.255, tz: 0.52, hair: '#aab2bd', hair2: '#aab2bd', female: false, gen: { top: '#8a96a6', top2: '#d8212e', pants: '#4a5668', shoe: '#2a2f3a', hair: '#aab2bd', style: 'short', acc: ['plume', 'shield'], accC: '#d8212e' },
-    torso: [[.001, -.1], [.22, -.1], [.23, -.02], [.215, .1], [.225, .22], [.26, .36], [.27, .46], [.265, .53], [.19, .57], [.07, .595], [.056, .63], [.001, .63]] }
+    torso: [[.001, -.1], [.22, -.1], [.23, -.02], [.215, .1], [.225, .22], [.26, .36], [.27, .46], [.265, .53], [.19, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'vocal', label: '伏克Vocal', sub: '', skill: { name: '聲波咒術', desc: '按住 R 開啟麥克風，直接念出號碼即自動填入並送出，放開 R 結束並立即送出。冷卻 20 秒。（需裝置支援語音辨識與麥克風授權）' }, H: 1.78, skin: '#e8c4a0', hipX: .098, shX: .235, tz: .54, hair: '#ff4fa3', hair2: '#ff8fc4', female: false, gen: { top: '#6a1b9a', top2: '#ffd24a', pants: '#14141c', shoe: '#ffd24a', hair: '#ff4fa3', style: 'bald', acc: ['pompadour', 'mic', 'goldstar'], accC: '#ff4fa3' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] }
 );
 const SKINPATCH = [.975, .975];
 
@@ -2210,6 +2214,7 @@ function buildOutfit(i) {
     if (ac.includes('mohawk')) for (let k = 0; k < 7; k++) hairP.push({ g: gCyl(0, .03, .1 + (k % 3) * .02, 6, 1), t: [0, hc + hh * .5, (k - 3) * .036], c: accC });
     if (ac.includes('icecrown')) for (let k = 0; k < 6; k++) { const a = k * 1.05; hairP.push({ g: gCyl(0, .02, .1 + (k % 2) * .05, 6, 1), t: [Math.sin(a) * hw * .8, hc + hh * .6, Math.cos(a) * hw * .85], r: [Math.cos(a) * .25, 0, -Math.sin(a) * .25], c: [.72, .92, 1] }); }
     if (ac.includes('plume')) { hairP.push({ g: gBox(.026, .11, .17), t: [0, hc + hh * .78, -.01], c: accC }); hairP.push({ g: gCyl(hw * 1.08, hw * 1.08, .02, 22, 1, true), t: [0, hc + hh * .2, -.004], s: [1, 1, 1.18], c: [.75, .78, .84] }); }
+    if (ac.includes('pompadour')) { hairP.push({ g: gSphere(1, 20, 12, 0, TAU, 0, 1.3), t: [0, hc + .02, -.006], s: [hw * 1.06, hh * .6, hw * 1.06 * 1.18], c: h1 }); hairP.push({ g: gBox(hw * 1.5, .1, hw * 1.7), t: [0, hc + hh * .6, hw * .55], r: [-.45, 0, 0], c: shade(h1, 1.1) }); hairP.push({ g: gBox(hw * 1.2, .06, hw * 1.2), t: [0, hc + hh * .75, hw * .15], r: [-.2, 0, 0], c: shade(h1, 1.2) }); }
     if (ac.includes('catears')) for (const sg of [-1, 1]) hairP.push({ g: gCyl(0, .035, .08, 4, 1), t: [sg * hw * .7, hc + hh * .62, .0], r: [0, 0, -sg * .25], c: [.1, .09, .12] });
     if (ac.includes('headband')) hairP.push({ g: gCyl(hw * 1.09, hw * 1.09, .022, 22, 1, true), t: [0, hc + hh * .22, -.004], s: [1, 1, 1.18], c: accC });
     if (ac.includes('flower')) { hairP.push({ g: gSphere(.022, 8, 6), t: [hw * .9, hc + hh * .35, hw * .5], c: accC }); hairP.push({ g: gSphere(.01, 6, 5), t: [hw * .9, hc + hh * .35, hw * .5 + .018], c: [1, .9, .3] }); }
@@ -2356,6 +2361,8 @@ function buildOutfit(i) {
     if (ac.includes('binos')) for (const sg of [-1, 1]) ex.push({ g: gCyl(.032, .032, .11, 10, 1), t: [sg * .04, shY - .22, .21], r: [PI / 2, 0, 0], c: [.12, .12, .14] });
     if (ac.includes('drum')) { ex.push({ g: gCyl(.14, .14, .14, 18, 1), t: [0, hipY + .2, .22], r: [PI / 2, 0, 0], c: [.85, .12, .15] }); ex.push({ g: gCyl(.145, .145, .02, 18, 1), t: [0, hipY + .2, .295], r: [PI / 2, 0, 0], c: [.95, .85, .6] }); }
     if (ac.includes('shield')) { ex.push({ g: gBox(.06, .52, .36), t: [-.34, hipY + .4, .04], c: [.72, .76, .82] }); ex.push({ g: gBox(.07, .16, .16), t: [-.345, hipY + .4, .04], c: [.8, .12, .15] }); }
+    if (ac.includes('mic')) { ex.push({ g: gCyl(.022, .026, .2, 10, 1), t: [.24, shY - .3, .26], r: [-.9, 0, 0], c: [.12, .12, .15] }); ex.push({ g: gSphere(.052, 10, 8), t: [.24, shY - .17, .33], c: [.78, .8, .86] }); ex.push({ g: gCyl(.054, .054, .018, 10, 1, true), t: [.24, shY - .17, .33], r: [.6, 0, 0], c: [.1, .1, .12] }); }
+    if (ac.includes('goldstar')) for (let k = 0; k < 5; k++) { const a = k * TAU / 5; ex.push({ g: gBox(.02, .06, .01), t: [Math.sin(a) * .05, shY - .2 + Math.cos(a) * .05, .22], r: [0, 0, -a], c: [1, .85, .2] }); }
     if (ac.includes('bowtie')) { for (const sg of [-1, 1]) ex.push({ g: gSphere(.035, 8, 6), t: [sg * .035, shY + .02, .12], s: [1.3, .8, .6], c: [.75, .12, .12] }); ex.push({ g: gSphere(.016, 6, 5), t: [0, shY + .02, .125], c: [.5, .08, .08] }); }
     if (ac.includes('pauldron')) for (const sg of [-1, 1]) { ex.push({ g: gSphere(.12, 10, 8), t: [sg * (O.shX + .035), shY - .005, 0], s: [1, .62, 1.1], c: [.82, .65, .15] }); ex.push({ g: gSphere(.095, 10, 8), t: [sg * (O.shX + .05), shY + .02, 0], s: [1, .5, 1], c: [.5, .52, .56] }); }
     if (ac.includes('tail')) for (let k = 0; k < 8; k++) ex.push({ g: gSphere(.032 - k * .0016, 7, 5), t: [0, hipY - .03 + k * .052 + Math.max(0, k - 4) * .035, -.15 - k * .03], c: k > 6 ? [.95, .8, .3] : [.8, .52, .2] });
@@ -2545,18 +2552,18 @@ function spawnAll() {
   for (let i = 0; i < n; i++) spawnActor(A[i], [pts[i][0], pts[i][1], yawFor(i)[0], pts[i][2] | 0]);
 }
 /* ---------- 英雄技能 ---------- */
-const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null, 'steal', 'dack', 'nox', 'charge', null, null, 'rel', 'revert', 'gis', null, 'neg', 'quick', 'ange', null, 'peace', null, null, 'ward', null, null, 'frost', 'beacon', 'drum', 'guard'];
+const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null, 'steal', 'dack', 'nox', 'charge', null, null, 'rel', 'revert', 'gis', null, 'neg', 'quick', 'ange', null, 'peace', null, null, 'ward', null, null, 'frost', 'beacon', 'drum', 'guard', 'vocal'];
 const PASSIVE_IDX = [3, 5, 8, 11, 12, 13, 19, 20, 24, 28, 30, 31, 33, 34];
 const GKEY_HEROES = [18, 26, 27]; // 沒有 G 道具格、G 鍵改為技能鍵的英雄
-const HERO_CLASSES = [['先手型', '#ff9a3c', [1, 11, 18, 24, 16, 17, 30, 31, 34]], ['輔助型', '#4fd38a', [29, 26, 27, 32, 33, 35, 36, 37, 38]], ['偽裝型', '#b48cff', [25, 21, 4, 22]], ['突進型', '#ff5a5a', [9, 19, 8]], ['把戲型', '#ffd24a', [0, 2, 6, 10, 15, 20]], ['進攻型', '#4fb0ff', [7, 23, 12, 5, 3, 13, 28]]]; // 英雄分類
-const HERO_TIERS = [['S 級', '#ff4d6d', [15]], ['A 級', '#ffb020', [18, 17, 4, 21, 0, 6, 10, 7, 23, 28]], ['B 級', '#4fb0ff', [16, 29, 26, 27, 32, 35, 36, 25, 9, 19, 8, 2, 12, 13]], ['C 級', '#9aa3b2', [1, 11, 24, 30, 31, 34, 33, 37, 38, 22, 20, 5, 3]]]; // 英雄等級
+const HERO_CLASSES = [['先手型', '#ff9a3c', [39, 1, 11, 18, 24, 16, 17, 30, 31, 34]], ['輔助型', '#4fd38a', [29, 26, 27, 32, 33, 35, 36, 37, 38]], ['偽裝型', '#b48cff', [25, 21, 4, 22]], ['突進型', '#ff5a5a', [9, 19, 8]], ['把戲型', '#ffd24a', [0, 2, 6, 10, 15, 20]], ['進攻型', '#4fb0ff', [7, 23, 12, 5, 3, 13, 28]]]; // 英雄分類
+const HERO_TIERS = [['S 級', '#ff4d6d', [15, 39]], ['A 級', '#ffb020', [18, 17, 4, 21, 0, 6, 10, 7, 23, 28]], ['B 級', '#4fb0ff', [16, 29, 26, 27, 32, 35, 36, 25, 9, 19, 8, 2, 12, 13]], ['C 級', '#9aa3b2', [1, 11, 24, 30, 31, 34, 33, 37, 38, 22, 20, 5, 3]]]; // 英雄等級
 const CHANT = { revert: .5, gis: 1, neg: 1.5 }; // 吟唱秒數
 const isOut = (a, i) => skOn() && a.av && (a.av.outfitIdx === i || a.passIdx === i); // 對應 OUTFITS：蘇蘇／艾迪／艾伯特／蘇米(被動)／艾瑞克／麥克(被動)
 const skOn = () => G.skillsOn !== false && !(G.sk && G.sk.ban && G.sk.ban.t > 0); // 停戰宣告期間：全場技能停用
 const isSumi = a => isOut(a, 3);
 const jumpMul = a => isSumi(a) ? 1.285 : 1; // 高度 1.65 倍 → 初速 √1.65 倍
 const speedMul = a => isOut(a, 5) ? 2.5 : isOut(a, 13) ? .7 : 1;
-const SKILLS = { ward: { name: '警戒結界', cd: 20, ico: '☯️' }, frost: { name: '冰封領域', cd: 20, ico: '❄️' }, beacon: { name: '通天視野', cd: 15, ico: '🔴' }, drum: { name: '戰鼓鼓舞', cd: 15, ico: '🥁' }, guard: { name: '替身契約', cd: 15, ico: '🤝' }, revert: { name: '逆流術士', cd: 0, ico: '⏪' }, gis: { name: '連號甜心', cd: 50, ico: '💖' }, neg: { name: '負領域展開', cd: 20, ico: '🎞️' }, quick: { name: '瞬影瞬行', cd: .5, ico: '🏃🏻‍♂️‍➡️' }, ange: { name: '天使之息', cd: 3, ico: '🧚🏻‍♀️' }, peace: { name: '停戰宣告', cd: 15, ico: '🕊️' }, rel: { name: '相對論', cd: 30, ico: '🔀' }, charge: { name: '衝鋒陷陣', cd: 10, ico: '🏃🏻' }, steal: { name: '命運拷貝', cd: 1, ico: '🔮' }, dack: { name: '生化操作', cd: 15, ico: '🧪' }, nox: { name: '夜間戰術', cd: 30, ico: '🌑' }, ink: { name: '烏賊戲法', cd: 25, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 20, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 20, ico: '🐱' }, mind: { name: '心靈控制', cd: 20, ico: '🌀' }, cloak: { name: '幻影易容', cd: 25, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 20, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 15, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 25, ico: '⚡' } };
+const SKILLS = { vocal: { name: '聲波咒術', cd: 20, ico: '🎤' }, ward: { name: '警戒結界', cd: 20, ico: '☯️' }, frost: { name: '冰封領域', cd: 20, ico: '❄️' }, beacon: { name: '通天視野', cd: 15, ico: '🔴' }, drum: { name: '戰鼓鼓舞', cd: 15, ico: '🥁' }, guard: { name: '替身契約', cd: 15, ico: '🤝' }, revert: { name: '逆流術士', cd: 0, ico: '⏪' }, gis: { name: '連號甜心', cd: 50, ico: '💖' }, neg: { name: '負領域展開', cd: 20, ico: '🎞️' }, quick: { name: '瞬影瞬行', cd: .5, ico: '🏃🏻‍♂️‍➡️' }, ange: { name: '天使之息', cd: 3, ico: '🧚🏻‍♀️' }, peace: { name: '停戰宣告', cd: 15, ico: '🕊️' }, rel: { name: '相對論', cd: 30, ico: '🔀' }, charge: { name: '衝鋒陷陣', cd: 10, ico: '🏃🏻' }, steal: { name: '命運拷貝', cd: 1, ico: '🔮' }, dack: { name: '生化操作', cd: 15, ico: '🧪' }, nox: { name: '夜間戰術', cd: 30, ico: '🌑' }, ink: { name: '烏賊戲法', cd: 25, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 20, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 20, ico: '🐱' }, mind: { name: '心靈控制', cd: 20, ico: '🌀' }, cloak: { name: '幻影易容', cd: 25, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 20, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 15, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 25, ico: '⚡' } };
 const DACK_T = 21; // 濃霧：1 秒戴鏡 + 20 秒噴發
 const immune = a => a.alive && ((isOut(a, 11) && (a.cleanW || 0) > 0) || (a.imm || 0) > 0); // 蕾西亞淨化窗口：無效化一切攻擊與技能
 const REL_WARN = 2, REL_DUR = 20; // 相對論：2 秒警笛 + 20 秒左右互換
@@ -2649,6 +2656,7 @@ function castSkill(a) {
     if (a.armed) return false; a.armed = true; skMsg(a, '發動【命運拷貝】！等待竊取下一個擊殺對象的技能'); (a.kp || (a.kp = {})).R = G.time + .5; if (a.isPlayer) Sfx.skill(); return true;
   }
   if (a.ctrlT > 0 && isStunBy(a.ctrlBy)) return false;
+  if (SKILL_OF[a.av.outfitIdx] === 'vocal') return false; // 聲波咒術由「按住 R」的語音模組處理
   if (base === 'revert') { if (!(a.windowT > 0) || a.chant || !a.revert) return false; }
   else if (a.chant) return false;
   if ((a.skCd || 0) > 0) return false;
@@ -2940,7 +2948,7 @@ function eliminate(k, v) {
   if (skOn() && k !== v && isOut(v, 31) && k.alive && !immune(k)) { k.ctrlT = 3; k.ctrlBy = v; k.typing = null; k.chg = null; k.chant = null; skMsg(v, '【以牙還牙】' + k.name + ' 被暈眩 3 秒！'); }
   k.lastKillT = G.time; if (k.cloak) k.cloakE = 0; const mul = (k !== v && isOut(k, 13) && G.time - (k.binAt ?? -99) <= 8) ? 2 : 1;
   if (G.sk.night.by === v) G.sk.night.by = null;
-  if (skOn() && k !== v && k.armed && k.av && k.av.outfitIdx === 15) { const vi = v.av.outfitIdx, kind = SKILL_OF[vi]; if (kind && kind !== 'steal' && kind !== 'charge' && kind !== 'revert') { k.stolen = kind; k.armed = false; skMsg(k, '竊取了【' + SKILLS[kind].name + '】！再按一次施放'); } else if (PASSIVE_IDX.includes(vi)) { k.passIdx = vi; k.armed = false; skMsg(k, '竊取了被動技能【' + OUTFITS[vi].skill.name + '】'); } }
+  if (skOn() && k !== v && k.armed && k.av && k.av.outfitIdx === 15) { const vi = v.av.outfitIdx, kind = SKILL_OF[vi]; if (kind && kind !== 'steal' && kind !== 'charge' && kind !== 'revert' && kind !== 'vocal') { k.stolen = kind; k.armed = false; skMsg(k, '竊取了【' + SKILLS[kind].name + '】！再按一次施放'); } else if (PASSIVE_IDX.includes(vi)) { k.passIdx = vi; k.armed = false; skMsg(k, '竊取了被動技能【' + OUTFITS[vi].skill.name + '】'); } }
   if (skOn() && k !== v && isOut(v, 22)) v.revert = { who: k, num: k.realNum !== undefined ? k.realNum : k.number };
   if (k !== v) { assignNumber(k); for (const o of G.actors) { if (o.read) o.read[k.id] = 0; if (o.typing && o.typing.target === k) o.typing = null; } } // 擊殺成功：自己的號碼立即更新
   if (G.mode === 'hunt' && k !== v && (k.isPlayer || k.remote)) { k.streak = (G.time - (k.lastKillT0 ?? -99) <= 10) ? (k.streak || 0) + 1 : 1; k.lastKillT0 = G.time; const pts = STREAK_PTS[Math.min(k.streak, 5) - 1] * mul; k.score = (k.score || 0) + pts; k.lastStreak = k.streak; if (k.isPlayer) UI.streak(k.streak, pts); }
@@ -3768,6 +3776,7 @@ function hostAct(a, ac) {
   else if (ac[1] === 's') { castSkill(a); }
   else if (ac[1] === 'b') { a.binAt = G.time; }
   else if (ac[1] === 'kp') { kofPick(a, ac[2] | 0); }
+  else if (ac[1] === 'vs') { if (isOut(a, 39)) a.skCd = 20; }
   else if (ac[1] === 'fk') { const t = G.actors[ac[2] | 0]; if (t && t.alive && isOut(a, 28) && t.number === String(ac[3]) && Math.hypot(t.x - a.x, t.z - a.z) < 12) a.fk = { t: 1.5, target: t, num: t.number }; }
   else if (ac[1] === 'u') {
     const i = ac[2] | 0, it = a.slots && a.slots[i]; if (!it) return;
@@ -4066,8 +4075,9 @@ const UI = {
     const dash = isSumi(p) && p.dashReady && !p.onGround, jb = $('bJump'); if (jb) { const tx = dash ? '突進' : '跳躍'; if (jb.textContent !== tx) jb.textContent = tx; }
     if (show) {
     const ico = p.stolen ? SKILLS[p.stolen].ico : p.armed ? '🪄' : sk.ico; if (this._skIco !== ico) { this._skIco = ico; s.querySelector('.ico').textContent = ico; }
+    if (Voice.on && (!p.alive || G.state !== 'playing')) Voice.cancel();
     const ace = p.av.outfitIdx === 22, locked = !skOn() || (ace ? !(p.windowT > 0) : cd > 0);
-    s.classList.toggle('cd', locked); s.classList.toggle('on', (p.shieldT || 0) > 0 || !!p.stolen || !!p.armed || !!p.chant); s.style.setProperty('--p', (sk.cd ? Math.min(360, cd / sk.cd * 360) : 0).toFixed(1) + 'deg');
+    s.classList.toggle('cd', locked); s.classList.toggle('on', (p.shieldT || 0) > 0 || !!p.stolen || !!p.armed || !!p.chant || !!p.vocalOn); s.style.setProperty('--p', (sk.cd ? Math.min(360, cd / sk.cd * 360) : 0).toFixed(1) + 'deg');
     const sec = ace ? (p.windowT > 0 ? String(Math.ceil(p.windowT)) : '') : cd > 0 ? String(Math.ceil(cd)) : ''; if (this._skSec !== sec) { this._skSec = sec; s.querySelector('.cdn').textContent = sec; }
     }
     const sc = G.sk.scr, t = sc.t; let on = false;
@@ -4224,7 +4234,7 @@ const Input = {
         if (e.code === 'Enter' || e.code === 'NumpadEnter') { submitNumber(); e.preventDefault(); return; }
         if (e.code === 'KeyF') { useItem(0); return; }
         if (e.code === 'KeyG') { if (G.player && GKEY_HEROES.includes(G.player.av.outfitIdx)) castSkillPlayer(); else useItem(1); return; }
-        if (e.code === 'KeyR') { castSkillPlayer(); return; }
+        if (e.code === 'KeyR') { if (G.player && SKILL_OF[G.player.av.outfitIdx] === 'vocal') { if (!e.repeat) Voice.start(); } else castSkillPlayer(); return; }
         if (e.code === 'KeyQ') { toggleBino(); return; }
         if (e.code === 'Escape') { if (!this.pointerLocked()) togglePause(); return; }
         if (e.code === 'KeyP') { togglePause(); return; }
@@ -4232,7 +4242,7 @@ const Input = {
       }
       keys[e.code] = true; if (/^(Space|ArrowUp|ArrowDown|Tab)$/.test(e.code)) e.preventDefault();
     });
-    window.addEventListener('keyup', e => { keys[e.code] = false; });
+    window.addEventListener('keyup', e => { keys[e.code] = false; if (e.code === 'KeyR') Voice.end(); });
     window.addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
     document.addEventListener('pointerdown', e => { const t = e.target.closest && e.target.closest('button,.btn,.chip,.card,.tbtn,.slot'); if (t && !t.classList.contains('np')) { Sfx.init(); Sfx.resume(); Sfx.click(); } }, true);
     const cvs = $('gl');
@@ -4299,7 +4309,7 @@ const Input = {
       for (const ev of ['touchend', 'touchcancel']) bb.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); off(); }, { passive: false });
     }
     press($('bBack'), () => backspace());
-    { const ss = $('slotS'); press(ss, () => castSkillPlayer()); ss.addEventListener('click', () => { if (!Device.mobile) castSkillPlayer(); }); }
+    { const ss = $('slotS'), vocal = () => G.player && SKILL_OF[G.player.av.outfitIdx] === 'vocal'; press(ss, () => { if (vocal()) Voice.start(); else castSkillPlayer(); }, () => { if (vocal()) Voice.end(); }); ss.addEventListener('click', () => { if (!Device.mobile && !vocal()) castSkillPlayer(); }); ss.addEventListener('mousedown', () => { if (!Device.mobile && vocal()) Voice.start(); }); ss.addEventListener('mouseup', () => { if (!Device.mobile && vocal()) Voice.end(); }); ss.addEventListener('mouseleave', () => { if (!Device.mobile && vocal()) Voice.end(); }); }
     press($('bRun'), () => { In.sprintT = !In.sprintT; In.sprint = In.sprintT; $('bRun').classList.toggle('tog', In.sprintT); }, () => { });
     for (const [id, i] of [['slotF', 0], ['slotG', 1]]) { const el = $(id); press(el, () => useItem(i)); el.addEventListener('click', () => { if (!Device.mobile) useItem(i); }); }
     press($('pauseBtn'), () => setPause(true));
@@ -4341,7 +4351,7 @@ function howPanel(id) {
 <h3>📱 手機（橫向）</h3><div class="hgrid">${hCard('🕹️', '左半邊拖曳', '搖桿移動')}${hCard('🏃', '右側「跑」鍵', '按住衝刺（耗體力）')}${hCard('👆', '右側空白拖曳', '轉視角')}${hCard('🔢', '左右數字鍵', '輸滿位數自動送出')}${hCard('⬆️', '跳躍鍵', '空中再按＝二段跳')}${hCard('🔭', '望遠鏡', '壓住使用、放開取消，壓住時滑動轉視角')}${hCard('🎒', '道具格', '點按使用')}</div>
 <div class="hnote">🔋 衝刺會消耗體力條；望遠鏡有能量條，用完需等待回復。</div>`;
   if (id === 'item') return `<div class="hnote">開局沒有道具，走過地圖上的 <b>？箱</b> 才會取得；兩格已滿時不會更換。</div><div class="hgrid">${Object.entries({ cam: '拍照後照片短暫停留，方便看清號碼', quake: '讓其他人畫面劇烈橫向晃動 2 秒', scope: '約 13° 超遠距放大，再按一次＝拍照', fake: '頭上號碼偽裝成別的數字 7 秒', spring: '立即刷新英雄技能冷卻' }).map(([k, d]) => hCard(ITEMS[k].ico, ITEMS[k].name, d, 'big')).join('')}${hCard('🔭', '望遠鏡（內建）', '遠距離讀碼，有能量限制', 'big')}</div>`;
-  if (id === 'chr') { return `<div class="hnote">按 <span class="kc">R</span>（手機：技能鍵）施放，圓環顯示冷卻。可在「遊戲設定」整體關閉技能。 Derek、快克、安琪沒有 G 道具格，其技能改由 <span class="kc">G</span> 鍵施放。</div>${HERO_CLASSES.map(([nm, col, ids]) => `<div class="chd" style="--hc:${col}">${nm}（${ids.length}）</div><div class="hchars">${ids.map(i => { const o = OUTFITS[i]; return `<div class="hch"><img src="${outfitIcon(i)}"><div><b>${o.label}</b><u>${o.skill.name}</u><span>${o.skill.desc}</span></div></div>`; }).join('')}</div>`).join('')}`; }
+  if (id === 'chr') { return `<div class="hnote">按 <span class="kc">R</span>（手機：技能鍵）施放，圓環顯示冷卻。可在「遊戲設定」整體關閉技能。 Derek、快克、安琪沒有 G 道具格，其技能改由 <span class="kc">G</span> 鍵施放。 伏克需要裝置支援語音辨識並允許麥克風，不支援時該英雄會反灰；按住 <span class="kc">R</span> 念號碼、放開即送出。</div>${HERO_CLASSES.map(([nm, col, ids]) => `<div class="chd" style="--hc:${col}">${nm}（${ids.length}）</div><div class="hchars">${ids.map(i => { const o = OUTFITS[i]; return `<div class="hch"><img src="${outfitIcon(i)}"><div><b>${o.label}</b><u>${o.skill.name}</u><span>${o.skill.desc}</span></div></div>`; }).join('')}</div>`).join('')}`; }
   if (id === 'spec') return `<h3>🏟️ 擂台逃殺（單人／多人合作）</h3>
 <div class="hrule">玩家方對抗一波強過一波的電腦軍團；電腦同屬一國，彼此不會互相攻擊。多人遊玩時，電腦人數會依真人人數成倍增加（場上總人數上限 20 人）。</div>
 <div class="hsteps h4">${hStep(1, '⏱️', '3 秒倒數', '進入畫面後先倒數 3 秒')}${hStep(2, '📢', '10 秒準備', '藍底通知＋右上角倒數，剩 3 秒響提示音')}${hStep(3, '🔔', 'Stage 1', '鳴響開賽聲，電腦登場')}${hStep(4, '🏆', 'Clear！！', '全數擊倒後進入下一關')}</div>
@@ -4490,7 +4500,8 @@ function beginNetClientUI() {
 let _qi = null;
 function qIcon() { if (_qi) return _qi; const c = cv(96, 96), g = c.getContext('2d'); g.fillStyle = '#2c2f4a'; g.beginPath(); g.arc(48, 48, 48, 0, TAU); g.fill(); g.font = '900 66px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = 6; g.strokeStyle = '#7a4a00'; g.strokeText('?', 48, 53); g.fillStyle = '#ffd24a'; g.fillText('?', 48, 53); return (_qi = c.toDataURL()); }
 const CS = { o: null, picks: [], rand: false, end: 0, tm: null };
-function csPool() { return CS.o && CS.o.allowed ? CS.o.allowed : VIS_OUTFITS; }
+const heroBlocked = i => i === 39 && !Voice.ok();
+function csPool() { return (CS.o && CS.o.allowed ? CS.o.allowed : VIS_OUTFITS).filter(i => !heroBlocked(i)); }
 function showCharInfo(i) {
   if (CS.rand && CS.o && CS.o.need === 1) { $('cName').textContent = '隨機'; $('cPass').textContent = '【驚喜】開始前由系統隨機指派一位英雄。'; return; }
   const o = OUTFITS[i === undefined ? S.outfit : i]; $('cName').textContent = o.label; $('cPass').textContent = '【' + o.skill.name + '】' + o.skill.desc;
@@ -4505,8 +4516,8 @@ function csRefresh(last) {
 }
 function csBuildCards() {
   const o = CS.o, pool = o.allowed || VIS_OUTFITS, cards = $('cards'); cards.innerHTML = '';
-  const rc = document.createElement('div'); rc.className = 'card'; rc.dataset.r = 1; rc.innerHTML = '<img class="cav" src="' + qIcon() + '">隨機'; rc.onclick = () => { if (o.need === 1) { CS.rand = true; CS.picks = []; csRefresh(); } else { const rest = pool.filter(i => !CS.picks.includes(i)).sort(() => Math.random() - .5); while (CS.picks.length < o.need && rest.length) CS.picks.push(rest.pop()); csRefresh(); } };
-  const mk = i => { const ou = OUTFITS[i], c = document.createElement('div'); c.dataset.i = i; c.className = 'card'; c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + ou.label + '<b class="pk"></b>'; c.onclick = () => { CS.rand = false; if (o.need === 1) CS.picks = [i]; else { const k = CS.picks.indexOf(i); if (k >= 0) CS.picks.splice(k, 1); else if (CS.picks.length < o.need) CS.picks.push(i); } csRefresh(i); }; return c; };
+  const rc = document.createElement('div'); rc.className = 'card'; rc.dataset.r = 1; rc.innerHTML = '<img class="cav" src="' + qIcon() + '">隨機'; rc.onclick = () => { if (o.need === 1) { CS.rand = true; CS.picks = []; csRefresh(); } else { const rest = pool.filter(i => !CS.picks.includes(i) && !heroBlocked(i)).sort(() => Math.random() - .5); while (CS.picks.length < o.need && rest.length) CS.picks.push(rest.pop()); csRefresh(); } };
+  const mk = i => { const ou = OUTFITS[i], c = document.createElement('div'); c.dataset.i = i; c.className = 'card' + (heroBlocked(i) ? ' dis' : ''); c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + ou.label + (heroBlocked(i) ? '<small class="nov">此裝置不支援語音</small>' : '') + '<b class="pk"></b>'; c.onclick = () => { if (heroBlocked(i)) return; if (i === 39) Voice.warm(); CS.rand = false; if (o.need === 1) CS.picks = [i]; else { const k = CS.picks.indexOf(i); if (k >= 0) CS.picks.splice(k, 1); else if (CS.picks.length < o.need) CS.picks.push(i); } csRefresh(i); }; return c; };
   const placed = new Set(), groups = CS.view === 'tier' ? HERO_TIERS : HERO_CLASSES;
   for (const [nm, col, ids] of groups) { const list = ids.filter(i => pool.includes(i)); if (!list.length) continue; const hd = document.createElement('div'); hd.className = 'chd'; hd.style.setProperty('--hc', col); hd.textContent = nm + '（' + list.length + '）'; cards.appendChild(hd); for (const i of list) { placed.add(i); cards.appendChild(mk(i)); } }
   const rest = pool.filter(i => !placed.has(i)); if (rest.length) { const hd = document.createElement('div'); hd.className = 'chd'; hd.textContent = '其他'; cards.appendChild(hd); for (const i of rest) cards.appendChild(mk(i)); }
@@ -4516,7 +4527,7 @@ function csBuildCards() {
 function openPick(o) {
   CS.o = o; CS.rand = false; CS.view = S.csView === 'tier' ? 'tier' : 'class'; $('csTitle').textContent = o.title || '選擇英雄'; $('csOk').textContent = o.okText || '確認'; $('csBack').style.display = o.back ? '' : 'none';
   const pool = o.allowed || VIS_OUTFITS;
-  if (o.need === 1) { const pf = S.pref === 'rand' ? 'rand' : (pool.includes(S.outfit) ? S.outfit : pool[0]); CS.rand = pf === 'rand' && !o.allowed; CS.picks = CS.rand ? [] : [pf]; } else CS.picks = [];
+  if (o.need === 1) { const pf = S.pref === 'rand' ? 'rand' : (pool.includes(S.outfit) && !heroBlocked(S.outfit) ? S.outfit : pool.find(i => !heroBlocked(i))); CS.rand = pf === 'rand' && !o.allowed; CS.picks = CS.rand ? [] : [pf]; } else CS.picks = [];
   csBuildCards();
   UI.els.menu.classList.add('hidden'); $('mp').classList.add('hidden'); $('gset').classList.add('hidden'); $('charsel').classList.remove('hidden'); showWait(false);
   csRefresh(); clearInterval(CS.tm); UI.clrEv('cs');
@@ -4540,7 +4551,7 @@ function startPickFlow() {
     onDone: (list, wasRand, ex) => { if (kof) G.kofPre = { me: list, opp: kofRandRoster() }; else S.pref = ex ? 'rand' : list[0]; S.outfit = list[0]; saveS(); beginGame(false); }
   });
 }
-function kofRandRoster() { return VIS_OUTFITS.slice().sort(() => Math.random() - .5).slice(0, 5); }
+function kofRandRoster() { return VIS_OUTFITS.filter(i => !heroBlocked(i)).sort(() => Math.random() - .5).slice(0, 5); }
 function openGset(demo) {
   UI.gDemo = !!demo; const g = $('gset');
   if (demo) { UI.gSaved = { mode: S.mode, map: S.map }; if (MODES[S.demoMode] && MODES[S.demoMode].demo !== false) S.mode = S.demoMode; else S.mode = 'dm'; if (MAPS[S.demoMap]) S.map = S.demoMap; buildMenu(); }
@@ -4610,6 +4621,77 @@ function initLayoutEditor() {
   $('edReset').onclick = () => { S.layout = {}; saveS(); applyLayout(); edSelect(null); };
   $('edDone').onclick = () => go(closeLayoutEditor);
 }
+/* ---------- 語音輸入（伏克Vocal・聲波咒術） ---------- */
+const Voice = (() => {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const CN = { '零': 0, '〇': 0, '○': 0, '洞': 0, '一': 1, '壹': 1, '幺': 1, '二': 2, '貳': 2, '兩': 2, '两': 2, '三': 3, '叁': 3, '參': 3, '四': 4, '肆': 4, '五': 5, '伍': 5, '六': 6, '陸': 6, '陆': 6, '七': 7, '柒': 7, '八': 8, '捌': 8, '九': 9, '玖': 9 };
+  const EN = { zero: 0, oh: 0, o: 0, one: 1, won: 1, two: 2, to: 2, too: 2, three: 3, four: 4, for: 4, five: 5, six: 6, seven: 7, eight: 8, ate: 8, nine: 9 };
+  const UNIT = { '十': 10, '拾': 10, '百': 100, '佰': 100, '千': 1000, '仟': 1000 };
+  const cnNum = t => { let total = 0, cur = 0; for (const ch of t) { if (ch in CN) cur = CN[ch]; else if (ch in UNIT) { total += (cur || 1) * UNIT[ch]; cur = 0; } } return String(total + cur); };
+  const V = { SR, on: false, rec: null, digits: '', prefix: '', base: 0, nRes: 0, last: 0, t0: 0, timer: null, text: '', fin: false };
+  V.digitsOf = txt => {
+    const s = String(txt || '').toLowerCase().replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 65248)); let out = '';
+    for (const m of s.match(/[0-9]+|[零〇○洞幺一二兩两三四五六七八九壹貳叁參肆伍陸陆柒捌玖十百千拾佰仟]+|[a-z]+/g) || []) {
+      if (/^[0-9]+$/.test(m)) out += m; else if (/^[a-z]+$/.test(m)) { if (m in EN) out += EN[m]; } else if (/[十百千拾佰仟]/.test(m)) out += cnNum(m); else for (const ch of m) out += CN[ch];
+    } return out;
+  };
+  V.ok = () => !!SR && window.isSecureContext !== false && !V.denied;
+  V.minLen = () => G.codeLen || 3; V.maxLen = () => G.codeLen || 6;
+  V.deny = () => { V.denied = true; if (CS.o) csBuildCards(); UI.msg('此裝置不支援語音，或尚未允許麥克風', 'bad'); };
+  V.warm = async () => { // 選用此英雄時順手取得授權；授權過就記住，不再詢問
+    if (!SR || S.voiceGranted) return true;
+    try { if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) { const st = await navigator.mediaDevices.getUserMedia({ audio: true }); st.getTracks().forEach(t => t.stop()); } S.voiceGranted = true; V.denied = false; saveS(); return true; }
+    catch (e) { if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) { V.denied = true; if (CS.o) csBuildCards(); } return false; }
+  };
+  V.enemyNums = () => { const p = G.player, set = new Set(); for (const a of G.actors) if (a !== p && a.alive && a.number) set.add(a.number); return set; };
+  V.parse = list => { // 取最近一段念出的號碼；多個候選字時，優先採用場上真的存在的號碼，降低誤判
+    const L = V.maxLen(), en = V.enemyNums(); let acc = V.prefix;
+    for (let k = V.base; k < list.length; k++) {
+      const r = list[k], alts = []; for (let j = 0; j < r.length; j++) alts.push(V.digitsOf(r[j].transcript));
+      let ch = alts[0] || ''; if (k === list.length - 1) for (const a of alts) if (a && en.has((acc + a).slice(-L))) { ch = a; break; }
+      acc += ch;
+    }
+    return acc.slice(-L);
+  };
+  V.setTyped = d => { const p = G.player; if (!p || !p.alive || G.lock > 0 || p.ctrlT > 0) return; const apply = () => { if (G.player && (V.on || V.fin)) { G.typed = d; UI.dirty = true; } }; if (p.wdHit) setTimeout(apply, 800); else apply(); };
+  V.bar = t => { const b = $('voiceBar'); if (!b) return; if (t === null) { b.classList.add('hidden'); return; } b.classList.remove('hidden'); b.innerHTML = '🎤 聆聽中　<b>' + (t || '…') + '</b>'; };
+  V.make = () => {
+    const r = new SR(); r.lang = 'zh-TW'; r.continuous = true; r.interimResults = true; r.maxAlternatives = 5;
+    r.onresult = e => { V.nRes = e.results.length; const d = V.parse(e.results); V.text = [...e.results].slice(V.base).map(x => x[0].transcript).join(' '); V.bar(V.text); if (d !== V.digits) { V.digits = d; V.last = performance.now(); V.setTyped(d); } };
+    r.onerror = e => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { V.cancel(); V.deny(); } else if (e.error === 'audio-capture') { V.cancel(); UI.msg('找不到麥克風', 'bad'); } };
+    r.onstart = () => { if (!S.voiceGranted) { S.voiceGranted = true; saveS(); } };
+    r.onend = () => { if (V.on && V.rec === r) { V.prefix = V.digits; V.base = 0; try { V.rec = V.make(); V.rec.start(); } catch (x) { } } };
+    return r;
+  };
+  V.start = () => {
+    const p = G.player; if (V.on || !p || !p.alive || G.state !== 'playing' || G.countdown > 0 || G.demo) return;
+    if (!skOn() || (p.skCd || 0) > 0 || p.ctrlT > 0 || G.lock > 0 || p.chant) return;
+    if (!V.ok()) { UI.msg('此裝置不支援語音', 'bad'); return; }
+    V.digits = ''; V.prefix = ''; V.base = 0; V.nRes = 0; V.text = ''; V.fin = false; V.t0 = V.last = performance.now(); G.typed = ''; UI.dirty = true;
+    try { V.rec = V.make(); V.rec.start(); } catch (e) { V.rec = null; UI.msg('語音啟動失敗，請再試一次', 'bad'); return; }
+    V.on = true; p.vocalOn = true; V.bar('');
+    V.timer = setInterval(() => { // 數字滿位且停頓 0.25 秒即自動送出；最長聆聽 15 秒
+      if (!V.on) return; const L = G.codeLen;
+      if (L && V.digits.length >= L && performance.now() - V.last > 250) { const d = V.digits.slice(-L); V.digits = ''; V.prefix = ''; V.base = V.nRes; G.typed = d; UI.dirty = true; submitNumber(); }
+      if (performance.now() - V.t0 > 15000) V.end();
+    }, 80);
+  };
+  V.stopRec = () => { try { if (V.rec) { const r = V.rec; V.rec = null; r.onend = null; r.stop(); } } catch (e) { } };
+  V.cancel = () => { if (!V.on && !V.fin) return; V.on = false; V.fin = false; clearInterval(V.timer); V.stopRec(); V.bar(null); if (G.player) G.player.vocalOn = false; };
+  V.end = () => { // 放開 R：立即送出剛念出的號碼，並進入冷卻
+    if (!V.on) return; const p = G.player; V.on = false; V.fin = true; clearInterval(V.timer); if (p) p.vocalOn = false;
+    const finish = () => {
+      V.fin = false; V.bar(null); V.stopRec(); const d = V.digits;
+      if (G.player && G.player.alive && G.state === 'playing') { if (d.length >= V.minLen()) { G.typed = d; UI.dirty = true; submitNumber(); } else { G.typed = ''; UI.dirty = true; if (d.length) UI.msg('號碼沒念完整，請再說一次', 'bad'); } }
+      if (G.player) { G.player.skCd = SKILLS.vocal.cd; if (G.netClient) netAct(['vs']); }
+    };
+    if (V.digits.length >= V.minLen()) { const wd = p && p.wdHit; if (wd) setTimeout(finish, 800); else finish(); }
+    else { try { if (V.rec) { V.rec.onend = null; V.rec.stop(); } } catch (e) { } setTimeout(finish, 550); } // 還沒湊滿就稍等最終辨識結果
+  };
+  try { if (navigator.permissions && navigator.permissions.query) navigator.permissions.query({ name: 'microphone' }).then(r => { const f = () => { if (r.state === 'granted') { S.voiceGranted = true; V.denied = false; } else if (r.state === 'denied') V.denied = true; }; f(); r.onchange = f; }).catch(() => { }); } catch (e) { }
+  window.addEventListener('blur', () => { if (V.on) V.end(); });
+  return V;
+})();
 /* ---------- 啟動 ---------- */
 let lastTs = 0;
 function frame(ts) {
@@ -4689,7 +4771,7 @@ function boot() {
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
 setInterval(() => { try { UI.renderPills(); } catch (e) { } }, 120);
-window.__G = { applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+window.__G = { Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 
 })();
