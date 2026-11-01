@@ -148,6 +148,7 @@ body.lay4 .numcol{top:34vh;height:auto;width:21vw;display:grid;grid-template-col
 body.lay4 #numL{left:22vw;right:auto}body.lay4 #numR{left:57vw;right:auto}body.lay4 .np{opacity:.85}
 body.lay4 #bBack{left:71.4vw;right:auto;top:calc(34vh + 11vh + .6vh);width:6.6vw;height:11vh;transform:none;opacity:.85}
 #heroSk{position:absolute;top:84px;left:50%;transform:translateX(-50%);max-width:40vw;text-align:center;color:#fff;font:700 11px/1.35 var(--font);text-shadow:0 1px 3px #000,0 0 2px #000;pointer-events:none;opacity:.95;z-index:3}#heroSk small{display:block;font-weight:400;font-size:10px;opacity:.88}body.demo #heroSk{display:none}
+.cshd{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}.csview{display:flex;gap:6px}.csview button{font:700 12.5px var(--font);color:#fff;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.4);border-radius:999px;padding:4px 12px;cursor:pointer}.csview button.on{background:#e0262f;border-color:#fff;box-shadow:0 0 8px rgba(224,38,47,.7)}
 .cshint{font-size:12px;opacity:.85;margin:4px 0 6px;min-height:16px}.card{position:relative}.card .pk{position:absolute;right:6px;top:4px;font:800 15px var(--font);color:#ffd24a;text-shadow:0 0 3px #000,0 0 3px #000}#csOk.dis{opacity:.4;filter:grayscale(1);pointer-events:none}
 #waitDlg{position:absolute;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(8,8,16,.7)}#waitDlg .wbox{background:rgba(30,32,52,.96);border:2px solid rgba(255,255,255,.5);border-radius:16px;padding:20px 34px;font:700 20px var(--font);color:#fff}.dots i{font-style:normal;animation:dotB 1.2s infinite;display:inline-block}.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}@keyframes dotB{0%,60%,100%{opacity:.15;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
 .btn.locked{opacity:.55;filter:grayscale(.8);cursor:not-allowed}body.doll #typed{color:#ff1a30;background:#000;border-radius:10px;padding:2px 14px;text-shadow:0 0 8px #ff1a30}
@@ -479,7 +480,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     </div>
   </div></div>
   <div id="charsel" class="hidden"><div class="panel">
-    <h2 id="csTitle" style="font:400 30px var(--disp);margin:0 0 10px">選擇英雄</h2>
+    <div class="cshd"><h2 id="csTitle" style="font:400 30px var(--disp);margin:0">選擇英雄</h2><div class="csview" id="csView"><button data-v="class">依種類區分</button><button data-v="tier">依等級區分</button></div></div>
     <div class="cards" id="cards"></div>
     <div id="csHint" class="cshint"></div><div class="btnrow" style="justify-content:flex-start"><button class="btn" id="csOk">確認，開始遊戲</button><button class="btn alt" id="csBack">返回</button></div>
   </div><div class="cinfo cinfoR"><div class="crow"><b>英雄</b><span id="cName"></span></div><div class="crow"><b>技能</b><span id="cPass"></span></div></div></div>

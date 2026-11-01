@@ -560,16 +560,21 @@ function csRefresh(last) {
   $('csOk').classList.toggle('dis', multi && CS.picks.length < o.need);
   if (CS.rand && !multi) { setPreview(null); showCharInfo(); } else { const v = last !== undefined ? last : CS.picks[CS.picks.length - 1]; if (v !== undefined) { setPreview(v); showCharInfo(v); } }
 }
+function csBuildCards() {
+  const o = CS.o, pool = o.allowed || VIS_OUTFITS, cards = $('cards'); cards.innerHTML = '';
+  const rc = document.createElement('div'); rc.className = 'card'; rc.dataset.r = 1; rc.innerHTML = '<img class="cav" src="' + qIcon() + '">隨機'; rc.onclick = () => { if (o.need === 1) { CS.rand = true; CS.picks = []; csRefresh(); } else { const rest = pool.filter(i => !CS.picks.includes(i)).sort(() => Math.random() - .5); while (CS.picks.length < o.need && rest.length) CS.picks.push(rest.pop()); csRefresh(); } };
+  const mk = i => { const ou = OUTFITS[i], c = document.createElement('div'); c.dataset.i = i; c.className = 'card'; c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + ou.label + '<b class="pk"></b>'; c.onclick = () => { CS.rand = false; if (o.need === 1) CS.picks = [i]; else { const k = CS.picks.indexOf(i); if (k >= 0) CS.picks.splice(k, 1); else if (CS.picks.length < o.need) CS.picks.push(i); } csRefresh(i); }; return c; };
+  const placed = new Set(), groups = CS.view === 'tier' ? HERO_TIERS : HERO_CLASSES;
+  for (const [nm, col, ids] of groups) { const list = ids.filter(i => pool.includes(i)); if (!list.length) continue; const hd = document.createElement('div'); hd.className = 'chd'; hd.style.setProperty('--hc', col); hd.textContent = nm + '（' + list.length + '）'; cards.appendChild(hd); for (const i of list) { placed.add(i); cards.appendChild(mk(i)); } }
+  const rest = pool.filter(i => !placed.has(i)); if (rest.length) { const hd = document.createElement('div'); hd.className = 'chd'; hd.textContent = '其他'; cards.appendChild(hd); for (const i of rest) cards.appendChild(mk(i)); }
+  cards.appendChild(rc); csRefresh();
+  [...$('csView').children].forEach(b => b.classList.toggle('on', b.dataset.v === CS.view));
+}
 function openPick(o) {
-  CS.o = o; CS.rand = false; $('csTitle').textContent = o.title || '選擇英雄'; $('csOk').textContent = o.okText || '確認'; $('csBack').style.display = o.back ? '' : 'none';
+  CS.o = o; CS.rand = false; CS.view = S.csView === 'tier' ? 'tier' : 'class'; $('csTitle').textContent = o.title || '選擇英雄'; $('csOk').textContent = o.okText || '確認'; $('csBack').style.display = o.back ? '' : 'none';
   const pool = o.allowed || VIS_OUTFITS;
   if (o.need === 1) { const pf = S.pref === 'rand' ? 'rand' : (pool.includes(S.outfit) ? S.outfit : pool[0]); CS.rand = pf === 'rand' && !o.allowed; CS.picks = CS.rand ? [] : [pf]; } else CS.picks = [];
-  const cards = $('cards'); cards.innerHTML = '';
-  const rc = document.createElement('div'); rc.className = 'card'; rc.dataset.r = 1; rc.innerHTML = '<img class="cav" src="' + qIcon() + '">隨機'; rc.onclick = () => { if (o.need === 1) { CS.rand = true; CS.picks = []; csRefresh(); } else { const rest = pool.filter(i => !CS.picks.includes(i)).sort(() => Math.random() - .5); while (CS.picks.length < o.need && rest.length) CS.picks.push(rest.pop()); csRefresh(); } }; cards.appendChild(rc);
-  const mk = i => { const ou = OUTFITS[i], c = document.createElement('div'); c.dataset.i = i; c.className = 'card'; c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + ou.label + '<b class="pk"></b>'; c.onclick = () => { CS.rand = false; if (o.need === 1) CS.picks = [i]; else { const k = CS.picks.indexOf(i); if (k >= 0) CS.picks.splice(k, 1); else if (CS.picks.length < o.need) CS.picks.push(i); } csRefresh(i); }; return c; };
-  const placed = new Set();
-  for (const [nm, col, ids] of HERO_CLASSES) { const list = ids.filter(i => pool.includes(i)); if (!list.length) continue; const hd = document.createElement('div'); hd.className = 'chd'; hd.style.setProperty('--hc', col); hd.textContent = nm + '（' + list.length + '）'; cards.appendChild(hd); for (const i of list) { placed.add(i); cards.appendChild(mk(i)); } }
-  const rest = pool.filter(i => !placed.has(i)); if (rest.length) { const hd = document.createElement('div'); hd.className = 'chd'; hd.textContent = '其他'; cards.appendChild(hd); for (const i of rest) cards.appendChild(mk(i)); }
+  csBuildCards();
   UI.els.menu.classList.add('hidden'); $('mp').classList.add('hidden'); $('gset').classList.add('hidden'); $('charsel').classList.remove('hidden'); showWait(false);
   csRefresh(); clearInterval(CS.tm); UI.clrEv('cs');
   if (o.secs) { CS.end = performance.now() + o.secs * 1000; const tick = () => { const rem = (CS.end - performance.now()) / 1000; UI.setEv('cs', rem, o.evIco || '🕒'); if (rem <= 0) csFinish(true); }; tick(); CS.tm = setInterval(tick, 150); }
@@ -580,6 +585,7 @@ function csFinish(auto) {
   else { list = CS.picks.slice(); const rest = pool.filter(i => !list.includes(i)).sort(() => Math.random() - .5); while (list.length < o.need && rest.length) list.push(rest.pop()); }
   $('charsel').classList.add('hidden'); CS.o = null; if (G.state === 'playing' && !G.demo && !Device.mobile) { try { Input.lock(); } catch (e) { } } o.onDone(list, wasRand, ex);
 }
+function csSetView(v) { CS.view = v; S.csView = v; saveS(); if (CS.o) csBuildCards(); }
 function closePick() { clearInterval(CS.tm); UI.clrEv('cs'); CS.o = null; $('charsel').classList.add('hidden'); showWait(false); }
 function showWait(on) { $('waitDlg').classList.toggle('hidden', !on); }
 /* 單人／房主：設定完成後才選英雄 */
@@ -728,6 +734,7 @@ function boot() {
   $('gBack').onclick = () => go(() => { const was = UI.gDemo; closeGset(); UI.els.menu.classList.remove('hidden'); });
   $('gGo').onclick = () => go(() => { if (UI.gDemo) { closeGset(); beginGame(true); } else { $('gset').classList.add('hidden'); startPickFlow(); } }); $('btnDemo').onclick = () => go(() => openGset(true)); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
   $('csBack').onclick = () => go(() => { const o = CS.o; if (o && o.back) o.back(); });
+  $('csView').onclick = e => { const b = e.target.closest('button'); if (b) csSetView(b.dataset.v); };
   $('csOk').onclick = () => { if ($('csOk').classList.contains('dis')) return; go(() => csFinish(false)); };
   $('btnSet').onclick = () => go(openSettings); $('btnSet2').onclick = () => go(openSettings); $('btnSetClose').onclick = () => go(closeSettings); $('dbSet').onclick = () => go(openSettings); $('dbPause').onclick = () => setPause(true);
   $('btnLayout').onclick = () => go(openLayoutEditor); $('btnLayoutReset').onclick = () => { S.layout = {}; saveS(); applyLayout(); UI.msg('已重設按鍵配置', 'item'); };
