@@ -143,7 +143,7 @@ function hostStart() {
   NET.phase = 'pick'; NET.pid = (Date.now() % 900000) + 1; NET.pickLeft = 40; NET.pickIn = {}; NET.hostPick = null; NET.pickMode = S.mode; const kof = S.mode === 'kof';
   go(() => {
     $('mp').classList.add('hidden');
-    openPick({ need: kof ? 5 : 1, secs: 0, evIco: '🧩', title: kof ? '選擇 5 位出賽英雄（車輪戰）' : '選擇英雄', okText: '確認', back: null, onDone: (list, wasRand, ex) => { NET.hostPick = list; NET.hostRand = ex; S.outfit = list[0]; if (!kof) S.pref = ex ? 'rand' : list[0]; saveS(); if (!hostPickReady()) showWait(true); } });
+    openPick({ need: kof ? 5 : 1, secs: 0, evIco: '🧩', title: kof ? '選擇 5 位出賽英雄（車輪戰）' : '選擇英雄', okText: '確認', back: null, onDone: (list, wasRand, ex) => { NET.hostPick = list; NET.hostRand = ex; S.outfit = list[0]; if (!kof) { if (ex) S.pref = 'rand'; else if (S.pref !== 'multi') S.pref = list[0]; } saveS(); if (!hostPickReady()) showWait(true); } });
   });
 }
 function hostPickReady() { return !!NET.hostPick && NET.ro.every(r => NET.pickIn[r[0]]); }
@@ -194,12 +194,13 @@ function hostAct(a, ac) {
   if (!a.alive) return;
   if (ac[1] === 'k') {
     if (ericHit(a, String(ac[3]))) return;
+    if (ac[4] === 1) a.voiceT = G.time;
     killByCode(a, String(ac[3]));
   } else if (ac[1] === 'w') { if (isOut(a, 24)) return; a.redT = 2; a.streak = 0; a.cloak = false; }
   else if (ac[1] === 's') { castSkill(a); }
   else if (ac[1] === 'b') { a.binAt = G.time; }
   else if (ac[1] === 'kp') { kofPick(a, ac[2] | 0); }
-  else if (ac[1] === 'vs') { if (isOut(a, 39)) a.skCd = 20; }
+  else if (ac[1] === 'vs') { if (isOut(a, 39)) { a.skCd = a.vkill ? 0 : 20; a.vkill = false; } }
   else if (ac[1] === 'fk') { const t = G.actors[ac[2] | 0]; if (t && t.alive && isOut(a, 28) && t.number === String(ac[3]) && Math.hypot(t.x - a.x, t.z - a.z) < 12) a.fk = { t: 1.5, target: t, num: t.number }; }
   else if (ac[1] === 'u') {
     const i = ac[2] | 0, it = a.slots && a.slots[i]; if (!it) return;

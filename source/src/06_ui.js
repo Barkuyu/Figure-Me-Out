@@ -40,7 +40,7 @@ const UI = {
     const sc = isDM() || arena ? '' : `<div style="font-size:20px;margin-bottom:6px"><span style="color:#ff7a7a">紅 ${G.scores[0]}</span>　-　<span style="color:#7aa5ff">${G.scores[1]} 藍</span></div>`;
     this.els.end.innerHTML = `<h2 style="color:${col}">${title}</h2>${sc}<table><tr><th class="n">#</th><th>玩家</th><th class="n">淘汰</th><th class="n">${hunt ? '積分' : '被淘汰'}</th></tr>${rows}</table><div class="btnrow"><button class="btn" id="btnAgain">再來一場</button><button class="btn alt" id="btnMenu">回主選單</button></div>`;
     this.els.end.classList.remove('hidden', 'flipin'); if (flip) { void this.els.end.offsetWidth; this.els.end.classList.add('flipin'); }
-    $('btnAgain').onclick = () => { const d = G.demo; this.hideEnd(); if (G.mode === 'kof' && !d) { go(() => { resetToMenuUI(); startPickFlow(); }); } else beginGame(d); };
+    $('btnAgain').onclick = () => { const d = G.demo; this.hideEnd(); if (G.mode === 'kof' && !d) { go(() => { resetToMenuUI(); startPickFlow(); }); } else { if (!d && !NET.mode) rerollHero(); beginGame(d); } };
     $('btnMenu').onclick = () => { this.hideEnd(); toMenu(); };
     if (NET.mode) { if (NET.mode === 'host') NET.phase = 'end'; $('btnAgain').textContent = '回到大廳'; $('btnAgain').onclick = () => { this.hideEnd(); if (NET.mode === 'host') hostToLobby(); else clientToLobby(false); }; $('btnMenu').textContent = '離開房間'; }
     if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
@@ -551,31 +551,68 @@ const CS = { o: null, picks: [], rand: false, end: 0, tm: null };
 const heroBlocked = i => i === 39 && !Voice.ok();
 function csPool() { return (CS.o && CS.o.allowed ? CS.o.allowed : VIS_OUTFITS).filter(i => !heroBlocked(i)); }
 function showCharInfo(i) {
-  if (CS.rand && CS.o && CS.o.need === 1) { $('cName').textContent = '隨機'; $('cPass').textContent = '【驚喜】開始前由系統隨機指派一位英雄。'; return; }
+  if (CS.rand && CS.o && CS.o.need === 1 && isWM(CS.o)) { $('cName').textContent = '隨機'; $('cPass').textContent = '【驚喜】開始前由系統隨機指派一位英雄。'; return; }
   const o = OUTFITS[i === undefined ? S.outfit : i]; $('cName').textContent = o.label; $('cPass').textContent = '【' + o.skill.name + '】' + o.skill.desc;
 }
 function setPreview(idx) { if (CS.o && CS.o.noPrev) return; if (idx === null) { G.preview = null; return; } G.preview = { x: 0, y: 0, z: 0, yaw: 0, animT: 0, sp: 0, av: createAvatar(idx === undefined ? S.outfit : idx), team: -1, number: '4827', plateScale: 1 }; makePlate(G.preview); }
+const isWM = o => !!o && o.need === 1 && !o.allowed && !o.kofChoose; // 可複選（加權隨機）的模式：非 KOF 的一般選英雄
+const csTotal = () => { let n = 0; for (const k in CS.counts) if (!heroBlocked(+k)) n += CS.counts[k]; return n; };
+function weightedHero(counts) { const bag = []; for (const k in counts) if (!heroBlocked(+k)) for (let n = 0; n < counts[k]; n++) bag.push(+k); return bag.length ? pick(bag) : null; }
+function rerollHero() { // 單人「再來一場」：依複選／隨機設定重新抽一位英雄
+  const pool = VIS_OUTFITS.filter(i => !heroBlocked(i)); if (S.pref === 'rand') S.outfit = pick(pool);
+  else if (S.multi) { const h = weightedHero(S.multi); if (h !== null) S.outfit = h; }
+}
+function csFlash(t) { CS.flash = t; clearTimeout(CS.ft); CS.ft = setTimeout(() => { CS.flash = ''; if (CS.o) csRefresh(); }, 1600); csRefresh(); }
+function csToggleFav(i) { S.fav = S.fav || []; const k = S.fav.indexOf(i); if (k >= 0) S.fav.splice(k, 1); else S.fav.push(i); saveS(); csBuildCards(); csFlash(k >= 0 ? '已從「我的收藏庫」移除 ' + OUTFITS[i].label : '已加入「我的收藏庫」：' + OUTFITS[i].label); }
+function csDec(i) { const o = CS.o; if (!o) return; if (isWM(o)) { if (CS.counts[i] > 1) CS.counts[i]--; else delete CS.counts[i]; } else if (o.need > 1) { const k = CS.picks.indexOf(i); if (k >= 0) CS.picks.splice(k, 1); } csRefresh(i); }
 function csRefresh(last) {
-  const o = CS.o; if (!o) return; const multi = o.need > 1;
-  [...$('cards').children].forEach(c => { if (c.dataset.r) { c.classList.toggle('on', CS.rand && !multi); return; } const i = +c.dataset.i, k = CS.picks.indexOf(i), on = multi ? k >= 0 : (!CS.rand && CS.picks[0] === i); c.classList.toggle('on', on); const b = c.querySelector('.pk'); if (b) b.textContent = multi && k >= 0 ? k + 1 : ''; });
-  $('csHint').textContent = multi ? `已選 ${CS.picks.length} / ${o.need}　（點選順序＝出賽順序，可點已選英雄取消）` : (o.hint || '');
-  $('csOk').classList.toggle('dis', multi && CS.picks.length < o.need);
-  if (CS.rand && !multi) { setPreview(null); showCharInfo(); } else { const v = last !== undefined ? last : CS.picks[CS.picks.length - 1]; if (v !== undefined) { setPreview(v); showCharInfo(v); } }
+  const o = CS.o; if (!o) return; const wm = isWM(o), five = o.need > 1;
+  document.querySelectorAll('#cards .card').forEach(c => {
+    if (c.dataset.r) { c.classList.toggle('on', CS.rand && !five); return; }
+    const i = +c.dataset.i, k = CS.picks.indexOf(i), n = wm ? (CS.counts[i] || 0) : 0, on = wm ? n > 0 : five ? k >= 0 : (!CS.rand && CS.picks[0] === i);
+    c.classList.toggle('on', on); c.classList.toggle('fav', (S.fav || []).includes(i)); const b = c.querySelector('.pk'); if (b) b.textContent = wm ? (n ? '×' + n : '') : (five && k >= 0 ? k + 1 : '');
+  });
+  const tot = csTotal();
+  $('csHint').textContent = CS.flash || (five ? `已選 ${CS.picks.length} / ${o.need}　（點選順序＝出賽順序；右鍵取消；長按右鍵加入收藏庫）` : wm ? (tot ? `已選 ${tot} 張　左鍵 +1・右鍵 −1・長按右鍵（手機：長按卡片）加入收藏庫；張數越多越容易被抽中，開局隨機抽出一位` : '左鍵選取（再點 +1）・右鍵 −1・長按右鍵（手機：長按卡片）加入收藏庫') : (o.hint || ''));
+  $('csOk').classList.toggle('dis', (five && CS.picks.length < o.need) || (wm && !CS.rand && tot === 0));
+  if (CS.rand && !five) { setPreview(null); showCharInfo(); } else { const v = last !== undefined ? last : (wm ? CS.lastClick : CS.picks[CS.picks.length - 1]); if (v !== undefined && v !== null) { setPreview(v); showCharInfo(v); } }
 }
 function csBuildCards() {
-  const o = CS.o, pool = o.allowed || VIS_OUTFITS, cards = $('cards'); cards.innerHTML = '';
-  const rc = document.createElement('div'); rc.className = 'card'; rc.dataset.r = 1; rc.innerHTML = '<img class="cav" src="' + qIcon() + '">隨機'; rc.onclick = () => { if (o.need === 1) { CS.rand = true; CS.picks = []; csRefresh(); } else { const rest = pool.filter(i => !CS.picks.includes(i) && !heroBlocked(i)).sort(() => Math.random() - .5); while (CS.picks.length < o.need && rest.length) CS.picks.push(rest.pop()); csRefresh(); } };
-  const mk = i => { const ou = OUTFITS[i], c = document.createElement('div'); c.dataset.i = i; c.className = 'card' + (heroBlocked(i) ? ' dis' : ''); c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + ou.label + (heroBlocked(i) ? '<small class="nov">此裝置不支援語音</small>' : '') + '<b class="pk"></b>'; c.onclick = () => { if (heroBlocked(i)) return; if (i === 39) Voice.warm(); CS.rand = false; if (o.need === 1) CS.picks = [i]; else { const k = CS.picks.indexOf(i); if (k >= 0) CS.picks.splice(k, 1); else if (CS.picks.length < o.need) CS.picks.push(i); } csRefresh(i); }; return c; };
+  const o = CS.o, pool = o.allowed || VIS_OUTFITS, cards = $('cards'), wm = isWM(o), five = o.need > 1; cards.innerHTML = '';
+  const rc = document.createElement('div'); rc.className = 'card'; rc.dataset.r = 1; rc.innerHTML = '<img class="cav" src="' + qIcon() + '">隨機（由系統抽一位）';
+  rc.onclick = () => { if (!five) { CS.rand = true; CS.picks = []; if (wm) CS.counts = {}; csRefresh(); } else { const rest = pool.filter(i => !CS.picks.includes(i) && !heroBlocked(i)).sort(() => Math.random() - .5); while (CS.picks.length < o.need && rest.length) CS.picks.push(rest.pop()); csRefresh(); } };
+  const mk = i => {
+    const ou = OUTFITS[i], c = document.createElement('div'), blocked = heroBlocked(i); c.dataset.i = i; c.className = 'card' + (blocked ? ' dis' : '');
+    c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + ou.label + (blocked ? '<small class="nov">此裝置不支援語音</small>' : '') + '<b class="pk"></b><span class="pm">−</span>';
+    c.onclick = () => { if (blocked) return; if (c._lp) { c._lp = false; return; } if (i === 39) Voice.warm(); CS.rand = false; CS.lastClick = i; if (wm) CS.counts[i] = Math.min(9, (CS.counts[i] || 0) + 1); else if (five) { const k = CS.picks.indexOf(i); if (k >= 0) CS.picks.splice(k, 1); else if (CS.picks.length < o.need) CS.picks.push(i); } else CS.picks = [i]; csRefresh(i); };
+    c.oncontextmenu = e => e.preventDefault();
+    c.onmousedown = e => { if (e.button === 2 && !blocked) { clearTimeout(c._rt); c._rt = setTimeout(() => { c._rt = null; csToggleFav(i); }, 550); } };
+    c.onmouseup = e => { if (e.button === 2 && c._rt) { clearTimeout(c._rt); c._rt = null; csDec(i); } };
+    c.onmouseleave = () => { clearTimeout(c._rt); c._rt = null; };
+    c.ontouchstart = () => { clearTimeout(c._tt); c._tt = setTimeout(() => { c._tt = null; c._lp = true; csToggleFav(i); setTimeout(() => { c._lp = false; }, 600); }, 550); };
+    for (const ev of ['ontouchend', 'ontouchcancel', 'ontouchmove']) c[ev] = () => { clearTimeout(c._tt); c._tt = null; };
+    c.querySelector('.pm').onclick = e => { e.stopPropagation(); csDec(i); };
+    return c;
+  };
+  const sec = (txt, col) => { const hd = document.createElement('div'); hd.className = 'chd'; if (col) hd.style.setProperty('--hc', col); hd.textContent = txt; cards.appendChild(hd); };
+  // 我的收藏庫（最上方）
+  const fav = (S.fav || []).filter(i => pool.includes(i)); sec('⭐ 我的收藏庫（' + fav.length + '）', '#ffd24a');
+  if (fav.length) for (const i of fav) cards.appendChild(mk(i)); else { const h = document.createElement('div'); h.className = 'favhint'; h.textContent = '尚無收藏。在任一英雄上「長按滑鼠右鍵」（手機：長按卡片）即可加入，再長按一次可移除。'; cards.appendChild(h); }
   const placed = new Set(), groups = CS.view === 'tier' ? HERO_TIERS : HERO_CLASSES;
-  for (const [nm, col, ids] of groups) { const list = ids.filter(i => pool.includes(i)); if (!list.length) continue; const hd = document.createElement('div'); hd.className = 'chd'; hd.style.setProperty('--hc', col); hd.textContent = nm + '（' + list.length + '）'; cards.appendChild(hd); for (const i of list) { placed.add(i); cards.appendChild(mk(i)); } }
-  const rest = pool.filter(i => !placed.has(i)); if (rest.length) { const hd = document.createElement('div'); hd.className = 'chd'; hd.textContent = '其他'; cards.appendChild(hd); for (const i of rest) cards.appendChild(mk(i)); }
-  cards.appendChild(rc); csRefresh();
+  for (const [nm, col, ids] of groups) { const list = ids.filter(i => pool.includes(i)); if (!list.length) continue; sec(nm + '（' + list.length + '）', col); for (const i of list) { placed.add(i); cards.appendChild(mk(i)); } }
+  const rest = pool.filter(i => !placed.has(i)); if (rest.length) { sec('其他'); for (const i of rest) cards.appendChild(mk(i)); }
+  sec('🎲 隨機', '#c9a8ff'); cards.appendChild(rc); csRefresh();
   [...$('csView').children].forEach(b => b.classList.toggle('on', b.dataset.v === CS.view));
 }
 function openPick(o) {
-  CS.o = o; CS.rand = false; CS.view = S.csView === 'tier' ? 'tier' : 'class'; $('csTitle').textContent = o.title || '選擇英雄'; $('csOk').textContent = o.okText || '確認'; $('csBack').style.display = o.back ? '' : 'none';
-  const pool = o.allowed || VIS_OUTFITS;
-  if (o.need === 1) { const pf = S.pref === 'rand' ? 'rand' : (pool.includes(S.outfit) && !heroBlocked(S.outfit) ? S.outfit : pool.find(i => !heroBlocked(i))); CS.rand = pf === 'rand' && !o.allowed; CS.picks = CS.rand ? [] : [pf]; } else CS.picks = [];
+  CS.o = o; CS.rand = false; CS.flash = ''; CS.lastClick = null; CS.view = S.csView === 'tier' ? 'tier' : 'class'; $('csTitle').textContent = o.title || '選擇英雄'; $('csOk').textContent = o.okText || '確認'; $('csBack').style.display = o.back ? '' : 'none';
+  const pool = o.allowed || VIS_OUTFITS; CS.counts = {}; CS.picks = [];
+  if (isWM(o)) {
+    CS.rand = S.pref === 'rand';
+    if (S.multi) for (const k in S.multi) if (pool.includes(+k) && !heroBlocked(+k) && S.multi[k] > 0) CS.counts[k] = S.multi[k];
+    if (!CS.rand && !Object.keys(CS.counts).length) { const f = pool.includes(S.outfit) && !heroBlocked(S.outfit) ? S.outfit : pool.find(i => !heroBlocked(i)); CS.counts[f] = 1; }
+    CS.lastClick = Object.keys(CS.counts).length ? +Object.keys(CS.counts)[0] : null;
+  } else if (o.need === 1) { const pf = pool.includes(S.outfit) && !heroBlocked(S.outfit) ? S.outfit : pool.find(i => !heroBlocked(i)); CS.picks = [pf]; }
   csBuildCards();
   UI.els.menu.classList.add('hidden'); $('mp').classList.add('hidden'); $('gset').classList.add('hidden'); $('charsel').classList.remove('hidden'); showWait(false);
   csRefresh(); clearInterval(CS.tm); UI.clrEv('cs');
@@ -583,7 +620,8 @@ function openPick(o) {
 }
 function csFinish(auto) {
   const o = CS.o; if (!o) return; clearInterval(CS.tm); UI.clrEv('cs'); const pool = csPool(); let list, wasRand = false; const ex = CS.rand && !auto;
-  if (o.need === 1) { wasRand = CS.rand || auto || CS.picks[0] === undefined; list = [wasRand ? pick(pool) : CS.picks[0]]; }
+  if (isWM(o)) { const h = CS.rand ? null : weightedHero(CS.counts); wasRand = h === null; list = [wasRand ? pick(pool) : h]; if (!wasRand) { S.multi = Object.assign({}, CS.counts); S.pref = 'multi'; } }
+  else if (o.need === 1) { wasRand = CS.rand || auto || CS.picks[0] === undefined; list = [wasRand ? pick(pool) : CS.picks[0]]; }
   else { list = CS.picks.slice(); const rest = pool.filter(i => !list.includes(i)).sort(() => Math.random() - .5); while (list.length < o.need && rest.length) list.push(rest.pop()); }
   $('charsel').classList.add('hidden'); CS.o = null; if (G.state === 'playing' && !G.demo && !Device.mobile) { try { Input.lock(); } catch (e) { } } o.onDone(list, wasRand, ex);
 }
@@ -596,7 +634,7 @@ function startPickFlow() {
   openPick({
     need: kof ? 5 : 1, secs: 0, evIco: '🧩', title: kof ? '選擇 5 位出賽英雄（車輪戰）' : '選擇英雄', okText: kof ? '確認出賽名單' : '確認，開始遊戲',
     back: () => { closePick(); $('gset').classList.remove('hidden'); UI.preResolved = false; },
-    onDone: (list, wasRand, ex) => { if (kof) G.kofPre = { me: list, opp: kofRandRoster() }; else S.pref = ex ? 'rand' : list[0]; S.outfit = list[0]; saveS(); beginGame(false); }
+    onDone: (list, wasRand, ex) => { if (kof) G.kofPre = { me: list, opp: kofRandRoster() }; else if (ex) S.pref = 'rand'; else if (S.pref !== 'multi') S.pref = list[0]; S.outfit = list[0]; saveS(); beginGame(false); }
   });
 }
 function kofRandRoster() { return VIS_OUTFITS.filter(i => !heroBlocked(i)).sort(() => Math.random() - .5).slice(0, 5); }
@@ -705,11 +743,15 @@ const Voice = (() => {
   V.bar = t => { const b = $('voiceBar'); if (!b) return; if (t === null) { b.classList.add('hidden'); return; } b.classList.remove('hidden'); b.innerHTML = '🎤 聆聽中　<b>' + (t || '…') + '</b>'; };
   V.make = () => {
     const r = new SR(); r.lang = 'zh-TW'; r.continuous = true; r.interimResults = true; r.maxAlternatives = 5;
-    r.onresult = e => { V.nRes = e.results.length; const d = V.parse(e.results); V.text = [...e.results].slice(V.base).map(x => x[0].transcript).join(' '); V.bar(V.text); if (d !== V.digits) { V.digits = d; V.last = performance.now(); V.setTyped(d); } };
+    r.onresult = e => { V.nRes = e.results.length; const d = V.parse(e.results); V.text = [...e.results].slice(V.base).map(x => x[0].transcript).join(' '); V.bar(V.text); if (d !== V.digits) { V.digits = d; V.last = performance.now(); V.setTyped(d); clearTimeout(V.sched); if (G.codeLen && d.length >= G.codeLen) V.sched = setTimeout(V.auto, 100); } };
     r.onerror = e => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { V.cancel(); V.deny(); } else if (e.error === 'audio-capture') { V.cancel(); UI.msg('找不到麥克風', 'bad'); } };
     r.onstart = () => { if (!S.voiceGranted) { S.voiceGranted = true; saveS(); } };
     r.onend = () => { if (V.on && V.rec === r) { V.prefix = V.digits; V.base = 0; try { V.rec = V.make(); V.rec.start(); } catch (x) { } } };
     return r;
+  };
+  V.auto = () => { // 念滿位數、停頓 0.1 秒即自動送出
+    if (!V.on) return; const L = G.codeLen; if (!L || V.digits.length < L) return; const d = V.digits.slice(-L); V.digits = ''; V.prefix = ''; V.base = V.nRes; G.typed = d; UI.dirty = true;
+    if (G.player) G.player.voiceT = G.time; submitNumber();
   };
   V.start = () => {
     const p = G.player; if (V.on || !p || !p.alive || G.state !== 'playing' || G.countdown > 0 || G.demo) return;
@@ -718,20 +760,16 @@ const Voice = (() => {
     V.digits = ''; V.prefix = ''; V.base = 0; V.nRes = 0; V.text = ''; V.fin = false; V.t0 = V.last = performance.now(); G.typed = ''; UI.dirty = true;
     try { V.rec = V.make(); V.rec.start(); } catch (e) { V.rec = null; UI.msg('語音啟動失敗，請再試一次', 'bad'); return; }
     V.on = true; p.vocalOn = true; V.bar('');
-    V.timer = setInterval(() => { // 數字滿位且停頓 0.25 秒即自動送出；最長聆聽 15 秒
-      if (!V.on) return; const L = G.codeLen;
-      if (L && V.digits.length >= L && performance.now() - V.last > 250) { const d = V.digits.slice(-L); V.digits = ''; V.prefix = ''; V.base = V.nRes; G.typed = d; UI.dirty = true; submitNumber(); }
-      if (performance.now() - V.t0 > 15000) V.end();
-    }, 80);
+    V.timer = setTimeout(() => V.end(), 15000); // 最長聆聽 15 秒
   };
   V.stopRec = () => { try { if (V.rec) { const r = V.rec; V.rec = null; r.onend = null; r.stop(); } } catch (e) { } };
-  V.cancel = () => { if (!V.on && !V.fin) return; V.on = false; V.fin = false; clearInterval(V.timer); V.stopRec(); V.bar(null); if (G.player) G.player.vocalOn = false; };
+  V.cancel = () => { if (!V.on && !V.fin) return; V.on = false; V.fin = false; clearTimeout(V.timer); clearTimeout(V.sched); V.stopRec(); V.bar(null); if (G.player) G.player.vocalOn = false; };
   V.end = () => { // 放開 R：立即送出剛念出的號碼，並進入冷卻
-    if (!V.on) return; const p = G.player; V.on = false; V.fin = true; clearInterval(V.timer); if (p) p.vocalOn = false;
+    if (!V.on) return; const p = G.player; V.on = false; V.fin = true; clearTimeout(V.timer); clearTimeout(V.sched); if (p) p.vocalOn = false;
     const finish = () => {
       V.fin = false; V.bar(null); V.stopRec(); const d = V.digits;
-      if (G.player && G.player.alive && G.state === 'playing') { if (d.length >= V.minLen()) { G.typed = d; UI.dirty = true; submitNumber(); } else { G.typed = ''; UI.dirty = true; if (d.length) UI.msg('號碼沒念完整，請再說一次', 'bad'); } }
-      if (G.player) { G.player.skCd = SKILLS.vocal.cd; if (G.netClient) netAct(['vs']); }
+      if (G.player && G.player.alive && G.state === 'playing') { if (d.length >= V.minLen()) { G.typed = d; UI.dirty = true; G.player.voiceT = G.time; submitNumber(); } else { G.typed = ''; UI.dirty = true; if (d.length) UI.msg('號碼沒念完整，請再說一次', 'bad'); } }
+      if (G.player) { G.player.skCd = G.player.vkill ? 0 : SKILLS.vocal.cd; G.player.vkill = false; if (G.netClient) netAct(['vs']); }
     };
     if (V.digits.length >= V.minLen()) { const wd = p && p.wdHit; if (wd) setTimeout(finish, 800); else finish(); }
     else { try { if (V.rec) { V.rec.onend = null; V.rec.stop(); } } catch (e) { } setTimeout(finish, 550); } // 還沒湊滿就稍等最終辨識結果
@@ -821,3 +859,6 @@ window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c
 setInterval(() => { try { UI.renderPills(); } catch (e) { } }, 120);
 window.__G = { Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+
+// 檢查是否有新版（防止 PWA 快取舊版）
+(function () { const ve = document.querySelector('.ver'), cur = ve ? ve.textContent.replace(/[^0-9.]/g, '') : '0'; if (!/^https?:/.test(location.protocol)) return; fetch('ver.txt?t=' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.text() : '').then(t => { t = (t || '').trim(); if (/^\d+(\.\d+)?$/.test(t) && parseFloat(t) > parseFloat(cur)) { const b = document.getElementById('updBar'); if (b) { b.textContent = '有新版本 ver ' + t + '（目前 ' + cur + '）— 點此重新載入；若仍是舊版請完全關閉 App 再開'; b.style.display = 'block'; } } }).catch(() => { }); })();

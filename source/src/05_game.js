@@ -481,6 +481,7 @@ function eliminate(k, v) {
     if (isOut(k, 19)) { if (k.wkT > 0) { k.wkT = 6; } else if (!k.wkPre && (k.skCd || 0) <= 0) { k.wkPre = .3; puffFx(k); } }
   }
   if (skOn() && k !== v && isOut(v, 31) && k.alive && !immune(k)) { k.ctrlT = 3; k.ctrlBy = v; k.typing = null; k.chg = null; k.chant = null; skMsg(v, '【以牙還牙】' + k.name + ' 被暈眩 3 秒！'); }
+  if (skOn() && k !== v && isOut(k, 39) && k.voiceT !== undefined && G.time - k.voiceT < .6) { k.vkill = true; k.skCd = 0; skMsg(k, '聲波咒術擊殺成功，技能立即刷新！'); }
   k.lastKillT = G.time; if (k.cloak) k.cloakE = 0; const mul = (k !== v && isOut(k, 13) && G.time - (k.binAt ?? -99) <= 8) ? 2 : 1;
   if (G.sk.night.by === v) G.sk.night.by = null;
   if (skOn() && k !== v && k.armed && k.av && k.av.outfitIdx === 15) { const vi = v.av.outfitIdx, kind = SKILL_OF[vi]; if (kind && kind !== 'steal' && kind !== 'charge' && kind !== 'revert' && kind !== 'vocal') { k.stolen = kind; k.armed = false; skMsg(k, '竊取了【' + SKILLS[kind].name + '】！再按一次施放'); } else if (PASSIVE_IDX.includes(vi)) { k.passIdx = vi; k.armed = false; skMsg(k, '竊取了被動技能【' + OUTFITS[vi].skill.name + '】'); } }
@@ -539,7 +540,7 @@ function submitNumber() {
   const ts = G.actors.filter(a => a.alive && a.number === code && a !== p && a.number !== ''), en = ts.filter(a => isDM() || a.team !== p.team), t = ts[0];
   if (en.length) {
     if (en.every(a => a.protect > 0)) { UI.msg('對方有重生保護', 'bad'); G.typed = ''; UI.dirty = true; return; }
-    if (G.netClient) { netAct(['k', G.actors.indexOf(en[0]), code]); G.typed = ''; UI.dirty = true; return; }
+    if (G.netClient) { netAct(['k', G.actors.indexOf(en[0]), code, (p.voiceT !== undefined && G.time - p.voiceT < .6) ? 1 : 0]); G.typed = ''; UI.dirty = true; return; }
     G.typed = ''; UI.dirty = true; const n = killByCode(p, code); if (n > 1) UI.msg('一次擊殺 ' + n + ' 人！', 'good');
   } else if (t) { UI.msg('這是隊友的號碼！', 'bad'); Sfx.wrong(); G.typed = ''; UI.dirty = true; UI.shake(); }
   else if (isOut(p, 24)) { UI.msg('藐視罰則：輸錯號碼，不受懲罰', 'item'); G.typed = ''; UI.dirty = true; }

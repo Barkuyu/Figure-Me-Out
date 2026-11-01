@@ -84,7 +84,7 @@ OUTFITS.push(
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'guardian', label: '旮Guardian', sub: '', skill: { name: '替身契約', desc: '啟動後 6 秒內，我方玩家受到的輸入攻擊改由你承擔；且重生後 20 秒內跑步與望遠鏡不消耗能量。冷卻 15 秒。' }, H: 1.82, skin: '#d8b08a', hipX: 0.105, shX: 0.255, tz: 0.52, hair: '#aab2bd', hair2: '#aab2bd', female: false, gen: { top: '#8a96a6', top2: '#d8212e', pants: '#4a5668', shoe: '#2a2f3a', hair: '#aab2bd', style: 'short', acc: ['plume', 'shield'], accC: '#d8212e' },
     torso: [[.001, -.1], [.22, -.1], [.23, -.02], [.215, .1], [.225, .22], [.26, .36], [.27, .46], [.265, .53], [.19, .57], [.07, .595], [.056, .63], [.001, .63]] },
-  { key: 'vocal', label: '伏克Vocal', sub: '', skill: { name: '聲波咒術', desc: '按住 R 開啟麥克風，直接念出號碼即自動填入並送出，放開 R 結束並立即送出。冷卻 20 秒。（需裝置支援語音辨識與麥克風授權）' }, H: 1.78, skin: '#e8c4a0', hipX: .098, shX: .235, tz: .54, hair: '#ff4fa3', hair2: '#ff8fc4', female: false, gen: { top: '#6a1b9a', top2: '#ffd24a', pants: '#14141c', shoe: '#ffd24a', hair: '#ff4fa3', style: 'bald', acc: ['pompadour', 'mic', 'goldstar'], accC: '#ff4fa3' },
+  { key: 'vocal', label: '伏克Vocal', sub: '', skill: { name: '聲波咒術', desc: '按住 R 開啟麥克風，直接念出號碼即自動填入並送出，放開 R 結束並立即送出。冷卻 20 秒。（需裝置支援語音辨識與麥克風授權）' }, H: 1.78, skin: '#e8c4a0', hipX: .098, shX: .235, tz: .54, hair: '#ff4fa3', hair2: '#ff8fc4', female: false, plateLift: .05, gen: { top: '#6a1b9a', top2: '#ffd24a', pants: '#14141c', shoe: '#ffd24a', hair: '#ff4fa3', style: 'bald', acc: ['pompadour', 'mic', 'goldstar'], accC: '#ff4fa3' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] }
 );
 const SKINPATCH = [.975, .975];
@@ -308,7 +308,7 @@ function buildOutfit(i) {
     if (ac.includes('monkeyears')) for (const sg of [-1, 1]) { hairP.push({ g: gSphere(.042, 8, 6), t: [sg * hw * 1.12, hc - hh * .02, 0], s: [.55, 1, 1], c: [.78, .55, .32] }); hairP.push({ g: gSphere(.026, 8, 6), t: [sg * hw * 1.18, hc - hh * .02, .004], s: [.4, 1, 1], c: [.95, .75, .6] }); }
     if (ac.includes('twintail')) for (const sg of [-1, 1]) { hairP.push({ g: gCyl(.05, .012, .36, 8, 3), t: [sg * (hw * 1.3), hc - .1, -.01], r: [0, 0, sg * .12], c: h1 }); hairP.push({ g: gSphere(.026, 8, 6), t: [sg * hw * 1.18, hc + hh * .3, -.01], c: accC }); }
     if (ac.includes('bow')) { for (const sg of [-1, 1]) hairP.push({ g: gSphere(.04, 8, 6), t: [sg * .045, hc + hh * .72, .03], s: [1.2, .7, .6], c: accC }); hairP.push({ g: gSphere(.02, 6, 5), t: [0, hc + hh * .72, .035], c: [.6, .05, .1] }); }
-    if (ac.includes('wildhair')) for (let k = 0; k < 18; k++) { const a = k * 2.4 + 1; hairP.push({ g: gCyl(0, .034, .13 + (k % 3) * .03, 6, 1), t: [Math.sin(a) * hw * .9, hc + hh * (.3 + (k % 4) * .08), Math.cos(a) * hw * 1.0], r: [.9 + (k % 3) * .25, a, 0], c: k % 2 ? [.95, .95, .95] : [.82, .82, .84] }); }
+    if (ac.includes('wildhair')) for (let k = 0; k < 18; k++) { const a = k * 2.4 + 1; if (Math.cos(a) > .15) continue; hairP.push({ g: gCyl(0, .034, .13 + (k % 3) * .03, 6, 1), t: [Math.sin(a) * hw * .9, hc + hh * (.3 + (k % 4) * .08), Math.cos(a) * hw * 1.0], r: [.9 + (k % 3) * .25, a, 0], c: k % 2 ? [.95, .95, .95] : [.82, .82, .84] }); }
     if (ac.includes('mustache')) for (const sg of [-1, 1]) hairP.push({ g: gBox(.075, .026, .03), t: [sg * .042, hc - hh * .3, hw * 1.2], r: [0, 0, -sg * .35], c: [.96, .96, .96] });
     if (ac.includes('clockhalo')) { hairP.push({ g: gCyl(.2, .2, .012, 26, 1, true), t: [0, hc + hh * .1, -hw * 1.7], r: [PI / 2, 0, 0], c: accC }); for (let k = 0; k < 4; k++) { const a = k * PI / 2; hairP.push({ g: gBox(.012, .045, .014), t: [Math.sin(a) * .17, hc + hh * .1 + Math.cos(a) * .17, -hw * 1.7], r: [0, 0, -a], c: [.95, .95, .98] }); } }
     if (ac.includes('buns')) for (const sg of [-1, 1]) { hairP.push({ g: gSphere(.062, 10, 8), t: [sg * hw * .95, hc + hh * .62, -.01], c: h1 }); hairP.push({ g: gSphere(.026, 8, 6), t: [sg * hw * .95, hc + hh * .62 + .055, -.01], c: accC }); }
@@ -324,10 +324,10 @@ function buildOutfit(i) {
     if (ac.includes('topknot')) { hairP.push({ g: gSphere(.062, 10, 8), t: [0, hc + hh * .78, -.02], c: h1 }); hairP.push({ g: gBox(.13, .012, .012), t: [0, hc + hh * .78, -.02], r: [0, 0, .2], c: accC }); }
     if (ac.includes('headmirror')) { hairP.push({ g: gCyl(hw * 1.1, hw * 1.1, .02, 22, 1, true), t: [0, hc + hh * .3, -.004], s: [1, 1, 1.18], c: [1, 1, 1] }); hairP.push({ g: gCyl(.05, .05, .012, 16, 1), t: [0, hc + hh * .33, hw * 1.27], r: [PI / 2, 0, 0], c: [.82, .94, 1] }); }
     if (ac.includes('pithhelmet')) { hairP.push({ g: gSphere(1, 20, 12, 0, TAU, 0, 1.5), t: [0, hc + .02, -.006], s: [hw * 1.2, hh * .88, hw * 1.2 * 1.18], c: accC }); hairP.push({ g: gCyl(hw * 1.8, hw * 1.8, .016, 22, 1), t: [0, hc + hh * .22, -.004], c: shade(accC, .85) }); }
-    if (ac.includes('mohawk')) for (let k = 0; k < 7; k++) hairP.push({ g: gCyl(0, .03, .1 + (k % 3) * .02, 6, 1), t: [0, hc + hh * .5, (k - 3) * .036], c: accC });
+    if (ac.includes('mohawk')) for (let k = 0; k < 6; k++) hairP.push({ g: gCyl(0, .03, .08 + (k % 3) * .02, 6, 1), t: [0, hc + hh * .5, -.02 - k * .03], c: accC });
     if (ac.includes('icecrown')) for (let k = 0; k < 6; k++) { const a = k * 1.05; hairP.push({ g: gCyl(0, .02, .1 + (k % 2) * .05, 6, 1), t: [Math.sin(a) * hw * .8, hc + hh * .6, Math.cos(a) * hw * .85], r: [Math.cos(a) * .25, 0, -Math.sin(a) * .25], c: [.72, .92, 1] }); }
-    if (ac.includes('plume')) { hairP.push({ g: gBox(.026, .11, .17), t: [0, hc + hh * .78, -.01], c: accC }); hairP.push({ g: gCyl(hw * 1.08, hw * 1.08, .02, 22, 1, true), t: [0, hc + hh * .2, -.004], s: [1, 1, 1.18], c: [.75, .78, .84] }); }
-    if (ac.includes('pompadour')) { hairP.push({ g: gSphere(1, 20, 12, 0, TAU, 0, 1.3), t: [0, hc + .02, -.006], s: [hw * 1.06, hh * .6, hw * 1.06 * 1.18], c: h1 }); hairP.push({ g: gBox(hw * 1.5, .1, hw * 1.7), t: [0, hc + hh * .6, hw * .55], r: [-.45, 0, 0], c: shade(h1, 1.1) }); hairP.push({ g: gBox(hw * 1.2, .06, hw * 1.2), t: [0, hc + hh * .75, hw * .15], r: [-.2, 0, 0], c: shade(h1, 1.2) }); }
+    if (ac.includes('plume')) { hairP.push({ g: gBox(.026, .09, .16), t: [0, hc + hh * .7, -.075], c: accC }); hairP.push({ g: gCyl(hw * 1.08, hw * 1.08, .02, 22, 1, true), t: [0, hc + hh * .2, -.004], s: [1, 1, 1.18], c: [.75, .78, .84] }); }
+    if (ac.includes('pompadour')) { hairP.push({ g: gSphere(1, 20, 12, 0, TAU, 0, 1.3), t: [0, hc + .02, -.006], s: [hw * 1.06, hh * .6, hw * 1.06 * 1.18], c: h1 }); hairP.push({ g: gBox(hw * 1.5, .09, hw * 1.5), t: [0, hc + hh * .66, -hw * .25], r: [.4, 0, 0], c: shade(h1, 1.1) }); hairP.push({ g: gBox(hw * 1.2, .07, hw * 1.1), t: [0, hc + hh * .8, -hw * .55], r: [.7, 0, 0], c: shade(h1, 1.2) }); }
     if (ac.includes('catears')) for (const sg of [-1, 1]) hairP.push({ g: gCyl(0, .035, .08, 4, 1), t: [sg * hw * .7, hc + hh * .62, .0], r: [0, 0, -sg * .25], c: [.1, .09, .12] });
     if (ac.includes('headband')) hairP.push({ g: gCyl(hw * 1.09, hw * 1.09, .022, 22, 1, true), t: [0, hc + hh * .22, -.004], s: [1, 1, 1.18], c: accC });
     if (ac.includes('flower')) { hairP.push({ g: gSphere(.022, 8, 6), t: [hw * .9, hc + hh * .35, hw * .5], c: accC }); hairP.push({ g: gSphere(.01, 6, 5), t: [hw * .9, hc + hh * .35, hw * .5 + .018], c: [1, .9, .3] }); }
@@ -567,9 +567,9 @@ function drawAvatar(a, opt) {
   if (a.team >= 0) { M4.trs(T, 0, -.09, 0, 0, 0, 0, 1, 1, 1); M4.mul(M, Ar, T); R.draw(AV.bandMesh, M, AV.bandMat[a.team]); }
   // 號碼牌（略向後仰，戴在額頭上）
   if (a.number === '' && !a.fake) return;
-  const sc = (a.plateScale || 1) * (G.bountyId === a ? 1 + Math.min(a.kills - 1, 8) * .14 : 1), k = C.head, eg = G.sk && G.sk.eagle.t > 0 && G.sk.eagle.by;
+  const sc = (a.plateScale || 1) * (G.bountyId === a ? 1 + Math.min(a.kills - 1, 8) * .14 : 1), k = C.head, pl0 = (O.plateLift || 0) * (C.head || 1), eg = G.sk && G.sk.eagle.t > 0 && G.sk.eagle.by;
   if (eg) { const yy = a.y + hipN + chinN + (O.plateY - d.chinY) * k + .12, ps = sc * 2.2; M4.trs(M, a.x, yy, a.z, 0, Math.atan2(eg.x - a.x, eg.z - a.z), 0, .40 * ps * 1.1, .19 * ps * 1.1, 1); R.draw(AV.plateMesh, M, plateMatFor(a)); return; }
-  placeM(M, U, 0, chinN + (O.plateY - d.chinY) * k + .04 * (sc - 1), O.plateZ * k, -.14, 0, .40 * sc * 1.1, .19 * sc * 1.1, 1); R.draw(AV.plateMesh, M, plateMatFor(a));
+  placeM(M, U, 0, chinN + (O.plateY - d.chinY) * k + .04 * (sc - 1) + pl0, O.plateZ * k, -.14, 0, .40 * sc * 1.1, .19 * sc * 1.1, 1); R.draw(AV.plateMesh, M, plateMatFor(a));
 }
 function drawBlob(a, tint) {
   const T = AV.tmp, s = a.blobS || 1.1;

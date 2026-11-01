@@ -151,6 +151,7 @@ body.lay4 #bBack{left:71.4vw;right:auto;top:calc(34vh + 11vh + .6vh);width:6.6vw
 .cshd{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}.csview{display:flex;gap:6px}.csview button{font:700 12.5px var(--font);color:#fff;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.4);border-radius:999px;padding:4px 12px;cursor:pointer}.csview button.on{background:#e0262f;border-color:#fff;box-shadow:0 0 8px rgba(224,38,47,.7)}
 #voiceBar{position:absolute;left:50%;bottom:26%;transform:translateX(-50%);background:rgba(30,10,60,.8);border:2px solid #ff4fa3;color:#fff;border-radius:999px;padding:4px 16px;font:700 14px var(--font);z-index:40;pointer-events:none;white-space:nowrap;max-width:80vw;overflow:hidden;text-overflow:ellipsis}#voiceBar b{color:#ffd24a;letter-spacing:.1em}
 .card.dis{opacity:.4;filter:grayscale(1);pointer-events:none}.card small.nov{display:block;font-size:10px;font-weight:400;color:#ffb3b3}
+.card .pm{display:none;position:absolute;left:5px;top:4px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.55);border:1.5px solid rgba(255,255,255,.7);align-items:center;justify-content:center;font:800 16px/1 Arial;color:#fff;z-index:2}.card.on .pm{display:flex}.card .pk{font-size:16px}.card.fav::after{content:'⭐';position:absolute;right:6px;bottom:3px;font-size:12px}.favhint{grid-column:1/-1;font-size:12px;opacity:.75;padding:4px 6px}
 .cshint{font-size:12px;opacity:.85;margin:4px 0 6px;min-height:16px}.card{position:relative}.card .pk{position:absolute;right:6px;top:4px;font:800 15px var(--font);color:#ffd24a;text-shadow:0 0 3px #000,0 0 3px #000}#csOk.dis{opacity:.4;filter:grayscale(1);pointer-events:none}
 #waitDlg{position:absolute;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(8,8,16,.7)}#waitDlg .wbox{background:rgba(30,32,52,.96);border:2px solid rgba(255,255,255,.5);border-radius:16px;padding:20px 34px;font:700 20px var(--font);color:#fff}.dots i{font-style:normal;animation:dotB 1.2s infinite;display:inline-block}.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}@keyframes dotB{0%,60%,100%{opacity:.15;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
 .btn.locked{opacity:.55;filter:grayscale(.8);cursor:not-allowed}body.doll #typed{color:#ff1a30;background:#000;border-radius:10px;padding:2px 14px;text-shadow:0 0 8px #ff1a30}
@@ -507,5 +508,6 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 <script>
 /*GAMEJS*/
 </script>
+<div id="updBar" style="display:none;position:fixed;left:50%;top:6px;transform:translateX(-50%);z-index:99999;background:#ffd24a;color:#000;font:700 13px sans-serif;padding:6px 12px;border-radius:8px" onclick="location.reload()"></div>
 </body>
 </html>
