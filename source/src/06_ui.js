@@ -101,6 +101,10 @@ const UI = {
     if (p.cloak) add('🐱', 5 - p.cloakE); else if (c && SKILL_OF[p.av.outfitIdx] === 'lydia' && cd > 15) add('🐱', cd - 15);
     add('🐵', p.wkT || 0);
     if (p.chant) add('🔮', p.chant.t);
+    add('☯️', p.wdT > 0 ? p.wdT : (c && SKILL_OF[p.av.outfitIdx] === 'ward' && cd > 10 ? cd - 10 : 0));
+    if (K) { if (K.beacon.by === p) add('🔴', K.beacon.t); if (K.guard.by === p) add('🤝', K.guard.t); for (const z of G.zones) if (z.by === p) add('❄️', z.t); }
+    add('🥁', p.drumT > 0 && !c ? p.drumT : (c && SKILL_OF[p.av.outfitIdx] === 'drum' && cd > 7 ? cd - 7 : 0)); add('♾️', p.freeEn || 0);
+    if (isOut(p, 34) && !p.amulet && p.alive) add('🧿', c ? p.amRem : 30 - (p.amT || 0));
     if (K) { add('🕊️', K.ban.t); add('🎞️', K.neg.t); if (K.gis.by === p) add('💖', K.gis.t); }
     if (c && SKILL_OF[p.av.outfitIdx] === 'gis' && cd > 45) add('💖', cd - 45);
     this.skPills = L;
@@ -263,7 +267,7 @@ const keys = {};
 const Input = {
   joy: { id: null, ox: 0, oy: 0 }, look: { id: null, lx: 0, ly: 0 }, binHold: false,
   init() {
-    const lookScale = () => (R.cam.fov / 1.28), sensNow = () => (G.bino ? 1.7 : S.sens); // 開望遠鏡時靈敏度 1.70
+    const lookScale = () => (R.cam.fov / 1.28), sensNow = () => ((G.player && G.player.wdHit) ? .2 : G.bino ? 1.7 : S.sens); // 開望遠鏡時靈敏度 1.70
     window.addEventListener('keydown', e => {
       if (e.repeat && e.code !== 'Backspace') { if (e.code === 'Tab' || e.code === 'Space') e.preventDefault(); return; }
       if (Device.auto && S.input === 'auto' && performance.now() - Device.lastTouch > 3000 && /^(Key|Digit|Arrow|Space|Shift|Tab)/.test(e.code)) { Device.auto = false; Device.update(); }
