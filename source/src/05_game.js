@@ -474,7 +474,7 @@ function eliminate(k, v) {
   if (!v.alive || v.protect > 0) return;
   v.alive = false; v.deaths++; v.deadT = 0; v.respawnT = 3.2; v.killedBy = k; v.typing = null; v.lure = null;
   if (G.mode === 'arena' && (v.isPlayer || v.remote)) v.respawnT = 10 + 2 * (Math.max(1, G.arena ? G.arena.stage : 1) - 1);
-  if (G.mode === 'kof') { v.kout++; v.kleft = v.kleft.filter(i => i !== v.kcur); v.respawnT = 1e9; if (v.kout < 5) { v.kw = 10; v.kbot = rand(2.5, 4.5); } }
+  if (G.mode === 'kof') { v.kout++; v.kleft = v.kleft.filter(i => i !== v.kcur); v.respawnT = 1e9; if (v.kout < 5) { v.kw = (v.isPlayer || v.remote) ? 9999 : 10; v.kbot = rand(2.5, 4.5); } }
   if (skOn() && k !== v) {
     if (isOut(k, 18) && (k.skCd || 0) > 0) { k.skCd = 0; skMsg(k, '擊殺成功，【衝鋒陷陣】立即刷新！'); }
     if (isOut(k, 19)) { if (k.wkT > 0) { k.wkT = 6; } else if (!k.wkPre && (k.skCd || 0) <= 0) { k.wkPre = .3; puffFx(k); } }
@@ -806,7 +806,7 @@ function kofTick(dt) {
   if (G.kofT > 0) { const p0 = G.kofT; G.kofT -= dt; if (p0 > 1 && G.kofT <= 1) Sfx.bell(); if (G.kofT <= 0) { G.kofT = 0; G.kofCd = false; } }
   for (const a of G.actors) {
     if (a.kfz > 0 && (a.isPlayer || a.remote)) a.kfz -= dt;
-    if (a.alive || !(a.kw > 0)) continue; a.kw -= dt;
+    if (a.alive || !(a.kw > 0)) continue; if (a.isPlayer || a.remote) continue; a.kw -= dt;
     if (!a.isPlayer && !a.remote) { a.kbot = (a.kbot || 0) - dt; if (a.kbot <= 0) { kofPick(a, pick(a.kleft)); continue; } }
     if (a.kw <= 0) kofPick(a, pick(a.kleft));
   }

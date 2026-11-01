@@ -143,7 +143,7 @@ function hostStart() {
   NET.phase = 'pick'; NET.pid = (Date.now() % 900000) + 1; NET.pickLeft = 40; NET.pickIn = {}; NET.hostPick = null; NET.pickMode = S.mode; const kof = S.mode === 'kof';
   go(() => {
     $('mp').classList.add('hidden');
-    openPick({ need: kof ? 5 : 1, secs: 40, evIco: '🧩', title: kof ? '選擇 5 位出賽英雄（車輪戰）' : '選擇英雄', okText: '確認', back: null, onDone: (list, wasRand, ex) => { NET.hostPick = list; NET.hostRand = ex; S.outfit = list[0]; if (!kof) S.pref = ex ? 'rand' : list[0]; saveS(); if (!hostPickReady()) showWait(true); } });
+    openPick({ need: kof ? 5 : 1, secs: 0, evIco: '🧩', title: kof ? '選擇 5 位出賽英雄（車輪戰）' : '選擇英雄', okText: '確認', back: null, onDone: (list, wasRand, ex) => { NET.hostPick = list; NET.hostRand = ex; S.outfit = list[0]; if (!kof) S.pref = ex ? 'rand' : list[0]; saveS(); if (!hostPickReady()) showWait(true); } });
   });
 }
 function hostPickReady() { return !!NET.hostPick && NET.ro.every(r => NET.pickIn[r[0]]); }
@@ -179,7 +179,7 @@ function hostReadPeers(dt) {
   if (NET.phase === 'pick') {
     const ids = new Set(ps.map(p => p.peer)); NET.ro = NET.ro.filter(r => ids.has(r[0]));
     for (const r of NET.ro) { const p = ps.find(x => x.peer === r[0]); if (p && p.st.pk === NET.pid && Array.isArray(p.st.pr)) NET.pickIn[r[0]] = p.st.pr.map(v => clamp(v | 0, 0, OUTFITS.length - 1)); }
-    NET.pickLeft -= dt; if (hostPickReady() || NET.pickLeft <= -1.5) hostLaunch(); return;
+    NET.pickLeft -= dt; if (hostPickReady()) hostLaunch(); return;
   }
   for (const a of G.actors) {
     if (!a.remote) continue; const p = ps.find(x => x.peer === a.peer);
@@ -266,7 +266,7 @@ function clientPoll(dt) {
   if (st.ph === 'lobby') { NET.waiting = false; if (NET.pickId) { NET.pickId = NET.pkId = NET.pkList = null; closePick(); showLobby(); } if (NET.curG) { NET.dismissedG = null; clientToLobby(true); } return; }
   if (st.ph === 'pick') {
     if (NET.pickId !== st.pid) { NET.pickId = st.pid; NET.pkId = null; NET.pkList = null; const need = st.pn || 1;
-      openPick({ need, secs: 40, evIco: '🧩', title: need > 1 ? '選擇 5 位出賽英雄（車輪戰）' : '選擇英雄', okText: '確認', back: null, onDone: (list, wasRand, ex) => { NET.pkId = st.pid; NET.pkList = list; S.outfit = list[0]; showWait(true); } }); }
+      openPick({ need, secs: 0, evIco: '🧩', title: need > 1 ? '選擇 5 位出賽英雄（車輪戰）' : '選擇英雄', okText: '確認', back: null, onDone: (list, wasRand, ex) => { NET.pkId = st.pid; NET.pkList = list; S.outfit = list[0]; showWait(true); } }); }
     return;
   }
   const s = st.setup; if (!s) return;
