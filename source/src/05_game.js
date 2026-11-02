@@ -12,7 +12,7 @@ const MODES = {
   kof: { name: 'KOF大賽', sub: '五人車輪戰・1 對 1', desc: '雙方各選 5 位英雄以車輪戰一對一單挑，倒下後再選下一位出戰，先耗盡 5 位英雄者落敗。僅限單人（對電腦）或 2 位玩家。', time: 0, limit: 0, demo: false, short: '五人車輪戰，先用完 5 位英雄者落敗' },
   ctf: { name: '奪旗', sub: '搶旗帶回基地', desc: '搶走敵方旗幟帶回己方基地得分，先得 3 分獲勝', time: 480, limit: 3, short: '搶走敵方旗幟帶回己方基地，先得 3 分獲勝' }
 };
-const ITEMS = { cam: { ico: '📷', name: '相機' }, quake: { ico: '🌋', name: '地牛控制器' }, scope: { ico: '🔍', name: '偵查鏡' }, fake: { ico: '🎫', name: '假號碼牌' }, spring: { ico: '⛲', name: '神仙泉水' } };
+const ITEMS = { cam: { ico: '📷', name: '相機' }, quake: { ico: '🌋', name: '地牛控制器' }, scope: { ico: '🔍', name: '偵查鏡' }, fake: { ico: '🎫', name: '假號碼牌' }, spring: { ico: '⛲', name: '神仙泉水' }, poker: { ico: '🃏', name: '賭一把撲克' } };
 const DIFF = [{ base: 1.9, type: 1.5, name: '輕鬆', desc: '電腦讀碼慢、出手遲鈍，適合新手練習' }, { base: 1.25, type: 1.0, name: '普通', desc: '電腦速度與反應適中，標準對戰' }, { base: .85, type: .7, name: '困難', desc: '電腦讀碼快、輸入迅速，考驗反應力' }, { base: 1.25, type: 1.0, name: '干擾者', troll: true, desc: '機器人不殺人，只四處亂跑丟道具搗亂' }];
 
 const G = {
@@ -87,11 +87,11 @@ function spawnAll() {
   for (let i = 0; i < n; i++) spawnActor(A[i], [pts[i][0], pts[i][1], yawFor(i)[0], pts[i][2] | 0]);
 }
 /* ---------- 英雄技能 ---------- */
-const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null, 'steal', 'dack', 'nox', 'charge', null, null, 'rel', 'revert', 'gis', null, 'neg', 'quick', 'ange', null, 'peace', null, null, 'ward', null, null, 'frost', 'beacon', 'drum', 'guard', 'vocal'];
-const PASSIVE_IDX = [3, 5, 8, 11, 12, 13, 19, 20, 24, 28, 30, 31, 33, 34];
+const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null, 'steal', 'dack', 'nox', 'charge', null, null, 'rel', 'revert', 'gis', null, 'neg', 'quick', 'ange', null, 'peace', null, null, 'ward', null, null, 'frost', 'beacon', 'drum', 'guard', 'vocal', null, null, null, null];
+const PASSIVE_IDX = [3, 5, 8, 11, 12, 13, 19, 20, 24, 28, 30, 31, 33, 34, 40, 41];
 const GKEY_HEROES = [18, 26, 27]; // 沒有 G 道具格、G 鍵改為技能鍵的英雄
-const HERO_CLASSES = [['先手型', '#ff9a3c', [39, 1, 11, 18, 24, 16, 17, 30, 31, 34]], ['輔助型', '#4fd38a', [29, 26, 27, 32, 33, 35, 36, 37, 38]], ['偽裝型', '#b48cff', [25, 21, 4, 22]], ['突進型', '#ff5a5a', [9, 19, 8]], ['把戲型', '#ffd24a', [0, 2, 6, 10, 15, 20]], ['進攻型', '#4fb0ff', [7, 23, 12, 5, 3, 13, 28]]]; // 英雄分類
-const HERO_TIERS = [['S 級', '#ff4d6d', [15, 39]], ['A 級', '#ffb020', [18, 17, 4, 21, 0, 6, 10, 7, 23, 28]], ['B 級', '#4fb0ff', [16, 29, 26, 27, 32, 35, 36, 25, 9, 19, 8, 2, 12, 13]], ['C 級', '#9aa3b2', [1, 11, 24, 30, 31, 34, 33, 37, 38, 22, 20, 5, 3]]]; // 英雄等級
+const HERO_CLASSES = [['先手型', '#ff9a3c', [39, 1, 11, 18, 24, 16, 17, 30, 31, 34, 40, 42, 43]], ['輔助型', '#4fd38a', [29, 26, 27, 32, 33, 35, 36, 37, 38, 41]], ['偽裝型', '#b48cff', [25, 21, 4, 22]], ['突進型', '#ff5a5a', [9, 19, 8]], ['把戲型', '#ffd24a', [0, 2, 6, 10, 15, 20]], ['進攻型', '#4fb0ff', [7, 23, 12, 5, 3, 13, 28]]]; // 英雄分類
+const HERO_TIERS = [['S 級', '#ff4d6d', [15, 39]], ['A 級', '#ffb020', [18, 17, 4, 21, 0, 6, 10, 7, 23, 28, 42, 43]], ['B 級', '#4fb0ff', [16, 29, 26, 27, 32, 35, 36, 25, 9, 19, 8, 2, 12, 13, 40, 41]], ['C 級', '#9aa3b2', [1, 11, 24, 30, 31, 34, 33, 37, 38, 22, 20, 5, 3]]]; // 英雄等級
 const CHANT = { revert: .5, gis: 1, neg: 1.5 }; // 吟唱秒數
 const isOut = (a, i) => skOn() && a.av && (a.av.outfitIdx === i || a.passIdx === i); // 對應 OUTFITS：蘇蘇／艾迪／艾伯特／蘇米(被動)／艾瑞克／麥克(被動)
 const skOn = () => G.skillsOn !== false && !(G.sk && G.sk.ban && G.sk.ban.t > 0); // 停戰宣告期間：全場技能停用
@@ -113,7 +113,8 @@ function skReset() { G.sk = { night: { e: 0, by: null }, quake: { t: 0, by: null
 function cleanse(a, quiet) { a.blind = 0; a.ctrlT = 0; a.redT = 0; a.clrRev = G.sk.rev.id; a.clrScr = G.sk.scr.id; a.clrInk = G.sk.ink.id; a.clrRel = G.sk.rel.id; if (quiet) { if (a.isPlayer) { G.flashT = 0; G.freezeT = 0; G.lock = 0; } return; } a.cleanFx = .7; if (a.isPlayer) { G.flashT = 0; G.freezeT = 0; G.lock = 0; UI.cleanse(); } }
 function ericHit(p, code) { // 艾瑞克的偽裝號碼被輸入：立即冷卻；若輸入者輸的是自己頭上的號碼則淘汰（不計擊殺／積分）
   const e = G.actors.find(o => o.alive && o !== p && o.fake === code && o.fakeOf); if (!e) return false;
-  uncloak(e, true); if (p.number !== code || p.protect > 0 || immune(p)) return false;
+  uncloak(e, true); { const kd = kenKind(p); if (kd === 'asc' || kd === 'desc') { notify(p, '偽裝陷阱 · 免疫', p.number === code ? e.name + ' 偽裝成了你頭上的號碼，你輸入的正是它。因【序列奇蹟】的規則，你不會因此陣亡，對方的偽裝也被識破了。' : '你輸入的是 ' + e.name + ' 偽裝後的號碼，並非真正號碼。因【序列奇蹟】的規則，這次輸入不會受到任何懲罰。', 0); return true; } }
+  if (p.number !== code || p.protect > 0 || immune(p)) return false;
   p.streak = 0; const m = p.name + ' 中了艾瑞克的陷阱，輸入了自己的號碼！'; UI.msg(m, p.isPlayer ? 'bad' : 'item'); netMsg(m, 'item'); eliminate(p, p); return true;
 }
 function skMsg(a, t) { const m = a.name + ' ' + t; UI.msg(m, 'item'); netMsg(m, 'item'); }
@@ -180,8 +181,70 @@ function endAllSkills() {
   for (const a of G.actors) { a.dackE = -1; a.cloak = false; if (a.fake && a.fakeOf) uncloak(a, false); a.shieldT = 0; a.wkT = 0; a.wkPre = 0; a.chg = null; a.chant = null; a.ctrlT = 0; a.frz = 0; a.imm = 0; a.rayJ = false; a.armed = false; a.stolen = null; a.wdT = 0; a.wd = false; a.drumT = 0; }
   K.beacon.t = 0; K.guard.t = 0; G.zones = [];
 }
-function killByCode(att, code) { // 輸入一組號碼，可同時擊殺所有顯示同號的敵方（連號甜心）
-  const ts = G.actors.filter(o => o !== att && o.alive && o.number && o.number === code && enemyOf(att, o) && o.protect <= 0); for (const o of ts) eliminate(att, o); return ts.length;
+function killByCode(att, code, only) { // 輸入一組號碼，可同時擊殺所有顯示同號的敵方（連號甜心）
+  const ts = only || G.actors.filter(o => o !== att && o.alive && o.number && o.number === code && enemyOf(att, o) && o.protect <= 0), ks = G.killSeq || 0;
+  for (const o of ts) eliminate(att, o); if ((G.killSeq || 0) > ks) kenBonus(att, code); return ts.length;
+}
+/* ===== 肯尼系列：序列奇蹟／梅開二度／梅開三度 ===== */
+const WRONG_STUN = 1.5; // 輸入錯誤的定身秒數
+const kenKind = a => !a || !a.av ? null : isOut(a, 40) ? 'asc' : isOut(a, 41) ? 'desc' : isOut(a, 42) ? 'two' : isOut(a, 43) ? 'three' : null;
+const inLen = p => { const k = kenKind(p); return k === 'two' ? 2 : k === 'three' ? 3 : (G.codeLen || 0); }; // 該玩家的輸入欄位數（0＝大亂鬥不定長）
+const digSort = (n, dir) => { const a = String(n).split('').sort(); if (dir === 'desc') a.reverse(); return a.join(''); };
+const subSeq = (c, n) => { let j = 0; for (const ch of n) if (j < c.length && ch === c[j]) j++; return j === c.length; };
+const subBag = (c, n) => { const m = {}; for (const ch of n) m[ch] = (m[ch] || 0) + 1; for (const ch of c) { if (!m[ch]) return false; m[ch]--; } return true; };
+function stunSelf(sec) { const p = G.player; if (!p) return; p.streak = 0; p.cloak = false; Sfx.wrong(); G.lock = sec; G.freezeT = sec; p.redT = sec; UI.shake(); UI.stunFx(sec); setTimeout(() => { G.typed = ''; UI.dirty = true; }, 350); }
+function notify(a, title, text, stun) { // 對指定玩家跳出提示框（本機直接顯示，連線訪客經快照傳遞）
+  if (a.isPlayer) { UI.popup(title, text); if (stun) stunSelf(stun); }
+  else if (a.remote) { a.ntf = { id: (a.ntf ? a.ntf.id : 0) + 1, t: title + '|' + text, s: stun || 0 }; if (stun) { a.redT = stun; a.streak = 0; a.cloak = false; } }
+}
+function kenDie(a, why) {
+  const m = a.name + ' 擊殺失敗而陣亡（' + why + '）'; netMsg(m, 'item'); if (!a.isPlayer) UI.msg(m, 'item');
+  notify(a, '擊殺失敗 · 直接陣亡', why, 0); a.protect = 0; eliminate(a, a);
+}
+function kenBonus(att, code) {
+  if (!att || !att.alive) return;
+  if (isOut(att, 40) && code === digSort(code, 'asc')) { att.freeEn = 15; skMsg(att, '【序列奇蹟】依序列擊殺成功，15 秒內跑步與望遠鏡不消耗能量'); }
+  if (isOut(att, 41) && code === digSort(code, 'desc')) {
+    let n = 0;
+    for (const o of G.actors) {
+      if (o !== att && enemyOf(att, o)) continue; const sl = o.isPlayer ? G.slots : o.slots; if (!sl) continue;
+      let i = sl.findIndex(x => x && x.type === 'scope');
+      if (i >= 0) sl[i].n = Math.max(sl[i].n, 3);
+      else { i = !sl[0] ? 0 : (!sl[1] && !sl.noG) ? 1 : (sl.noG ? 0 : (Math.random() < .5 ? 0 : 1)); sl[i] = { type: 'scope', n: 3 }; }
+      n++;
+    }
+    UI.dirty = true; skMsg(att, '【序列奇蹟】依序列擊殺成功，全隊 ' + n + ' 人各獲得 3 個偵查鏡');
+  }
+}
+function pokerTrap(a, code) { // 輸入了「賭一把撲克」的假號碼：直接陣亡，死亡冷卻延長為 5 秒
+  const f = a.pkFake; if (!f || f.num !== code || G.time > f.t) return false; a.pkFake = null;
+  notify(a, '擊殺錯誤懲罰', '你輸入了「賭一把撲克」中未命中的假號碼。對不存在的目標開火屬於嚴重誤判，需付出代價：當場陣亡，且死亡冷卻延長為 5 秒。', 0);
+  const m = a.name + ' 輸入了撲克假號碼而陣亡'; netMsg(m, 'item'); if (!a.isPlayer) UI.msg(m, 'item');
+  a.protect = 0; eliminate(a, a); a.respawnT = Math.max(a.respawnT, 5); return true;
+}
+function pokerCast(a) {
+  const en = G.actors.filter(o => o !== a && o.alive && o.number && enemyOf(a, o)); let num; a.pkFake = null;
+  if (en.length && Math.random() < .65) num = pick(en).number; // 取真實號碼（不受偽裝／變造影響）
+  else { const L = G.codeLen || randi(3, 6); do { num = String(randi(Math.pow(10, L - 1), Math.pow(10, L) - 1)); } while (G.actors.some(o => o.number === num || o.fake === num)); a.pkFake = { num, t: G.time + 25 }; }
+  if (a.isPlayer) { UI.poker(num); G.pkCode = num; } else if (a.remote) a.ntf = { id: (a.ntf ? a.ntf.id : 0) + 1, t: '#PK' + num, s: 0 };
+}
+function kenSubmit(a, code) { // 肯尼系列的輸入判定（本機／主機）。呼叫前已處理過艾瑞克陷阱與撲克假號碼
+  const kd = kenKind(a); if (!kd) return;
+  const mine = G.actors.filter(o => o !== a && o.alive && o.number && enemyOf(a, o)), dist = o => Math.hypot(o.x - a.x, o.z - a.z), near = l => l.slice().sort((x, y) => dist(x) - dist(y))[0];
+  if (kd === 'two' || kd === 'three') {
+    const fn = kd === 'two' ? subSeq : subBag, cs = mine.filter(o => fn(code, o.number)); let why = '';
+    if (!cs.length) { const dead = G.actors.find(o => o !== a && !o.alive && o.number && enemyOf(a, o) && fn(code, o.number)); why = dead ? '符合這組數字的玩家「' + dead.name + '」已經被擊殺了' : '場上沒有任何敵方號碼符合你輸入的這 ' + code.length + ' 碼（可能輸入有誤，或目標號碼已更新）'; }
+    else { const t = near(cs), ks = G.killSeq || 0; eliminate(a, t); if ((G.killSeq || 0) === ks) why = '鎖定的目標「' + t.name + '」未被擊殺：' + (G.elimFail || '攻擊未生效'); }
+    if (why) kenDie(a, why); return;
+  }
+  let hit = mine.filter(o => o.number === code);
+  if (!hit.length) { const al = mine.filter(o => digSort(o.number, kd) === code); if (al.length) hit = [near(al)]; }
+  if (hit.length) { const ok = hit.filter(o => o.protect <= 0); if (!ok.length) { notify(a, '無法擊殺', '對方仍在重生保護中，這次輸入沒有生效。', 0); return; } killByCode(a, code, ok); return; }
+  if (G.actors.some(o => o !== a && o.alive && o.number === code && !enemyOf(a, o))) { notify(a, '友軍號碼', '這是隊友的號碼，沒有造成任何影響。', 0); return; }
+  const fh = G.actors.find(o => o !== a && o.alive && o.fake === code);
+  if (fh) { notify(a, '偽裝號碼 · 免受懲罰', '你輸入的是 ' + fh.name + ' 頭上「偽裝或變造後的號碼」，並非他真正的號碼，所以沒有擊殺成功。因【序列奇蹟】的規則，這次輸入不會受到任何懲罰。', 0); return; }
+  if (isOut(a, 24)) { notify(a, '藐視罰則', '輸錯號碼，不受懲罰。', 0); return; }
+  a.streak = 0; a.cloak = false; notify(a, '號碼錯誤', '場上沒有符合的號碼（序列奇蹟只接受原號碼或其' + (kd === 'asc' ? '由小到大' : '由大到小') + '排序）。定身 ' + WRONG_STUN + ' 秒。', WRONG_STUN);
 }
 function castSkill(a) {
   if (!skOn() || !a || !a.alive || G.state !== 'playing' || G.countdown > 0) return false;
@@ -372,11 +435,11 @@ function updateGrenades(dt) {
   }
   for (let i = G.fx.length - 1; i >= 0; i--) { G.fx[i].t += dt; if (G.fx[i].t > G.fx[i].d) G.fx.splice(i, 1); }
 }
-function randomItem() { const r = Math.random(); return r < .3 ? 'cam' : r < .5 ? 'quake' : r < .7 ? 'scope' : r < .85 ? 'fake' : 'spring'; }
+function randomItem() { const r = Math.random(); return r < .27 ? 'cam' : r < .45 ? 'quake' : r < .63 ? 'scope' : r < .77 ? 'fake' : r < .89 ? 'spring' : 'poker'; }
 function giveItem(i, type) { G.slots[i] = { type, n: type === 'cam' ? 4 : 1 }; }
-function grantItem(sl, force) {
-  const ty = force || randomItem(), i0 = sl.findIndex(x => x && x.type === ty);
-  if (i0 >= 0) { sl[i0].n = Math.min(ty === 'cam' ? 9 : 3, sl[i0].n + (ty === 'cam' ? 3 : 1)); return { i: i0, ty }; }
+function grantItem(sl, force, noPoker) {
+  let ty = force || randomItem(); if (noPoker && ty === 'poker') ty = 'spring'; const i0 = sl.findIndex(x => x && x.type === ty);
+  if (i0 >= 0) { sl[i0].n = Math.min(ty === 'cam' ? 9 : ty === 'poker' ? 2 : 3, sl[i0].n + (ty === 'cam' ? 3 : 1)); return { i: i0, ty }; }
   const free = !sl[0] ? 0 : (!sl[1] && !sl.noG) ? 1 : -1; if (free < 0) return null; // 道具欄已滿：不更換
   sl[free] = { type: ty, n: ty === 'cam' ? 4 : 1 }; return { i: free, ty };
 }
@@ -384,7 +447,7 @@ function tryPickup(a) {
   for (const p of G.pickups) {
     if (!p.on) continue; if (Math.abs(p.x - a.x) > 1.5 || Math.abs(p.z - a.z) > 1.5 || Math.abs(p.y - a.y) > 2.2) continue;
     if (a.isPlayer) { if (G.netClient) continue; const r = grantItem(G.slots, isOut(a, 12) && (a.remote ? a.sp > .85 : a.sprinting) ? 'scope' : null); if (!r) continue; Sfx.pick(); UI.msg('獲得 ' + ITEMS[r.ty].name + (G.slots[r.i].n > 1 ? ' ×' + G.slots[r.i].n : ''), 'item'); UI.dirty = true; }
-    else if (a.slots) { if (!grantItem(a.slots, isOut(a, 12) && (a.remote ? a.sp > .85 : a.sprinting) ? 'scope' : null)) continue; }
+    else if (a.slots) { if (!grantItem(a.slots, isOut(a, 12) && (a.remote ? a.sp > .85 : a.sprinting) ? 'scope' : null, !a.remote)) continue; }
     else continue;
     p.on = false; p.t = 18;
   }
@@ -394,6 +457,7 @@ function applyItem(a, type) {
   if (type === 'quake') { G.sk.quake = { t: 2, by: a }; for (const o of G.actors) if (o !== a && o.alive && !o.isPlayer && !o.remote) o.blind = Math.max(o.blind, .8); const m = a.name + ' 啟動了地牛控制器！'; UI.msg(m, 'item'); netMsg(m, 'item'); }
   else if (type === 'fake') { let n, L = G.codeLen || randi(3, 6); do { n = String(randi(Math.pow(10, L - 1), Math.pow(10, L) - 1)); } while (G.actors.some(o => o.number === n)); a.fake = n; a.fakeT = 7; a.fakeOf = null; drawPlate(a); if (a.isPlayer) UI.msg('號碼已偽裝 7 秒', 'item'); }
   else if (type === 'spring') { a.skCd = 0; if (a.isPlayer) UI.msg('神仙泉水：技能冷卻已刷新！', 'item'); }
+  else if (type === 'poker') pokerCast(a);
 }
 function felixShot(p) { // 致命相機：照片中能清楚讀到完整號碼的最近對手，1 秒後自動輸入擊殺
   const c = R.cam, asp = c.asp || 1.8, fw = G.binK > .5 ? .8 : .42, th = Math.tan(c.fov / 2), hx = th * asp * fw, hy = th * fw * .75 * asp;
@@ -469,11 +533,12 @@ function updateFlags(dt) {
 /* ---------- 淘汰 / 勝負 ---------- */
 function eliminate(k, v) {
   { const gd = G.sk.guard; if (gd.t > 0 && gd.by && gd.by.alive && k !== v && v !== gd.by && skOn() && !enemyOf(gd.by, v) && enemyOf(gd.by, k)) { const m = gd.by.name + ' 替 ' + v.name + ' 承擔了攻擊！'; UI.msg(m, 'item'); netMsg(m, 'item'); v = gd.by; } }
-  if (k !== v && v.alive && immune(v)) { const m = v.name + ' 的淨化之光無效化了 ' + k.name + ' 的攻擊！'; UI.msg(m, k.isPlayer ? 'bad' : 'item'); netMsg(m, 'item'); if (k.isPlayer) Sfx.wrong(); return; }
-  if (k !== v && v.alive && skOn() && isOut(v, 34) && v.amulet) { v.amulet = false; v.amT = 0; blockHit(k, v, '號碼護符'); return; }
-  if (k !== v && v.alive && v.shieldT > 0) { blockHit(k, v); return; }
-  if (!v.alive || v.protect > 0) return;
-  v.alive = false; v.deaths++; v.deadT = 0; v.respawnT = 3.2; v.killedBy = k; v.typing = null; v.lure = null;
+  G.elimFail = '';
+  if (k !== v && v.alive && immune(v)) { G.elimFail = '對方的「淨化之光」無效化了攻擊'; const m = v.name + ' 的淨化之光無效化了 ' + k.name + ' 的攻擊！'; UI.msg(m, k.isPlayer ? 'bad' : 'item'); netMsg(m, 'item'); if (k.isPlayer) Sfx.wrong(); return; }
+  if (k !== v && v.alive && skOn() && isOut(v, 34) && v.amulet) { G.elimFail = '對方的「號碼護符」抵擋了攻擊'; v.amulet = false; v.amT = 0; blockHit(k, v, '號碼護符'); return; }
+  if (k !== v && v.alive && v.shieldT > 0) { G.elimFail = '對方的護盾擋下了攻擊'; blockHit(k, v); return; }
+  if (!v.alive || v.protect > 0) { G.elimFail = !v.alive ? '對方已被其他人擊殺' : '對方仍在重生保護中'; return; }
+  G.killSeq = (G.killSeq || 0) + 1; v.alive = false; v.deaths++; v.deadT = 0; v.respawnT = 3.2; v.killedBy = k; v.typing = null; v.lure = null;
   if (G.mode === 'arena' && (v.isPlayer || v.remote)) v.respawnT = 10 + 2 * (Math.max(1, G.arena ? G.arena.stage : 1) - 1);
   if (G.mode === 'kof') { v.kout++; v.kleft = v.kleft.filter(i => i !== v.kcur); v.respawnT = 1e9; if (v.kout < 5) { v.kw = (v.isPlayer || v.remote) ? 9999 : 10; v.kbot = rand(2.5, 4.5); } }
   if (skOn() && k !== v) {
@@ -526,7 +591,7 @@ function typeDigit(d) {
   if (G.state !== 'playing' || G.countdown > 0 || !G.player || !G.player.alive || G.lock > 0 || G.player.ctrlT > 0) return;
   if (!Device.mobile && scrPhase2(G.player) && G.keyMap) d = G.keyMap[d] || d;
   if (!Device.mobile && relPhase2(G.player)) d = String(9 - (+d));
-  const mix = !G.codeLen, L = G.codeLen || 6; if (G.typed.length >= L) return;
+  const LN = inLen(G.player), mix = !LN, L = LN || 6; if (G.typed.length >= L) return;
   if (G.player.wdHit) { Sfx.key(); setTimeout(() => { if (G.player && G.player.alive && G.state === 'playing' && G.typed.length < L) { G.typed += d; UI.dirty = true; Sfx.key(); if (S.auto || Device.mobile) { const t0 = G.typed; if (!mix ? t0.length === L : (t0.length >= 3 && (t0.length >= 6 || G.actors.some(a => a.alive && a !== G.player && a.number === t0)))) submitNumber(); } } }, 800); return; }
   G.typed += d; Sfx.key(); UI.dirty = true;
   if (mix) { if (G.typed.length >= 3 && (G.typed.length >= 6 || G.actors.some(a => a.alive && a !== G.player && a.number === G.typed)) && (S.auto || Device.mobile)) submitNumber(); }
@@ -535,8 +600,10 @@ function typeDigit(d) {
 function backspace() { if (G.state !== 'playing' || G.lock > 0) return; if (G.typed.length) { G.typed = G.typed.slice(0, -1); Sfx.del(); UI.dirty = true; } }
 function submitNumber() {
   const p = G.player; if (G.state !== 'playing' || G.countdown > 0 || !p || !p.alive || G.lock > 0 || p.ctrlT > 0) return;
-  if (G.typed.length < (G.codeLen || 3)) { UI.msg('請輸入完整的 ' + (G.codeLen || 3) + ' 位以上數字', 'bad'); return; }
-  const code = G.typed; if (!G.netClient && ericHit(p, code)) { G.typed = ''; UI.dirty = true; return; }
+  if (G.typed.length < (inLen(p) || 3)) { UI.msg('請輸入完整的 ' + (inLen(p) || 3) + ' 位以上數字', 'bad'); return; }
+  const code = G.typed; if (G.netClient && kenKind(p)) { netAct(['kn', code]); G.typed = ''; UI.dirty = true; return; }
+  if (!G.netClient && (pokerTrap(p, code) || ericHit(p, code))) { G.typed = ''; UI.dirty = true; return; }
+  if (!G.netClient && kenKind(p)) { G.typed = ''; UI.dirty = true; kenSubmit(p, code); return; }
   const ts = G.actors.filter(a => a.alive && a.number === code && a !== p && a.number !== ''), en = ts.filter(a => isDM() || a.team !== p.team), t = ts[0];
   if (en.length) {
     if (en.every(a => a.protect > 0)) { UI.msg('對方有重生保護', 'bad'); G.typed = ''; UI.dirty = true; return; }
@@ -544,7 +611,7 @@ function submitNumber() {
     G.typed = ''; UI.dirty = true; const n = killByCode(p, code); if (n > 1) UI.msg('一次擊殺 ' + n + ' 人！', 'good');
   } else if (t) { UI.msg('這是隊友的號碼！', 'bad'); Sfx.wrong(); G.typed = ''; UI.dirty = true; UI.shake(); }
   else if (isOut(p, 24)) { UI.msg('藐視罰則：輸錯號碼，不受懲罰', 'item'); G.typed = ''; UI.dirty = true; }
-  else { if (G.netClient && code === p.number) netAct(['k', -1, code]); p.streak = 0; p.cloak = false; Sfx.wrong(); UI.msg('號碼錯誤！定身 2 秒', 'bad'); G.lock = 2; G.freezeT = 2; p.redT = 2; if (G.netClient) netAct(['w']); UI.shake(); UI.stunFx(2); setTimeout(() => { G.typed = ''; UI.dirty = true; }, 350); }
+  else { if (G.netClient && (code === p.number || code === G.pkCode)) netAct(['k', -1, code]); p.streak = 0; p.cloak = false; Sfx.wrong(); UI.msg('號碼錯誤！定身 1.5 秒', 'bad'); G.lock = WRONG_STUN; G.freezeT = WRONG_STUN; p.redT = WRONG_STUN; if (G.netClient) netAct(['w']); UI.shake(); UI.stunFx(WRONG_STUN); setTimeout(() => { G.typed = ''; UI.dirty = true; }, 350); }
 }
 function updatePlayer(dt) {
   const p = G.player;

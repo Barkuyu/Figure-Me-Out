@@ -158,6 +158,8 @@ body.lay4 #numL{left:calc(var(--vw)*22);right:auto}body.lay4 #numR{left:calc(var
 body.lay4 #bBack{left:calc(var(--vw)*71.4);right:auto;top:calc(calc(var(--vh)*34) + calc(var(--vh)*11) + calc(var(--vh)*.6));width:calc(var(--vw)*6.6);height:calc(var(--vh)*11);transform:none;opacity:.85}
 #heroSk{position:absolute;top:84px;left:50%;transform:translateX(-50%);max-width:calc(var(--vw)*40);text-align:center;color:#fff;font:700 11px/1.35 var(--font);text-shadow:0 1px 3px #000,0 0 2px #000;pointer-events:none;opacity:.95;z-index:3}#heroSk small{display:block;font-weight:400;font-size:10px;opacity:.88}body.demo #heroSk{display:none}
 .cshd{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}.csview{display:flex;gap:6px}.csview button{font:700 12.5px var(--font);color:#fff;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.4);border-radius:999px;padding:4px 12px;cursor:pointer}.csview button.on{background:#e0262f;border-color:#fff;box-shadow:0 0 8px rgba(224,38,47,.7)}
+#kPop{position:absolute;left:50%;top:30%;transform:translate(-50%,0);max-width:min(calc(var(--vw)*78),520px);background:rgba(20,14,34,.93);border:2px solid #ffb84a;border-radius:14px;padding:10px 16px;color:#fff;z-index:60;pointer-events:none;text-align:center;box-shadow:0 6px 28px rgba(0,0,0,.55)}#kPop b{display:block;color:#ffb84a;font:800 17px var(--font);margin-bottom:4px}#kPop span{font:600 13px/1.5 var(--font);opacity:.95}#kPop.on{animation:kpIn .25s ease-out}@keyframes kpIn{from{opacity:0;transform:translate(-50%,-14px)}to{opacity:1;transform:translate(-50%,0)}}
+#pokerBox{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(calc(var(--vw)*46),260px);aspect-ratio:5/4;background:linear-gradient(160deg,#fffdf4,#f1e6c8);border:3px solid #1a1a22;border-radius:14px;z-index:55;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(0,0,0,.6);color:#16161e}#pokerBox.off{opacity:.06}#pokerBox strong{font:900 clamp(28px,calc(var(--vw)*7),48px)/1 var(--font);letter-spacing:.12em;color:#c4142b}#pokerBox em{font:800 13px var(--font);font-style:normal;color:#333;margin-bottom:6px}#pokerBox small{font:600 10px var(--font);opacity:.6;margin-top:6px}#pokerBox .pc{position:absolute;font:900 22px/1 serif;font-style:normal}#pokerBox .tl{left:9px;top:5px;color:#16161e}#pokerBox .tr{right:9px;top:5px;color:#c4142b}#pokerBox .bl{left:9px;bottom:5px;color:#c4142b}#pokerBox .br{right:9px;bottom:5px;color:#16161e}
 #voiceBar{position:absolute;left:50%;bottom:26%;transform:translateX(-50%);background:rgba(30,10,60,.8);border:2px solid #ff4fa3;color:#fff;border-radius:999px;padding:4px 16px;font:700 14px var(--font);z-index:40;pointer-events:none;white-space:nowrap;max-width:calc(var(--vw)*80);overflow:hidden;text-overflow:ellipsis}#voiceBar b{color:#ffd24a;letter-spacing:.1em}
 .card.dis{opacity:.4;filter:grayscale(1);pointer-events:none}.card small.nov{display:block;font-size:10px;font-weight:400;color:#ffb3b3}
 .card .pm{display:none;position:absolute;left:5px;top:4px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.55);border:1.5px solid rgba(255,255,255,.7);align-items:center;justify-content:center;font:800 16px/1 Arial;color:#fff;z-index:2}.card.on .pm{display:flex}.card .pk{font-size:16px}.card.fav::after{content:'⭐';position:absolute;right:6px;bottom:3px;font-size:12px}.favhint{grid-column:1/-1;font-size:12px;opacity:.75;padding:4px 6px}
@@ -387,7 +389,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
   <div id="hud" class="hidden">
     <div id="scorebar"><span class="flagic" id="flagR"></span><div class="sc red" id="scR">0</div><span class="sep">-</span><div class="sc blue" id="scB">0</div><span class="flagic" id="flagB"></span></div>
     <div id="timer">5:00</div>
-    <div id="heroSk"></div><div id="voiceBar" class="hidden"></div><div id="arBanner" class="hidden">擂台賽將於10秒後正式開始，請做好準備</div><div id="arBig" class="hidden"></div><div id="kofbar" class="hidden"></div>
+    <div id="kPop" class="hidden"></div><div id="pokerBox" class="hidden"></div><div id="heroSk"></div><div id="voiceBar" class="hidden"></div><div id="arBanner" class="hidden">擂台賽將於10秒後正式開始，請做好準備</div><div id="arBig" class="hidden"></div><div id="kofbar" class="hidden"></div>
     <div id="countdown" class="hidden"><div id="cdTxt"></div><div id="cdNum"></div></div><div id="modeName"></div>
     <div id="killfeed"></div>
     <div id="crosshair"></div>
@@ -422,7 +424,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.0</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.1</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -1973,7 +1975,15 @@ OUTFITS.push(
   { key: 'guardian', label: '旮Guardian', sub: '', skill: { name: '替身契約', desc: '啟動後 6 秒內，我方玩家受到的輸入攻擊改由你承擔；且重生後 20 秒內跑步與望遠鏡不消耗能量。冷卻 15 秒。' }, H: 1.82, skin: '#d8b08a', hipX: 0.105, shX: 0.255, tz: 0.52, hair: '#aab2bd', hair2: '#aab2bd', female: false, gen: { top: '#8a96a6', top2: '#d8212e', pants: '#4a5668', shoe: '#2a2f3a', hair: '#aab2bd', style: 'short', acc: ['plume', 'shield'], accC: '#d8212e' },
     torso: [[.001, -.1], [.22, -.1], [.23, -.02], [.215, .1], [.225, .22], [.26, .36], [.27, .46], [.265, .53], [.19, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'vocal', label: '伏克Vocal', sub: '', skill: { name: '聲波咒術', desc: '按住 R 開啟麥克風，直接念出號碼即自動填入並送出，放開 R 結束並立即送出。冷卻 20 秒。（需裝置支援語音辨識與麥克風授權）' }, H: 1.78, skin: '#e8c4a0', hipX: .098, shX: .235, tz: .54, hair: '#ff4fa3', hair2: '#ff8fc4', female: false, plateLift: .05, gen: { top: '#6a1b9a', top2: '#ffd24a', pants: '#14141c', shoe: '#ffd24a', hair: '#ff4fa3', style: 'bald', acc: ['pompadour', 'mic', 'goldstar'], accC: '#ff4fa3' },
-    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] }
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'kenny', label: '肯尼Kenny M.', sub: '', skill: { name: '序列奇蹟', desc: '【被動】可輸入敵方原號碼，或其「由小到大」重排結果（9291 → 1299）擊殺；依序列擊殺後 15 秒內，跑步與望遠鏡不耗能量。輸入偽裝、變造的號碼不受懲罰，並提示原因。' }, H: 1.76, skin: '#e9c3a2', hipX: .098, shX: .24, tz: .53, hair: '#f2c14e', hair2: '#f2c14e', female: false, gen: { top: '#1e3a5f', top2: '#f2c14e', pants: '#2c3547', shoe: '#f2c14e', hair: '#d9a63a', style: 'short', acc: ['steps', 'bowtie'], accC: '#f2c14e' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'julia', label: '肯尼女士Julia M.', sub: '', skill: { name: '序列奇蹟', desc: '【被動】可輸入敵方原號碼，或其「由大到小」重排結果（9291 → 9921）擊殺；依序列擊殺後，全隊立即獲得 3 個偵查鏡（欄位已滿則隨機替換 F 或 G）。輸入偽裝、變造的號碼不受懲罰，並提示原因。' }, H: 1.68, skin: '#f1cfb4', hipX: .095, shX: .19, tz: .54, hair: '#b8582c', hair2: '#d9743a', female: true, gen: { top: '#1f6f78', top2: '#e8b04a', pants: '#2d2a3d', shoe: '#e8b04a', hair: '#b8582c', style: 'long', acc: ['tiara', 'skirt', 'scarftail'], accC: '#e8b04a', skirtC: '#1f6f78', hemC: '#e8b04a' },
+    torso: [[.001, -.16], [.2, -.16], [.19, -.08], [.16, .05], [.15, .17], [.152, .28], [.17, .38], [.18, .46], [.17, .51], [.12, .545], [.056, .56], [.05, .595], [.001, .595]] },
+  { key: 'kennyjr', label: '肯尼二世Kenny Jr.', sub: '', skill: { name: '梅開二度', desc: '【被動】輸入欄位僅 2 格：只要這兩碼在敵方號碼中依原順序出現（2498 → 24、49、28…）即可擊殺，多人符合取最近者；未能擊殺則直接陣亡，並提示原因。' }, H: 1.52, skin: '#f2d2b6', hipX: .085, shX: .2, tz: .5, hair: '#2a2438', hair2: '#3a3350', female: false, gen: { top: '#d84a7a', top2: '#fff1c9', pants: '#2b2b44', shoe: '#fff1c9', hair: '#2a2438', style: 'bob', acc: ['plum2'], accC: '#ff8fb8' },
+    torso: [[.001, -.1], [.19, -.1], [.195, -.02], [.18, .1], [.185, .22], [.215, .34], [.23, .43], [.225, .49], [.17, .53], [.07, .55], [.056, .58], [.001, .58]] },
+  { key: 'kennysr', label: '肯尼三世Kenny Sr.', sub: '', skill: { name: '梅開三度', desc: '【被動】輸入欄位僅 3 格：只要這三碼是敵方號碼中的任三個數字（不限順序，2498 → 892）即可擊殺，多人符合取最近者；未能擊殺則直接陣亡，並提示原因。' }, H: 1.9, skin: '#d9ad88', hipX: .112, shX: .28, tz: .52, hair: '#f1f1ee', hair2: '#f1f1ee', female: false, gen: { top: '#7a1f1f', top2: '#e0b050', pants: '#3a2a22', shoe: '#e0b050', hair: '#f1f1ee', style: 'bald', acc: ['plum3', 'mustache', 'sidehair', 'cane'], accC: '#ff4f86' },
+    torso: [[.001, -.1], [.235, -.1], [.245, -.02], [.23, .1], [.24, .22], [.28, .36], [.295, .46], [.29, .53], [.2, .57], [.075, .595], [.058, .63], [.001, .63]] }
 );
 const SKINPATCH = [.975, .975];
 
@@ -2218,6 +2228,11 @@ function buildOutfit(i) {
     if (ac.includes('pompadour')) { hairP.push({ g: gSphere(1, 20, 12, 0, TAU, 0, 1.3), t: [0, hc + .02, -.006], s: [hw * 1.06, hh * .6, hw * 1.06 * 1.18], c: h1 }); hairP.push({ g: gBox(hw * 1.5, .09, hw * 1.5), t: [0, hc + hh * .66, -hw * .25], r: [.4, 0, 0], c: shade(h1, 1.1) }); hairP.push({ g: gBox(hw * 1.2, .07, hw * 1.1), t: [0, hc + hh * .8, -hw * .55], r: [.7, 0, 0], c: shade(h1, 1.2) }); }
     if (ac.includes('catears')) for (const sg of [-1, 1]) hairP.push({ g: gCyl(0, .035, .08, 4, 1), t: [sg * hw * .7, hc + hh * .62, .0], r: [0, 0, -sg * .25], c: [.1, .09, .12] });
     if (ac.includes('headband')) hairP.push({ g: gCyl(hw * 1.09, hw * 1.09, .022, 22, 1, true), t: [0, hc + hh * .22, -.004], s: [1, 1, 1.18], c: accC });
+    if (ac.includes('steps')) for (let k = 0; k < 3; k++) hairP.push({ g: gCyl(hw * (.66 - k * .17), hw * (.66 - k * .17), .036, 18, 1), t: [0, hc + hh * .8 + k * .036, -hw * .32], c: k === 1 ? shade(accC, .78) : accC }); // 肯尼：由下往上遞減的三層階梯帽
+    if (ac.includes('tiara')) for (let k = 0; k < 5; k++) { hairP.push({ g: gCyl(0, .019, .145 - k * .027, 5, 1), t: [(k - 2) * hw * .34, hc + hh * .72 + (.145 - k * .027) / 2, -hw * .42], c: accC }); hairP.push({ g: gSphere(.012, 6, 5), t: [(k - 2) * hw * .34, hc + hh * .72 + (.145 - k * .027) + .01, -hw * .42], c: [.5, 1, .9] }); } // 肯尼女士：高度由大到小的五尖冠
+    const plumF = (x, y, z, r) => { for (let q = 0; q < 5; q++) { const a = q * TAU / 5; hairP.push({ g: gSphere(r, 8, 6), t: [x, y + Math.sin(a) * r * 1.5, z + Math.cos(a) * r * 1.5], s: [.7, 1, 1], c: accC }); } hairP.push({ g: gSphere(r * .6, 6, 5), t: [x, y, z], c: [1, .82, .2] }); };
+    if (ac.includes('plum2')) for (const sg of [-1, 1]) plumF(sg * hw * 1.1, hc + hh * .4, hw * .05, .042); // 肯尼二世：雙梅花
+    if (ac.includes('plum3')) { plumF(0, hc + hh * .9, -hw * .5, .04); plumF(-hw * .85, hc + hh * .72, -hw * .45, .037); plumF(hw * .85, hc + hh * .72, -hw * .45, .037); } // 肯尼三世：三朵梅花冠
     if (ac.includes('flower')) { hairP.push({ g: gSphere(.022, 8, 6), t: [hw * .9, hc + hh * .35, hw * .5], c: accC }); hairP.push({ g: gSphere(.01, 6, 5), t: [hw * .9, hc + hh * .35, hw * .5 + .018], c: [1, .9, .3] }); }
   }
   const hairG = mergeGeos(hairP);
@@ -2478,7 +2493,7 @@ const MODES = {
   kof: { name: 'KOF大賽', sub: '五人車輪戰・1 對 1', desc: '雙方各選 5 位英雄以車輪戰一對一單挑，倒下後再選下一位出戰，先耗盡 5 位英雄者落敗。僅限單人（對電腦）或 2 位玩家。', time: 0, limit: 0, demo: false, short: '五人車輪戰，先用完 5 位英雄者落敗' },
   ctf: { name: '奪旗', sub: '搶旗帶回基地', desc: '搶走敵方旗幟帶回己方基地得分，先得 3 分獲勝', time: 480, limit: 3, short: '搶走敵方旗幟帶回己方基地，先得 3 分獲勝' }
 };
-const ITEMS = { cam: { ico: '📷', name: '相機' }, quake: { ico: '🌋', name: '地牛控制器' }, scope: { ico: '🔍', name: '偵查鏡' }, fake: { ico: '🎫', name: '假號碼牌' }, spring: { ico: '⛲', name: '神仙泉水' } };
+const ITEMS = { cam: { ico: '📷', name: '相機' }, quake: { ico: '🌋', name: '地牛控制器' }, scope: { ico: '🔍', name: '偵查鏡' }, fake: { ico: '🎫', name: '假號碼牌' }, spring: { ico: '⛲', name: '神仙泉水' }, poker: { ico: '🃏', name: '賭一把撲克' } };
 const DIFF = [{ base: 1.9, type: 1.5, name: '輕鬆', desc: '電腦讀碼慢、出手遲鈍，適合新手練習' }, { base: 1.25, type: 1.0, name: '普通', desc: '電腦速度與反應適中，標準對戰' }, { base: .85, type: .7, name: '困難', desc: '電腦讀碼快、輸入迅速，考驗反應力' }, { base: 1.25, type: 1.0, name: '干擾者', troll: true, desc: '機器人不殺人，只四處亂跑丟道具搗亂' }];
 
 const G = {
@@ -2553,11 +2568,11 @@ function spawnAll() {
   for (let i = 0; i < n; i++) spawnActor(A[i], [pts[i][0], pts[i][1], yawFor(i)[0], pts[i][2] | 0]);
 }
 /* ---------- 英雄技能 ---------- */
-const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null, 'steal', 'dack', 'nox', 'charge', null, null, 'rel', 'revert', 'gis', null, 'neg', 'quick', 'ange', null, 'peace', null, null, 'ward', null, null, 'frost', 'beacon', 'drum', 'guard', 'vocal'];
-const PASSIVE_IDX = [3, 5, 8, 11, 12, 13, 19, 20, 24, 28, 30, 31, 33, 34];
+const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null, 'steal', 'dack', 'nox', 'charge', null, null, 'rel', 'revert', 'gis', null, 'neg', 'quick', 'ange', null, 'peace', null, null, 'ward', null, null, 'frost', 'beacon', 'drum', 'guard', 'vocal', null, null, null, null];
+const PASSIVE_IDX = [3, 5, 8, 11, 12, 13, 19, 20, 24, 28, 30, 31, 33, 34, 40, 41];
 const GKEY_HEROES = [18, 26, 27]; // 沒有 G 道具格、G 鍵改為技能鍵的英雄
-const HERO_CLASSES = [['先手型', '#ff9a3c', [39, 1, 11, 18, 24, 16, 17, 30, 31, 34]], ['輔助型', '#4fd38a', [29, 26, 27, 32, 33, 35, 36, 37, 38]], ['偽裝型', '#b48cff', [25, 21, 4, 22]], ['突進型', '#ff5a5a', [9, 19, 8]], ['把戲型', '#ffd24a', [0, 2, 6, 10, 15, 20]], ['進攻型', '#4fb0ff', [7, 23, 12, 5, 3, 13, 28]]]; // 英雄分類
-const HERO_TIERS = [['S 級', '#ff4d6d', [15, 39]], ['A 級', '#ffb020', [18, 17, 4, 21, 0, 6, 10, 7, 23, 28]], ['B 級', '#4fb0ff', [16, 29, 26, 27, 32, 35, 36, 25, 9, 19, 8, 2, 12, 13]], ['C 級', '#9aa3b2', [1, 11, 24, 30, 31, 34, 33, 37, 38, 22, 20, 5, 3]]]; // 英雄等級
+const HERO_CLASSES = [['先手型', '#ff9a3c', [39, 1, 11, 18, 24, 16, 17, 30, 31, 34, 40, 42, 43]], ['輔助型', '#4fd38a', [29, 26, 27, 32, 33, 35, 36, 37, 38, 41]], ['偽裝型', '#b48cff', [25, 21, 4, 22]], ['突進型', '#ff5a5a', [9, 19, 8]], ['把戲型', '#ffd24a', [0, 2, 6, 10, 15, 20]], ['進攻型', '#4fb0ff', [7, 23, 12, 5, 3, 13, 28]]]; // 英雄分類
+const HERO_TIERS = [['S 級', '#ff4d6d', [15, 39]], ['A 級', '#ffb020', [18, 17, 4, 21, 0, 6, 10, 7, 23, 28, 42, 43]], ['B 級', '#4fb0ff', [16, 29, 26, 27, 32, 35, 36, 25, 9, 19, 8, 2, 12, 13, 40, 41]], ['C 級', '#9aa3b2', [1, 11, 24, 30, 31, 34, 33, 37, 38, 22, 20, 5, 3]]]; // 英雄等級
 const CHANT = { revert: .5, gis: 1, neg: 1.5 }; // 吟唱秒數
 const isOut = (a, i) => skOn() && a.av && (a.av.outfitIdx === i || a.passIdx === i); // 對應 OUTFITS：蘇蘇／艾迪／艾伯特／蘇米(被動)／艾瑞克／麥克(被動)
 const skOn = () => G.skillsOn !== false && !(G.sk && G.sk.ban && G.sk.ban.t > 0); // 停戰宣告期間：全場技能停用
@@ -2579,7 +2594,8 @@ function skReset() { G.sk = { night: { e: 0, by: null }, quake: { t: 0, by: null
 function cleanse(a, quiet) { a.blind = 0; a.ctrlT = 0; a.redT = 0; a.clrRev = G.sk.rev.id; a.clrScr = G.sk.scr.id; a.clrInk = G.sk.ink.id; a.clrRel = G.sk.rel.id; if (quiet) { if (a.isPlayer) { G.flashT = 0; G.freezeT = 0; G.lock = 0; } return; } a.cleanFx = .7; if (a.isPlayer) { G.flashT = 0; G.freezeT = 0; G.lock = 0; UI.cleanse(); } }
 function ericHit(p, code) { // 艾瑞克的偽裝號碼被輸入：立即冷卻；若輸入者輸的是自己頭上的號碼則淘汰（不計擊殺／積分）
   const e = G.actors.find(o => o.alive && o !== p && o.fake === code && o.fakeOf); if (!e) return false;
-  uncloak(e, true); if (p.number !== code || p.protect > 0 || immune(p)) return false;
+  uncloak(e, true); { const kd = kenKind(p); if (kd === 'asc' || kd === 'desc') { notify(p, '偽裝陷阱 · 免疫', p.number === code ? e.name + ' 偽裝成了你頭上的號碼，你輸入的正是它。因【序列奇蹟】的規則，你不會因此陣亡，對方的偽裝也被識破了。' : '你輸入的是 ' + e.name + ' 偽裝後的號碼，並非真正號碼。因【序列奇蹟】的規則，這次輸入不會受到任何懲罰。', 0); return true; } }
+  if (p.number !== code || p.protect > 0 || immune(p)) return false;
   p.streak = 0; const m = p.name + ' 中了艾瑞克的陷阱，輸入了自己的號碼！'; UI.msg(m, p.isPlayer ? 'bad' : 'item'); netMsg(m, 'item'); eliminate(p, p); return true;
 }
 function skMsg(a, t) { const m = a.name + ' ' + t; UI.msg(m, 'item'); netMsg(m, 'item'); }
@@ -2646,8 +2662,70 @@ function endAllSkills() {
   for (const a of G.actors) { a.dackE = -1; a.cloak = false; if (a.fake && a.fakeOf) uncloak(a, false); a.shieldT = 0; a.wkT = 0; a.wkPre = 0; a.chg = null; a.chant = null; a.ctrlT = 0; a.frz = 0; a.imm = 0; a.rayJ = false; a.armed = false; a.stolen = null; a.wdT = 0; a.wd = false; a.drumT = 0; }
   K.beacon.t = 0; K.guard.t = 0; G.zones = [];
 }
-function killByCode(att, code) { // 輸入一組號碼，可同時擊殺所有顯示同號的敵方（連號甜心）
-  const ts = G.actors.filter(o => o !== att && o.alive && o.number && o.number === code && enemyOf(att, o) && o.protect <= 0); for (const o of ts) eliminate(att, o); return ts.length;
+function killByCode(att, code, only) { // 輸入一組號碼，可同時擊殺所有顯示同號的敵方（連號甜心）
+  const ts = only || G.actors.filter(o => o !== att && o.alive && o.number && o.number === code && enemyOf(att, o) && o.protect <= 0), ks = G.killSeq || 0;
+  for (const o of ts) eliminate(att, o); if ((G.killSeq || 0) > ks) kenBonus(att, code); return ts.length;
+}
+/* ===== 肯尼系列：序列奇蹟／梅開二度／梅開三度 ===== */
+const WRONG_STUN = 1.5; // 輸入錯誤的定身秒數
+const kenKind = a => !a || !a.av ? null : isOut(a, 40) ? 'asc' : isOut(a, 41) ? 'desc' : isOut(a, 42) ? 'two' : isOut(a, 43) ? 'three' : null;
+const inLen = p => { const k = kenKind(p); return k === 'two' ? 2 : k === 'three' ? 3 : (G.codeLen || 0); }; // 該玩家的輸入欄位數（0＝大亂鬥不定長）
+const digSort = (n, dir) => { const a = String(n).split('').sort(); if (dir === 'desc') a.reverse(); return a.join(''); };
+const subSeq = (c, n) => { let j = 0; for (const ch of n) if (j < c.length && ch === c[j]) j++; return j === c.length; };
+const subBag = (c, n) => { const m = {}; for (const ch of n) m[ch] = (m[ch] || 0) + 1; for (const ch of c) { if (!m[ch]) return false; m[ch]--; } return true; };
+function stunSelf(sec) { const p = G.player; if (!p) return; p.streak = 0; p.cloak = false; Sfx.wrong(); G.lock = sec; G.freezeT = sec; p.redT = sec; UI.shake(); UI.stunFx(sec); setTimeout(() => { G.typed = ''; UI.dirty = true; }, 350); }
+function notify(a, title, text, stun) { // 對指定玩家跳出提示框（本機直接顯示，連線訪客經快照傳遞）
+  if (a.isPlayer) { UI.popup(title, text); if (stun) stunSelf(stun); }
+  else if (a.remote) { a.ntf = { id: (a.ntf ? a.ntf.id : 0) + 1, t: title + '|' + text, s: stun || 0 }; if (stun) { a.redT = stun; a.streak = 0; a.cloak = false; } }
+}
+function kenDie(a, why) {
+  const m = a.name + ' 擊殺失敗而陣亡（' + why + '）'; netMsg(m, 'item'); if (!a.isPlayer) UI.msg(m, 'item');
+  notify(a, '擊殺失敗 · 直接陣亡', why, 0); a.protect = 0; eliminate(a, a);
+}
+function kenBonus(att, code) {
+  if (!att || !att.alive) return;
+  if (isOut(att, 40) && code === digSort(code, 'asc')) { att.freeEn = 15; skMsg(att, '【序列奇蹟】依序列擊殺成功，15 秒內跑步與望遠鏡不消耗能量'); }
+  if (isOut(att, 41) && code === digSort(code, 'desc')) {
+    let n = 0;
+    for (const o of G.actors) {
+      if (o !== att && enemyOf(att, o)) continue; const sl = o.isPlayer ? G.slots : o.slots; if (!sl) continue;
+      let i = sl.findIndex(x => x && x.type === 'scope');
+      if (i >= 0) sl[i].n = Math.max(sl[i].n, 3);
+      else { i = !sl[0] ? 0 : (!sl[1] && !sl.noG) ? 1 : (sl.noG ? 0 : (Math.random() < .5 ? 0 : 1)); sl[i] = { type: 'scope', n: 3 }; }
+      n++;
+    }
+    UI.dirty = true; skMsg(att, '【序列奇蹟】依序列擊殺成功，全隊 ' + n + ' 人各獲得 3 個偵查鏡');
+  }
+}
+function pokerTrap(a, code) { // 輸入了「賭一把撲克」的假號碼：直接陣亡，死亡冷卻延長為 5 秒
+  const f = a.pkFake; if (!f || f.num !== code || G.time > f.t) return false; a.pkFake = null;
+  notify(a, '擊殺錯誤懲罰', '你輸入了「賭一把撲克」中未命中的假號碼。對不存在的目標開火屬於嚴重誤判，需付出代價：當場陣亡，且死亡冷卻延長為 5 秒。', 0);
+  const m = a.name + ' 輸入了撲克假號碼而陣亡'; netMsg(m, 'item'); if (!a.isPlayer) UI.msg(m, 'item');
+  a.protect = 0; eliminate(a, a); a.respawnT = Math.max(a.respawnT, 5); return true;
+}
+function pokerCast(a) {
+  const en = G.actors.filter(o => o !== a && o.alive && o.number && enemyOf(a, o)); let num; a.pkFake = null;
+  if (en.length && Math.random() < .65) num = pick(en).number; // 取真實號碼（不受偽裝／變造影響）
+  else { const L = G.codeLen || randi(3, 6); do { num = String(randi(Math.pow(10, L - 1), Math.pow(10, L) - 1)); } while (G.actors.some(o => o.number === num || o.fake === num)); a.pkFake = { num, t: G.time + 25 }; }
+  if (a.isPlayer) { UI.poker(num); G.pkCode = num; } else if (a.remote) a.ntf = { id: (a.ntf ? a.ntf.id : 0) + 1, t: '#PK' + num, s: 0 };
+}
+function kenSubmit(a, code) { // 肯尼系列的輸入判定（本機／主機）。呼叫前已處理過艾瑞克陷阱與撲克假號碼
+  const kd = kenKind(a); if (!kd) return;
+  const mine = G.actors.filter(o => o !== a && o.alive && o.number && enemyOf(a, o)), dist = o => Math.hypot(o.x - a.x, o.z - a.z), near = l => l.slice().sort((x, y) => dist(x) - dist(y))[0];
+  if (kd === 'two' || kd === 'three') {
+    const fn = kd === 'two' ? subSeq : subBag, cs = mine.filter(o => fn(code, o.number)); let why = '';
+    if (!cs.length) { const dead = G.actors.find(o => o !== a && !o.alive && o.number && enemyOf(a, o) && fn(code, o.number)); why = dead ? '符合這組數字的玩家「' + dead.name + '」已經被擊殺了' : '場上沒有任何敵方號碼符合你輸入的這 ' + code.length + ' 碼（可能輸入有誤，或目標號碼已更新）'; }
+    else { const t = near(cs), ks = G.killSeq || 0; eliminate(a, t); if ((G.killSeq || 0) === ks) why = '鎖定的目標「' + t.name + '」未被擊殺：' + (G.elimFail || '攻擊未生效'); }
+    if (why) kenDie(a, why); return;
+  }
+  let hit = mine.filter(o => o.number === code);
+  if (!hit.length) { const al = mine.filter(o => digSort(o.number, kd) === code); if (al.length) hit = [near(al)]; }
+  if (hit.length) { const ok = hit.filter(o => o.protect <= 0); if (!ok.length) { notify(a, '無法擊殺', '對方仍在重生保護中，這次輸入沒有生效。', 0); return; } killByCode(a, code, ok); return; }
+  if (G.actors.some(o => o !== a && o.alive && o.number === code && !enemyOf(a, o))) { notify(a, '友軍號碼', '這是隊友的號碼，沒有造成任何影響。', 0); return; }
+  const fh = G.actors.find(o => o !== a && o.alive && o.fake === code);
+  if (fh) { notify(a, '偽裝號碼 · 免受懲罰', '你輸入的是 ' + fh.name + ' 頭上「偽裝或變造後的號碼」，並非他真正的號碼，所以沒有擊殺成功。因【序列奇蹟】的規則，這次輸入不會受到任何懲罰。', 0); return; }
+  if (isOut(a, 24)) { notify(a, '藐視罰則', '輸錯號碼，不受懲罰。', 0); return; }
+  a.streak = 0; a.cloak = false; notify(a, '號碼錯誤', '場上沒有符合的號碼（序列奇蹟只接受原號碼或其' + (kd === 'asc' ? '由小到大' : '由大到小') + '排序）。定身 ' + WRONG_STUN + ' 秒。', WRONG_STUN);
 }
 function castSkill(a) {
   if (!skOn() || !a || !a.alive || G.state !== 'playing' || G.countdown > 0) return false;
@@ -2838,11 +2916,11 @@ function updateGrenades(dt) {
   }
   for (let i = G.fx.length - 1; i >= 0; i--) { G.fx[i].t += dt; if (G.fx[i].t > G.fx[i].d) G.fx.splice(i, 1); }
 }
-function randomItem() { const r = Math.random(); return r < .3 ? 'cam' : r < .5 ? 'quake' : r < .7 ? 'scope' : r < .85 ? 'fake' : 'spring'; }
+function randomItem() { const r = Math.random(); return r < .27 ? 'cam' : r < .45 ? 'quake' : r < .63 ? 'scope' : r < .77 ? 'fake' : r < .89 ? 'spring' : 'poker'; }
 function giveItem(i, type) { G.slots[i] = { type, n: type === 'cam' ? 4 : 1 }; }
-function grantItem(sl, force) {
-  const ty = force || randomItem(), i0 = sl.findIndex(x => x && x.type === ty);
-  if (i0 >= 0) { sl[i0].n = Math.min(ty === 'cam' ? 9 : 3, sl[i0].n + (ty === 'cam' ? 3 : 1)); return { i: i0, ty }; }
+function grantItem(sl, force, noPoker) {
+  let ty = force || randomItem(); if (noPoker && ty === 'poker') ty = 'spring'; const i0 = sl.findIndex(x => x && x.type === ty);
+  if (i0 >= 0) { sl[i0].n = Math.min(ty === 'cam' ? 9 : ty === 'poker' ? 2 : 3, sl[i0].n + (ty === 'cam' ? 3 : 1)); return { i: i0, ty }; }
   const free = !sl[0] ? 0 : (!sl[1] && !sl.noG) ? 1 : -1; if (free < 0) return null; // 道具欄已滿：不更換
   sl[free] = { type: ty, n: ty === 'cam' ? 4 : 1 }; return { i: free, ty };
 }
@@ -2850,7 +2928,7 @@ function tryPickup(a) {
   for (const p of G.pickups) {
     if (!p.on) continue; if (Math.abs(p.x - a.x) > 1.5 || Math.abs(p.z - a.z) > 1.5 || Math.abs(p.y - a.y) > 2.2) continue;
     if (a.isPlayer) { if (G.netClient) continue; const r = grantItem(G.slots, isOut(a, 12) && (a.remote ? a.sp > .85 : a.sprinting) ? 'scope' : null); if (!r) continue; Sfx.pick(); UI.msg('獲得 ' + ITEMS[r.ty].name + (G.slots[r.i].n > 1 ? ' ×' + G.slots[r.i].n : ''), 'item'); UI.dirty = true; }
-    else if (a.slots) { if (!grantItem(a.slots, isOut(a, 12) && (a.remote ? a.sp > .85 : a.sprinting) ? 'scope' : null)) continue; }
+    else if (a.slots) { if (!grantItem(a.slots, isOut(a, 12) && (a.remote ? a.sp > .85 : a.sprinting) ? 'scope' : null, !a.remote)) continue; }
     else continue;
     p.on = false; p.t = 18;
   }
@@ -2860,6 +2938,7 @@ function applyItem(a, type) {
   if (type === 'quake') { G.sk.quake = { t: 2, by: a }; for (const o of G.actors) if (o !== a && o.alive && !o.isPlayer && !o.remote) o.blind = Math.max(o.blind, .8); const m = a.name + ' 啟動了地牛控制器！'; UI.msg(m, 'item'); netMsg(m, 'item'); }
   else if (type === 'fake') { let n, L = G.codeLen || randi(3, 6); do { n = String(randi(Math.pow(10, L - 1), Math.pow(10, L) - 1)); } while (G.actors.some(o => o.number === n)); a.fake = n; a.fakeT = 7; a.fakeOf = null; drawPlate(a); if (a.isPlayer) UI.msg('號碼已偽裝 7 秒', 'item'); }
   else if (type === 'spring') { a.skCd = 0; if (a.isPlayer) UI.msg('神仙泉水：技能冷卻已刷新！', 'item'); }
+  else if (type === 'poker') pokerCast(a);
 }
 function felixShot(p) { // 致命相機：照片中能清楚讀到完整號碼的最近對手，1 秒後自動輸入擊殺
   const c = R.cam, asp = c.asp || 1.8, fw = G.binK > .5 ? .8 : .42, th = Math.tan(c.fov / 2), hx = th * asp * fw, hy = th * fw * .75 * asp;
@@ -2935,11 +3014,12 @@ function updateFlags(dt) {
 /* ---------- 淘汰 / 勝負 ---------- */
 function eliminate(k, v) {
   { const gd = G.sk.guard; if (gd.t > 0 && gd.by && gd.by.alive && k !== v && v !== gd.by && skOn() && !enemyOf(gd.by, v) && enemyOf(gd.by, k)) { const m = gd.by.name + ' 替 ' + v.name + ' 承擔了攻擊！'; UI.msg(m, 'item'); netMsg(m, 'item'); v = gd.by; } }
-  if (k !== v && v.alive && immune(v)) { const m = v.name + ' 的淨化之光無效化了 ' + k.name + ' 的攻擊！'; UI.msg(m, k.isPlayer ? 'bad' : 'item'); netMsg(m, 'item'); if (k.isPlayer) Sfx.wrong(); return; }
-  if (k !== v && v.alive && skOn() && isOut(v, 34) && v.amulet) { v.amulet = false; v.amT = 0; blockHit(k, v, '號碼護符'); return; }
-  if (k !== v && v.alive && v.shieldT > 0) { blockHit(k, v); return; }
-  if (!v.alive || v.protect > 0) return;
-  v.alive = false; v.deaths++; v.deadT = 0; v.respawnT = 3.2; v.killedBy = k; v.typing = null; v.lure = null;
+  G.elimFail = '';
+  if (k !== v && v.alive && immune(v)) { G.elimFail = '對方的「淨化之光」無效化了攻擊'; const m = v.name + ' 的淨化之光無效化了 ' + k.name + ' 的攻擊！'; UI.msg(m, k.isPlayer ? 'bad' : 'item'); netMsg(m, 'item'); if (k.isPlayer) Sfx.wrong(); return; }
+  if (k !== v && v.alive && skOn() && isOut(v, 34) && v.amulet) { G.elimFail = '對方的「號碼護符」抵擋了攻擊'; v.amulet = false; v.amT = 0; blockHit(k, v, '號碼護符'); return; }
+  if (k !== v && v.alive && v.shieldT > 0) { G.elimFail = '對方的護盾擋下了攻擊'; blockHit(k, v); return; }
+  if (!v.alive || v.protect > 0) { G.elimFail = !v.alive ? '對方已被其他人擊殺' : '對方仍在重生保護中'; return; }
+  G.killSeq = (G.killSeq || 0) + 1; v.alive = false; v.deaths++; v.deadT = 0; v.respawnT = 3.2; v.killedBy = k; v.typing = null; v.lure = null;
   if (G.mode === 'arena' && (v.isPlayer || v.remote)) v.respawnT = 10 + 2 * (Math.max(1, G.arena ? G.arena.stage : 1) - 1);
   if (G.mode === 'kof') { v.kout++; v.kleft = v.kleft.filter(i => i !== v.kcur); v.respawnT = 1e9; if (v.kout < 5) { v.kw = (v.isPlayer || v.remote) ? 9999 : 10; v.kbot = rand(2.5, 4.5); } }
   if (skOn() && k !== v) {
@@ -2992,7 +3072,7 @@ function typeDigit(d) {
   if (G.state !== 'playing' || G.countdown > 0 || !G.player || !G.player.alive || G.lock > 0 || G.player.ctrlT > 0) return;
   if (!Device.mobile && scrPhase2(G.player) && G.keyMap) d = G.keyMap[d] || d;
   if (!Device.mobile && relPhase2(G.player)) d = String(9 - (+d));
-  const mix = !G.codeLen, L = G.codeLen || 6; if (G.typed.length >= L) return;
+  const LN = inLen(G.player), mix = !LN, L = LN || 6; if (G.typed.length >= L) return;
   if (G.player.wdHit) { Sfx.key(); setTimeout(() => { if (G.player && G.player.alive && G.state === 'playing' && G.typed.length < L) { G.typed += d; UI.dirty = true; Sfx.key(); if (S.auto || Device.mobile) { const t0 = G.typed; if (!mix ? t0.length === L : (t0.length >= 3 && (t0.length >= 6 || G.actors.some(a => a.alive && a !== G.player && a.number === t0)))) submitNumber(); } } }, 800); return; }
   G.typed += d; Sfx.key(); UI.dirty = true;
   if (mix) { if (G.typed.length >= 3 && (G.typed.length >= 6 || G.actors.some(a => a.alive && a !== G.player && a.number === G.typed)) && (S.auto || Device.mobile)) submitNumber(); }
@@ -3001,8 +3081,10 @@ function typeDigit(d) {
 function backspace() { if (G.state !== 'playing' || G.lock > 0) return; if (G.typed.length) { G.typed = G.typed.slice(0, -1); Sfx.del(); UI.dirty = true; } }
 function submitNumber() {
   const p = G.player; if (G.state !== 'playing' || G.countdown > 0 || !p || !p.alive || G.lock > 0 || p.ctrlT > 0) return;
-  if (G.typed.length < (G.codeLen || 3)) { UI.msg('請輸入完整的 ' + (G.codeLen || 3) + ' 位以上數字', 'bad'); return; }
-  const code = G.typed; if (!G.netClient && ericHit(p, code)) { G.typed = ''; UI.dirty = true; return; }
+  if (G.typed.length < (inLen(p) || 3)) { UI.msg('請輸入完整的 ' + (inLen(p) || 3) + ' 位以上數字', 'bad'); return; }
+  const code = G.typed; if (G.netClient && kenKind(p)) { netAct(['kn', code]); G.typed = ''; UI.dirty = true; return; }
+  if (!G.netClient && (pokerTrap(p, code) || ericHit(p, code))) { G.typed = ''; UI.dirty = true; return; }
+  if (!G.netClient && kenKind(p)) { G.typed = ''; UI.dirty = true; kenSubmit(p, code); return; }
   const ts = G.actors.filter(a => a.alive && a.number === code && a !== p && a.number !== ''), en = ts.filter(a => isDM() || a.team !== p.team), t = ts[0];
   if (en.length) {
     if (en.every(a => a.protect > 0)) { UI.msg('對方有重生保護', 'bad'); G.typed = ''; UI.dirty = true; return; }
@@ -3010,7 +3092,7 @@ function submitNumber() {
     G.typed = ''; UI.dirty = true; const n = killByCode(p, code); if (n > 1) UI.msg('一次擊殺 ' + n + ' 人！', 'good');
   } else if (t) { UI.msg('這是隊友的號碼！', 'bad'); Sfx.wrong(); G.typed = ''; UI.dirty = true; UI.shake(); }
   else if (isOut(p, 24)) { UI.msg('藐視罰則：輸錯號碼，不受懲罰', 'item'); G.typed = ''; UI.dirty = true; }
-  else { if (G.netClient && code === p.number) netAct(['k', -1, code]); p.streak = 0; p.cloak = false; Sfx.wrong(); UI.msg('號碼錯誤！定身 2 秒', 'bad'); G.lock = 2; G.freezeT = 2; p.redT = 2; if (G.netClient) netAct(['w']); UI.shake(); UI.stunFx(2); setTimeout(() => { G.typed = ''; UI.dirty = true; }, 350); }
+  else { if (G.netClient && (code === p.number || code === G.pkCode)) netAct(['k', -1, code]); p.streak = 0; p.cloak = false; Sfx.wrong(); UI.msg('號碼錯誤！定身 1.5 秒', 'bad'); G.lock = WRONG_STUN; G.freezeT = WRONG_STUN; p.redT = WRONG_STUN; if (G.netClient) netAct(['w']); UI.shake(); UI.stunFx(WRONG_STUN); setTimeout(() => { G.typed = ''; UI.dirty = true; }, 350); }
 }
 function updatePlayer(dt) {
   const p = G.player;
@@ -3771,11 +3853,12 @@ function hostReadPeers(dt) {
 function hostAct(a, ac) {
   if (G.state !== 'playing') return; if (ac[1] === 'kp') { kofPick(a, ac[2] | 0); return; }
   if (!a.alive) return;
+  if (ac[1] === 'kn') { const c = String(ac[2]); if (!/^\d{2,6}$/.test(c) || !kenKind(a) || pokerTrap(a, c) || ericHit(a, c)) return; kenSubmit(a, c); return; }
   if (ac[1] === 'k') {
-    if (ericHit(a, String(ac[3]))) return;
+    if (pokerTrap(a, String(ac[3])) || ericHit(a, String(ac[3]))) return;
     if (ac[4] === 1) a.voiceT = G.time;
     killByCode(a, String(ac[3]));
-  } else if (ac[1] === 'w') { if (isOut(a, 24)) return; a.redT = 2; a.streak = 0; a.cloak = false; }
+  } else if (ac[1] === 'w') { if (isOut(a, 24)) return; a.redT = WRONG_STUN; a.streak = 0; a.cloak = false; }
   else if (ac[1] === 's') { castSkill(a); }
   else if (ac[1] === 'b') { a.binAt = G.time; }
   else if (ac[1] === 'kp') { kofPick(a, ac[2] | 0); }
@@ -3804,7 +3887,7 @@ function buildSnap() {
     if (a.isPlayer || a.remote) {
       const sl = a.isPlayer ? G.slots : (a.slots || [null, null]); let thr = -1, tp = 0;
       if (a.alive) for (let j = 0; j < A.length; j++) { const b = A[j]; if (b === a || !b.alive || !b.read) continue; let q = b.read[a.id] || 0; if (b.typing && b.typing.target === a) q = 1; if (q > tp && q > .12) { tp = q; thr = j; } }
-      e.push(a.rsC || 0, a.killedBy ? A.indexOf(a.killedBy) : -1, Math.round((a.isPlayer ? G.flashT : a.blind) * 10), thr, Math.round(tp * 10), a.lastSeq || 0, encSl(sl[0]), encSl(sl[1]), Math.round((a.skCd || 0) * 10), Math.round((a.shieldT || 0) * 10), Math.round((a.ctrlT || 0) * 10), a.ctrlBy ? A.indexOf(a.ctrlBy) : -1, (a.clrRev === G.sk.rev.id ? 1 : 0) | (a.clrScr === G.sk.scr.id ? 2 : 0) | (a.clrInk === G.sk.ink.id ? 4 : 0) | (a.clrRel === G.sk.rel.id ? 8 : 0), Math.round((a.wkT || 0) * 10), (a.fake && a.fakeOf) ? Math.round(a.fakeT * 10) : 0, Math.round(Math.max(0, a.windowT || 0) * 10), Math.round(Math.max(0, a.frz || 0) * 10), a.rfC || 0, Math.round(Math.max(0, a.chant ? a.chant.t : 0) * 10), a.amulet ? 0 : Math.round(Math.max(.1, 30 - (a.amT || 0)) * 10), Math.round(Math.max(0, a.freeEn || 0) * 10));
+      e.push(a.rsC || 0, a.killedBy ? A.indexOf(a.killedBy) : -1, Math.round((a.isPlayer ? G.flashT : a.blind) * 10), thr, Math.round(tp * 10), a.lastSeq || 0, encSl(sl[0]), encSl(sl[1]), Math.round((a.skCd || 0) * 10), Math.round((a.shieldT || 0) * 10), Math.round((a.ctrlT || 0) * 10), a.ctrlBy ? A.indexOf(a.ctrlBy) : -1, (a.clrRev === G.sk.rev.id ? 1 : 0) | (a.clrScr === G.sk.scr.id ? 2 : 0) | (a.clrInk === G.sk.ink.id ? 4 : 0) | (a.clrRel === G.sk.rel.id ? 8 : 0), Math.round((a.wkT || 0) * 10), (a.fake && a.fakeOf) ? Math.round(a.fakeT * 10) : 0, Math.round(Math.max(0, a.windowT || 0) * 10), Math.round(Math.max(0, a.frz || 0) * 10), a.rfC || 0, Math.round(Math.max(0, a.chant ? a.chant.t : 0) * 10), a.amulet ? 0 : Math.round(Math.max(.1, 30 - (a.amT || 0)) * 10), Math.round(Math.max(0, a.freeEn || 0) * 10), a.ntf ? a.ntf.id : 0, a.ntf ? a.ntf.t : '', a.ntf ? a.ntf.s : 0);
     }
     ac.push(e);
   }
@@ -3897,6 +3980,7 @@ function applySnap(s) {
       }
       const fl = e[11] / 10; if (fl > G.flashT + .05) { G.flashT = fl; G.flashMax = Math.max(1, fl); Sfx.bang(.6); }
       me.wkT = (e[22] || 0) / 10; me.fakeT = (e[23] || 0) / 10; me.windowT = (e[24] || 0) / 10; if ((e[25] || 0) > 0 && !(me.frz > 0)) me.frz = e[25] / 10; else if (!(e[25] > 0)) me.frz = 0; if (NET.rfSeen !== undefined && e[26] !== NET.rfSeen) { G.stam = 1; G.energy = 1; } NET.rfSeen = e[26] || 0; me.chant = e[27] > 0 ? { k: '', t: e[27] / 10 } : null; me.amulet = e[28] === 0 && isOut(me, 34); me.amRem = (e[28] || 0) / 10; if ((e[29] || 0) > 0 && !(me.freeEn > 0)) me.freeEn = e[29] / 10; me.skCd = (e[17] || 0) / 10; me.shieldT = (e[18] || 0) / 10; me.ctrlT = (e[19] || 0) / 10; me.ctrlBy = A[e[20]] || null; { const m = e[21] || 0; me.clrRev = (m & 1) ? 1 : -1; me.clrScr = (m & 2) ? 1 : -1; me.clrInk = (m & 4) ? 1 : -1; me.clrRel = (m & 8) ? 1 : -1; }
+      if (e[30] !== undefined) { if (NET.ntfSeen !== undefined && e[30] > 0 && e[30] !== NET.ntfSeen) { const t = String(e[31] || ''); if (t.startsWith('#PK')) { UI.poker(t.slice(3)); G.pkCode = t.slice(3); } else { const q = t.split('|'); UI.popup(q[0], q.slice(1).join('|')); if (e[32] > 0) stunSelf(e[32] / 1); } } NET.ntfSeen = e[30]; }
       const slc = e[15] + ',' + e[16]; if (slc !== NET.slC) { NET.slC = slc; G.slots = [decSl(e[15]), decSl(e[16])]; UI.dirty = true; }
       NET.acts = NET.acts.filter(x => x[0] > e[14]);
       G.threat = e[12] >= 0 && A[e[12]] && me.alive ? { b: A[e[12]], p: e[13] / 10 } : null;
@@ -4112,7 +4196,7 @@ const UI = {
     if (G.mode === 'ctf') { const f0 = G.flags[0], f1 = G.flags[1]; e.flagR.textContent = f0 && f0.state !== 'home' ? '🚩' : ''; e.flagB.textContent = f1 && f1.state !== 'home' ? '🏴' : ''; } else { e.flagR.textContent = ''; e.flagB.textContent = ''; }
     // 輸入
     if (this.dirty || this.lastTyped !== G.typed) {
-      const t = G.codeLen ? G.typed + '_'.repeat(Math.max(0, G.codeLen - G.typed.length)) : (G.typed.length ? G.typed : '＿＿＿') + (G.typed.length && G.typed.length < 6 ? '_' : ''); e.typed.textContent = t; e.typed.className = G.typed.length ? '' : 'empty'; e.photoCap.textContent = t; this.lastTyped = G.typed;
+      const LN = inLen(G.player), t = LN ? G.typed + '_'.repeat(Math.max(0, LN - G.typed.length)) : (G.typed.length ? G.typed : '＿＿＿') + (G.typed.length && G.typed.length < 6 ? '_' : ''); e.typed.textContent = t; e.typed.className = G.typed.length ? '' : 'empty'; e.photoCap.textContent = t; this.lastTyped = G.typed;
       this.slotHTML(e.slotF, G.slots[0]); this.slotHTML(e.slotG, G.slots[1]);
       this.dirty = false;
     }
@@ -4142,6 +4226,8 @@ const UI = {
     // FPS
     Perf.hud(dt);
   },
+  popup(title, text) { const b = $('kPop'); if (!b) return; b.innerHTML = '<b>' + title + '</b><span>' + text + '</span>'; b.classList.remove('hidden'); b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); clearTimeout(this._pp); this._pp = setTimeout(() => b.classList.add('hidden'), 5200); },
+  poker(num) { const b = $('pokerBox'); if (!b) return; clearTimeout(this._pk1); clearTimeout(this._pk2); b.innerHTML = '<i class="pc tl">♠</i><i class="pc tr">♥</i><i class="pc bl">♦</i><i class="pc br">♣</i><em>賭一把</em><strong>' + num + '</strong><small>3 秒後消失・65% 為真</small>'; b.classList.remove('hidden'); let n = 0; const step = () => { if (n >= 5) { b.classList.add('hidden'); return; } b.classList.remove('off'); this._pk1 = setTimeout(() => { b.classList.add('off'); this._pk2 = setTimeout(() => { n++; step(); }, 240); }, 360); }; step(); },
   stunFx(sec) { const e = this.els.deadv; e.style.opacity = .75; clearTimeout(this._st); this._st = setTimeout(() => { if (G.player && G.player.alive) e.style.opacity = 0; }, sec * 1000); },
   goText() { this.goT = 1; this._cd = 0; $('cdNum').textContent = '開始！'; $('cdTxt').textContent = '戰鬥開始'; this.els.countdown.classList.remove('hidden'); },
   cdUpdate(dt) {
@@ -4349,11 +4435,11 @@ const hKey = (k, d) => `<div class="hkey"><span class="kc">${k}</span><em>${d}</
 function howPanel(id) {
   if (id === 'go') return `<div class="hhero"><svg viewBox="0 0 120 70" class="hplate"><circle cx="60" cy="22" r="14" fill="#e8c7a6" stroke="#5a3a22" stroke-width="2"/><rect x="26" y="34" width="68" height="26" rx="5" fill="#fff6d8" stroke="#c0392b" stroke-width="3"/><text x="60" y="53" text-anchor="middle" font-size="19" font-weight="800" fill="#c0392b" font-family="monospace">48 213</text></svg><p>每個人額頭都有一組<b>數字牌</b>。<br>先讀到、先輸入，對方就<b>淘汰</b>！</p></div>
 <div class="hsteps">${hStep(1, '👀', '看', '靠近、對準額頭')}${hStep(2, '🧠', '記', '記下整組數字')}${hStep(3, '⌨️', '輸入', '按數字鍵 → Enter')}${hStep(4, '💥', '淘汰', '對方出局、你得分')}</div>
-<div class="hgrid">${hCard('🔴', '被讀到了？', '畫面中央紅箭頭＝有人在讀你。快<b>背對、躲掩體、移動</b>。')}${hCard('❌', '輸錯號碼', '定身 2 秒，視角也鎖住，千萬別亂按。')}${hCard('♻️', '擊殺後', '你的號碼立刻換新，別人讀到的作廢。')}${hCard('🛡️', '重生保護', '剛重生短時間無法被淘汰。')}</div>`;
+<div class="hgrid">${hCard('🔴', '被讀到了？', '畫面中央紅箭頭＝有人在讀你。快<b>背對、躲掩體、移動</b>。')}${hCard('❌', '輸錯號碼', '定身 1.5 秒，視角也鎖住，千萬別亂按。')}${hCard('♻️', '擊殺後', '你的號碼立刻換新，別人讀到的作廢。')}${hCard('🛡️', '重生保護', '剛重生短時間無法被淘汰。')}</div>`;
   if (id === 'ctl') return `<h3>🖥️ 電腦</h3><div class="hkeys">${hKey('W A S D', '移動')}${hKey('Shift', '衝刺')}${hKey('Space', '跳（空中再按＝二段跳）')}${hKey('滑鼠', '轉視角（先點畫面）')}${hKey('0-9', '輸入號碼')}${hKey('Enter', '送出')}${hKey('⌫', '刪除一碼')}${hKey('R', '英雄技能')}${hKey('F / G', '使用道具（Derek 的 G＝衝鋒）')}${hKey('Q／右鍵', '望遠鏡')}${hKey('Esc', '暫停')}</div>
 <h3>📱 手機（橫向）</h3><div class="hgrid">${hCard('🕹️', '左半邊拖曳', '搖桿移動')}${hCard('🏃', '右側「跑」鍵', '按住衝刺（耗體力）')}${hCard('👆', '右側空白拖曳', '轉視角')}${hCard('🔢', '左右數字鍵', '輸滿位數自動送出')}${hCard('⬆️', '跳躍鍵', '空中再按＝二段跳')}${hCard('🔭', '望遠鏡', '壓住使用、放開取消，壓住時滑動轉視角')}${hCard('🎒', '道具格', '點按使用')}</div>
 <div class="hnote">🔋 衝刺會消耗體力條；望遠鏡有能量條，用完需等待回復。</div>`;
-  if (id === 'item') return `<div class="hnote">開局沒有道具，走過地圖上的 <b>？箱</b> 才會取得；兩格已滿時不會更換。</div><div class="hgrid">${Object.entries({ cam: '拍照後照片短暫停留，方便看清號碼', quake: '讓其他人畫面劇烈橫向晃動 2 秒', scope: '約 13° 超遠距放大，再按一次＝拍照', fake: '頭上號碼偽裝成別的數字 7 秒', spring: '立即刷新英雄技能冷卻' }).map(([k, d]) => hCard(ITEMS[k].ico, ITEMS[k].name, d, 'big')).join('')}${hCard('🔭', '望遠鏡（內建）', '遠距離讀碼，有能量限制', 'big')}</div>`;
+  if (id === 'item') return `<div class="hnote">開局沒有道具，走過地圖上的 <b>？箱</b> 才會取得；兩格已滿時不會更換。</div><div class="hgrid">${Object.entries({ cam: '拍照後照片短暫停留，方便看清號碼', quake: '讓其他人畫面劇烈橫向晃動 2 秒', scope: '約 13° 超遠距放大，再按一次＝拍照', fake: '頭上號碼偽裝成別的數字 7 秒', spring: '立即刷新英雄技能冷卻', poker: '畫面中央閃現一組號碼（3 秒）：65% 是場上某位敵人的真號碼，35% 是假的——輸入假號碼會直接陣亡並延長重生冷卻到 5 秒；上限 2 張' }).map(([k, d]) => hCard(ITEMS[k].ico, ITEMS[k].name, d, 'big')).join('')}${hCard('🔭', '望遠鏡（內建）', '遠距離讀碼，有能量限制', 'big')}</div>`;
   if (id === 'chr') { return `<div class="hnote">按 <span class="kc">R</span>（手機：技能鍵）施放，圓環顯示冷卻。可在「遊戲設定」整體關閉技能。 Derek、快克、安琪沒有 G 道具格，其技能改由 <span class="kc">G</span> 鍵施放。 伏克需要裝置支援語音辨識並允許麥克風，不支援時該英雄會反灰；按住 <span class="kc">R</span> 念號碼、放開即送出。</div>${HERO_CLASSES.map(([nm, col, ids]) => `<div class="chd" style="--hc:${col}">${nm}（${ids.length}）</div><div class="hchars">${ids.map(i => { const o = OUTFITS[i]; return `<div class="hch"><img src="${outfitIcon(i)}"><div><b>${o.label}</b><u>${o.skill.name}</u><span>${o.skill.desc}</span></div></div>`; }).join('')}</div>`).join('')}`; }
   if (id === 'spec') return `<h3>🏟️ 擂台逃殺（單人／多人合作）</h3>
 <div class="hrule">玩家方對抗一波強過一波的電腦軍團；電腦同屬一國，彼此不會互相攻擊。多人遊玩時，電腦人數會依真人人數成倍增加（場上總人數上限 20 人）。</div>
@@ -4443,7 +4529,7 @@ function tutHTML(mobile) {
 <div class="tcard"><b>🖱 視角</b>滑鼠移動＝轉視角（先點一下畫面鎖定）<br>右鍵／<span class="kc">Q</span> 望遠鏡（放大、移動變慢）</div>
 <div class="tcard"><b>🔢 輸入號碼</b>看清對手額頭的數字後：<br><span class="kc">0</span>–<span class="kc">9</span> 輸入　<span class="kc">Enter</span> 送出<br><span class="kc">Backspace</span> 刪除（輸入滿位數可自動送出）</div>
 <div class="tcard"><b>🎒 道具</b><span class="kc">F</span> 道具 1　<span class="kc">G</span> 道具 2　<span class="kc">R</span> 英雄技能<br>開局沒有道具，撿地圖上的橘色「?」箱取得；欄位滿了就不會更換</div>
-<div class="tcard"><b>⚠ 小心</b>紅色箭頭＝有人正在讀你的號碼<br>輸入錯誤會被定身 2 秒（視角也不能轉）<br><span class="kc">Esc</span> 暫停</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
+<div class="tcard"><b>⚠ 小心</b>紅色箭頭＝有人正在讀你的號碼<br>輸入錯誤會被定身 1.5 秒（視角也不能轉）<br><span class="kc">Esc</span> 暫停</div></div><div class="tskip">輕觸任意地方以跳過</div>`;
   const P = (l, t, w, cls, txt, st) => `<i class="${cls || ''}" style="left:${l}%;top:${t}%;${w ? 'width:' + w + '%;aspect-ratio:1;' : ''}${st || ''}">${txt}</i>`;
   return `<h2>操作說明</h2><div class="tphone">
 ${P(23, 19.5, 0, 'col', '1 2 3 4 5')}${P(77, 19.5, 0, 'col', '6 7 8 9 0')}${P(95.6, 34, 0, 'col', '🔙', 'width:8.8%;height:9%;top:33%')}
@@ -4678,7 +4764,7 @@ const Voice = (() => {
     } return out;
   };
   V.ok = () => !!SR && window.isSecureContext !== false && !V.denied;
-  V.minLen = () => G.codeLen || 3; V.maxLen = () => G.codeLen || 6;
+  V.minLen = () => inLen(G.player) || 3; V.maxLen = () => inLen(G.player) || 6;
   V.deny = () => { V.denied = true; if (CS.o) csBuildCards(); UI.msg('此裝置不支援語音，或尚未允許麥克風', 'bad'); };
   V.warm = () => new Promise(res => { // 在選英雄畫面取得授權（麥克風＋語音辨識）；本機記住，之後不再於戰鬥中詢問
     if (!SR) return res(false); if (V.primed || V.warming) return res(!!V.primed);
@@ -4706,14 +4792,14 @@ const Voice = (() => {
   V.bar = t => { const b = $('voiceBar'); if (!b) return; if (t === null) { b.classList.add('hidden'); return; } b.classList.remove('hidden'); b.innerHTML = '🎤 聆聽中　<b>' + (t || '…') + '</b>'; };
   V.make = () => {
     const r = new SR(); r.lang = 'zh-TW'; r.continuous = true; r.interimResults = true; r.maxAlternatives = 5;
-    r.onresult = e => { V.nRes = e.results.length; const d = V.parse(e.results); V.text = [...e.results].slice(V.base).map(x => x[0].transcript).join(' '); V.bar(V.text); if (d !== V.digits) { V.digits = d; V.last = performance.now(); V.setTyped(d); clearTimeout(V.sched); if (G.codeLen && d.length >= G.codeLen) V.sched = setTimeout(V.auto, 100); } };
+    r.onresult = e => { V.nRes = e.results.length; const d = V.parse(e.results); V.text = [...e.results].slice(V.base).map(x => x[0].transcript).join(' '); V.bar(V.text); if (d !== V.digits) { V.digits = d; V.last = performance.now(); V.setTyped(d); clearTimeout(V.sched); if (inLen(G.player) && d.length >= inLen(G.player)) V.sched = setTimeout(V.auto, 100); } };
     r.onerror = e => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { V.cancel(); V.deny(); } else if (e.error === 'audio-capture') { V.cancel(); UI.msg('找不到麥克風', 'bad'); } };
     r.onstart = () => { V.started = true; V.primed = true; if (!S.voiceGranted) { S.voiceGranted = true; saveS(); } };
     r.onend = () => { if (V.on && V.rec === r) { V.prefix = V.digits; V.base = 0; try { V.rec = V.make(); V.rec.start(); } catch (x) { } } };
     return r;
   };
   V.auto = () => { // 念滿位數、停頓 0.1 秒即自動送出
-    if (!V.on) return; const L = G.codeLen; if (!L || V.digits.length < L) return; const d = V.digits.slice(-L); V.digits = ''; V.prefix = ''; V.base = V.nRes; G.typed = d; UI.dirty = true;
+    if (!V.on) return; const L = inLen(G.player); if (!L || V.digits.length < L) return; const d = V.digits.slice(-L); V.digits = ''; V.prefix = ''; V.base = V.nRes; G.typed = d; UI.dirty = true;
     if (G.player) G.player.voiceT = G.time; submitNumber();
   };
   V.start = () => {
@@ -4821,7 +4907,7 @@ function boot() {
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
 setInterval(() => { try { UI.renderPills(); } catch (e) { } }, 120);
-window.__G = { Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+window.__G = { hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 
 // 檢查是否有新版（防止 PWA 快取舊版）
