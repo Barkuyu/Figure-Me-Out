@@ -103,7 +103,7 @@ const UI = {
     if (p.chant) add('🔮', p.chant.t);
     add('☯️', p.wdT > 0 ? p.wdT : (c && SKILL_OF[p.av.outfitIdx] === 'ward' && cd > 10 ? cd - 10 : 0));
     if (K) { if (K.beacon.by === p) add('🔴', K.beacon.t); if (K.guard.by === p) add('🤝', K.guard.t); for (const z of G.zones) if (z.by === p) add('❄️', z.t); }
-    add('🥁', p.drumT > 0 && !c ? p.drumT : (c && SKILL_OF[p.av.outfitIdx] === 'drum' && cd > 7 ? cd - 7 : 0)); add('♾️', p.freeEn || 0);
+    add('🥁', p.drumT > 0 && !c ? p.drumT : (c && SKILL_OF[p.av.outfitIdx] === 'drum' && cd > 7 ? cd - 7 : 0)); add('♾️', p.freeEn || 0); add('🔬', p.miniT || 0); add('🦎', p.chamT || 0); add('🪆', p.vdT || 0); for (const z of G.zones) if (z.k === 'peace' && z.by === p) add('🕊️', z.t);
     if (isOut(p, 34) && !p.amulet && p.alive) add('🧿', c ? p.amRem : 30 - (p.amT || 0));
     if (K) { add('🕊️', K.ban.t); add('🎞️', K.neg.t); if (K.gis.by === p) add('💖', K.gis.t); }
     if (c && SKILL_OF[p.av.outfitIdx] === 'gis' && cd > 45) add('💖', cd - 45);
@@ -188,6 +188,7 @@ const UI = {
     Perf.hud(dt);
   },
   popup(title, text) { const b = $('kPop'); if (!b) return; b.innerHTML = '<b>' + title + '</b><span>' + text + '</span>'; b.classList.remove('hidden'); b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); clearTimeout(this._pp); this._pp = setTimeout(() => b.classList.add('hidden'), 1500); },
+  vdFlash(name, num) { const b = $('vdBox'); if (!b) return; clearTimeout(this._vd1); clearTimeout(this._vd2); b.innerHTML = '<small>🪆 反殺情報・' + name + ' 目前的號碼</small><strong>' + num + '</strong>'; b.classList.remove('hidden'); let n = 0; const step = () => { if (n >= 6) { b.classList.add('hidden'); return; } b.classList.remove('off'); this._vd1 = setTimeout(() => { b.classList.add('off'); this._vd2 = setTimeout(() => { n++; step(); }, 250); }, 250); }; step(); },
   poker(num) { const b = $('pokerBox'); if (!b) return; clearTimeout(this._pk1); clearTimeout(this._pk2); b.innerHTML = '<i class="pc tl">♠</i><i class="pc tr">♥</i><i class="pc bl">♦</i><i class="pc br">♣</i><em>賭一把</em><strong>' + num + '</strong><small>3 秒後消失・65% 為真</small>'; b.classList.remove('hidden'); let n = 0; const step = () => { if (n >= 5) { b.classList.add('hidden'); return; } b.classList.remove('off'); this._pk1 = setTimeout(() => { b.classList.add('off'); this._pk2 = setTimeout(() => { n++; step(); }, 240); }, 360); }; step(); },
   stunFx(sec) { const e = this.els.deadv; e.style.opacity = .75; clearTimeout(this._st); this._st = setTimeout(() => { if (G.player && G.player.alive) e.style.opacity = 0; }, sec * 1000); },
   goText() { this.goT = 1; this._cd = 0; $('cdNum').textContent = '開始！'; $('cdTxt').textContent = '戰鬥開始'; this.els.countdown.classList.remove('hidden'); },
@@ -868,7 +869,7 @@ function boot() {
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
 setInterval(() => { try { UI.renderPills(); } catch (e) { } }, 120);
-window.__G = { hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+window.__G = { cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 
 // 檢查是否有新版（防止 PWA 快取舊版）

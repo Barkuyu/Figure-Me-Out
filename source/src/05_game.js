@@ -35,7 +35,7 @@ function newActor(name, outfit, isPlayer) {
   makePlate(a); return a;
 }
 function assignNumber(a) {
-  const mix = !G.codeLen, L = G.codeLen || randi(3, 6); let n; do { n = String(randi(Math.pow(10, L - 1), Math.pow(10, L) - 1)); } while (G.actors.some(o => o !== a && (o.number === n || (mix && o.number && (o.number.startsWith(n) || n.startsWith(o.number))))));
+  const mix = !G.codeLen, L = G.codeLen || randi(3, 6); let n; do { n = String(randi(Math.pow(10, L - 1), Math.pow(10, L) - 1)); } while (G.actors.some(o => o !== a && (o.number === n || (mix && o.number && (o.number.startsWith(n) || n.startsWith(o.number))))) || (G.clones && G.clones.some(c => c.number === n)));
   if (G.sk && G.sk.gis && G.sk.gis.t > 0) { a.realNum = n; a.number = repdigit(n.length); } else a.number = n; drawPlate(a);
 }
 function spawnActor(a, fixed) {
@@ -47,6 +47,7 @@ function spawnActor(a, fixed) {
   if (a.remote) { a.rsC = (a.rsC || 0) + 1; a.net = null; }
   { const nog = GKEY_HEROES.includes(a.av.outfitIdx); if (a.slots) a.slots.noG = nog; if (a.isPlayer) G.slots.noG = nog; if (nog && a.isPlayer) G.slots[1] = null; }
   if (G.mode === 'hunt' && !G.multi && (a.isPlayer || a.remote)) { a.number = ''; a.fake = null; drawPlate(a); } else assignNumber(a);
+  a.miniT = 0; a.chamT = 0; a.fdT = 0; a.vdT = 0; a.vdHold = 0; if (a.vdKeep && !G.actors.some(o => o !== a && o.number === a.vdKeep)) { a.number = a.vdKeep; drawPlate(a); a.vdHold = 10; } a.vdKeep = null; a.vdShowAt = a.vdKiller ? G.time + 3 : undefined;
   if (!a.isPlayer && !a.remote) {
     a.slots = [null, null]; a.mode = 'roam'; a.threatT = 0; a.reader = null;
   }
@@ -87,18 +88,18 @@ function spawnAll() {
   for (let i = 0; i < n; i++) spawnActor(A[i], [pts[i][0], pts[i][1], yawFor(i)[0], pts[i][2] | 0]);
 }
 /* ---------- 英雄技能 ---------- */
-const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null, 'steal', 'dack', 'nox', 'charge', null, null, 'rel', 'revert', 'gis', null, 'neg', 'quick', 'ange', null, 'peace', null, null, 'ward', null, null, 'frost', 'beacon', 'drum', 'guard', 'vocal', null, null, null, null];
-const PASSIVE_IDX = [3, 5, 8, 11, 12, 13, 19, 20, 24, 28, 30, 31, 33, 34, 40, 41];
+const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null, 'steal', 'dack', 'nox', 'charge', null, null, 'rel', 'revert', 'gis', null, 'neg', 'quick', 'ange', null, 'peace', null, null, 'ward', null, null, 'frost', 'beacon', 'drum', 'guard', 'vocal', null, null, null, null, 'medi', 'mirror', 'cham', 'lian', 'mini', 'voodoo', 'enigma', 'decoy', null];
+const PASSIVE_IDX = [3, 5, 8, 11, 12, 13, 19, 20, 24, 28, 30, 31, 33, 34, 40, 41, 52];
 const GKEY_HEROES = [18, 26, 27]; // 沒有 G 道具格、G 鍵改為技能鍵的英雄
-const HERO_CLASSES = [['先手型', '#ff9a3c', [39, 1, 11, 18, 24, 16, 17, 30, 31, 34, 40, 42, 43]], ['輔助型', '#4fd38a', [29, 26, 27, 32, 33, 35, 36, 37, 38, 41]], ['偽裝型', '#b48cff', [25, 21, 4, 22]], ['突進型', '#ff5a5a', [9, 19, 8]], ['把戲型', '#ffd24a', [0, 2, 6, 10, 15, 20]], ['進攻型', '#4fb0ff', [7, 23, 12, 5, 3, 13, 28]]]; // 英雄分類
-const HERO_TIERS = [['S 級', '#ff4d6d', [15, 39]], ['A 級', '#ffb020', [18, 17, 4, 21, 0, 6, 10, 7, 23, 28, 42, 43]], ['B 級', '#4fb0ff', [16, 29, 26, 27, 32, 35, 36, 25, 9, 19, 8, 2, 12, 13, 40, 41]], ['C 級', '#9aa3b2', [1, 11, 24, 30, 31, 34, 33, 37, 38, 22, 20, 5, 3]]]; // 英雄等級
-const CHANT = { revert: .5, gis: 1, neg: 1.5 }; // 吟唱秒數
+const HERO_CLASSES = [['先手型', '#ff9a3c', [39, 1, 11, 18, 24, 16, 17, 30, 31, 34, 40, 42, 43]], ['輔助型', '#4fd38a', [29, 26, 27, 32, 33, 35, 36, 37, 38, 41, 44]], ['偽裝型', '#b48cff', [25, 21, 4, 22, 45, 46, 47, 48, 50, 51]], ['突進型', '#ff5a5a', [9, 19, 8, 52]], ['把戲型', '#ffd24a', [0, 2, 6, 10, 15, 20, 49]], ['進攻型', '#4fb0ff', [7, 23, 12, 5, 3, 13, 28]]]; // 英雄分類
+const HERO_TIERS = [['S 級', '#ff4d6d', [15, 39]], ['A 級', '#ffb020', [18, 17, 4, 21, 0, 6, 10, 7, 23, 28, 42, 43, 51]], ['B 級', '#4fb0ff', [16, 29, 26, 27, 32, 35, 36, 25, 9, 19, 8, 2, 12, 13, 40, 41, 47, 48, 49]], ['C 級', '#9aa3b2', [1, 11, 24, 30, 31, 34, 33, 37, 38, 22, 20, 5, 3, 44, 45, 46, 50, 52]]]; // 英雄等級
+const CHANT = { cham: 1, revert: .5, gis: 1, neg: 1.5 }; // 吟唱秒數
 const isOut = (a, i) => skOn() && a.av && (a.av.outfitIdx === i || a.passIdx === i); // 對應 OUTFITS：蘇蘇／艾迪／艾伯特／蘇米(被動)／艾瑞克／麥克(被動)
 const skOn = () => G.skillsOn !== false && !(G.sk && G.sk.ban && G.sk.ban.t > 0); // 停戰宣告期間：全場技能停用
 const isSumi = a => isOut(a, 3);
 const jumpMul = a => isSumi(a) ? 1.285 : 1; // 高度 1.65 倍 → 初速 √1.65 倍
-const speedMul = a => isOut(a, 5) ? 2.5 : isOut(a, 13) ? .7 : 1;
-const SKILLS = { vocal: { name: '聲波咒術', cd: 20, ico: '🎤' }, ward: { name: '警戒結界', cd: 20, ico: '☯️' }, frost: { name: '冰封領域', cd: 20, ico: '❄️' }, beacon: { name: '通天視野', cd: 15, ico: '🔴' }, drum: { name: '戰鼓鼓舞', cd: 15, ico: '🥁' }, guard: { name: '替身契約', cd: 15, ico: '🤝' }, revert: { name: '逆流術士', cd: 0, ico: '⏪' }, gis: { name: '連號甜心', cd: 50, ico: '💖' }, neg: { name: '負領域展開', cd: 20, ico: '🎞️' }, quick: { name: '瞬影瞬行', cd: .5, ico: '🏃🏻‍♂️‍➡️' }, ange: { name: '天使之息', cd: 3, ico: '🧚🏻‍♀️' }, peace: { name: '停戰宣告', cd: 15, ico: '🕊️' }, rel: { name: '相對論', cd: 30, ico: '🔀' }, charge: { name: '衝鋒陷陣', cd: 10, ico: '🏃🏻' }, steal: { name: '命運拷貝', cd: 1, ico: '🔮' }, dack: { name: '生化操作', cd: 15, ico: '🧪' }, nox: { name: '夜間戰術', cd: 30, ico: '🌑' }, ink: { name: '烏賊戲法', cd: 25, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 20, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 20, ico: '🐱' }, mind: { name: '心靈控制', cd: 20, ico: '🌀' }, cloak: { name: '幻影易容', cd: 25, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 20, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 15, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 25, ico: '⚡' } };
+const speedMul = a => isOut(a, 5) ? 2.5 : isOut(a, 13) ? .7 : isOut(a, 52) ? 1.2 : 1;
+const SKILLS = { medi: { name: '暫時的休止符', cd: 15, ico: '🕊️' }, mirror: { name: '鏡像混亂', cd: 15, ico: '🪞' }, cham: { name: '半透明視線', cd: 15, ico: '🦎' }, lian: { name: '死胡同', cd: 20, ico: '⚰️' }, mini: { name: '超級縮小', cd: 20, ico: '🔬' }, voodoo: { name: '巫毒反殺', cd: 20, ico: '🪆' }, enigma: { name: '亂碼術', cd: 20, ico: '❓' }, decoy: { name: '影子突進', cd: 10, ico: '👥' }, vocal: { name: '聲波咒術', cd: 20, ico: '🎤' }, ward: { name: '警戒結界', cd: 20, ico: '☯️' }, frost: { name: '冰封領域', cd: 20, ico: '❄️' }, beacon: { name: '通天視野', cd: 15, ico: '🔴' }, drum: { name: '戰鼓鼓舞', cd: 15, ico: '🥁' }, guard: { name: '替身契約', cd: 15, ico: '🤝' }, revert: { name: '逆流術士', cd: 0, ico: '⏪' }, gis: { name: '連號甜心', cd: 50, ico: '💖' }, neg: { name: '負領域展開', cd: 20, ico: '🎞️' }, quick: { name: '瞬影瞬行', cd: .5, ico: '🏃🏻‍♂️‍➡️' }, ange: { name: '天使之息', cd: 3, ico: '🧚🏻‍♀️' }, peace: { name: '停戰宣告', cd: 15, ico: '🕊️' }, rel: { name: '相對論', cd: 30, ico: '🔀' }, charge: { name: '衝鋒陷陣', cd: 10, ico: '🏃🏻' }, steal: { name: '命運拷貝', cd: 1, ico: '🔮' }, dack: { name: '生化操作', cd: 15, ico: '🧪' }, nox: { name: '夜間戰術', cd: 30, ico: '🌑' }, ink: { name: '烏賊戲法', cd: 25, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 20, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 20, ico: '🐱' }, mind: { name: '心靈控制', cd: 20, ico: '🌀' }, cloak: { name: '幻影易容', cd: 25, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 20, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 15, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 25, ico: '⚡' } };
 const DACK_T = 21; // 濃霧：1 秒戴鏡 + 20 秒噴發
 const immune = a => a.alive && ((isOut(a, 11) && (a.cleanW || 0) > 0) || (a.imm || 0) > 0); // 蕾西亞淨化窗口：無效化一切攻擊與技能
 const REL_WARN = 2, REL_DUR = 20; // 相對論：2 秒警笛 + 20 秒左右互換
@@ -124,7 +125,7 @@ const CH_V = 18, CH_T = .155, CH_BV = 9.6, CH_BT = .25;
 const faceYaw = (a, t) => Math.atan2(-(t.x - a.x), -(t.z - a.z));
 const isStunBy = o => !!o && o.av && (o.av.outfitIdx === 18 || o.av.outfitIdx === 31);
 const wardenAffects = a => { for (const o of G.actors) if (o !== a && o.wd && o.alive && enemyOf(o, a) && Math.hypot(o.x - a.x, o.z - a.z) < 5) return true; return false; };
-const iceAffects = a => { if (!G.zones || !a.alive) return false; for (const z of G.zones) if (z.t > 0 && z.by && enemyOf(z.by, a) && Math.hypot(z.x - a.x, z.z - a.z) < z.r) return true; return false; };
+const iceAffects = a => { if (!G.zones || !a.alive) return false; for (const z of G.zones) if (z.k === 'ice' && z.t > 0 && z.by && enemyOf(z.by, a) && Math.hypot(z.x - a.x, z.z - a.z) < z.r) return true; return false; };
 function startCharge(a, aim, kind) {
   let dir = FWD(a.yaw);
   if (a.isPlayer) { const f = dir, rx = Math.cos(a.yaw), rz = -Math.sin(a.yaw); let mx = In.mx, my = In.my; if (revActive(a)) { mx = -mx; my = -my; } if (relPhase2(a)) mx = -mx; const l = Math.hypot(mx, my); if (l > .15) dir = [(f[0] * my + rx * mx) / l, (f[1] * my + rz * mx) / l]; } // 依位移鍵方向衝撞
@@ -165,6 +166,7 @@ function finishChant(a, k) {
     for (const o of G.actors) { if (o.read) o.read[r.who.id] = 0; if (o.typing && o.typing.target === r.who) o.typing = null; }
     skMsg(a, '發動【逆流術士】！' + r.who.name + ' 的號碼被回溯成舊的一組');
   }
+  else if (k === 'cham') { a.chamT = 6; skMsg(a, '發動【半透明視線】！身形變得半透明，8 公尺外看不清號碼 6 秒'); }
   else if (k === 'gis') { gisStart(a); skMsg(a, '發動【連號甜心】！全場號碼變成連號 4 秒'); }
   else if (k === 'neg') { G.sk.neg = { t: 7, by: a }; skMsg(a, '發動【負領域展開】！全場視角負片化 7 秒'); }
 }
@@ -178,12 +180,13 @@ function angeCast(a) {
 }
 function endAllSkills() {
   const K = G.sk; K.rev.t = 0; K.scr.t = -1; K.ink.t = 0; K.eagle.t = 0; K.night = { e: 0, by: null }; K.rel.t = -1; K.neg.t = -1; gisEnd();
-  for (const a of G.actors) { a.dackE = -1; a.cloak = false; if (a.fake && a.fakeOf) uncloak(a, false); a.shieldT = 0; a.wkT = 0; a.wkPre = 0; a.chg = null; a.chant = null; a.ctrlT = 0; a.frz = 0; a.imm = 0; a.rayJ = false; a.armed = false; a.stolen = null; a.wdT = 0; a.wd = false; a.drumT = 0; }
+  for (const a of G.actors) { a.dackE = -1; a.cloak = false; if (a.fake && a.fakeOf) uncloak(a, false); a.shieldT = 0; a.wkT = 0; a.wkPre = 0; a.chg = null; a.chant = null; a.ctrlT = 0; a.frz = 0; a.imm = 0; a.rayJ = false; a.armed = false; a.stolen = null; a.wdT = 0; a.wd = false; a.drumT = 0; a.miniT = 0; a.chamT = 0; a.fdT = 0; a.vdT = 0; }
+  for (const c of G.clones) c.t = 0;
   K.beacon.t = 0; K.guard.t = 0; G.zones = [];
 }
 function killByCode(att, code, only) { // 輸入一組號碼，可同時擊殺所有顯示同號的敵方（連號甜心）
   const ts = only || G.actors.filter(o => o !== att && o.alive && o.number && o.number === code && enemyOf(att, o) && o.protect <= 0), ks = G.killSeq || 0;
-  for (const o of ts) eliminate(att, o); if ((G.killSeq || 0) > ks) kenBonus(att, code); return ts.length;
+  for (const o of ts) eliminate(att, o); if ((G.killSeq || 0) > ks) kenBonus(att, code); return ts.length + (only ? 0 : killClones(att, code));
 }
 /* ===== 肯尼系列：序列奇蹟／梅開二度／梅開三度 ===== */
 const WRONG_STUN = 1.5; // 輸入錯誤的定身秒數
@@ -232,19 +235,58 @@ function kenSubmit(a, code) { // 肯尼系列的輸入判定（本機／主機�
   const kd = kenKind(a); if (!kd) return;
   const mine = G.actors.filter(o => o !== a && o.alive && o.number && enemyOf(a, o)), dist = o => Math.hypot(o.x - a.x, o.z - a.z), near = l => l.slice().sort((x, y) => dist(x) - dist(y))[0];
   if (kd === 'two' || kd === 'three') {
-    const fn = kd === 'two' ? subSeq : subBag, cs = mine.filter(o => fn(code, o.number)); let why = '';
+    const fn = kd === 'two' ? subSeq : subBag, cs = mine.concat(G.clones.filter(c => c.alive && c.owner !== a && (isDM() || c.owner.team !== a.team))).filter(o => fn(code, o.number)); let why = '';
     if (!cs.length) { const dead = G.actors.find(o => o !== a && !o.alive && o.number && enemyOf(a, o) && fn(code, o.number)); why = dead ? '符合這組數字的玩家「' + dead.name + '」已經被擊殺了' : '場上沒有任何敵方號碼符合你輸入的這 ' + code.length + ' 碼（可能輸入有誤，或目標號碼已更新）'; }
+    else if (near(cs).isClone) { killClone(a, near(cs)); }
     else { const t = near(cs), ks = G.killSeq || 0; eliminate(a, t); if ((G.killSeq || 0) === ks) why = '鎖定的目標「' + t.name + '」未被擊殺：' + (G.elimFail || '攻擊未生效'); }
     if (why) kenDie(a, why); return;
   }
   let hit = mine.filter(o => o.number === code);
   if (!hit.length) { const al = mine.filter(o => digSort(o.number, kd) === code); if (al.length) hit = [near(al)]; }
+  if (!hit.length && cloneOf(a, code, true)) { killClones(a, code); return; }
   if (hit.length) { const ok = hit.filter(o => o.protect <= 0); if (!ok.length) { notify(a, '無法擊殺', '對方仍在重生保護中，這次輸入沒有生效。', 0); return; } killByCode(a, code, ok); return; }
   if (G.actors.some(o => o !== a && o.alive && o.number === code && !enemyOf(a, o))) { notify(a, '友軍號碼', '這是隊友的號碼，沒有造成任何影響。', 0); return; }
   const fh = G.actors.find(o => o !== a && o.alive && o.fake === code);
   if (fh) { notify(a, '偽裝號碼 · 免受懲罰', '你輸入的是 ' + fh.name + ' 頭上「偽裝或變造後的號碼」，並非他真正的號碼，所以沒有擊殺成功。因【序列奇蹟】的規則，這次輸入不會受到任何懲罰。', 0); return; }
   if (isOut(a, 24)) { notify(a, '藐視罰則', '輸錯號碼，不受懲罰。', 0); return; }
   a.streak = 0; a.cloak = false; notify(a, '號碼錯誤', '場上沒有符合的號碼（序列奇蹟只接受原號碼或其' + (kd === 'asc' ? '由小到大' : '由大到小') + '排序）。定身 ' + WRONG_STUN + ' 秒。', WRONG_STUN);
+}
+
+/* ===== 新英雄機制：休止符範圍、分身、巫毒顯示 ===== */
+G.clones = []; let _cid = 0;
+function peaceBlocks(k, v) { for (const z of G.zones) if (z.k === 'peace' && z.t > 0 && z.by && z.by.alive && Math.hypot(z.by.x - k.x, z.by.z - k.z) <= z.r && Math.hypot(z.by.x - v.x, z.by.z - v.z) <= z.r) return true; return false; }
+function cloneSpawn(a, kind) {
+  const old = a.realNum !== undefined ? a.realNum : a.number, f = FWD(a.yaw);
+  const c = { id: ++_cid, isClone: true, kind, owner: a, av: a.av, team: a.team, x: a.x, y: a.y, z: a.z, yaw: a.yaw, animT: 0, sp: 1, fall: 0, number: old, fake: null, kills: 0, redT: 0, lo: 0, alive: true, t: kind === 'mirror' ? 8 : 12, fx: f[0], fz: f[1], plateScale: 1, moving: true };
+  if (kind === 'mirror') { c.cx = a.x; c.cz = a.z; c.ang = Math.random() * TAU; c.x = c.cx + Math.cos(c.ang) * 2; c.z = c.cz + Math.sin(c.ang) * 2; } else { c.dx = f[0]; c.dz = f[1]; c.x = a.x + f[0] * .8; c.z = a.z + f[1] * .8; }
+  makePlate(c); G.clones.push(c); puffFx(c);
+  if (old !== '') { if (a.realNum !== undefined) a.realNum = undefined; assignNumber(a); for (const o of G.actors) { if (o.read) o.read[a.id] = 0; if (o.typing && o.typing.target === a) o.typing = null; } }
+  G.feedVer = (G.feedVer || 0) + 1;
+}
+function cloneTick(dt) {
+  const bn = World.bounds;
+  for (let i = G.clones.length - 1; i >= 0; i--) {
+    const c = G.clones[i]; c.t -= dt;
+    if (c.t <= 0 || !c.alive) { R.freeTex(c.plateTex); G.clones.splice(i, 1); continue; }
+    if (c.kind === 'mirror') { c.ang += dt * 1.75; const ox = c.x, oz = c.z; c.x = c.cx + Math.cos(c.ang) * 2; c.z = c.cz + Math.sin(c.ang) * 2; c.yaw = Math.atan2(-(c.x - ox), -(c.z - oz)); c.moving = true; }
+    else if (c.moving) { const nx = c.x + c.dx * 8 * dt, nz = c.z + c.dz * 8 * dt; if (nx < bn.x0 + .7 || nx > bn.x1 - .7 || nz < bn.z0 + .7 || nz > bn.z1 - .7) c.moving = false; else { c.x = nx; c.z = nz; } }
+    c.sp = c.moving ? 1 : 0; c.gy = groundAt(c.x, c.z, c.y + .6); if (c.kind === 'decoy') c.y = Math.max(0, c.gy);
+  }
+}
+function fxAnim(dt) {
+  for (const a of G.actors) { const tg = (a.fdT > 0 || a.fd) ? 1 : 0, v = a.fdLie || 0; a.fdLie = v + clamp(tg - v, -dt * 3, dt * 3); }
+  for (const c of G.clones) c.animT += dt * (5 + c.sp * 9) * (c.sp ? 1 : 0);
+}
+const cloneOf = (att, code, enemy) => G.clones.some(c => c.alive && c.number === code && c.owner !== att && ((isDM() || c.owner.team !== att.team) === enemy));
+function killClone(att, c) { c.alive = false; puffFx(c); const m = att.name + ' 擊毀了 ' + c.owner.name + ' 的分身'; netMsg(m, 'item'); if (att.isPlayer) { Sfx.kill(); UI.msg(m, 'good'); } else UI.msg(m, 'item'); }
+function killClones(att, code) { let n = 0; for (const c of G.clones) if (c.alive && c.number === code && c.owner !== att && (isDM() || c.owner.team !== att.team)) { killClone(att, c); n++; } return n; }
+function vdShow(a) {
+  const kk = a.vdKiller; a.vdShowAt = undefined; a.vdKiller = null; if (!kk) return;
+  const num = kk.realNum !== undefined ? kk.realNum : kk.number; if (!num) return;
+  for (const o of G.actors) {
+    if (o !== a && (isDM() || o.team !== a.team)) continue;
+    if (o.isPlayer) UI.vdFlash(kk.name, num); else if (o.remote) o.ntf = { id: (o.ntf ? o.ntf.id : 0) + 1, t: '#VD' + kk.name + '|' + num, s: 0 };
+  }
 }
 function castSkill(a) {
   if (!skOn() || !a || !a.alive || G.state !== 'playing' || G.countdown > 0) return false;
@@ -279,6 +321,12 @@ function runSkill(a, k, useCd) {
   else if (k === 'quick') startCharge(a, true, 'quick');
   else if (k === 'ange') angeCast(a);
   else if (k === 'ward') { a.wdT = 10; a.wd = true; skMsg(a, '發動【警戒結界】！10 秒內範圍內的敵人被壓制'); }
+  else if (k === 'medi') { G.zones.push({ k: 'peace', x: a.x, z: a.z, r: 6, t: 6, by: a }); skMsg(a, '發動【暫時的休止符】！6 公尺內的所有人 6 秒內無法互相攻擊'); }
+  else if (k === 'mirror') { cloneSpawn(a, 'mirror'); skMsg(a, '發動【鏡像混亂】！留下一個同號碼的分身，本體換上新號碼'); }
+  else if (k === 'decoy') { cloneSpawn(a, 'decoy'); skMsg(a, '發動【影子突進】！替身朝前方奔去，本體換上新號碼'); }
+  else if (k === 'lian') { a.fdT = 3; a.protect = Math.max(a.protect, 3.05); a.frz = Math.max(a.frz || 0, 3); a.typing = null; a.chg = null; if (a.isPlayer) { G.lock = 3; G.typed = ''; UI.dirty = true; } else if (a.remote) a.ntf = { id: (a.ntf ? a.ntf.id : 0) + 1, t: '#LK3', s: 0 }; skMsg(a, '發動【死胡同】！假裝被擊殺倒下 3 秒'); }
+  else if (k === 'mini') { a.miniT = 8; skMsg(a, '發動【超級縮小】！身形縮小，移動速度提升 8 秒'); }
+  else if (k === 'voodoo' || k === 'enigma') { a.vdT = 5; skMsg(a, '發動【' + SKILLS[k].name + '】！接下來 5 秒內的擊殺與被擊殺將觸發反制效果'); }
   else if (k === 'frost') { G.zones.push({ k: 'ice', x: a.x, z: a.z, r: 5, t: 6, by: a }); skMsg(a, '發動【冰封領域】！腳下展開 6 秒冰面'); }
   else if (k === 'beacon') { G.sk.beacon = { t: 8, by: a }; skMsg(a, '發動【通天視野】！敵人頭頂射出紅光柱 8 秒'); }
   else if (k === 'drum') { let n = 0; for (const o of G.actors) { if (!o.alive || (o !== a && (enemyOf(a, o) || Math.hypot(o.x - a.x, o.z - a.z) > 12))) continue; o.drumT = 8; n++; } skMsg(a, '發動【戰鼓鼓舞】！' + n + ' 人移動速度 +45% 8 秒'); }
@@ -302,8 +350,9 @@ function skTick(dt) {
     if (isOut(a, 11) && a.alive) { a.cleanT = (a.cleanT ?? 2) - dt; if (a.cleanT <= 0) { a.cleanT = 2; a.cleanW = .5; cleanse(a); } else if ((a.cleanW || 0) > 0) { a.cleanW -= dt; cleanse(a, true); } } else a.cleanW = 0;
     if (a.chg) chargeTick(a, dt);
     if (a.frz > 0) a.frz -= dt; if ((a.windowT || 0) > 0) a.windowT -= dt;
+    if (a.miniT > 0) a.miniT -= dt; if (a.chamT > 0) a.chamT -= dt; if (a.fdT > 0) a.fdT -= dt; if (a.vdT > 0) a.vdT -= dt; if (a.vdHold > 0) { a.vdHold -= dt; if (a.vdHold <= 0) { a.vdHold = 0; if (a.alive) assignNumber(a); } } if (a.vdShowAt !== undefined && a.alive && G.time >= a.vdShowAt) vdShow(a);
     if (a.wdT > 0) { a.wdT -= dt; a.wd = a.wdT > 0 && a.alive; } else a.wd = false; if (a.drumT > 0) a.drumT -= dt; if (a.freeEn > 0) a.freeEn -= dt;
-    a.wdHit = wardenAffects(a); a.slowM = a.wdHit ? .5 : 1; a.spdM = a.slowM * (a.drumT > 0 ? 1.45 : 1); a.icy = iceAffects(a);
+    a.wdHit = wardenAffects(a); a.slowM = a.wdHit ? .5 : 1; a.spdM = a.slowM * (a.drumT > 0 ? 1.45 : 1) * (a.miniT > 0 ? 1.7 : 1); a.icy = iceAffects(a);
     if (isOut(a, 30) && a.alive) { const mv = Math.hypot(a.x - (a._gx ?? a.x), a.z - (a._gz ?? a.z)) / Math.max(dt, .001) > .5; a._gx = a.x; a._gz = a.z; a.stillT = mv ? 0 : (a.stillT || 0) + dt; a.gdSmall = a.stillT > 1.5; } else a.gdSmall = false;
     if (isOut(a, 34) && a.alive) { if (!a.amulet) { a.amT = (a.amT || 0) + dt; if (a.amT >= 30) { a.amulet = true; a.amT = 30; if (a.isPlayer) UI.msg('號碼護符已生成！', 'item'); } } } else if (!isOut(a, 34)) a.amulet = false;
     if ((a.imm || 0) > 0) { a.imm -= dt; cleanse(a, true); }
@@ -321,6 +370,7 @@ function skTick(dt) {
   }
   for (const a of G.actors) { if (a.fake) { a.fakeT -= dt; if (a.fakeT <= 0 || !a.alive || (a.fakeOf && (!a.fakeOf.alive || a.fakeOf.number !== a.fake))) uncloak(a, a.alive && !!a.fakeOf); } if (!a.wdHit) a.skCd = Math.max(0, (a.skCd || 0) - dt); a.shieldT = Math.max(0, (a.shieldT || 0) - dt); if (a.say) { a.say.t -= dt; if (a.say.t <= 0) a.say = null; } }
   if (G.sk.rel.t >= 0) { G.sk.rel.t += dt; if (G.sk.rel.t >= REL_WARN + REL_DUR) G.sk.rel.t = -1; }
+  for (const z of G.zones) if (z.k === 'peace' && z.by) { if (z.by.alive) { z.x = z.by.x; z.z = z.by.z; } else z.t = 0; }
   for (let i = G.zones.length - 1; i >= 0; i--) { G.zones[i].t -= dt; if (G.zones[i].t <= 0) G.zones.splice(i, 1); } if (G.sk.beacon.t > 0) G.sk.beacon.t -= dt; if (G.sk.guard.t > 0) G.sk.guard.t -= dt;
   if (G.sk.neg.t >= 0) { G.sk.neg.t -= dt; if (G.sk.neg.t <= 0) G.sk.neg.t = -1; } if (G.sk.ban.t > 0) G.sk.ban.t -= dt; if (G.sk.gis.t > 0) { G.sk.gis.t -= dt; if (G.sk.gis.t <= 0) gisEnd(); }
   if (G.sk.rev.t > 0) G.sk.rev.t -= dt; if (G.sk.scr.t >= 0) { G.sk.scr.t += dt; if (G.sk.scr.t >= SCR_TOTAL) G.sk.scr.t = -1; }
@@ -534,6 +584,7 @@ function updateFlags(dt) {
 function eliminate(k, v) {
   { const gd = G.sk.guard; if (gd.t > 0 && gd.by && gd.by.alive && k !== v && v !== gd.by && skOn() && !enemyOf(gd.by, v) && enemyOf(gd.by, k)) { const m = gd.by.name + ' 替 ' + v.name + ' 承擔了攻擊！'; UI.msg(m, 'item'); netMsg(m, 'item'); v = gd.by; } }
   G.elimFail = '';
+  if (k !== v && v.alive && peaceBlocks(k, v)) { G.elimFail = '雙方都在「暫時的休止符」範圍內，無法互相攻擊'; notify(k, '休止符生效中', '你與對方都在「暫時的休止符」的 6 公尺範圍內，這段時間無法互相攻擊。', 0); return; }
   if (k !== v && v.alive && immune(v)) { G.elimFail = '對方的「淨化之光」無效化了攻擊'; const m = v.name + ' 的淨化之光無效化了 ' + k.name + ' 的攻擊！'; UI.msg(m, k.isPlayer ? 'bad' : 'item'); netMsg(m, 'item'); if (k.isPlayer) Sfx.wrong(); return; }
   if (k !== v && v.alive && skOn() && isOut(v, 34) && v.amulet) { G.elimFail = '對方的「號碼護符」抵擋了攻擊'; v.amulet = false; v.amT = 0; blockHit(k, v, '號碼護符'); return; }
   if (k !== v && v.alive && v.shieldT > 0) { G.elimFail = '對方的護盾擋下了攻擊'; blockHit(k, v); return; }
@@ -545,6 +596,8 @@ function eliminate(k, v) {
     if (isOut(k, 18) && (k.skCd || 0) > 0) { k.skCd = 0; skMsg(k, '擊殺成功，【衝鋒陷陣】立即刷新！'); }
     if (isOut(k, 19)) { if (k.wkT > 0) { k.wkT = 6; } else if (!k.wkPre && (k.skCd || 0) <= 0) { k.wkPre = .3; puffFx(k); } }
   }
+  if (k !== v && v.vdT > 0 && !v.vdKiller) v.vdKiller = k;
+  if (k !== v && k.vdT > 0) v.vdKeep = v.realNum !== undefined ? v.realNum : v.number;
   if (skOn() && k !== v && isOut(v, 31) && k.alive && !immune(k)) { k.ctrlT = 3; k.ctrlBy = v; k.typing = null; k.chg = null; k.chant = null; skMsg(v, '【以牙還牙】' + k.name + ' 被暈眩 3 秒！'); }
   if (skOn() && k !== v && isOut(k, 39) && k.voiceT !== undefined && G.time - k.voiceT < .6) { k.vkill = true; k.skCd = 0; skMsg(k, '聲波咒術擊殺成功，技能立即刷新！'); }
   k.lastKillT = G.time; if (k.cloak) k.cloakE = 0; const mul = (k !== v && isOut(k, 13) && G.time - (k.binAt ?? -99) <= 8) ? 2 : 1;
@@ -609,7 +662,9 @@ function submitNumber() {
     if (en.every(a => a.protect > 0)) { UI.msg('對方有重生保護', 'bad'); G.typed = ''; UI.dirty = true; return; }
     if (G.netClient) { netAct(['k', G.actors.indexOf(en[0]), code, (p.voiceT !== undefined && G.time - p.voiceT < .6) ? 1 : 0]); G.typed = ''; UI.dirty = true; return; }
     G.typed = ''; UI.dirty = true; const n = killByCode(p, code); if (n > 1) UI.msg('一次擊殺 ' + n + ' 人！', 'good');
-  } else if (t) { UI.msg('這是隊友的號碼！', 'bad'); Sfx.wrong(); G.typed = ''; UI.dirty = true; UI.shake(); }
+  } else if (cloneOf(p, code, true)) { G.typed = ''; UI.dirty = true; if (G.netClient) netAct(['k', -1, code]); else killClones(p, code); }
+  else if (cloneOf(p, code, false)) { UI.msg('這是友軍的分身！', 'bad'); Sfx.wrong(); G.typed = ''; UI.dirty = true; UI.shake(); }
+  else if (t) { UI.msg('這是隊友的號碼！', 'bad'); Sfx.wrong(); G.typed = ''; UI.dirty = true; UI.shake(); }
   else if (isOut(p, 24)) { UI.msg('藐視罰則：輸錯號碼，不受懲罰', 'item'); G.typed = ''; UI.dirty = true; }
   else { if (G.netClient && (code === p.number || code === G.pkCode)) netAct(['k', -1, code]); p.streak = 0; p.cloak = false; Sfx.wrong(); UI.msg('號碼錯誤！定身 1.5 秒', 'bad'); G.lock = WRONG_STUN; G.freezeT = WRONG_STUN; p.redT = WRONG_STUN; if (G.netClient) netAct(['w']); UI.shake(); UI.stunFx(WRONG_STUN); setTimeout(() => { G.typed = ''; UI.dirty = true; }, 350); }
 }
@@ -623,7 +678,7 @@ function updatePlayer(dt) {
   p.yaw += In.lookX; p.pitch = clamp(p.pitch + In.lookY, -1.45, 1.45); In.lookX = In.lookY = 0;
   const f = FWD(p.yaw), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
   if (p.alive) {
-    if (G.netClient) { p.wdHit = wardenAffects(p); p.slowM = p.wdHit ? .5 : 1; p.spdM = p.slowM * (p.drumT > 0 ? 1.45 : 1); p.icy = iceAffects(p); if (p.freeEn > 0) p.freeEn -= dt; if (p.drumT > 0) p.drumT -= dt; }
+    if (G.netClient) { p.wdHit = wardenAffects(p); p.slowM = p.wdHit ? .5 : 1; p.spdM = p.slowM * (p.drumT > 0 ? 1.45 : 1) * (p.miniT > 0 ? 1.7 : 1); p.icy = iceAffects(p); if (p.freeEn > 0) p.freeEn -= dt; if (p.drumT > 0) p.drumT -= dt; if (p.miniT > 0) p.miniT -= dt; }
     let mx = In.mx, my = In.my; if (G.freezeT > 0) { mx = my = 0; G.freezeT -= dt; p.redT = Math.max(0, G.freezeT); }
     if (G.netClient && p.frz > 0) p.frz -= dt; if (p.frz > 0) mx = my = 0;
     if (revActive(p)) { mx = -mx; my = -my; } if (relPhase2(p)) mx = -mx;
@@ -642,7 +697,7 @@ function updatePlayer(dt) {
     if (jp) {
       if (p.onGround) { p.vy = 7.1 * jumpMul(p); p.onGround = false; p.jumps = 1; Sfx.tone(420, .08, 'triangle', .08, 260); }
       else if (isSumi(p) && p.jumps >= 2 && p.dashReady) { p.dashReady = false; p.dashT = .2025; const fw = ml > .1 ? [f[0] * my + rx * mx, f[1] * my + rz * mx] : f, fl = Math.hypot(fw[0], fw[1]) || 1; p.dashV = [fw[0] / fl * 24, fw[1] / fl * 24]; Sfx.noise(.2, .18, 2500, 0, true); Sfx.tone(300, .2, 'sawtooth', .06, 500); }
-      else if ((p.jumps || 0) < 2) { p.vy = 6.9 * jumpMul(p); p.jumps = 2; p.dashReady = isSumi(p); Sfx.tone(620, .1, 'triangle', .09, 380); }
+      else if ((p.jumps || 0) < (isOut(p, 52) ? 3 : 2)) { const n = p.jumps || 1; p.vy = isOut(p, 52) ? 7.1 * Math.pow(1.2, n / 2) : 6.9 * jumpMul(p); p.jumps = n + 1; p.dashReady = isSumi(p); Sfx.tone(620 + n * 120, .1, 'triangle', .09, 380); }
     }
     if (p.chg) { if (G.netClient) chargeTick(p, dt); p.vx = p.chg ? p.chg.vx : 0; p.vz = p.chg ? p.chg.vz : 0; }
     if ((p.dashT || 0) > 0) { p.dashT -= dt; p.vx = p.dashV[0]; p.vz = p.dashV[1]; p.vy = Math.max(p.vy, 0); }
@@ -693,13 +748,13 @@ function scanBot(b, dt) {
     if (o === b || !o.alive || o.invis) continue; if (teamMode && o.team === b.team) continue;
     let p = b.read[o.id] || 0;
     const dx = o.x - b.x, dz = o.z - b.z, d2 = dx * dx + dz * dz;
-    if (d2 > R2 || b.blind > 0) { if (p > 0) b.read[o.id] = Math.max(0, p - dt * 1.5); continue; }
+    if (d2 > R2 || b.blind > 0 || o.fdT > 0 || (o.chamT > 0 && d2 > 64)) { if (p > 0) b.read[o.id] = Math.max(0, p - dt * 1.5); continue; }
     const d = Math.sqrt(d2) || .001, ux = dx / d, uz = dz / d;
     if (b.fx * ux + b.fz * uz < .45 || !los(ex, ey, ez, o.x + headX(o), o.y + 1.65, o.z + headZ(o))) { if (p > 0) b.read[o.id] = Math.max(0, p - dt * 1.2); continue; }
     if (d < seenD) { seenD = d; seen = o; }
     const face = -(o.fx * ux + o.fz * uz);
     if (face > .34 && o.protect <= 0) {
-      const need = df.base * o.number.length / 4 * (G.demo ? 1.25 : 1) * b.scaleBase * (.55 + d / 17) * (1 + o.sp * .45) * (G.mode === 'ctf' ? (o.carry ? 2.2 : 1.5) : 1);
+      const need = df.base * o.number.length / 4 * (G.demo ? 1.25 : 1) * b.scaleBase * (.55 + d / 17) * (1 + o.sp * .45) * (o.miniT > 0 ? 1.8 : 1) * (G.mode === 'ctf' ? (o.carry ? 2.2 : 1.5) : 1);
       p += dt / need; b.read[o.id] = Math.min(1, p); if (p > .3) { o.threatT = 1.3; o.reader = b; }
       if (p >= 1 && !b.typing) { b.typing = { target: o, num: o.fake || o.number, t: df.type * (.8 + Math.random() * .5) + (b.wdHit ? .8 : 0) }; b.read[o.id] = 0; }
     } else if (p > 0) b.read[o.id] = Math.max(0, p - dt * 1.0);
@@ -858,7 +913,7 @@ function arenaTick(dt) {
   else if (A.ph === 3) { if (A.t <= 0) { A.stage++; A.ph = 1; A.t = 1.8; } }
 }
 /* ---------- KOF 大賽 ---------- */
-function resetSkillState(a) { a.skCd = 0; a.shieldT = 0; a.cloak = false; a.invis = false; a.fake = null; a.fakeT = 0; a.fakeOf = null; a.dackE = -1; a.armed = false; a.stolen = null; a.passIdx = -1; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2; a.cleanW = 0; a.chg = null; a.wkT = 0; a.wkPre = 0; a.say = null; a.blind = 0; }
+function resetSkillState(a) { a.skCd = 0; a.shieldT = 0; a.cloak = false; a.invis = false; a.fake = null; a.fakeT = 0; a.fakeOf = null; a.dackE = -1; a.armed = false; a.stolen = null; a.passIdx = -1; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2; a.cleanW = 0; a.chg = null; a.wkT = 0; a.wkPre = 0; a.say = null; a.blind = 0; a.miniT = 0; a.chamT = 0; a.fdT = 0; a.vdT = 0; a.vdKeep = null; a.vdHold = 0; a.vdKiller = null; a.vdShowAt = undefined; }
 const kofVisible = (o, x, z, y) => { if (!o || !o.alive) return false; const dx = x - o.x, dz = z - o.z, d = Math.hypot(dx, dz); if (d > 75) return false; const f = FWD(o.yaw); if ((dx * f[0] + dz * f[1]) / (d || 1) < Math.cos(.95)) return false; return los(o.x, o.y + 1.6, o.z, x, y + 1.6, z); };
 function kofSpawnPos(a, o) {
   let best = null; for (let k = 0; k < 18; k++) { const p = World.pickSpawn(-1, o ? [o] : []) || [0, 0, 0]; if (!kofVisible(o, p[0], p[1], p[2] ? World.mezz.h : 0)) { best = p; break; } if (!best) best = p; }
@@ -890,7 +945,7 @@ function updateDead(a, dt) {
 function updateGame(dt) {
   if (G.tut) return; // 操作說明顯示中：先不開始
   if (G.netClient) { updateClientGame(dt); return; }
-  G.time += dt;
+  G.time += dt; fxAnim(dt); cloneTick(dt);
   if (G.countdown > 0 && G.state === 'playing') {
     const c0 = Math.ceil(G.countdown); G.countdown -= dt;
     if (G.countdown <= 0) { G.countdown = 0; if (G.mode !== 'arena') { Sfx.bell(); UI.goText(); } } else if (Math.ceil(G.countdown) !== c0) Sfx.tick();
@@ -946,7 +1001,7 @@ function updateDemoCam(dt) {
 function startMatch(demo, roster) {
   const mapId = roster ? (roster.map || S.map) : (demo ? (S.demoMap || S.map) : S.map); World.load(MAPS[mapId] ? mapId : 'hb'); G.map = World.id;
   const mk = (demo && S.demoMode && MODES[S.demoMode]) ? S.demoMode : S.mode, m = MODES[mk]; G.mode = mk; G.codeLen = S.codeLen === 'rand' ? pick([3, 4, 5, 6]) : S.codeLen === 'mix' ? 0 : (S.codeLen | 0) || 4; G.countdown = 3; G.freezeT = 0; G.skillsOn = S.skills !== false; G.tleft = (S.time || 5) * 60; G.limit = m.limit; G.scores = [0, 0]; G.grenades = []; G.smokes = []; G.lures = []; G.fx = []; G.feed = []; G.typed = ''; G.lock = 0; G.time = 0;
-  freeActors(G.actors); G.actors = []; _id = 0; G.slots = [null, null]; G.scopeOn = false; G.bino = false; G.binK = 0; G.energy = 1; G.stam = 1; G.flashT = 0; G.itemCd = 0; G.threat = null;
+  freeActors(G.actors); G.actors = []; freeActors(G.clones); G.clones = []; _id = 0; G.slots = [null, null]; G.scopeOn = false; G.bino = false; G.binK = 0; G.energy = 1; G.stam = 1; G.flashT = 0; G.itemCd = 0; G.threat = null;
   G.netClient = false; G.multi = !!roster; const hum = roster ? roster.length : 1;
   let n = roster ? (S.netBots ? clamp(Math.max(S.count, hum), hum, 20) : hum) : clamp(S.count, 4, 20);
   if (mk === 'arena') n = hum + (roster ? Math.max(0, 20 - hum) : 20); else if (mk === 'kof') n = 2;
@@ -989,7 +1044,7 @@ function iceTex() {
   return R.tex(c, { nomip: true });
 }
 function initRenderAssets() {
-  SPR.baguaMat = R.mat({ tex: baguaTex(), unlit: 1, blend: 1, fog: 0, tint: [1, 1, 1, .95] }); SPR.iceMat = R.mat({ tex: iceTex(), unlit: 1, blend: 1, fog: 0, tint: [1, 1, 1, .9] });
+  SPR.baguaMat = R.mat({ tex: baguaTex(), unlit: 1, blend: 1, fog: 0, tint: [1, 1, 1, .95] }); SPR.iceMat = R.mat({ tex: iceTex(), unlit: 1, blend: 1, fog: 0, tint: [1, 1, 1, .9] }); SPR.peaceMat = R.mat({ tex: baguaTex(), unlit: 1, blend: 1, fog: 0, tint: [.6, 1, .8, .8] });
   SPR.pillar = R.mkMesh(mergeGeos([{ g: gBox(.22, 90, .22), t: [0, 45, 0], c: [1, 1, 1] }])); SPR.pillarMat = R.mat({ unlit: 1, blend: 1, noDepth: 1, fog: 0, tint: [1, .15, .12, .55] });
   SPR.mesh = R.mkMesh(mergeGeos([{ g: gPlane(1, 1) }]));
   SPR.puff = R.tex(TG.puff(), { nomip: true }); SPR.glow = R.tex(TG.glow(), { nomip: true });
@@ -1059,7 +1114,7 @@ function drawWorldFrame() {
   const c = R.cam, pl = G.player || (G.demo ? G.view : null); applyNightEnv(pl);
   if (R.shadowOn()) {
     const fw = [-Math.sin(c.yaw), -Math.cos(c.yaw)]; R.beginShadow(c.x + fw[0] * 16, 0, c.z + fw[1] * 16); World.drawShadow();
-    for (const a of G.actors) { if (a === pl || a.invis || (!a.alive && a.deadT > 3)) continue; if (Math.abs(a.x - c.x) > 80 || Math.abs(a.z - c.z) > 80) continue; drawAvatar(a); }
+    for (const a of G.actors) { if (a === pl || a.invis || (!a.alive && a.deadT > 3)) continue; if (Math.abs(a.x - c.x) > 80 || Math.abs(a.z - c.z) > 80) continue; drawAvatar(a); } for (const q of G.clones) drawAvatar(q);
     R.endShadow();
   }
   R.begin();
@@ -1081,6 +1136,7 @@ function drawWorldFrame() {
   { R.polyOffset(true); const rot = G.time * .5;
     for (const a of G.actors) if (a.wd && a.alive && R.visible(a.x, a.y, a.z, 5.5)) { M4.trs(SPR.tmp2, a.x, a.y + .05, a.z, 0, rot, 0, 10, 1, 10); R.draw(AV.blob, SPR.tmp2, SPR.baguaMat); }
     for (const z of G.zones) if (z.k === 'ice' && R.visible(z.x, 0, z.z, 5.5)) { M4.trs(SPR.tmp2, z.x, (z.by ? z.by.y : 0) + .05, z.z, 0, 0, 0, 10, 1, 10); R.draw(AV.blob, SPR.tmp2, SPR.iceMat); }
+    for (const z of G.zones) if (z.k === 'peace' && R.visible(z.x, 0, z.z, 6.5)) { M4.trs(SPR.tmp2, z.x, (z.by ? z.by.y : 0) + .05, z.z, 0, G.time * .4, 0, 12, 1, 12); R.draw(AV.blob, SPR.tmp2, SPR.peaceMat); }
     R.polyOffset(false); }
   // 英雄
   const ps = Device.mobile ? 1.32 : 1.0;
@@ -1089,11 +1145,12 @@ function drawWorldFrame() {
     if (!R.visible(a.x, a.y + .9, a.z, 1.4)) continue;
     a.plateScale = ps * (a.gdSmall ? .4 : 1); drawAvatar(a);
   }
+  for (const q of G.clones) { if (!R.visible(q.x, q.y + .9, q.z, 1.4)) continue; q.plateScale = ps; drawAvatar(q); }
   // 通天視野：全隊可見的敵人紅光柱
   { const bc = G.sk.beacon; if (bc.t > 0 && bc.by && pl && (pl === bc.by || !enemyOf(bc.by, pl))) for (const a of G.actors) { if (!a.alive || !enemyOf(bc.by, a)) continue; SPR.pillarMat.tint[3] = .35 + .2 * Math.sin(G.time * 6); M4.trs(SPR.tmp2, a.x, a.y, a.z, 0, 0, 0, 1, 1, 1); R.draw(SPR.pillar, SPR.tmp2, SPR.pillarMat); } }
   // 影子
   R.polyOffset(true);
-  for (const a of G.actors) { if (a.invis || (!a.alive && a.deadT > 2.5)) continue; if (!R.visible(a.x, a.y, a.z, 1.2)) continue; a.blobS = a.alive ? 1.25 : 1.6; drawBlob(a); }
+  for (const a of G.actors) { if (a.invis || (!a.alive && a.deadT > 2.5)) continue; if (!R.visible(a.x, a.y, a.z, 1.2)) continue; a.blobS = (a.alive ? 1.25 : 1.6) * (a.miniT > 0 ? .5 : 1); drawBlob(a); } for (const q of G.clones) if (R.visible(q.x, q.y, q.z, 1.2)) { q.blobS = 1.25; drawBlob(q); }
   R.polyOffset(false);
   // 透明：雲、煙、特效、名字
   drawSkyFx(c, t);

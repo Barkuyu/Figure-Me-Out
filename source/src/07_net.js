@@ -222,7 +222,7 @@ function buildSnap() {
   const A = G.actors, ac = [];
   for (let i = 0; i < A.length; i++) {
     const a = A[i];
-    const e = [Math.round(a.x * 20), Math.round(a.z * 20), Math.round(a.y * 20), Math.round(a.yaw * 50), Math.round(a.sp * 10), (a.alive ? 1 : 0) | (a.carry ? 2 : 0) | (a.protect > 0 ? 4 : 0) | (a.redT > 0 ? 8 : 0) | (a.lo > .12 ? 32 : a.lo < -.12 ? 16 : 0) | ((a.shieldT > 0 || a.amulet) ? 64 : 0) | (a.wd ? 1024 : 0) | (a.drumT > 0 ? 4096 : 0) | (a.gdSmall ? 8192 : 0) | (a.invis ? 128 : 0) | (a.ctrlT > 0 ? 256 : 0) | (a.dackE >= 1 ? 512 : 0), a.kills, a.deaths, a.fake || a.number];
+    const e = [Math.round(a.x * 20), Math.round(a.z * 20), Math.round(a.y * 20), Math.round(a.yaw * 50), Math.round(a.sp * 10), (a.alive ? 1 : 0) | (a.carry ? 2 : 0) | (a.protect > 0 ? 4 : 0) | (a.redT > 0 ? 8 : 0) | (a.lo > .12 ? 32 : a.lo < -.12 ? 16 : 0) | ((a.shieldT > 0 || a.amulet) ? 64 : 0) | (a.wd ? 1024 : 0) | (a.drumT > 0 ? 4096 : 0) | (a.gdSmall ? 8192 : 0) | (a.invis ? 128 : 0) | (a.ctrlT > 0 ? 256 : 0) | (a.dackE >= 1 ? 512 : 0) | (a.miniT > 0 ? 2048 : 0) | (a.chamT > 0 ? 16384 : 0) | (a.fdT > 0 ? 32768 : 0), a.kills, a.deaths, a.fake || a.number];
     if (a.isPlayer || a.remote) {
       const sl = a.isPlayer ? G.slots : (a.slots || [null, null]); let thr = -1, tp = 0;
       if (a.alive) for (let j = 0; j < A.length; j++) { const b = A[j]; if (b === a || !b.alive || !b.read) continue; let q = b.read[a.id] || 0; if (b.typing && b.typing.target === a) q = 1; if (q > tp && q > .12) { tp = q; thr = j; } }
@@ -237,7 +237,8 @@ function buildSnap() {
     lu: G.lures.slice(0, 3).map(l => [Math.round(l.x * 10), Math.round(l.z * 10), Math.round(l.t * 10)]),
     fg: G.mode === 'ctf' ? G.flags.map(f => [f.state === 'home' ? 0 : f.state === 'carried' ? 1 : 2, Math.round(f.x * 10), Math.round(f.z * 10), Math.round(f.y * 10), f.carrier ? A.indexOf(f.carrier) : -1]) : [],
     sk: [Math.round(G.sk.rev.t * 10), G.actors.indexOf(G.sk.rev.by), Math.round(G.sk.scr.t * 10), G.actors.indexOf(G.sk.scr.by), Math.round(G.sk.ink.t * 10), G.actors.indexOf(G.sk.ink.by), Math.round(G.sk.eagle.t * 10), G.actors.indexOf(G.sk.eagle.by), Math.round(G.sk.quake.t * 10), G.actors.indexOf(G.sk.quake.by), G.sk.night.by ? Math.round(G.sk.night.e * 10) : -1, G.actors.indexOf(G.sk.night.by), Math.round(G.sk.rel.t * 10), G.actors.indexOf(G.sk.rel.by), Math.round(G.sk.neg.t * 10), Math.round(Math.max(0, G.sk.ban.t) * 10), G.actors.indexOf(G.sk.ban.by), Math.round(Math.max(0, G.sk.beacon.t) * 10), G.actors.indexOf(G.sk.beacon.by), Math.round(Math.max(0, G.sk.guard.t) * 10), G.actors.indexOf(G.sk.guard.by)],
-    zn: G.zones.map(z => [Math.round(z.x * 10), Math.round(z.z * 10), Math.round(z.t * 10), G.actors.indexOf(z.by)]),
+    zn: G.zones.map(z => [Math.round(z.x * 10), Math.round(z.z * 10), Math.round(z.t * 10), G.actors.indexOf(z.by), z.k === 'peace' ? 1 : 0]),
+    cl: G.clones.map(c => [c.id, Math.round(c.x * 20), Math.round(c.z * 20), Math.round(c.y * 20), Math.round(c.yaw * 50), c.sp ? 1 : 0, c.number, G.actors.indexOf(c.owner), c.kind === 'mirror' ? 0 : 1]),
     pk: G.pickups.reduce((m, p, i) => m | (p.on ? (1 << i) : 0), 0),
     ar: G.arena ? [G.arena.stage, G.arena.ph, Math.round(G.arena.t * 10), A.map(a => (a.isPlayer || a.remote) && !a.alive ? Math.round(Math.max(0, Math.min(99, a.respawnT)) * 10) : 0)] : 0,
     kf: G.mode === 'kof' ? { c: Math.round(Math.max(0, G.kofT || 0) * 10), a: A.slice(0, 2).map(a => [a.kcur, a.kout, Math.round(Math.max(0, a.kw || 0) * 10), (a.kroster || []).reduce((m, v, j) => m | ((a.kleft || []).includes(v) ? (1 << j) : 0), 0), Math.round(Math.max(0, a.kfz || 0) * 10)]) } : 0,
@@ -284,7 +285,7 @@ function clientStartGame(s) {
   closePick(); showWait(false); NET.pickId = null;
   World.load(MAPS[s.mp] ? s.mp : 'hb'); G.map = World.id;
   G.multi = true; G.mode = s.m; G.codeLen = s.cl === 0 ? 0 : (s.cl || 4); G.countdown = 3; G.freezeT = 0; NET.prevCd = 3; G.limit = MODES[s.m].limit; G.tleft = (s.tm || 5) * 60; G.skillsOn = s.sk !== 0; G.scores = [0, 0]; G.grenades = []; G.smokes = []; G.lures = []; G.fx = []; G.feed = []; G.feedVer = 1; G.typed = ''; G.lock = 0; G.time = 0; G.demo = false; G.view = null;
-  _id = 0; freeActors(G.actors); G.actors = [];
+  _id = 0; freeActors(G.actors); G.actors = []; freeActors(G.clones); G.clones = [];
   s.ac.forEach((x, i) => { const a = newActor(x[0], x[1], i === idx); a.team = x[2]; a.alive = false; a.deadT = 99; a.number = '0000'; a.init = false; a.net = true; drawPlate(a); G.actors.push(a); });
   G.player = G.actors[idx]; G.player.deadT = 0; NET.myIdx = idx; G.netClient = true; G.arena = s.m === 'arena' ? { stage: 0, ph: 0, t: 10, hum: 1 } : null; G.kofCd = false;
   if (s.m === 'arena') G.actors.forEach(a => { if (a.team === 1) a.pool = true; });
@@ -303,7 +304,7 @@ function applySnap(s) {
     const e = s.ac[i], a = A[i]; if (!e || !a) continue;
     const alive = !!(e[5] & 1);
     a.kills = e[6]; a.deaths = e[7]; if (a.number !== e[8]) { a.number = e[8]; drawPlate(a); }
-    a.wd = !!(e[5] & 1024); a.gdSmall = !!(e[5] & 8192); if (a !== me) a.drumT = (e[5] & 4096) ? 8 : 0; else me.drumT = (e[5] & 4096) ? Math.max(me.drumT || 0, .6) : 0;
+    a.wd = !!(e[5] & 1024); a.gdSmall = !!(e[5] & 8192); a.chamT = (e[5] & 16384) ? 6 : 0; a.fdT = (e[5] & 32768) ? 3 : 0; a.fd = !!(e[5] & 32768); if (a !== me) a.miniT = (e[5] & 2048) ? 8 : 0; else me.miniT = (e[5] & 2048) ? Math.max(me.miniT || 0, .6) : 0; if (a !== me) a.drumT = (e[5] & 4096) ? 8 : 0; else me.drumT = (e[5] & 4096) ? Math.max(me.drumT || 0, .6) : 0;
     a.carry = (e[5] & 2) ? true : null; a.protect = (e[5] & 4) ? 1 : 0; if (a !== me) { a.dackE = (e[5] & 512) ? 2 : -1; a.invis = !!(e[5] & 128); a.ctrlT = (e[5] & 256) ? .3 : 0; a.shieldT = (e[5] & 64) ? 1 : 0; a.redT = (e[5] & 8) ? .4 : 0; a.lo += (((e[5] & 32) ? .45 : (e[5] & 16) ? -.45 : 0) - a.lo) * .4; }
     if (a !== me) {
       a.tx = e[0] / 20; a.tz = e[1] / 20; a.ty = e[2] / 20; a.tyaw = e[3] / 50;
@@ -319,7 +320,7 @@ function applySnap(s) {
       }
       const fl = e[11] / 10; if (fl > G.flashT + .05) { G.flashT = fl; G.flashMax = Math.max(1, fl); Sfx.bang(.6); }
       me.wkT = (e[22] || 0) / 10; me.fakeT = (e[23] || 0) / 10; me.windowT = (e[24] || 0) / 10; if ((e[25] || 0) > 0 && !(me.frz > 0)) me.frz = e[25] / 10; else if (!(e[25] > 0)) me.frz = 0; if (NET.rfSeen !== undefined && e[26] !== NET.rfSeen) { G.stam = 1; G.energy = 1; } NET.rfSeen = e[26] || 0; me.chant = e[27] > 0 ? { k: '', t: e[27] / 10 } : null; me.amulet = e[28] === 0 && isOut(me, 34); me.amRem = (e[28] || 0) / 10; if ((e[29] || 0) > 0 && !(me.freeEn > 0)) me.freeEn = e[29] / 10; me.skCd = (e[17] || 0) / 10; me.shieldT = (e[18] || 0) / 10; me.ctrlT = (e[19] || 0) / 10; me.ctrlBy = A[e[20]] || null; { const m = e[21] || 0; me.clrRev = (m & 1) ? 1 : -1; me.clrScr = (m & 2) ? 1 : -1; me.clrInk = (m & 4) ? 1 : -1; me.clrRel = (m & 8) ? 1 : -1; }
-      if (e[30] !== undefined) { if (NET.ntfSeen !== undefined && e[30] > 0 && e[30] !== NET.ntfSeen) { const t = String(e[31] || ''); if (t.startsWith('#PK')) { UI.poker(t.slice(3)); G.pkCode = t.slice(3); } else { const q = t.split('|'); UI.popup(q[0], q.slice(1).join('|')); if (e[32] > 0) stunSelf(e[32] / 1); } } NET.ntfSeen = e[30]; }
+      if (e[30] !== undefined) { if (NET.ntfSeen !== undefined && e[30] > 0 && e[30] !== NET.ntfSeen) { const t = String(e[31] || ''); if (t.startsWith('#PK')) { UI.poker(t.slice(3)); G.pkCode = t.slice(3); } else if (t.startsWith('#LK')) { G.lock = Math.max(G.lock, +t.slice(3) || 3); } else if (t.startsWith('#VD')) { const q = t.slice(3).split('|'); UI.vdFlash(q[0], q[1]); } else { const q = t.split('|'); UI.popup(q[0], q.slice(1).join('|')); if (e[32] > 0) stunSelf(e[32] / 1); } } NET.ntfSeen = e[30]; }
       const slc = e[15] + ',' + e[16]; if (slc !== NET.slC) { NET.slC = slc; G.slots = [decSl(e[15]), decSl(e[16])]; UI.dirty = true; }
       NET.acts = NET.acts.filter(x => x[0] > e[14]);
       G.threat = e[12] >= 0 && A[e[12]] && me.alive ? { b: A[e[12]], p: e[13] / 10 } : null;
@@ -336,14 +337,25 @@ function applySnap(s) {
   if (s.ar) { G.arena = { stage: s.ar[0], ph: s.ar[1], t: s.ar[2] / 10, hum: 1 }; if (me && s.ar[3] && s.ar[3][NET.myIdx] > 0 && !me.alive) me.respawnT = s.ar[3][NET.myIdx] / 10; }
   if (s.kf) s.kf.a.forEach((x, i) => { const a = A[i]; if (!a) return; a.kout = x[1]; a.kw = x[2] / 10; if (a === me && x[4] > 0 && !(me.kfz > 0)) { G.freezeT = x[4] / 10; G.lock = x[4] / 10; } me.kfz = a === me ? x[4] / 10 : 0; const r = a.kroster || []; a.kleft = r.filter((v, j) => x[3] & (1 << j)); if (a.kcur !== x[0]) { if (a !== me && a.kcur !== undefined && G.state === 'playing') UI.msg('對手派出了【' + OUTFITS[x[0]].label + '】', 'item'); a.kcur = x[0]; a.outfit = x[0]; a.av = createAvatar(x[0]); } });
   if (s.sk) { G.sk.rev = { t: s.sk[0] / 10, by: A[s.sk[1]] || null, id: 1 }; G.sk.scr = { t: s.sk[2] / 10, by: A[s.sk[3]] || null, id: 1 }; G.sk.ink = { t: (s.sk[4] || 0) / 10, by: A[s.sk[5]] || null, id: 1 }; G.sk.eagle = { t: (s.sk[6] || 0) / 10, by: A[s.sk[7]] || null }; G.sk.quake = { t: (s.sk[8] || 0) / 10, by: A[s.sk[9]] || null }; G.sk.night = { e: s.sk[10] >= 0 ? s.sk[10] / 10 : 0, by: s.sk[10] >= 0 ? (A[s.sk[11]] || null) : null }; G.sk.rel = { t: s.sk[12] === undefined ? -1 : s.sk[12] / 10, by: A[s.sk[13]] || null, id: 1 }; G.sk.neg = { t: s.sk[14] === undefined ? -1 : s.sk[14] / 10, by: null }; G.sk.ban = { t: (s.sk[15] || 0) / 10, by: A[s.sk[16]] || null }; G.sk.beacon = { t: (s.sk[17] || 0) / 10, by: A[s.sk[18]] || null }; G.sk.guard = { t: (s.sk[19] || 0) / 10, by: A[s.sk[20]] || null }; }
-  G.zones = (s.zn || []).map(z => ({ k: 'ice', x: z[0] / 10, z: z[1] / 10, r: 5, t: z[2] / 10, by: A[z[3]] || null }));
+  G.zones = (s.zn || []).map(z => ({ k: z[4] === 1 ? 'peace' : 'ice', x: z[0] / 10, z: z[1] / 10, r: z[4] === 1 ? 6 : 5, t: z[2] / 10, by: A[z[3]] || null }));
+  applyClones(s.cl || [], A);
   if (NET.feedSeen < 0) NET.feedSeen = s.fd.length ? s.fd[s.fd.length - 1][0] : 0;
   for (const f of s.fd) if (f[0] > NET.feedSeen) { NET.feedSeen = f[0]; const k = A[f[1]], v = A[f[2]]; if (k && v) { G.feed.push({ t: 6, k: k.name, v: v.name, me: k === me || v === me, st: f[3] || 0, seq: f[0] }); if (k === me && f[3] > 1) UI.streak(f[3], STREAK_PTS[Math.min(f[3], 5) - 1]); if (G.feed.length > 5) G.feed.shift(); G.feedVer++; } }
   if (NET.msgSeen < 0) NET.msgSeen = s.ms.length ? s.ms[s.ms.length - 1][0] : 0;
   for (const m of s.ms) if (m[0] > NET.msgSeen) { NET.msgSeen = m[0]; UI.msg(m[1], m[2]); }
   if (s.st === 1 && G.state === 'playing') { G.state = 'ended'; G.winner = s.w; UI.onEnd(); }
 }
+function applyClones(list, A) {
+  const keep = new Set();
+  for (const e of list) {
+    keep.add(e[0]); let c = G.clones.find(x => x.id === e[0]);
+    if (!c) { const ow = A[e[7]]; if (!ow) continue; c = { id: e[0], isClone: true, kind: e[8] === 0 ? 'mirror' : 'decoy', owner: ow, av: ow.av, team: ow.team, x: e[1] / 20, y: e[3] / 20, z: e[2] / 20, yaw: e[4] / 50, animT: 0, sp: 0, fall: 0, number: e[6], fake: null, kills: 0, redT: 0, lo: 0, alive: true, t: 99, fx: 0, fz: -1, plateScale: 1 }; makePlate(c); G.clones.push(c); }
+    c.tx = e[1] / 20; c.tz = e[2] / 20; c.y = e[3] / 20; c.yaw = e[4] / 50; c.sp = e[5]; c.number = e[6]; if (Math.hypot(c.x - c.tx, c.z - c.tz) > 3) { c.x = c.tx; c.z = c.tz; }
+  }
+  for (let i = G.clones.length - 1; i >= 0; i--) if (!keep.has(G.clones[i].id)) { R.freeTex(G.clones[i].plateTex); G.clones.splice(i, 1); }
+}
 function updateClientGame(dt) {
+  fxAnim(dt); for (const c of G.clones) if (c.tx !== undefined) { const k = 1 - Math.exp(-dt * 14); c.x += (c.tx - c.x) * k; c.z += (c.tz - c.z) * k; }
   if (G.state === 'ended') { G.time += dt; In.lookX = In.lookY = 0; return; } // 結算：全場暫停
   if (G.kofT > 0) { G.kofT = Math.max(0, G.kofT - dt); if (G.kofT <= 0) G.kofCd = false; }
   if (G.sk) { if (G.sk.neg.t >= 0) G.sk.neg.t -= dt; if (G.sk.ban.t > 0) G.sk.ban.t -= dt; if (G.sk.beacon.t > 0) G.sk.beacon.t -= dt; if (G.sk.guard.t > 0) G.sk.guard.t -= dt; for (const z of G.zones) z.t -= dt; { const m1 = G.player; if (m1 && !(m1.wdHit)) m1.skCd = m1.skCd; } } { const m0 = G.player; if (m0) { m0.windowT = Math.max(0, (m0.windowT || 0) - dt); if (m0.chant) m0.chant.t -= dt; } }

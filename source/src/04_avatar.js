@@ -93,7 +93,25 @@ OUTFITS.push(
   { key: 'kennyjr', label: '肯尼二世Kenny Jr.', sub: '', skill: { name: '梅開二度', desc: '【被動】輸入欄位僅 2 格：只要這兩碼在敵方號碼中依原順序出現（2498 → 24、49、28…）即可擊殺，多人符合取最近者；未能擊殺則直接陣亡，並提示原因。' }, H: 1.52, skin: '#f2d2b6', hipX: .085, shX: .2, tz: .5, hair: '#2a2438', hair2: '#3a3350', female: false, gen: { top: '#d84a7a', top2: '#fff1c9', pants: '#2b2b44', shoe: '#fff1c9', hair: '#2a2438', style: 'bob', acc: ['plum2'], accC: '#ff8fb8' },
     torso: [[.001, -.1], [.19, -.1], [.195, -.02], [.18, .1], [.185, .22], [.215, .34], [.23, .43], [.225, .49], [.17, .53], [.07, .55], [.056, .58], [.001, .58]] },
   { key: 'kennysr', label: '肯尼三世Kenny Sr.', sub: '', skill: { name: '梅開三度', desc: '【被動】輸入欄位僅 3 格：只要這三碼是敵方號碼中的任三個數字（不限順序，2498 → 892）即可擊殺，多人符合取最近者；未能擊殺則直接陣亡，並提示原因。' }, H: 1.9, skin: '#d9ad88', hipX: .112, shX: .28, tz: .52, hair: '#f1f1ee', hair2: '#f1f1ee', female: false, gen: { top: '#7a1f1f', top2: '#e0b050', pants: '#3a2a22', shoe: '#e0b050', hair: '#f1f1ee', style: 'bald', acc: ['plum3', 'mustache', 'sidehair', 'cane'], accC: '#ff4f86' },
-    torso: [[.001, -.1], [.235, -.1], [.245, -.02], [.23, .1], [.24, .22], [.28, .36], [.295, .46], [.29, .53], [.2, .57], [.075, .595], [.058, .63], [.001, .63]] }
+    torso: [[.001, -.1], [.235, -.1], [.245, -.02], [.23, .1], [.24, .22], [.28, .36], [.295, .46], [.29, .53], [.2, .57], [.075, .595], [.058, .63], [.001, .63]] },
+  { key: 'mediator', label: '調停Mediator', sub: '', skill: { name: '暫時的休止符', desc: '發動後，以自己為中心 6 公尺內的所有人，6 秒內無法互相攻擊。冷卻 15 秒。' }, H: 1.74, skin: '#e8c8a8', hipX: .098, shX: .235, tz: .53, hair: '#c9ced6', hair2: '#c9ced6', female: false, gen: { top: '#3a4a5a', top2: '#2fbf9a', pants: '#2a3340', shoe: '#2fbf9a', hair: '#c9ced6', style: 'short', acc: ['glasses', 'scarf'], accC: '#2fbf9a' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'mirror', label: '鏡鬼Mirror', sub: '', skill: { name: '鏡像混亂', desc: '發動後在原地留下同號碼的分身 8 秒，分身以半徑 2 公尺繞圈行走；敵方輸入該號碼只會擊毀分身，本體則立即換上新號碼。冷卻 15 秒。' }, H: 1.72, skin: '#dfe6ee', hipX: .095, shX: .225, tz: .53, hair: '#9ad7ff', hair2: '#9ad7ff', female: false, gen: { top: '#c7d3e0', top2: '#6a7fa8', pants: '#2a3350', shoe: '#c7d3e0', hair: '#9ad7ff', style: 'long', acc: ['shards', 'cape'], accC: '#e8f4ff', capeC: '#aab8cc' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'chameleon', label: '變色龍Chameleon', sub: '', skill: { name: '半透明視線', desc: '發動後吟唱 1 秒，隨即變成半透明模樣，持續 6 秒；期間 8 公尺以外的人看不清你的號碼。冷卻 15 秒。' }, H: 1.68, skin: '#9ccf7a', hipX: .092, shX: .22, tz: .53, hair: '#5fbf4a', hair2: '#5fbf4a', female: false, gen: { top: '#6fcf5a', top2: '#ffb347', pants: '#2f7f3a', shoe: '#ffb347', hair: '#5fbf4a', style: 'bald', acc: ['chameyes', 'tail'], accC: '#ffb347' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'lian', label: '殮Lian', sub: '', skill: { name: '死胡同', desc: '發動後假裝被擊殺倒下 3 秒，期間無法被讀取、也無法被擊殺；起身後可立即輸入號碼。冷卻 20 秒。' }, H: 1.85, skin: '#e6dccf', hipX: .1, shX: .24, tz: .53, hair: '#1a1a22', hair2: '#1a1a22', female: false, gen: { top: '#15151c', top2: '#e8e8ee', pants: '#15151c', shoe: '#e8e8ee', hair: '#1a1a22', style: 'short', acc: ['tophat', 'bowtie'], accC: '#e8e8ee' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'mini', label: '迷你Mini', sub: '', skill: { name: '超級縮小', desc: '發動後身形縮小 60%，號碼牌同步縮小 50%，移動速度提升至 1.7 倍，持續 8 秒。冷卻 20 秒。' }, H: 1.38, skin: '#f6d6bc', hipX: .082, shX: .18, tz: .52, hair: '#ff6b9a', hair2: '#ff6b9a', female: true, gen: { top: '#ffd23a', top2: '#ff6b9a', pants: '#4aa3ff', shoe: '#ff6b9a', hair: '#ff6b9a', style: 'short', acc: ['buns', 'hearts', 'skirt'], accC: '#fff1c9', skirtC: '#ff6b9a', hemC: '#ffd23a' },
+    torso: [[.001, -.16], [.2, -.16], [.19, -.08], [.16, .05], [.15, .17], [.152, .28], [.17, .38], [.18, .46], [.17, .51], [.12, .545], [.056, .56], [.05, .595], [.001, .595]] },
+  { key: 'voodoo', label: '巫毒娃娃Voodoo', sub: '', skill: { name: '巫毒反殺', desc: '發動後 5 秒內若被擊殺，重生後第 3～6 秒畫面會閃爍顯示擊殺者目前的號碼；若這 5 秒內擊殺對手，對手重生後 10 秒內沿用舊號碼（KOF 適用）。冷卻 20 秒。' }, H: 1.6, skin: '#d9b48a', hipX: .09, shX: .2, tz: .53, hair: '#4b2a6b', hair2: '#4b2a6b', female: true, gen: { top: '#8c5ac8', top2: '#e8d28a', pants: '#3a2a4a', shoe: '#e8d28a', hair: '#4b2a6b', style: 'long', acc: ['pins', 'skirt'], accC: '#e8e8f0', skirtC: '#8c5ac8', hemC: '#e8d28a' },
+    torso: [[.001, -.16], [.2, -.16], [.19, -.08], [.16, .05], [.15, .17], [.152, .28], [.17, .38], [.18, .46], [.17, .51], [.12, .545], [.056, .56], [.05, .595], [.001, .595]] },
+  { key: 'enigma', label: '艾尼Enigma', sub: '', skill: { name: '亂碼術', desc: '發動後 5 秒內若被擊殺，重生後第 3～6 秒畫面會閃爍顯示擊殺者目前的號碼；若這 5 秒內擊殺對手，對手重生後 10 秒內沿用舊號碼（KOF 適用）。冷卻 20 秒。' }, H: 1.75, skin: '#e0c4a8', hipX: .098, shX: .235, tz: .53, hair: '#39ff9a', hair2: '#39ff9a', female: false, gen: { top: '#2b1a4a', top2: '#39ff9a', pants: '#1c1230', shoe: '#39ff9a', hair: '#23183a', style: 'short', acc: ['qmark', 'shades'], accC: '#39ff9a' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'decoy', label: '影武者Decoy', sub: '', skill: { name: '影子突進', desc: '發動後生成外觀相同的替身往前奔跑，穿過障礙物直到碰牆停止；替身持有你的舊號碼，本體立即換上新號碼。冷卻 10 秒。' }, H: 1.78, skin: '#d9b894', hipX: .098, shX: .235, tz: .53, hair: '#111118', hair2: '#111118', female: false, gen: { top: '#23232b', top2: '#e0322e', pants: '#23232b', shoe: '#e0322e', hair: '#111118', style: 'short', acc: ['headband', 'scarftail', 'katana'], accC: '#e0322e' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'spring', label: '彈簧Spring', sub: '', skill: { name: '充能彈簧', desc: '【被動】移動速度提升至 1.2 倍；二段跳升級為三段跳，且每一段的跳躍高度再遞增 1.2 倍。' }, H: 1.7, skin: '#efcaa8', hipX: .095, shX: .23, tz: .53, hair: '#3a5bd9', hair2: '#3a5bd9', female: false, gen: { top: '#ff7a1a', top2: '#ffe14a', pants: '#3a5bd9', shoe: '#ffe14a', hair: '#3a5bd9', style: 'spiky', acc: ['antenna'], accC: '#c9d2e0' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] }
 );
 const SKINPATCH = [.975, .975];
 
@@ -343,6 +361,12 @@ function buildOutfit(i) {
     const plumF = (x, y, z, r) => { for (let q = 0; q < 5; q++) { const a = q * TAU / 5; hairP.push({ g: gSphere(r, 8, 6), t: [x, y + Math.sin(a) * r * 1.5, z + Math.cos(a) * r * 1.5], s: [.7, 1, 1], c: accC }); } hairP.push({ g: gSphere(r * .6, 6, 5), t: [x, y, z], c: [1, .82, .2] }); };
     if (ac.includes('plum2')) for (const sg of [-1, 1]) plumF(sg * hw * 1.1, hc + hh * .4, hw * .05, .042); // 肯尼二世：雙梅花
     if (ac.includes('plum3')) { plumF(0, hc + hh * .9, -hw * .5, .04); plumF(-hw * .85, hc + hh * .72, -hw * .45, .037); plumF(hw * .85, hc + hh * .72, -hw * .45, .037); } // 肯尼三世：三朵梅花冠
+    if (ac.includes('shards')) for (let k = 0; k < 5; k++) hairP.push({ g: gBox(.018, .13 + (k % 3) * .04, .01), t: [(k - 2) * hw * .36, hc + hh * .78 + (.13 + (k % 3) * .04) / 2, -hw * .45], r: [0, 0, (k - 2) * .22], c: k % 2 ? accC : shade(accC, .85) }); // 鏡鬼：鏡片冠
+    if (ac.includes('chameyes')) for (const sg of [-1, 1]) { hairP.push({ g: gSphere(.042, 10, 8), t: [sg * hw * .5, hc + hh * .92, -hw * .35], c: [.5, .85, .35] }); hairP.push({ g: gSphere(.02, 8, 6), t: [sg * hw * .5, hc + hh * .95, -hw * .35 + .03], c: [.08, .08, .1] }); } // 變色龍：突出的眼珠
+    if (ac.includes('tophat')) { hairP.push({ g: gCyl(hw * .95, hw * .95, .17, 20, 1), t: [0, hc + hh * .98, -hw * .38], c: [.06, .06, .09] }); hairP.push({ g: gCyl(hw * 1.3, hw * 1.3, .014, 20, 1), t: [0, hc + hh * .88, -hw * .38], c: [.06, .06, .09] }); hairP.push({ g: gCyl(hw * .97, hw * .97, .03, 20, 1), t: [0, hc + hh * .92, -hw * .38], c: accC }); } // 殮：高禮帽
+    if (ac.includes('pins')) for (let k = 0; k < 5; k++) { const a = -.9 + k * .45; hairP.push({ g: gBox(.008, .15, .008), t: [Math.sin(a) * hw * .75 + .02, hc + hh * .85, -hw * .3 + Math.cos(a) * hw * .3], r: [.25, 0, a * .7], c: accC }); hairP.push({ g: gSphere(.014, 6, 5), t: [Math.sin(a) * hw * .75 + .02 + Math.sin(a * .7) * .07, hc + hh * .85 + .075, -hw * .3 + Math.cos(a) * hw * .3], c: k % 2 ? [.9, .1, .15] : [.2, .2, .25] }); } // 巫毒娃娃：頭上的針
+    if (ac.includes('qmark')) { hairP.push({ g: gCyl(.012, .012, .08, 8, 1), t: [0, hc + hh * 1.0, -hw * .4], c: accC }); hairP.push({ g: gSphere(.016, 6, 5), t: [0, hc + hh * .9, -hw * .4], c: accC }); for (let k = 0; k < 6; k++) { const a = -.4 + k * .65; hairP.push({ g: gSphere(.014, 6, 5), t: [Math.sin(a) * .045, hc + hh * 1.12 + Math.cos(a) * .045, -hw * .4], c: accC }); } } // 艾尼：問號
+    if (ac.includes('antenna')) { for (let k = 0; k < 7; k++) hairP.push({ g: gCyl(.024, .024, .012, 10, 1), t: [Math.sin(k * 1.3) * .012, hc + hh * .8 + k * .026, -hw * .35], c: accC }); hairP.push({ g: gSphere(.04, 10, 8), t: [0, hc + hh * .8 + .2, -hw * .35], c: [1, .35, .1] }); } // 彈簧：彈簧天線
     if (ac.includes('flower')) { hairP.push({ g: gSphere(.022, 8, 6), t: [hw * .9, hc + hh * .35, hw * .5], c: accC }); hairP.push({ g: gSphere(.01, 6, 5), t: [hw * .9, hc + hh * .35, hw * .5 + .018], c: [1, .9, .3] }); }
   }
   const hairG = mergeGeos(hairP);
@@ -476,6 +500,7 @@ function buildOutfit(i) {
     if (ac.includes('cape')) { const cc = O.gen.capeC ? rgb(O.gen.capeC) : [.1, .27, .33]; ex.push({ g: gBox(.42, .66, .03), t: [0, shY - .3, -.19], r: [.12, 0, 0], c: cc }); ex.push({ g: gBox(.44, .04, .035), t: [0, shY - .02, -.185], c: accC }); }
     if (ac.includes('wings')) for (const sg of [-1, 1]) { ex.push({ g: gBox(.04, .5, .2), t: [sg * .17, shY - .12, -.2], r: [.25, 0, sg * .45], c: [1, 1, 1] }); ex.push({ g: gBox(.03, .34, .16), t: [sg * .27, shY - .28, -.21], r: [.3, 0, sg * .6], c: [.97, .95, .85] }); }
     if (ac.includes('scarftail')) { ex.push({ g: gBox(.09, .5, .02), t: [.1, shY - .3, -.17], r: [.2, 0, .15], c: accC }); ex.push({ g: gBox(.08, .38, .02), t: [-.04, shY - .26, -.18], r: [.25, 0, -.1], c: shade(accC, .8) }); }
+    if (ac.includes('katana')) { ex.push({ g: gBox(.04, .9, .03), t: [.02, shY - .28, -.2], r: [0, 0, .75], c: [.78, .8, .86] }); ex.push({ g: gBox(.05, .16, .035), t: [.27, shY + .12, -.2], r: [0, 0, .75], c: [.12, .08, .08] }); }
     if (ac.includes('cane')) { ex.push({ g: gCyl(.016, .016, .85, 8, 1), t: [.3, .43, .16], c: [.42, .27, .15] }); ex.push({ g: gSphere(.035, 8, 6), t: [.3, .86, .16], c: [.9, .72, .2] }); }
     if (ac.includes('camera')) { ex.push({ g: gBox(.15, .1, .07), t: [0, shY - .22, .2], c: [.08, .08, .1] }); ex.push({ g: gCyl(.034, .038, .05, 12, 1), t: [0, shY - .22, .245], r: [PI / 2, 0, 0], c: [.7, .7, .74] }); ex.push({ g: gBox(.06, .012, .03), t: [.04, shY - .165, .2], c: [.85, .1, .1] }); }
     if (ac.includes('dovestaff')) { ex.push({ g: gCyl(.018, .018, 1.55, 8, 1), t: [-.34, .78, .12], c: [.62, .45, .25] }); ex.push({ g: gSphere(.05, 8, 6), t: [-.34, 1.58, .12], s: [1.2, .9, 1.4], c: [1, 1, 1] }); ex.push({ g: gBox(.14, .02, .06), t: [-.34, 1.6, .12], r: [0, 0, .3], c: [.95, .95, .95] }); }
@@ -560,8 +585,9 @@ function drawAvatar(a, opt) {
   const O = a.av.outfit, d = O.dim, Mr = AV.Mr, T = AV.tmp, M = AV.tmp2, mt = O.meshes, ms = O.mats, C = CHIBI;
   const ph = a.animT || 0, sp = a.sp || 0, red = a.redT > 0 && !R.shadowPass;
   if (red) { const e = .45 + .3 * Math.sin(G.time * 14); for (const m of [ms.torso, ms.head, ms.cloth, ms.hair]) { m.emis = [e, .02, .02]; m.tint = [1, .62, .62, 1]; } }
-  const bob = Math.abs(Math.sin(ph * 2)) * .03 * sp, fall = a.fall || 0;
-  M4.trs(Mr, a.x, a.y + bob, a.z, -fall * (PI / 2), a.yaw + PI, 0, 1, 1, 1);
+  const bob = Math.abs(Math.sin(ph * 2)) * .03 * sp, fall = Math.max(a.fall || 0, a.fdLie || 0), bs = a.miniT > 0 ? .4 : 1, tr = (a.chamT > 0) && !R.shadowPass;
+  M4.trs(Mr, a.x, a.y + bob, a.z, -fall * (PI / 2), a.yaw + PI, 0, bs, bs, bs);
+  if (tr) for (const m of [ms.torso, ms.head, ms.cloth, ms.hair]) { m._bl = m.blend; m.blend = 1; m.tint = [m.tint[0], m.tint[1], m.tint[2], .38]; }
   const hipN = d.hipY * C.legS, shN = (d.shY - d.hipY) * C.torS, chinN = (d.chinY - d.hipY) * C.torS;
   const lean = clamp((a.lo || 0) / LEANMAX, -1, 1) * .38;
   M4.trs(T, 0, hipN, 0, 0, 0, -lean, 1, 1, 1); M4.mul(_U, Mr, T); const U = _U;
@@ -576,12 +602,15 @@ function drawAvatar(a, opt) {
   placeM(M, U, -d.shX * C.wide + .02, sy, 0, -sw * .8 - .05 - arm, .05, C.wide, C.armS, C.wide); R.draw(mt.armL, M, ms.cloth);
   const Ar = placeM(AV.Ar || (AV.Ar = M4.create()), U, d.shX * C.wide - .02, sy, 0, sw * .8 - .05 - arm * .5, -.05, C.wide, C.armS, C.wide); R.draw(mt.armR, Ar, ms.cloth);
   if (red) for (const m of [ms.torso, ms.head, ms.cloth, ms.hair]) { m.emis = [0, 0, 0]; m.tint = [1, 1, 1, 1]; }
+  if (tr) for (const m of [ms.torso, ms.head, ms.cloth, ms.hair]) { m.blend = m._bl || 0; m.tint = [m.tint[0], m.tint[1], m.tint[2], 1]; }
   if (R.shadowPass) return;
   if (a.team >= 0) { M4.trs(T, 0, -.09, 0, 0, 0, 0, 1, 1, 1); M4.mul(M, Ar, T); R.draw(AV.bandMesh, M, AV.bandMat[a.team]); }
   // 號碼牌（略向後仰，戴在額頭上）
   if (a.number === '' && !a.fake) return;
-  const sc = (a.plateScale || 1) * (G.bountyId === a ? 1 + Math.min(a.kills - 1, 8) * .14 : 1), k = C.head, pl0 = (O.plateLift || 0) * (C.head || 1), eg = G.sk && G.sk.eagle.t > 0 && G.sk.eagle.by;
-  if (eg) { const yy = a.y + hipN + chinN + (O.plateY - d.chinY) * k + .12, ps = sc * 2.2; M4.trs(M, a.x, yy, a.z, 0, Math.atan2(eg.x - a.x, eg.z - a.z), 0, .40 * ps * 1.1, .19 * ps * 1.1, 1); R.draw(AV.plateMesh, M, plateMatFor(a)); return; }
+  if (a.fdT > 0 || a.fd || (a.fdLie || 0) > .15) return; // 假死：號碼牌不可讀
+  if (a.chamT > 0 && R.cam && Math.hypot(a.x - R.cam.x, a.z - R.cam.z) > 8) return; // 半透明：8 公尺外看不清號碼
+  const sc = (a.plateScale || 1) * (a.miniT > 0 ? 1.25 : 1) * (G.bountyId === a ? 1 + Math.min(a.kills - 1, 8) * .14 : 1), k = C.head, pl0 = (O.plateLift || 0) * (C.head || 1), eg = G.sk && G.sk.eagle.t > 0 && G.sk.eagle.by !== a && G.sk.eagle.by; // 靶靶命中：只放大「其他人」的號碼牌，發動者自己的不放大
+  if (eg) { const yy = a.y + (hipN + chinN + (O.plateY - d.chinY) * k + .12) * bs, ps = sc * 2.2 * bs; M4.trs(M, a.x, yy, a.z, 0, Math.atan2(eg.x - a.x, eg.z - a.z), 0, .40 * ps * 1.1, .19 * ps * 1.1, 1); R.draw(AV.plateMesh, M, plateMatFor(a)); return; }
   placeM(M, U, 0, chinN + (O.plateY - d.chinY) * k + .04 * (sc - 1) + pl0, O.plateZ * k, -.14, 0, .40 * sc * 1.1, .19 * sc * 1.1, 1); R.draw(AV.plateMesh, M, plateMatFor(a));
 }
 function drawBlob(a, tint) {
