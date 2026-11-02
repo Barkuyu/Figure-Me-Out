@@ -1,7 +1,23 @@
-/* ================= 地圖 3：追逃商城（1F 106x80m = 熱血高校 1.4 倍；二樓為 1F 的 1/3） ================= */
+/* ================= 地圖 3：追逃商城（1F 86x70m = 與熱血高校同大；樓中樓二樓面積不變 ≈ 2820 m²） ================= */
 const MALL_FH = 4.6;
-function buildMall(W) {
-  const B = (...a) => W.box(...a), FH = MALL_FH, CH = 9.2;
+// 座標轉換：把原 106×80 的配置壓縮到 86×70 的 1F；樓中樓（z∈[-40,-13.4]，26.6 m 深）加深為 32.8 m，保持二樓面積不變
+const MK = 43 / 53, MZ_N = 32.8 / 26.6, MZ_S = 37.2 / 53.4;
+const mfx = x => x * MK, mfz = z => z <= -13.4 ? -35 + (z + 40) * MZ_N : -2.2 + (z + 13.4) * MZ_S;
+const mAx = (c, s, f) => s >= 3 ? [(f(c - s / 2) + f(c + s / 2)) / 2, Math.abs(f(c + s / 2) - f(c - s / 2))] : [f(c), s];
+function warpMall(W) {
+  const w = {
+    box(mat, cx, cz, bw, bd, h, y0, o) { const [x, ww] = mAx(cx, bw, mfx), [z, dd] = mAx(cz, bd, mfz); return W.box(mat, x, z, ww, dd, h, y0, o); },
+    col(cx, cz, bw, bd, h, y0) { const [x, ww] = mAx(cx, bw, mfx), [z, dd] = mAx(cz, bd, mfz); return W.col(x, z, ww, dd, h, y0); },
+    quadTop(mat, x0, z0, x1, z1, y, u) { return W.quadTop(mat, mfx(x0), mfz(z0), mfx(x1), mfz(z1), y, u); },
+    wdecal(r, x0, z0, x1, z1, y0, y1, mat) { return W.wdecal(r, mfx(x0), mfz(z0), mfx(x1), mfz(z1), y0, y1, mat); },
+    stairs(mat, x, z, dir, ...r) { return W.stairs(mat, mfx(x), mfz(z), dir, ...r); },
+    prop(items, mat) { return W.prop(items.map(it => it.t ? Object.assign({}, it, { t: [mfx(it.t[0]), it.t[1], mfz(it.t[2])] }) : it), mat); },
+    trees(o) { return W.trees(Object.assign({}, o, { list: (o.list || []).map(q => [mfx(q[0]), mfz(q[1]), q[2]]) })); }
+  };
+  return new Proxy(W, { get(t, k) { return k in w ? w[k] : (typeof t[k] === 'function' ? t[k].bind(t) : t[k]); }, set(t, k, v) { t[k] = v; return true; } });
+}
+function buildMall(W0) {
+  const W = warpMall(W0), B = (...a) => W.box(...a), FH = MALL_FH, CH = 9.2;
   // ---- 地板、外牆、天花板 ----
   W.quadTop('pave', -110, -90, 110, 90, 0); W.quadTop('tile', -53, -40, 53, 40, .01);
   for (const [cx, cz, w, d] of [[0, -40.5, 108, 1], [0, 40.5, 108, 1], [-53.5, 0, 1, 82], [53.5, 0, 1, 82]]) B('whitepaint', cx, cz, w, d, CH);
@@ -19,10 +35,11 @@ function buildMall(W) {
   // 電扶梯（兩座，左右對稱）
   const ES = [-24, 24];
   for (const ex of ES) {
-    W.ramp({ ax: 'z', x0: ex - 1.2, x1: ex + 1.2, a: -3.9, b: -13.4, ya: 0, yb: FH, belt: 1.4, mat: 'esc', wallH: 1.0, wallMat: 'glassT', wallSee: false });
-    for (const s of [-1.5, 1.5]) B('steel', ex + s, -8.6, .08, 9.6, .08, 1.95, { collide: false });
-    W.wdecal(W.text('▲ 往二樓 2F', { w: 512, h: 96, bg: '#c4161c', fg: '#fff', font: '900 56px' }), ex - 1.6, -3.7, ex + 1.6, -3.7, 3.4, 4.0, 'neon');
-    B('light', ex, -8.6, 2.2, 9, .06, FH + 3.6, { collide: false });
+    const ux = mfx(ex);
+    W0.ramp({ ax: 'z', x0: ux - 1.2, x1: ux + 1.2, a: 7.3, b: -2.2, ya: 0, yb: FH, belt: 1.4, mat: 'esc', wallH: 1.0, wallMat: 'glassT', wallSee: false });
+    for (const s of [-1.5, 1.5]) W0.box('steel', ux + s, 2.55, .08, 9.8, .08, 1.95, { collide: false });
+    W0.wdecal(W.text('▲ 往二樓 2F', { w: 512, h: 96, bg: '#c4161c', fg: '#fff', font: '900 56px' }), ux - 1.6, 7.7, ux + 1.6, 7.7, 3.4, 4.0, 'neon');
+    W0.box('light', ux, 2.55, 2.2, 9.6, .06, FH + 3.6, { collide: false });
   }
   // ---- 一樓（樓中樓下方）商店：北牆 6 間 ----
   const shop = (o) => {
@@ -148,14 +165,27 @@ function buildMall(W) {
   // 二樓：觀景平台（可站上去的展示台）
   for (const x of [-26, 26]) { B('cBlue', x, -33, 3.5, 3, .5, FH); B('cBlue', x, -33, 2, 2, 1.0, FH + .5); }
   W.prop(mann);
+  // ---- 新增障礙物：數量為原有裝飾障礙物的 1.3 倍，高度 1.4～3.3 公尺不等 ----
+  { const base = W0.boxes.filter(b => !b.nc && Math.max(b.x1 - b.x0, b.z1 - b.z0) <= 9 && (b.y1 - b.y0) <= 3.5 && (b.y1 - b.y0) >= .45).length, add = Math.round(base * .3), rr = rng(20261102), mats = ['cBlk', 'cRed', 'cBlue', 'cYel', 'cGrn', 'cPur', 'cOrg', 'cTeal', 'cPnk'], BX = 43, my1 = -2.2, mine = FH;
+    const clear = (x, z, w, d, y0, h, mg) => { for (const b of W0.boxes) { if (b.nc) continue; if (!(b.y0 < y0 + h && b.y1 > y0 + .05)) continue; if (x + w / 2 + mg > b.x0 && x - w / 2 - mg < b.x1 && z + d / 2 + mg > b.z0 && z - d / 2 - mg < b.z1) return false; } for (const r of W0.ramps) if (x > r.x0 - 3 && x < r.x1 + 3 && z > r.z0 - 3 && z < r.z1 + 3) return false; return true; };
+    const zones = [[mfx(-51), mfz(27), mfx(-39), mfz(38)], [mfx(39), mfz(27), mfx(51), mfz(38)]];
+    let placed = 0, tries = 0; W0.obstacles = 0;
+    while (placed < add && tries < 9000) {
+      tries++; const up = rr() < .3, w = .9 + rr() * 1.5, d = .9 + rr() * 1.5, h = 1.4 + rr() * 1.9, y0 = up ? mine : 0;
+      const x = (rr() * 2 - 1) * (BX - 3), z = up ? -35 + 3 + rr() * (my1 + 35 - 6) : my1 + 3 + rr() * (35 - my1 - 6);
+      if (zones.some(q => x > q[0] - 2 && x < q[2] + 2 && z > q[1] - 2 && z < q[3] + 2)) continue;
+      if (!clear(x, z, w, d, y0, h, 1.8)) continue;
+      W0.box(mats[Math.floor(rr() * mats.length)], x, z, w, d, h, y0); placed++; W0.obstacles++;
+    }
+  }
 }
 MAPS.mall = {
-  id: 'mall', orbit: { c: [0, 12], r: 13, h: 7.4, ly: 1.4 }, preview: [0, 22], name: '追逃商城', sub: '1F 約 106×80 m · 樓中樓二樓', desc: '面積為熱血高校的 1.4 倍。兩座對稱電扶梯通往二樓（占 1F 的 1/3），可從欄杆直接跳下一樓、不會摔傷；店鋪、攤位、屋頂與盆栽處處可躲可踩。',
-  bounds: { x0: -53, x1: 53, z0: -40, z1: 40 }, flagPos: [[-46, 30.5], [46, 30.5]], zoneRed: [-51, 27, -39, 38], zoneBlue: [39, 27, 51, 38], faceRed: [0, 8], faceBlue: [0, 8],
-  interior: [-53.5, -40.5, 53.5, 40.5], env: { sunCol: [.52, .50, .46], sky: [.76, .76, .79], gnd: [.60, .57, .52], fog: [.70, .72, .78], fogR: [80, 260], interior: [-53.5, -40.5, 53.5, 40.5], intK: 1.0, intH: 9.8 }, night: false, indoor: true, noShadow: true,
-  mezz: { x0: -53, x1: 53, z0: -40, z1: -13.4, h: MALL_FH },
-  portals: [{ a: [-24, -3], b: [-24, -15], via: [[-24, -4.6], [-24, -12.4]] }, { a: [24, -3], b: [24, -15], via: [[24, -4.6], [24, -12.4]] }],
+  id: 'mall', orbit: { c: [0, mfz(12)], r: 11, h: 7.4, ly: 1.4 }, preview: [0, mfz(22)], name: '追逃商城', sub: '1F 86×70 m · 樓中樓二樓', desc: '1F 面積與熱血高校相同（86×70 m），樓中樓二樓面積不變，占 1F 近一半。兩座電扶梯通往二樓，可從欄杆直接跳下一樓；店鋪、攤位與大量高低障礙物（1.4～3.3 公尺）處處可躲可踩。',
+  bounds: { x0: -43, x1: 43, z0: -35, z1: 35 }, flagPos: [[mfx(-46), mfz(30.5)], [mfx(46), mfz(30.5)]], zoneRed: [mfx(-51), mfz(27), mfx(-39), mfz(38)], zoneBlue: [mfx(39), mfz(27), mfx(51), mfz(38)], faceRed: [0, mfz(8)], faceBlue: [0, mfz(8)],
+  interior: [-43.5, -35.5, 43.5, 35.5], env: { sunCol: [.52, .50, .46], sky: [.76, .76, .79], gnd: [.60, .57, .52], fog: [.70, .72, .78], fogR: [80, 260], interior: [-43.5, -35.5, 43.5, 35.5], intK: 1.0, intH: 9.8 }, night: false, indoor: true, noShadow: true,
+  mezz: { x0: -43, x1: 43, z0: -35, z1: -2.2, h: MALL_FH },
+  portals: [{ a: [mfx(-24), 8.4], b: [mfx(-24), -4.2], via: [[mfx(-24), 6.6], [mfx(-24), -1]] }, { a: [mfx(24), 8.4], b: [mfx(24), -4.2], via: [[mfx(24), 6.6], [mfx(24), -1]] }],
   pickSpots: [[-10, -8], [10, -8], [-24, 6], [24, 6], [-44, 12], [44, 12], [0, 5], [-36, 24], [36, 24], [-46, 33], [46, 33], [0, 22], [-8, 34], [8, 34], [-45, -33], [45, -33], [-8, -20], [8, -20], [-30, -4], [30, -4],
-    [-20, -22, 1], [20, -22, 1], [0, -36, 1], [-46, -22, 1], [46, -22, 1]],
+    [-20, -22, 1], [20, -22, 1], [0, -36, 1], [-46, -22, 1], [46, -22, 1]].map(q => q.length > 2 ? [mfx(q[0]), mfz(q[1]), 1] : [mfx(q[0]), mfz(q[1])]),
   build(W) { buildMall(W); }
 };

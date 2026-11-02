@@ -151,9 +151,9 @@ const UI = {
     // 計分
     if (G.mode === 'hunt') { const others = G.actors.filter(a => a !== p && (a.isPlayer || a.remote)).reduce((m, a) => Math.max(m, a.score || 0), 0); e.scR.textContent = p.score || 0; e.scB.textContent = others; e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
     else if (G.mode === 'arena') { e.scR.textContent = p.kills; e.scB.textContent = 'S' + ((G.arena && G.arena.stage) || 0); e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
-    else if (G.mode === 'dm' || G.mode === 'kof') { const others = G.actors.filter(a => a !== p).reduce((m, a) => Math.max(m, a.kills), 0); e.scR.textContent = p.kills; e.scB.textContent = others; e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
+    else if (G.mode === 'dm' || G.mode === 'kof' || G.mode === 'prac') { const others = G.actors.filter(a => a !== p).reduce((m, a) => Math.max(m, a.kills), 0); e.scR.textContent = p.kills; e.scB.textContent = others; e.scR.className = 'sc red'; e.scB.className = 'sc dm'; }
     else { e.scR.textContent = G.scores[0]; e.scB.textContent = G.scores[1]; e.scR.className = 'sc red'; e.scB.className = 'sc blue'; }
-    const ts = Math.max(0, Math.ceil(G.tleft)), tstr = Math.floor(ts / 60) + ':' + String(ts % 60).padStart(2, '0'); if (G.mode === 'arena' || G.mode === 'kof') { const A = G.arena, t = G.mode === 'kof' ? '🥊 KOF 大賽' : (A && A.stage ? 'Stage ' + A.stage + (A.ph === 2 ? ' ・ 剩 ' + G.actors.filter(a => a.pool && a.alive).length + ' 名' : '') : '擂台準備中'); if (t !== this.lastTimer) { e.timer.textContent = t; this.lastTimer = t; } } else if (tstr !== this.lastTimer) { e.timer.textContent = tstr; this.lastTimer = tstr; }
+    const ts = Math.max(0, Math.ceil(G.tleft)), tstr = Math.floor(ts / 60) + ':' + String(ts % 60).padStart(2, '0'); if (G.mode === 'arena' || G.mode === 'kof' || G.mode === 'prac') { const A = G.arena, t = G.mode === 'prac' ? '🎯 練習場' : G.mode === 'kof' ? '🥊 KOF 大賽' : (A && A.stage ? 'Stage ' + A.stage + (A.ph === 2 ? ' ・ 剩 ' + G.actors.filter(a => a.pool && a.alive).length + ' 名' : '') : '擂台準備中'); if (t !== this.lastTimer) { e.timer.textContent = t; this.lastTimer = t; } } else if (tstr !== this.lastTimer) { e.timer.textContent = tstr; this.lastTimer = tstr; }
     if (G.mode === 'ctf') { const f0 = G.flags[0], f1 = G.flags[1]; e.flagR.textContent = f0 && f0.state !== 'home' ? '🚩' : ''; e.flagB.textContent = f1 && f1.state !== 'home' ? '🏴' : ''; } else { e.flagR.textContent = ''; e.flagB.textContent = ''; }
     // 輸入
     if (this.dirty || this.lastTyped !== G.typed) {
@@ -275,6 +275,7 @@ const Input = {
     window.addEventListener('keydown', e => {
       if (e.repeat && e.code !== 'Backspace') { if (e.code === 'Tab' || e.code === 'Space') e.preventDefault(); return; }
       if (Device.auto && S.input === 'auto' && performance.now() - Device.lastTouch > 3000 && /^(Key|Digit|Arrow|Space|Shift|Tab)/.test(e.code)) { Device.auto = false; Device.update(); }
+      if (G.mode === 'prac' && G.state === 'playing' && !UI.paused && !UI.menuOpen && !CS.o && (e.code === 'KeyH' || (UI.pracOpen && e.code === 'Escape'))) { togglePrac(); e.preventDefault(); return; }
       if ((UI.paused || UI.menuOpen) && G.state === 'playing') { if (e.code === 'Escape' || e.code === 'KeyP') togglePause(); return; }
       if (G.demo && (G.state === 'playing' || G.state === 'ended')) { if (e.code === 'Escape' || e.code === 'KeyP') togglePause(); e.preventDefault(); return; }
       if (G.state === 'playing' || G.state === 'ended') {
@@ -425,12 +426,12 @@ function buildHowto() {
   show('go');
 }
 function huntLock() {
-  if ($('chMode')) [...$('chMode').children].forEach((b, i) => { const m = Object.values(MODES)[i]; if (UI.gDemo && m && m.demo === false) b.classList.add('dis'); else if (!m || !m.soon) b.classList.remove('dis'); });
+  if ($('chMode')) [...$('chMode').children].forEach((b, i) => { const m = MODES[Object.keys(MODES).filter(k => UI.gPrac ? k === 'prac' : k !== 'prac')[i]]; if (UI.gDemo && m && m.demo === false) b.classList.add('dis'); else if (!m || !m.soon) b.classList.remove('dis'); });
   const h = S.mode === 'hunt'; if (h) { if (S.count !== 16 && S.count !== 20) S.count = 20; S.diff = 3; S.countSet = true; }
   const CN = [4, 8, 12, 16, 20];
   for (const id of ['chCount', 'chNCount']) { const el = $(id); if (!el) continue; [...el.children].forEach(b => { const v = parseInt(b.textContent); if (isNaN(v)) { b.classList.toggle('dis', h); return; } b.classList.toggle('dis', h && v !== 16 && v !== 20); b.classList.toggle('on', v === S.count); }); }
-  if (window.updTroll) window.updTroll(); if ($('diffDesc')) $('diffDesc').textContent = DIFF[S.diff].desc; if ($('diffDescN')) $('diffDescN').textContent = DIFF[S.diff].desc;
-  for (const id of ['chDiff', 'chNDiff']) { const el = $(id); if (!el) continue; [...el.children].forEach((b, i) => { if (i >= DIFF.length) { b.classList.toggle('dis', h); return; } b.classList.toggle('dis', h && i !== 3); b.classList.toggle('on', i === S.diff); }); }
+  if (window.updTroll) window.updTroll(); if ($('diffDesc')) $('diffDesc').textContent = DIFF[UI.gPrac ? (S.pdiff === undefined ? 4 : S.pdiff) : S.diff].desc; if ($('diffDescN')) $('diffDescN').textContent = DIFF[S.diff].desc;
+  if (!UI.gPrac) for (const id of ['chDiff', 'chNDiff']) { const el = $(id); if (!el) continue; [...el.children].forEach((b, i) => { if (i >= DIFF.length) { b.classList.toggle('dis', h); return; } b.classList.toggle('dis', h && i !== 3); b.classList.toggle('on', i === S.diff); }); }
   refreshRand();
   const ar = (UI.gDemo ? S.demoMode : S.mode) === 'arena' && !(S.rnd && S.rnd.mode); // 擂台逃殺：時間／技能／人數／難度依固定規則，全部上鎖
   if (ar) S.skills = true;
@@ -443,7 +444,8 @@ function chips(id, items, get, set, rk) {
 }
 function refreshRand() { for (const id in RAND_IDS) { const el = $(id); if (!el) continue; const on = !!(S.rnd && S.rnd[RAND_IDS[id]]), ch = [...el.children]; ch.forEach((c, i) => { if (on) c.classList.toggle('on', i === ch.length - 1); else if (i === ch.length - 1) c.classList.remove('on'); }); } }
 function resolveRandoms(demo, humans) { // 開局時把「隨機」類別換成實際值
-  const r = S.rnd || {}, vis = Object.entries(MODES).filter(([k, m]) => !m.soon && !(demo && m.demo === false) && !(k === 'kof' && humans > 2)).map(x => x[0]);
+  if (S.mode === 'prac') return;
+  const r = S.rnd || {}, vis = Object.entries(MODES).filter(([k, m]) => k !== 'prac' && !m.soon && !(demo && m.demo === false) && !(k === 'kof' && humans > 2)).map(x => x[0]);
   if (r.mode) { const k = pick(vis); if (demo) S.demoMode = k; else S.mode = k; }
   if (r.map) { const k = pick(Object.keys(MAPS)); if (demo) S.demoMap = k; else S.map = k; }
   const arenaFix = (demo ? S.demoMode : S.mode) === 'arena';
@@ -452,21 +454,23 @@ function resolveRandoms(demo, humans) { // 開局時把「隨機」類別換成�
   const mk = demo ? S.demoMode : S.mode; if (mk === 'hunt') { if (S.count !== 16 && S.count !== 20) S.count = 20; S.diff = 3; S.countSet = true; }
 }
 function buildMenu() {
+  if (S.mode === 'prac' && !UI.gPrac) S.mode = 'dm'; const P = !!UI.gPrac;
   buildHowto(); if (!MAPS[S.map]) S.map = 'hb';
   const mapItems = Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name + '<small>' + m.sub + '</small>' })), updMap = () => { $('mapDesc').textContent = MAPS[S.map].desc; };
   chips('chMap', mapItems, () => S.map, v => { S.map = v; updMap(); World.load(v); }, 'map'); updMap();
   const updMode = () => { $('modeDescG').textContent = MODES[S.mode] ? MODES[S.mode].short : ''; };
-  chips('chMode', Object.entries(MODES).map(([k, m]) => ({ v: k, dis: !!m.soon, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => { S.mode = v; updMode(); huntLock(); }, 'mode'); updMode();
+  chips('chMode', Object.entries(MODES).filter(([k]) => P ? k === 'prac' : k !== 'prac').map(([k, m]) => ({ v: k, dis: !!m.soon, l: m.name + '<small>' + m.sub + '</small>' })), () => S.mode, v => { S.mode = v; updMode(); huntLock(); }, P ? undefined : 'mode'); updMode();
   chips('chCode', CODE_OPTS.map(n => ({ v: n, l: codeLabel(n) })), () => S.codeLen, v => S.codeLen = v);
   chips('chCount', [4, 8, 12, 16, 20].map(n => ({ v: n, l: n + ' 人' })), () => S.count, v => { S.count = v; S.countSet = true; }, 'count');
-  chips('chTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v, 'time');
+  if (P) chips('chTime', [{ v: 0, l: '不限' }], () => 0, () => { }); else chips('chTime', [4, 5, 8, 10].map(n => ({ v: n, l: n + ' 分鐘' })), () => S.time, v => S.time = v, 'time');
+  $('chSkill').parentNode.classList.toggle('hidden', P); $('skDesc').classList.toggle('hidden', P);
   const updSk = () => { $('skDesc').textContent = S.skills === false ? '所有英雄的主動、被動技能都停用，純粹比拼眼力與手速。' : '英雄技能全部啟用（含主動技能與被動能力）。'; };
   chips('chSkill', [{ v: true, l: '是' }, { v: false, l: '否' }], () => S.skills !== false, v => { S.skills = v; updSk(); }, 'skills'); updSk();
   const TL = [{ v: 1, l: '輕度', d: '靈活度降為標準的 25%，動作遲緩、很少搗亂。' }, { v: 2, l: '中度', d: '靈活度降為標準的 55%，動作與搗亂頻率適中。' }, { v: 3, l: '重度', d: '維持標準靈活度，全場亂跑、積極搗亂。' }];
-  const updTroll = () => { $('trollRow').classList.toggle('hidden', S.diff !== 3); $('trollDesc').textContent = (TL.find(t => t.v === S.trollLv) || TL[2]).d; };
+  const updTroll = () => { $('trollRow').classList.toggle('hidden', P || S.diff !== 3); $('trollDesc').textContent = (TL.find(t => t.v === S.trollLv) || TL[2]).d; };
   chips('chTroll', TL.map(t => ({ v: t.v, l: t.l })), () => S.trollLv, v => { S.trollLv = v; updTroll(); }, 'troll'); window.updTroll = updTroll;
-  const updDiff = () => { $('diffDesc').textContent = DIFF[S.diff].desc; updTroll(); };
-  chips('chDiff', DIFF.map((d, i) => ({ v: i, l: d.name })), () => S.diff, v => { S.diff = v; updDiff(); }, 'diff'); updDiff();
+  const updDiff = () => { $('diffDesc').textContent = DIFF[P ? (S.pdiff === undefined ? 4 : S.pdiff) : S.diff].desc; updTroll(); };
+  if (P) chips('chDiff', [{ v: 4, l: 'No AI' }, { v: 0, l: '輕度' }, { v: 1, l: '中度' }, { v: 2, l: '重度' }], () => S.pdiff === undefined ? 4 : S.pdiff, v => { S.pdiff = v; updDiff(); }); else chips('chDiff', DIFF.map((d, i) => ({ v: i, l: d.name, prac: d.prac })).filter(d => !d.prac), () => S.diff, v => { S.diff = v; updDiff(); }, 'diff'); updDiff();
   chips('chInput', [{ v: 'auto', l: '自動偵測' }, { v: 'desktop', l: '🖥️ 電腦' }, { v: 'mobile', l: '📱 手機' }], () => S.input, v => { S.input = v; Device.update(); refreshBadge(); });
   chips('chQual', [{ v: 'auto', l: '自動' }, { v: 'high', l: '高' }, { v: 'mid', l: '中' }, { v: 'low', l: '低（最順）' }], () => S.quality, v => { S.quality = v; Perf.profile(); Perf.apply(); });
   chips('chLay', [{ v: 1, l: '預設 1<small>目前版面</small>' }, { v: 2, l: '預設 2<small>右側方格</small>' }, { v: 3, l: '預設 3<small>左右直列</small>' }, { v: 4, l: '預設 4<small>中央雙組</small>' }], () => S.lp || 1, v => { S.lp = v; if (v > 1) for (const id of ['numL', 'numR', 'bBack', 'bJump', 'bRun', 'bBino2', 'slotF', 'slotG', 'slotS']) delete S.layout[id]; applyLayout(); updLay(); }); const updLay = () => { $('layNote').textContent = ['保留原本的按鍵位置（可再用「按鍵配置」自行拖曳）。', '數字鍵與 🔙 排成 3×4 方格靠右，其餘按鍵不受影響。', '數字鍵直列在螢幕左右兩側，右側按鍵自動往中央收攏。', '1～5 與 6～0 分兩組擺在畫面中央左右，中央留空不擋視線。'][(S.lp || 1) - 1]; }; updLay();
@@ -517,17 +521,18 @@ function beginGame(demo, roster) {
   UI.els.menu.classList.add('hidden'); UI.els.hud.classList.remove('hidden'); document.body.classList.add('playing'); document.body.classList.toggle('demo', demo);
   $('keysov').classList.add('hidden'); UI.hideEnd(); UI.endScramble(); UI._ph2 = false; In.sprintT = false; $('bRun').classList.remove('tog'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.els.demoTag.classList.add('hidden');
   $('btnResume').textContent = demo ? '繼續示範' : '繼續'; $('btnQuit').textContent = demo ? '退出示範模式' : NET.mode ? '離開房間' : '回主選單'; $('pauseTitle').textContent = demo ? '示範模式已暫停' : '已暫停';
-  startMatch(demo, roster); UI.els.modeName.textContent = (demo ? '示範 · ' : '') + MAPS[G.map].name + ' · ' + MODES[G.mode].name + ' · ' + (G.codeLen ? G.codeLen + ' 碼' : '大亂鬥') + ' · ' + DIFF[S.diff].name; UI._cd = 0; UI.goT = 0; UI.lastFeed = -1; UI.dirty = true; UI.onRespawn(); Perf.profile(); Perf.apply(); updateRotate();
+  startMatch(demo, roster); UI.els.modeName.textContent = (demo ? '示範 · ' : '') + MAPS[G.map].name + ' · ' + MODES[G.mode].name + ' · ' + (G.codeLen ? G.codeLen + ' 碼' : '大亂鬥') + (G.mode === 'prac' ? '' : ' · ' + DIFF[S.diff].name); $('pracBtn').classList.toggle('hidden', G.mode !== 'prac'); closePrac(); UI._cd = 0; UI.goT = 0; UI.lastFeed = -1; UI.dirty = true; UI.onRespawn(); Perf.profile(); Perf.apply(); updateRotate();
   UI.els.hints.style.display = Device.mobile ? 'none' : '';
   if (demo) { UI.msg('示範模式：全員為電腦，視角會自動切換', 'item'); }
   else if (!Device.mobile) { Input.lock(); UI.noLock = false; setTimeout(() => { if (!Input.pointerLocked() && G.state === 'playing' && !G.demo) UI.msg('點一下畫面以鎖定滑鼠（無法鎖定時可按住左鍵拖曳）', 'item'); }, 900); }
   else UI.msg('左側拖曳移動・中間拖曳轉視角・上方數字鍵輸入', 'item');
   UI._wasLocked = false;
-  if (!demo) showTut(!NET.mode); else hideTut();
+  if (!demo && G.mode !== 'prac') showTut(!NET.mode); else hideTut();
 }
 function toMenu() { go(() => { netLeave(); resetToMenuUI(); }); }
 function stopGameUI() { resetToMenuUI(); UI.els.menu.classList.add('hidden'); }
 function resetToMenuUI() {
+  closePrac(); $('pracBtn').classList.add('hidden'); if (UI.gPrac || UI.pracSaved) endPrac();
   $('gl').style.filter = ''; UI._neg = false;
   $('keysov').classList.add('hidden');
   UI.ev = {}; UI._pk = null; closePick(); G.arena = null; G.kofCd = false;
@@ -558,7 +563,7 @@ function showCharInfo(i) {
   const o = OUTFITS[i === undefined ? S.outfit : i]; $('cName').textContent = o.label; $('cPass').textContent = '【' + o.skill.name + '】' + o.skill.desc;
 }
 function setPreview(idx) { if (CS.o && CS.o.noPrev) return; if (idx === null) { G.preview = null; return; } G.preview = { x: 0, y: 0, z: 0, yaw: 0, animT: 0, sp: 0, av: createAvatar(idx === undefined ? S.outfit : idx), team: -1, number: '4827', plateScale: 1 }; makePlate(G.preview); }
-const isWM = o => !!o && o.need === 1 && !o.allowed && !o.kofChoose && !o.browse; // 可複選（加權隨機）的模式：非 KOF 的一般選英雄
+const isWM = o => !!o && o.need === 1 && !o.allowed && !o.kofChoose && !o.browse && !o.single; // 可複選（加權隨機）的模式：非 KOF 的一般選英雄
 const csTotal = () => { let n = 0; for (const k in CS.counts) if (!heroBlocked(+k)) n += CS.counts[k]; return n; };
 function weightedHero(counts) { const bag = []; for (const k in counts) if (!heroBlocked(+k)) for (let n = 0; n < counts[k]; n++) bag.push(+k); return bag.length ? pick(bag) : null; }
 function rerollHero() { // 單人「再來一場」：依複選／隨機設定重新抽一位英雄
@@ -573,11 +578,11 @@ function csRefresh(last) {
   document.querySelectorAll('#cards .card').forEach(c => {
     if (c.dataset.r) { c.classList.toggle('on', CS.rand && !five); return; }
     const i = +c.dataset.i, k = CS.picks.indexOf(i), n = wm ? (CS.counts[i] || 0) : 0, on = wm ? n > 0 : five ? k >= 0 : (!CS.rand && CS.picks[0] === i);
-    c.classList.toggle('on', on); c.classList.toggle('fav', (S.fav || []).includes(i)); const b = c.querySelector('.pk'); if (b) b.textContent = wm ? (n ? '×' + n : '') : (five && k >= 0 ? k + 1 : '');
+    c.classList.toggle('on', on); c.classList.toggle('lk', !!o.single && CS.picks.length > 0 && CS.picks[0] !== i); c.classList.toggle('fav', (S.fav || []).includes(i)); const b = c.querySelector('.pk'); if (b) b.textContent = wm ? (n ? '×' + n : '') : (five && k >= 0 ? k + 1 : '');
   });
   const tot = csTotal();
   $('csHint').textContent = CS.flash || (five ? `已選 ${CS.picks.length} / ${o.need}　（點選順序＝出賽順序；右鍵取消；長按右鍵加入收藏庫）` : wm ? (tot ? `已選 ${tot} 張　左鍵 +1・右鍵 −1・長按右鍵（手機：長按卡片）加入收藏庫；張數越多越容易被抽中，開局隨機抽出一位` : '左鍵選取（再點 +1）・右鍵 −1・長按右鍵（手機：長按卡片）加入收藏庫') : (o.hint || ''));
-  $('csOk').classList.toggle('dis', (five && CS.picks.length < o.need) || (wm && !CS.rand && tot === 0));
+  $('csOk').classList.toggle('dis', (five && CS.picks.length < o.need) || (wm && !CS.rand && tot === 0) || (!!o.single && CS.picks.length === 0));
   if (CS.rand && !five) { setPreview(null); showCharInfo(); } else { const v = last !== undefined ? last : (wm ? CS.lastClick : CS.picks[CS.picks.length - 1]); if (v !== undefined && v !== null) { setPreview(v); showCharInfo(v); } }
 }
 function csBuildCards() {
@@ -587,14 +592,14 @@ function csBuildCards() {
   const mk = i => {
     const ou = OUTFITS[i], c = document.createElement('div'), blocked = !o.browse && heroBlocked(i); c.dataset.i = i; c.className = 'card' + (blocked ? ' dis' : '');
     c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + ou.label + (blocked ? '<small class="nov">此裝置不支援語音</small>' : '') + '<b class="pk"></b><span class="pm">−</span>';
-    c.onclick = () => { if (blocked) return; if (c._lp) { c._lp = false; return; } if (o.browse) { CS.picks = [i]; csRefresh(i); return; } if (i === 39) Voice.warm(); CS.rand = false; CS.lastClick = i; if (wm) CS.counts[i] = Math.min(9, (CS.counts[i] || 0) + 1); else if (five) { const k = CS.picks.indexOf(i); if (k >= 0) CS.picks.splice(k, 1); else if (CS.picks.length < o.need) CS.picks.push(i); } else CS.picks = [i]; csRefresh(i); };
+    c.onclick = () => { if (blocked) return; if (c._lp) { c._lp = false; return; } if (o.browse) { CS.picks = [i]; csRefresh(i); return; } if (o.single) { if (CS.picks[0] === i) CS.picks = []; else if (!CS.picks.length) CS.picks = [i]; else return; CS.lastClick = i; csRefresh(i); return; } if (i === 39) Voice.warm(); CS.rand = false; CS.lastClick = i; if (wm) CS.counts[i] = Math.min(9, (CS.counts[i] || 0) + 1); else if (five) { const k = CS.picks.indexOf(i); if (k >= 0) CS.picks.splice(k, 1); else if (CS.picks.length < o.need) CS.picks.push(i); } else CS.picks = [i]; csRefresh(i); };
     c.oncontextmenu = e => e.preventDefault();
     c.onmousedown = e => { if (e.button === 2 && !blocked) { clearTimeout(c._rt); c._rt = setTimeout(() => { c._rt = null; csToggleFav(i); }, 550); } };
     c.onmouseup = e => { if (e.button === 2 && c._rt) { clearTimeout(c._rt); c._rt = null; csDec(i); } };
     c.onmouseleave = () => { clearTimeout(c._rt); c._rt = null; };
     c.ontouchstart = () => { clearTimeout(c._tt); c._tt = setTimeout(() => { c._tt = null; c._lp = true; csToggleFav(i); setTimeout(() => { c._lp = false; }, 600); }, 550); };
     for (const ev of ['ontouchend', 'ontouchcancel', 'ontouchmove']) c[ev] = () => { clearTimeout(c._tt); c._tt = null; };
-    if (o.browse) c.querySelector('.pm').remove(); else c.querySelector('.pm').onclick = e => { e.stopPropagation(); csDec(i); };
+    if (o.browse || o.single) c.querySelector('.pm').remove(); else c.querySelector('.pm').onclick = e => { e.stopPropagation(); csDec(i); };
     return c;
   };
   const sec = (txt, col) => { const hd = document.createElement('div'); hd.className = 'chd'; if (col) hd.style.setProperty('--hc', col); hd.textContent = txt; cards.appendChild(hd); };
@@ -604,7 +609,7 @@ function csBuildCards() {
   const placed = new Set(), groups = CS.view === 'tier' ? HERO_TIERS : HERO_CLASSES;
   for (const [nm, col, ids] of groups) { const list = ids.filter(i => pool.includes(i)); if (!list.length) continue; sec(nm + '（' + list.length + '）', col); for (const i of list) { placed.add(i); cards.appendChild(mk(i)); } }
   const rest = pool.filter(i => !placed.has(i)); if (rest.length) { sec('其他'); for (const i of rest) cards.appendChild(mk(i)); }
-  if (!o.browse) { sec('🎲 隨機', '#c9a8ff'); cards.appendChild(rc); } csRefresh();
+  if (!o.browse && !o.single) { sec('🎲 隨機', '#c9a8ff'); cards.appendChild(rc); } csRefresh();
   [...$('csView').children].forEach(b => b.classList.toggle('on', b.dataset.v === CS.view));
 }
 function openPick(o) {
@@ -615,7 +620,7 @@ function openPick(o) {
     if (S.multi) for (const k in S.multi) if (pool.includes(+k) && !heroBlocked(+k) && S.multi[k] > 0) CS.counts[k] = S.multi[k];
     if (!CS.rand && !Object.keys(CS.counts).length) { const f = pool.includes(S.outfit) && !heroBlocked(S.outfit) ? S.outfit : pool.find(i => !heroBlocked(i)); CS.counts[f] = 1; }
     CS.lastClick = Object.keys(CS.counts).length ? +Object.keys(CS.counts)[0] : null;
-  } else if (o.need === 1) { const pf = pool.includes(S.outfit) && !heroBlocked(S.outfit) ? S.outfit : pool.find(i => !heroBlocked(i)); CS.picks = [pf]; }
+  } else if (o.need === 1 && !o.single) { const pf = pool.includes(S.outfit) && !heroBlocked(S.outfit) ? S.outfit : pool.find(i => !heroBlocked(i)); CS.picks = [pf]; }
   csBuildCards();
   UI.els.menu.classList.add('hidden'); $('mp').classList.add('hidden'); $('gset').classList.add('hidden'); $('charsel').classList.remove('hidden'); showWait(false);
   csRefresh(); clearInterval(CS.tm); UI.clrEv('cs');
@@ -635,21 +640,43 @@ function showWait(on) { $('waitDlg').classList.toggle('hidden', !on); }
 /* 單人／房主：設定完成後才選英雄 */
 function startPickFlow() {
   resolveRandoms(false); UI.preResolved = true; const kof = S.mode === 'kof';
+  if (S.mode === 'prac') { openPick({ need: 1, single: true, secs: 0, title: '練習場：選擇一位英雄', okText: '確認，進入練習場', hint: '點選一位英雄後，其餘英雄會自動反灰鎖住；再點一次已選的英雄可取消重選。', back: () => { closePick(); $('gset').classList.remove('hidden'); UI.preResolved = false; }, onDone: list => { S.outfit = list[0]; saveS(); beginGame(false); } }); return; }
   openPick({
     need: kof ? 5 : 1, secs: 0, evIco: '🧩', title: kof ? '選擇 5 位出賽英雄（車輪戰）' : '選擇英雄', okText: kof ? '確認出賽名單' : '確認，開始遊戲',
     back: () => { closePick(); $('gset').classList.remove('hidden'); UI.preResolved = false; },
     onDone: (list, wasRand, ex) => { if (kof) G.kofPre = { me: list, opp: kofRandRoster() }; else if (ex) S.pref = 'rand'; else if (S.pref !== 'multi') S.pref = list[0]; S.outfit = list[0]; saveS(); beginGame(false); }
   });
 }
+
+/* ---------- 練習場小幫手 ---------- */
+function relockGame() { if (!Device.mobile && G.state === 'playing' && !G.demo) { try { Input.lock(); } catch (e) { } } }
+function buildPrac() {
+  const on = [{ v: true, l: '開啟' }, { v: false, l: '關閉' }];
+  chips('prDiff', [{ v: 4, l: 'No AI' }, { v: 0, l: '輕度' }, { v: 1, l: '中度' }, { v: 2, l: '重度' }], () => S.pdiff === undefined ? 4 : S.pdiff, v => pracSetDiff(v));
+  chips('prCd', on, () => !!G.pracCdr, v => { G.pracCdr = v; });
+  chips('prEn', on, () => !G.noEn, v => { G.noEn = !v; });
+}
+function closePrac() { const pn = $('pracPanel'); if (!pn || pn.classList.contains('hidden')) { UI.pracOpen = false; return; } pn.classList.add('hidden'); UI.pracOpen = false; UI.noLock = false; relockGame(); }
+function togglePrac(v) {
+  const pn = $('pracPanel'); if (G.mode !== 'prac' || G.state !== 'playing') return; const open = v === undefined ? pn.classList.contains('hidden') : v; if (!open) { closePrac(); return; }
+  buildPrac(); pn.classList.remove('hidden'); UI.pracOpen = true; UI.noLock = true; for (const k in keys) keys[k] = false; In.mx = In.my = 0; In.sprint = false; In.jump = false; if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
+}
+function pracPickHero() {
+  closePrac(); UI.paused = true; const back = () => { closePick(); UI.paused = false; relockGame(); };
+  openPick({ need: 1, single: true, secs: 0, title: '練習場：更換英雄', okText: '確認，回到練習場', hint: '點選一位英雄後，其餘英雄會自動反灰鎖住；再點一次已選的英雄可取消重選。', back, onDone: list => { pracChangeHero(list[0]); UI.paused = false; } });
+  UI.els.hud.classList.remove('hidden'); $('charsel').classList.remove('hidden');
+}
 function kofRandRoster() { return VIS_OUTFITS.filter(i => !heroBlocked(i)).sort(() => Math.random() - .5).slice(0, 5); }
-function openGset(demo) {
-  UI.gDemo = !!demo; const g = $('gset');
+function openGset(demo, prac) {
+  UI.gDemo = !!demo; const g = $('gset'); UI.gPrac = !!prac;
+  if (prac) { UI.pracSaved = { mode: S.mode }; S.mode = 'prac'; buildMenu(); } else if (UI.pracSaved) endPrac(); else buildMenu();
   if (demo) { UI.gSaved = { mode: S.mode, map: S.map }; if (MODES[S.demoMode] && MODES[S.demoMode].demo !== false) S.mode = S.demoMode; else S.mode = 'dm'; if (MAPS[S.demoMap]) S.map = S.demoMap; buildMenu(); }
-  $('gTitle').textContent = demo ? '🎬 電腦示範設定' : '🏆 遊戲設定'; $('gSub').textContent = demo ? '全部由電腦對戰，你以觀戰視角隨機切換' : '依序選好三個區塊，再按「進入遊戲」'; $('gGoT').textContent = demo ? '🎬 開始示範' : '🔥 進入遊戲';
+  $('gTitle').textContent = prac ? '🎯 練習模式設定' : demo ? '🎬 電腦示範設定' : '🏆 遊戲設定'; $('gSub').textContent = prac ? '沒有勝負、不限時間；進入後可用左上角「練習場小幫手」調整' : demo ? '全部由電腦對戰，你以觀戰視角隨機切換' : '依序選好三個區塊，再按「進入遊戲」'; $('gGoT').textContent = prac ? '🎯 選擇英雄並進入練習場' : demo ? '🎬 開始示範' : '🔥 進入遊戲';
   UI.els.menu.classList.add('hidden'); g.classList.remove('hidden'); huntLock();
 }
+function endPrac() { UI.gPrac = false; if (UI.pracSaved) { S.mode = UI.pracSaved.mode; UI.pracSaved = null; } if (S.mode === 'prac') S.mode = 'dm'; saveS(); buildMenu(); }
 function closeGset(go2) {
-  const demo = UI.gDemo; $('gset').classList.add('hidden');
+  const demo = UI.gDemo; $('gset').classList.add('hidden'); if (UI.gPrac) endPrac();
   if (demo) { S.demoMode = S.mode; S.demoMap = S.map; if (UI.gSaved) { S.mode = UI.gSaved.mode; S.map = UI.gSaved.map; } UI.gSaved = null; saveS(); buildMenu(); UI.gDemo = false; }
 }
 /* ---------- 設定視窗 / 按鍵配置 ---------- */
@@ -855,7 +882,7 @@ function boot() {
   $('btnFs').onclick = fs; $('btnFs2').onclick = fs;
   $('btnStart').onclick = () => go(() => openGset(false));
   $('gBack').onclick = () => go(() => { const was = UI.gDemo; closeGset(); UI.els.menu.classList.remove('hidden'); });
-  $('gGo').onclick = () => go(() => { if (UI.gDemo) { closeGset(); beginGame(true); } else { $('gset').classList.add('hidden'); startPickFlow(); } }); $('btnCodex').onclick = () => go(() => openPick({ need: 1, secs: 0, browse: true, title: '英雄圖鑑', hint: '點選英雄查看人像與技能說明；上方可切換「依種類／依等級」排序。長按右鍵（手機：長按卡片）可加入收藏庫。', back: () => { $('charsel').classList.add('hidden'); CS.o = null; setPreview(null); UI.els.menu.classList.remove('hidden'); }, onDone: () => { } })); $('btnDemo').onclick = () => go(() => openGset(true)); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
+  $('gGo').onclick = () => go(() => { if (UI.gDemo) { closeGset(); beginGame(true); } else { $('gset').classList.add('hidden'); startPickFlow(); } }); $('btnCodex').onclick = () => go(() => openPick({ need: 1, secs: 0, browse: true, title: '英雄圖鑑', hint: '點選英雄查看人像與技能說明；上方可切換「依種類／依等級」排序。長按右鍵（手機：長按卡片）可加入收藏庫。', back: () => { $('charsel').classList.add('hidden'); CS.o = null; setPreview(null); UI.els.menu.classList.remove('hidden'); }, onDone: () => { } })); $('btnPrac').onclick = () => go(() => openGset(false, true)); $('pracBtn').onclick = () => togglePrac(); $('pracX').onclick = () => closePrac(); $('prHero').onclick = pracPickHero; $('prAlly').onclick = () => pracSpawn(0); $('prFoe').onclick = () => pracSpawn(1); $('prClr').onclick = pracClear; $('btnDemo').onclick = () => go(() => openGset(true)); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
   $('csBack').onclick = () => go(() => { const o = CS.o; if (o && o.back) o.back(); });
   $('csView').onclick = e => { const b = e.target.closest('button'); if (b) csSetView(b.dataset.v); };
   $('csOk').onclick = () => { if ($('csOk').classList.contains('dis')) return; go(() => csFinish(false)); };

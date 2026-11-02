@@ -106,7 +106,7 @@ OUTFITS.push(
     torso: [[.001, -.16], [.2, -.16], [.19, -.08], [.16, .05], [.15, .17], [.152, .28], [.17, .38], [.18, .46], [.17, .51], [.12, .545], [.056, .56], [.05, .595], [.001, .595]] },
   { key: 'voodoo', label: '巫毒娃娃Voodoo', sub: '', skill: { name: '巫毒反殺', desc: '發動後 5 秒內若被擊殺，重生後第 3～6 秒畫面會閃爍顯示擊殺者目前的號碼；若這 5 秒內擊殺對手，對手重生後 10 秒內沿用舊號碼（KOF 適用）。冷卻 20 秒。' }, H: 1.6, skin: '#d9b48a', hipX: .09, shX: .2, tz: .53, hair: '#4b2a6b', hair2: '#4b2a6b', female: true, gen: { top: '#8c5ac8', top2: '#e8d28a', pants: '#3a2a4a', shoe: '#e8d28a', hair: '#4b2a6b', style: 'long', acc: ['pins', 'skirt'], accC: '#e8e8f0', skirtC: '#8c5ac8', hemC: '#e8d28a' },
     torso: [[.001, -.16], [.2, -.16], [.19, -.08], [.16, .05], [.15, .17], [.152, .28], [.17, .38], [.18, .46], [.17, .51], [.12, .545], [.056, .56], [.05, .595], [.001, .595]] },
-  { key: 'enigma', label: '艾尼Enigma', sub: '', skill: { name: '亂碼術', desc: '發動後 5 秒內若被擊殺，重生後第 3～6 秒畫面會閃爍顯示擊殺者目前的號碼；若這 5 秒內擊殺對手，對手重生後 10 秒內沿用舊號碼（KOF 適用）。冷卻 20 秒。' }, H: 1.75, skin: '#e0c4a8', hipX: .098, shX: .235, tz: .53, hair: '#39ff9a', hair2: '#39ff9a', female: false, gen: { top: '#2b1a4a', top2: '#39ff9a', pants: '#1c1230', shoe: '#39ff9a', hair: '#23183a', style: 'short', acc: ['qmark', 'shades'], accC: '#39ff9a' },
+  { key: 'enigma', label: '艾尼Enigma', sub: '', skill: { name: '亂碼術', desc: '發動後 5 秒內，頭上的真號碼每 0.5 秒會在真號碼與另一組假號碼之間隨機跳動，讓對手難以鎖定。冷卻 18 秒。' }, H: 1.75, skin: '#e0c4a8', hipX: .098, shX: .235, tz: .53, hair: '#39ff9a', hair2: '#39ff9a', female: false, gen: { top: '#2b1a4a', top2: '#39ff9a', pants: '#1c1230', shoe: '#39ff9a', hair: '#23183a', style: 'short', acc: ['qmark', 'shades'], accC: '#39ff9a' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'decoy', label: '影武者Decoy', sub: '', skill: { name: '影子突進', desc: '發動後生成外觀相同的替身往前奔跑，穿過障礙物直到碰牆停止；替身持有你的舊號碼，本體立即換上新號碼。冷卻 10 秒。' }, H: 1.78, skin: '#d9b894', hipX: .098, shX: .235, tz: .53, hair: '#111118', hair2: '#111118', female: false, gen: { top: '#23232b', top2: '#e0322e', pants: '#23232b', shoe: '#e0322e', hair: '#111118', style: 'short', acc: ['headband', 'scarftail', 'katana'], accC: '#e0322e' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
@@ -567,7 +567,7 @@ function drawPlate(a) {
   const border = team === 0 ? '#d93a3a' : team === 1 ? '#3a6fd9' : '#2a2018';
   g.fillStyle = '#f4c64e'; g.fillRect(0, 0, 256, 128); g.fillStyle = border; g.fillRect(0, 0, 256, 10); g.fillRect(0, 118, 256, 10); g.fillRect(0, 0, 10, 128); g.fillRect(246, 0, 10, 128);
   g.fillStyle = '#0d0d0d'; g.font = '900 96px "Arial Black",Impact,"Helvetica Neue",Arial,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-  const txt = a.fake || a.number || '0'.repeat(G.codeLen || 4); let w = g.measureText(txt).width; const sc = Math.min(1, 220 / w); g.save(); g.translate(128, 68); g.scale(sc, 1); g.fillText(txt, 0, 0); g.restore();
+  const txt = a.fake || a.enShow || a.number || '0'.repeat(G.codeLen || 4); let w = g.measureText(txt).width; const sc = Math.min(1, 220 / w); g.save(); g.translate(128, 68); g.scale(sc, 1); g.fillText(txt, 0, 0); g.restore();
   g.fillStyle = '#c9a469'; g.fillRect(256, 0, 256, 128); g.fillStyle = 'rgba(0,0,0,.18)'; g.fillRect(256, 56, 256, 16); dots(g, 512, 128, 400, ['#b8935a', '#d7b87c'], 1, 2, .4);
   R.updateTex(a.plateTex);
 }
