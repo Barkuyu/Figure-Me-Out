@@ -557,7 +557,7 @@ function showCharInfo(i) {
   const o = OUTFITS[i === undefined ? S.outfit : i]; $('cName').textContent = o.label; $('cPass').textContent = '【' + o.skill.name + '】' + o.skill.desc;
 }
 function setPreview(idx) { if (CS.o && CS.o.noPrev) return; if (idx === null) { G.preview = null; return; } G.preview = { x: 0, y: 0, z: 0, yaw: 0, animT: 0, sp: 0, av: createAvatar(idx === undefined ? S.outfit : idx), team: -1, number: '4827', plateScale: 1 }; makePlate(G.preview); }
-const isWM = o => !!o && o.need === 1 && !o.allowed && !o.kofChoose; // 可複選（加權隨機）的模式：非 KOF 的一般選英雄
+const isWM = o => !!o && o.need === 1 && !o.allowed && !o.kofChoose && !o.browse; // 可複選（加權隨機）的模式：非 KOF 的一般選英雄
 const csTotal = () => { let n = 0; for (const k in CS.counts) if (!heroBlocked(+k)) n += CS.counts[k]; return n; };
 function weightedHero(counts) { const bag = []; for (const k in counts) if (!heroBlocked(+k)) for (let n = 0; n < counts[k]; n++) bag.push(+k); return bag.length ? pick(bag) : null; }
 function rerollHero() { // 單人「再來一場」：依複選／隨機設定重新抽一位英雄
@@ -584,16 +584,16 @@ function csBuildCards() {
   const rc = document.createElement('div'); rc.className = 'card'; rc.dataset.r = 1; rc.innerHTML = '<img class="cav" src="' + qIcon() + '">隨機（由系統抽一位）';
   rc.onclick = () => { if (!five) { CS.rand = true; CS.picks = []; if (wm) CS.counts = {}; csRefresh(); } else { const rest = pool.filter(i => !CS.picks.includes(i) && !heroBlocked(i)).sort(() => Math.random() - .5); while (CS.picks.length < o.need && rest.length) CS.picks.push(rest.pop()); csRefresh(); } };
   const mk = i => {
-    const ou = OUTFITS[i], c = document.createElement('div'), blocked = heroBlocked(i); c.dataset.i = i; c.className = 'card' + (blocked ? ' dis' : '');
+    const ou = OUTFITS[i], c = document.createElement('div'), blocked = !o.browse && heroBlocked(i); c.dataset.i = i; c.className = 'card' + (blocked ? ' dis' : '');
     c.innerHTML = '<img class="cav" src="' + outfitIcon(i) + '">' + ou.label + (blocked ? '<small class="nov">此裝置不支援語音</small>' : '') + '<b class="pk"></b><span class="pm">−</span>';
-    c.onclick = () => { if (blocked) return; if (c._lp) { c._lp = false; return; } if (i === 39) Voice.warm(); CS.rand = false; CS.lastClick = i; if (wm) CS.counts[i] = Math.min(9, (CS.counts[i] || 0) + 1); else if (five) { const k = CS.picks.indexOf(i); if (k >= 0) CS.picks.splice(k, 1); else if (CS.picks.length < o.need) CS.picks.push(i); } else CS.picks = [i]; csRefresh(i); };
+    c.onclick = () => { if (blocked) return; if (c._lp) { c._lp = false; return; } if (o.browse) { CS.picks = [i]; csRefresh(i); return; } if (i === 39) Voice.warm(); CS.rand = false; CS.lastClick = i; if (wm) CS.counts[i] = Math.min(9, (CS.counts[i] || 0) + 1); else if (five) { const k = CS.picks.indexOf(i); if (k >= 0) CS.picks.splice(k, 1); else if (CS.picks.length < o.need) CS.picks.push(i); } else CS.picks = [i]; csRefresh(i); };
     c.oncontextmenu = e => e.preventDefault();
     c.onmousedown = e => { if (e.button === 2 && !blocked) { clearTimeout(c._rt); c._rt = setTimeout(() => { c._rt = null; csToggleFav(i); }, 550); } };
     c.onmouseup = e => { if (e.button === 2 && c._rt) { clearTimeout(c._rt); c._rt = null; csDec(i); } };
     c.onmouseleave = () => { clearTimeout(c._rt); c._rt = null; };
     c.ontouchstart = () => { clearTimeout(c._tt); c._tt = setTimeout(() => { c._tt = null; c._lp = true; csToggleFav(i); setTimeout(() => { c._lp = false; }, 600); }, 550); };
     for (const ev of ['ontouchend', 'ontouchcancel', 'ontouchmove']) c[ev] = () => { clearTimeout(c._tt); c._tt = null; };
-    c.querySelector('.pm').onclick = e => { e.stopPropagation(); csDec(i); };
+    if (o.browse) c.querySelector('.pm').remove(); else c.querySelector('.pm').onclick = e => { e.stopPropagation(); csDec(i); };
     return c;
   };
   const sec = (txt, col) => { const hd = document.createElement('div'); hd.className = 'chd'; if (col) hd.style.setProperty('--hc', col); hd.textContent = txt; cards.appendChild(hd); };
@@ -603,11 +603,11 @@ function csBuildCards() {
   const placed = new Set(), groups = CS.view === 'tier' ? HERO_TIERS : HERO_CLASSES;
   for (const [nm, col, ids] of groups) { const list = ids.filter(i => pool.includes(i)); if (!list.length) continue; sec(nm + '（' + list.length + '）', col); for (const i of list) { placed.add(i); cards.appendChild(mk(i)); } }
   const rest = pool.filter(i => !placed.has(i)); if (rest.length) { sec('其他'); for (const i of rest) cards.appendChild(mk(i)); }
-  sec('🎲 隨機', '#c9a8ff'); cards.appendChild(rc); csRefresh();
+  if (!o.browse) { sec('🎲 隨機', '#c9a8ff'); cards.appendChild(rc); } csRefresh();
   [...$('csView').children].forEach(b => b.classList.toggle('on', b.dataset.v === CS.view));
 }
 function openPick(o) {
-  CS.o = o; CS.rand = false; CS.flash = ''; CS.lastClick = null; CS.view = S.csView === 'tier' ? 'tier' : 'class'; $('csTitle').textContent = o.title || '選擇英雄'; $('csOk').textContent = o.okText || '確認'; $('csBack').style.display = o.back ? '' : 'none';
+  CS.o = o; CS.rand = false; CS.flash = ''; CS.lastClick = null; CS.view = S.csView === 'tier' ? 'tier' : 'class'; $('csTitle').textContent = o.title || '選擇英雄'; $('csOk').textContent = o.okText || '確認'; $('csOk').style.display = o.browse ? 'none' : ''; $('csBack').style.display = o.back ? '' : 'none';
   const pool = o.allowed || VIS_OUTFITS; CS.counts = {}; CS.picks = [];
   if (isWM(o)) {
     CS.rand = S.pref === 'rand';
@@ -854,7 +854,7 @@ function boot() {
   $('btnFs').onclick = fs; $('btnFs2').onclick = fs;
   $('btnStart').onclick = () => go(() => openGset(false));
   $('gBack').onclick = () => go(() => { const was = UI.gDemo; closeGset(); UI.els.menu.classList.remove('hidden'); });
-  $('gGo').onclick = () => go(() => { if (UI.gDemo) { closeGset(); beginGame(true); } else { $('gset').classList.add('hidden'); startPickFlow(); } }); $('btnDemo').onclick = () => go(() => openGset(true)); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
+  $('gGo').onclick = () => go(() => { if (UI.gDemo) { closeGset(); beginGame(true); } else { $('gset').classList.add('hidden'); startPickFlow(); } }); $('btnCodex').onclick = () => go(() => openPick({ need: 1, secs: 0, browse: true, title: '英雄圖鑑', hint: '點選英雄查看人像與技能說明；上方可切換「依種類／依等級」排序。長按右鍵（手機：長按卡片）可加入收藏庫。', back: () => { $('charsel').classList.add('hidden'); CS.o = null; setPreview(null); UI.els.menu.classList.remove('hidden'); }, onDone: () => { } })); $('btnDemo').onclick = () => go(() => openGset(true)); $('btnHow').onclick = () => go(() => $('howPick').classList.remove('hidden')); $('howBack').onclick = () => go(() => $('howPick').classList.add('hidden')); $('btnResume').onclick = resumeGame; $('btnQuit').onclick = toMenu;
   $('csBack').onclick = () => go(() => { const o = CS.o; if (o && o.back) o.back(); });
   $('csView').onclick = e => { const b = e.target.closest('button'); if (b) csSetView(b.dataset.v); };
   $('csOk').onclick = () => { if ($('csOk').classList.contains('dis')) return; go(() => csFinish(false)); };
