@@ -711,21 +711,21 @@ function updatePlayer(dt) {
     let spd = 5.85; const wantSprint = In.sprint && my > .2 && moving;
     G.stamDelay -= dt;
     const bolt = isOut(p, 12) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn; if (wantSprint && (G.stam > .02 || bolt) && !G.bino) { spd = 8.4; if (!bolt) G.stam = Math.max(0, G.stam - dt * .13); G.stamDelay = .9; } else if (G.stamDelay <= 0) G.stam = Math.min(1, G.stam + dt * .2);
-    const sprinting = spd > 7; p.sprinting = sprinting; spd *= speedMul(p); if (World.cur && World.cur.space && !p.onGround) spd *= 1.125; // 外太空：滯空 ×1.6 ⇒ 空中水平速度 ×1.125，跳躍距離 ×1.8
+    const sprinting = spd > 7; p.sprinting = sprinting; spd *= speedMul(p); if (World.cur && World.cur.space && !p.onGround) spd *= 2; // 外太空：空中水平速度 ×2（滯空時間不變）⇒ 跳躍距離 ×2
     if (G.bino) spd *= .42; if (p.carry) spd *= .93;
     let wx = (f[0] * my + rx * mx) * spd, wz = (f[1] * my + rz * mx) * spd; if (p.ctrlT > 0 && p.ctrlBy && isStunBy(p.ctrlBy)) { wx = wz = 0; p.yaw = faceYaw(p, p.ctrlBy); } else if (p.ctrlT > 0 && p.ctrlBy) { const dx = p.x - p.ctrlBy.x, dz = p.z - p.ctrlBy.z, dd = Math.hypot(dx, dz) || 1; wx = dx / dd * spd * .3; wz = dz / dd * spd * .3; }
     const k = Math.min(1, dt * (p.onGround ? (p.icy ? 1.3 : 12) : 3));
     p.vx += (wx - p.vx) * k; p.vz += (wz - p.vz) * k;
     const jp = In.jump && !G.jumpHeld && !(G.freezeT > 0) && !(p.frz > 0); G.jumpHeld = In.jump;
     if (p.onGround) { p.jumps = 0; p.dashReady = false; }
-    const SP = !!(World.cur && World.cur.space), vk = SP ? .75 : 1, maxJ = isOut(p, 52) ? 3 : 2; // 外太空：重力 ×0.469、起跳速度 ×0.75 ⇒ 高度 ×1.2、滯空 ×1.6
+    const SP = !!(World.cur && World.cur.space), vk = SP ? 1.2 : 1, maxJ = isOut(p, 52) ? 3 : 2; // 外太空：重力 ×1.2、起跳速度 ×1.2 ⇒ 高度 ×1.2、滯空時間不變
     const jumpGround = () => { p.vy = 7.1 * jumpMul(p) * vk; p.onGround = false; p.jumps = 1; Sfx.tone(420, .08, 'triangle', .08, 260); };
     const jumpAir = () => { const n = p.jumps || 1; p.vy = (isOut(p, 52) ? 7.1 * Math.pow(1.2, n / 2) : 6.9 * jumpMul(p)) * vk; p.jumps = n + 1; p.dashReady = isSumi(p); Sfx.tone(620 + n * 120, .1, 'triangle', .09, 380); };
     if (SP && (p.jumpQ || 0) > 0) { p.jumpQ -= dt; UI.setEv('jl', Math.max(0, p.jumpQ), '🌑'); if (p.jumpQ <= 0) { p.jumpQ = 0; UI.clrEv('jl'); if (p.onGround) jumpGround(); else if ((p.jumps || 0) < maxJ) jumpAir(); } }
     if (jp) {
-      if (p.onGround) { if (SP) { if (!(p.jumpQ > 0)) p.jumpQ = 1; } else jumpGround(); }
+      if (p.onGround) { if (SP) { if (!(p.jumpQ > 0)) p.jumpQ = .3; } else jumpGround(); }
       else if (isSumi(p) && p.jumps >= 2 && p.dashReady) { p.dashReady = false; p.dashT = .2025; const fw = ml > .1 ? [f[0] * my + rx * mx, f[1] * my + rz * mx] : f, fl = Math.hypot(fw[0], fw[1]) || 1; p.dashV = [fw[0] / fl * 24, fw[1] / fl * 24]; Sfx.noise(.2, .18, 2500, 0, true); Sfx.tone(300, .2, 'sawtooth', .06, 500); }
-      else if ((p.jumps || 0) < maxJ) { if (SP) { if (!(p.jumpQ > 0)) p.jumpQ = 1; } else jumpAir(); }
+      else if ((p.jumps || 0) < maxJ) { if (SP) { if (!(p.jumpQ > 0)) p.jumpQ = .3; } else jumpAir(); }
     }
     if (p.chg) { if (G.netClient) chargeTick(p, dt); p.vx = p.chg ? p.chg.vx : 0; p.vz = p.chg ? p.chg.vz : 0; }
     if ((p.dashT || 0) > 0) { p.dashT -= dt; p.vx = p.dashV[0]; p.vz = p.dashV[1]; p.vy = Math.max(p.vy, 0); }
