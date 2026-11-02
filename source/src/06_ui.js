@@ -665,6 +665,7 @@ function buildPrac() {
   chips('prDiff', [{ v: 4, l: 'No AI' }, { v: 0, l: '輕度' }, { v: 1, l: '中度' }, { v: 2, l: '重度' }], () => S.pdiff === undefined ? 4 : S.pdiff, v => pracSetDiff(v));
   chips('prCd', on, () => !!G.pracCdr, v => { G.pracCdr = v; });
   chips('prEn', on, () => !G.noEn, v => { G.noEn = !v; });
+  chips('prMap', Object.entries(MAPS).map(([k, m]) => ({ v: k, l: m.name })), () => S.map, v => { if (v === S.map) return; const cd = G.pracCdr, en = G.noEn; S.map = v; saveS(); beginGame(false); G.pracCdr = cd; G.noEn = en; UI.msg('已切換地圖：' + MAPS[v].name, 'item'); });
 }
 function closePrac() { const pn = $('pracPanel'); if (!pn || pn.classList.contains('hidden')) { UI.pracOpen = false; return; } pn.classList.add('hidden'); UI.pracOpen = false; UI.noLock = false; relockGame(); }
 function togglePrac(v) {
