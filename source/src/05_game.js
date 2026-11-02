@@ -439,7 +439,7 @@ function moveActor(a, dt) {
     a.x += dx / n; collideH(a); a.z += dz / n; collideH(a);
     const g0 = groundAt(a.x, a.z, a.y); if (g0 > a.y && g0 - a.y <= STEP + .001) a.y = g0;
   }
-  a.vy -= GRAV * dt; a.y += a.vy * dt;
+  a.vy -= GRAV * ((World.cur && World.cur.gravK) || 1) * dt; a.y += a.vy * dt;
   const g = groundAt(a.x, a.z, a.y); a.gy = g;
   if (a.y <= g + .001) { a.y = g; a.vy = 0; a.onGround = true; } else a.onGround = false;
   if (a.onGround && World.ramps.length) { const rp = World.rampAt(a.x, a.z, a.y, .12); if (rp && rp.belt) { a.x += rp.dir[0] * rp.belt * dt; a.z += rp.dir[1] * rp.belt * dt; collideH(a); } }
@@ -711,17 +711,21 @@ function updatePlayer(dt) {
     let spd = 5.85; const wantSprint = In.sprint && my > .2 && moving;
     G.stamDelay -= dt;
     const bolt = isOut(p, 12) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn; if (wantSprint && (G.stam > .02 || bolt) && !G.bino) { spd = 8.4; if (!bolt) G.stam = Math.max(0, G.stam - dt * .13); G.stamDelay = .9; } else if (G.stamDelay <= 0) G.stam = Math.min(1, G.stam + dt * .2);
-    const sprinting = spd > 7; p.sprinting = sprinting; spd *= speedMul(p);
+    const sprinting = spd > 7; p.sprinting = sprinting; spd *= speedMul(p); if (World.cur && World.cur.space && !p.onGround) spd *= 1.125; // 外太空：滯空 ×1.6 ⇒ 空中水平速度 ×1.125，跳躍距離 ×1.8
     if (G.bino) spd *= .42; if (p.carry) spd *= .93;
     let wx = (f[0] * my + rx * mx) * spd, wz = (f[1] * my + rz * mx) * spd; if (p.ctrlT > 0 && p.ctrlBy && isStunBy(p.ctrlBy)) { wx = wz = 0; p.yaw = faceYaw(p, p.ctrlBy); } else if (p.ctrlT > 0 && p.ctrlBy) { const dx = p.x - p.ctrlBy.x, dz = p.z - p.ctrlBy.z, dd = Math.hypot(dx, dz) || 1; wx = dx / dd * spd * .3; wz = dz / dd * spd * .3; }
     const k = Math.min(1, dt * (p.onGround ? (p.icy ? 1.3 : 12) : 3));
     p.vx += (wx - p.vx) * k; p.vz += (wz - p.vz) * k;
     const jp = In.jump && !G.jumpHeld && !(G.freezeT > 0) && !(p.frz > 0); G.jumpHeld = In.jump;
     if (p.onGround) { p.jumps = 0; p.dashReady = false; }
+    const SP = !!(World.cur && World.cur.space), vk = SP ? .75 : 1, maxJ = isOut(p, 52) ? 3 : 2; // 外太空：重力 ×0.469、起跳速度 ×0.75 ⇒ 高度 ×1.2、滯空 ×1.6
+    const jumpGround = () => { p.vy = 7.1 * jumpMul(p) * vk; p.onGround = false; p.jumps = 1; Sfx.tone(420, .08, 'triangle', .08, 260); };
+    const jumpAir = () => { const n = p.jumps || 1; p.vy = (isOut(p, 52) ? 7.1 * Math.pow(1.2, n / 2) : 6.9 * jumpMul(p)) * vk; p.jumps = n + 1; p.dashReady = isSumi(p); Sfx.tone(620 + n * 120, .1, 'triangle', .09, 380); };
+    if (SP && (p.jumpQ || 0) > 0) { p.jumpQ -= dt; UI.setEv('jl', Math.max(0, p.jumpQ), '🌑'); if (p.jumpQ <= 0) { p.jumpQ = 0; UI.clrEv('jl'); if (p.onGround) jumpGround(); else if ((p.jumps || 0) < maxJ) jumpAir(); } }
     if (jp) {
-      if (p.onGround) { p.vy = 7.1 * jumpMul(p); p.onGround = false; p.jumps = 1; Sfx.tone(420, .08, 'triangle', .08, 260); }
+      if (p.onGround) { if (SP) { if (!(p.jumpQ > 0)) p.jumpQ = 1; } else jumpGround(); }
       else if (isSumi(p) && p.jumps >= 2 && p.dashReady) { p.dashReady = false; p.dashT = .2025; const fw = ml > .1 ? [f[0] * my + rx * mx, f[1] * my + rz * mx] : f, fl = Math.hypot(fw[0], fw[1]) || 1; p.dashV = [fw[0] / fl * 24, fw[1] / fl * 24]; Sfx.noise(.2, .18, 2500, 0, true); Sfx.tone(300, .2, 'sawtooth', .06, 500); }
-      else if ((p.jumps || 0) < (isOut(p, 52) ? 3 : 2)) { const n = p.jumps || 1; p.vy = isOut(p, 52) ? 7.1 * Math.pow(1.2, n / 2) : 6.9 * jumpMul(p); p.jumps = n + 1; p.dashReady = isSumi(p); Sfx.tone(620 + n * 120, .1, 'triangle', .09, 380); }
+      else if ((p.jumps || 0) < maxJ) { if (SP) { if (!(p.jumpQ > 0)) p.jumpQ = 1; } else jumpAir(); }
     }
     if (p.chg) { if (G.netClient) chargeTick(p, dt); p.vx = p.chg ? p.chg.vx : 0; p.vz = p.chg ? p.chg.vz : 0; }
     if ((p.dashT || 0) > 0) { p.dashT -= dt; p.vx = p.dashV[0]; p.vz = p.dashV[1]; p.vy = Math.max(p.vy, 0); }
@@ -733,7 +737,7 @@ function updatePlayer(dt) {
     // 望遠鏡能量
     if (G.bino) { p.binAt = G.time; if (G.netClient && isOut(p, 13) && G.time - (p._bsent ?? -9) > 1) { p._bsent = G.time; netAct(['b']); } }
     if (G.bino && (isOut(p, 13) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn)) G.energy = 1; else if (G.bino) { G.energy -= dt * .22; if (G.energy <= 0) { G.energy = 0; G.bino = false; } } else G.energy = Math.min(1, G.energy + dt * .12);
-  } else { p.vx *= .9; p.vz *= .9; p.deadT += dt; p.respawnT -= dt; p.fall = Math.min(1, p.fall + dt * 2.5); }
+  } else { p.vx *= .9; p.vz *= .9; p.deadT += dt; p.respawnT -= dt; p.fall = Math.min(1, p.fall + dt * 2.5); if (p.jumpQ) { p.jumpQ = 0; UI.clrEv('jl'); } }
   { const want = 0; // 已取消探頭功能
      let tgt = 0; if (want) { let k = 0; for (let s = 1; s <= 11; s++) { if (!leanClear(p, want * s * .05)) break; k = s * .05; } tgt = want * k; } p.lo += (tgt - p.lo) * Math.min(1, dt * 11); p.lean = want; }
   p.fx = f[0]; p.fz = f[1]; if (!p.alive) { In.leanL = In.leanR = false; }
@@ -1077,6 +1081,7 @@ function initRenderAssets() {
   const sky = mergeGeos([{ g: gSphere(1, 20, 12), cfn: (x, y) => { const t = y; if (t < 0) return mixc([.78, .83, .82], [.84, .9, .94], clamp(1 + t * 5, 0, 1)); return mixc(mixc([.84, .9, .95], [.52, .72, .93], clamp(t * 3, 0, 1)), [.30, .52, .86], clamp((t - .35) * 1.4, 0, 1)); } }]);
   SPR.sky = R.mkMesh(sky); SPR.skyMat = R.mat({ unlit: 1, fog: 0, two: 1, noDepth: 1 }); SPR.skyCur = SPR.sky;
   SPR.skyNight = R.mkMesh(mergeGeos([{ g: gSphere(1, 24, 14) }])); SPR.skyNightMat = R.mat({ tex: R.tex(TG.skyNight(), { nomip: true }), unlit: 1, fog: 0, two: 1, noDepth: 1 });
+  SPR.skySpace = SPR.skyNight; SPR.skySpaceMat = R.mat({ tex: R.tex(TG.skySpace(), { nomip: true }), unlit: 1, fog: 0, two: 1, noDepth: 1 }); SPR.skyNeonMat = R.mat({ tex: R.tex(TG.skyNeon(), { nomip: true }), unlit: 1, fog: 0, two: 1, noDepth: 1 });
   SPR.crate = R.mkMesh(mergeGeos([{ g: gBox(.4, .4, .4) }])); SPR.crateMat = R.mat({ tex: R.tex(TG.crate(), {}), spec: .2 });
   SPR.flagPole = R.mkMesh(mergeGeos([{ g: gCyl(.04, .05, 3.6, 8, 1), t: [0, 1.8, 0], c: [.85, .85, .88] }, { g: gSphere(.07, 8, 6), t: [0, 3.65, 0], c: [.9, .8, .3] }]));
   SPR.flagCloth = R.mkMesh(mergeGeos([{ g: gBox(1.2, .75, .03), t: [.62, 3.15, 0] }]));
@@ -1110,9 +1115,9 @@ function sayTex(txt) {
   g.fillStyle = '#2a2018'; g.font = '700 46px "Noto Sans TC","Microsoft JhengHei",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(txt, 256, 56);
   return (_sayC[txt] = R.tex(c, { nomip: true }));
 }
-function drawSkyDome(c) { const n = World.cur && World.cur.night; M4.trs(SPR.skyM, c.x, c.y, c.z, 0, 0, 0, 520, 520, 520); R.draw(n ? SPR.skyNight : SPR.sky, SPR.skyM, n ? SPR.skyNightMat : SPR.skyMat); }
+function drawSkyDome(c) { const m = World.cur, n = m && m.night, sk = m && m.skyKind; M4.trs(SPR.skyM, c.x, c.y, c.z, 0, 0, 0, 520, 520, 520); if (sk === 'space') R.draw(SPR.skySpace, SPR.skyM, SPR.skySpaceMat); else if (sk === 'neon') R.draw(SPR.skySpace, SPR.skyM, SPR.skyNeonMat); else R.draw(n ? SPR.skyNight : SPR.sky, SPR.skyM, n ? SPR.skyNightMat : SPR.skyMat); }
 function drawSkyFx(c, t) {
-  const m = World.cur; if (!m || m.indoor) return;
+  const m = World.cur; if (!m || m.indoor || m.skyKind) return;
   if (m.night) { drawSprite(SPR.glow, c.x + R.sun[0] * 480, c.y + R.sun[1] * 480, c.z + R.sun[2] * 480, 210, 210, [.5, .58, .9], .45); drawSprite(SPR.glow, c.x + R.sun[0] * 480, c.y + R.sun[1] * 480, c.z + R.sun[2] * 480, 62, 62, [.92, .96, 1], 1); return; }
   drawSprite(SPR.glow, c.x + R.sun[0] * 480, c.y + R.sun[1] * 480, c.z + R.sun[2] * 480, 120, 120, [1, .96, .8], .9);
   for (let k = 0; k < CLOUDS.length; k++) { const q = CLOUDS[k]; drawSprite(SPR.puff, c.x + Math.cos(q.a + t * .004) * q.r, q.h, c.z + Math.sin(q.a + t * .004) * q.r, q.w, q.w * .34, [1, 1, 1], .8); }
@@ -1132,7 +1137,7 @@ function applyNightEnv(viewer) {
   }
   G.plateK = (nt.by && viewer !== nt.by && nt.e >= 1.5) ? Math.max(.3, k * .9) : 1;
   const key = k + '|' + tint.join() + '|' + World.id;
-  if (key !== applyNightEnv.key) { for (const kk of ['sunCol', 'sky', 'gnd', 'fog']) R.env[kk] = b[kk].map((v, i) => v * k * tint[i]); for (const m of [SPR.skyMat, SPR.skyNightMat]) for (let q = 0; q < 3; q++) m.tint[q] = k * tint[q]; applyNightEnv.key = key; }
+  if (key !== applyNightEnv.key) { for (const kk of ['sunCol', 'sky', 'gnd', 'fog']) R.env[kk] = b[kk].map((v, i) => v * k * tint[i]); for (const m of [SPR.skyMat, SPR.skyNightMat, SPR.skySpaceMat, SPR.skyNeonMat]) for (let q = 0; q < 3; q++) m.tint[q] = k * tint[q]; applyNightEnv.key = key; }
   if (nv !== applyNightEnv.nv) { applyNightEnv.nv = nv; document.getElementById('nvov').classList.toggle('on', nv); }
 }
 function drawWorldFrame() {

@@ -926,6 +926,26 @@ const TG = {
     const rr = rng(77); for (let i = 0; i < 520; i++) { const x = rr() * 1024, y = rr() * 250, r = rr() * .6 + .22; g.fillStyle = `rgba(255,255,${220 + rr() * 35 | 0},${.35 + rr() * .6})`; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); }
     g.globalAlpha = .1; for (let i = 0; i < 12; i++) { g.fillStyle = '#6f7fb0'; g.beginPath(); g.ellipse(rr() * 1024, 190 + rr() * 50, 90 + rr() * 80, 9 + rr() * 8, 0, 0, TAU); g.fill(); } g.globalAlpha = 1; return c;
   },
+  skySpace() { // 外太空：紫灰色天空、土黃色大行星
+    const c = cv(1024, 512), g = c.getContext('2d'); const gr = g.createLinearGradient(0, 0, 0, 512);
+    gr.addColorStop(0, '#1b1429'); gr.addColorStop(.3, '#34294a'); gr.addColorStop(.46, '#6f6080'); gr.addColorStop(.5, '#8f7f9c'); gr.addColorStop(.56, '#5c4f6a'); gr.addColorStop(1, '#2b2336'); g.fillStyle = gr; g.fillRect(0, 0, 1024, 512);
+    const rr = rng(5150); for (let i = 0; i < 380; i++) { const x = rr() * 1024, y = rr() * 215, r = rr() * .8 + .25; g.fillStyle = `rgba(255,${235 + rr() * 20 | 0},${215 + rr() * 40 | 0},${.3 + rr() * .6})`; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); }
+    const px = 690, py = 150, pr = 105; g.save(); g.beginPath(); g.arc(px, py, pr, 0, TAU); g.clip();
+    const pg = g.createRadialGradient(px - 30, py - 30, 10, px, py, pr); pg.addColorStop(0, '#f0c565'); pg.addColorStop(.6, '#c98f34'); pg.addColorStop(1, '#7d4f1c'); g.fillStyle = pg; g.fillRect(px - pr, py - pr, pr * 2, pr * 2);
+    for (let b = 0; b < 9; b++) { g.fillStyle = `rgba(${b % 2 ? '120,70,20' : '255,225,150'},${.12 + rr() * .12})`; g.fillRect(px - pr, py - pr + b * 24 + rr() * 6, pr * 2, 9 + rr() * 8); }
+    for (let i = 0; i < 12; i++) { g.fillStyle = 'rgba(90,50,15,.22)'; g.beginPath(); g.ellipse(px + (rr() - .5) * 150, py + (rr() - .5) * 150, 6 + rr() * 14, 4 + rr() * 8, 0, 0, TAU); g.fill(); }
+    const tg = g.createLinearGradient(px - pr, 0, px + pr, 0); tg.addColorStop(0, 'rgba(0,0,0,0)'); tg.addColorStop(.55, 'rgba(0,0,0,0)'); tg.addColorStop(1, 'rgba(15,5,25,.62)'); g.fillStyle = tg; g.fillRect(px - pr, py - pr, pr * 2, pr * 2); g.restore();
+    g.strokeStyle = 'rgba(225,200,140,.6)'; g.lineWidth = 5; g.beginPath(); g.ellipse(px, py, 175, 28, -.28, 0, TAU); g.stroke(); g.lineWidth = 2; g.strokeStyle = 'rgba(190,160,110,.5)'; g.beginPath(); g.ellipse(px, py, 150, 23, -.28, 0, TAU); g.stroke();
+    g.fillStyle = '#b9b0c4'; g.beginPath(); g.arc(250, 105, 24, 0, TAU); g.fill(); g.fillStyle = 'rgba(70,60,90,.45)'; g.beginPath(); g.arc(260, 100, 24, 0, TAU); g.fill(); g.fillStyle = '#b9b0c4'; g.beginPath(); g.arc(250, 105, 20, 0, TAU); g.fill();
+    g.globalAlpha = .12; for (let i = 0; i < 10; i++) { g.fillStyle = '#b99ac8'; g.beginPath(); g.ellipse(rr() * 1024, 215 + rr() * 40, 110 + rr() * 90, 8 + rr() * 8, 0, 0, TAU); g.fill(); } g.globalAlpha = 1; return c;
+  },
+  skyNeon() { // 超能槍戰：深紫夜空與霓虹地平線
+    const c = cv(1024, 512), g = c.getContext('2d'); const gr = g.createLinearGradient(0, 0, 0, 512);
+    gr.addColorStop(0, '#05030d'); gr.addColorStop(.35, '#140a30'); gr.addColorStop(.47, '#3a1260'); gr.addColorStop(.5, '#ff3fa8'); gr.addColorStop(.515, '#2a0f50'); gr.addColorStop(.6, '#0a1a3a'); gr.addColorStop(1, '#04060f'); g.fillStyle = gr; g.fillRect(0, 0, 1024, 512);
+    const rr = rng(2024); for (let i = 0; i < 300; i++) { g.fillStyle = `rgba(200,${190 + rr() * 60 | 0},255,${.3 + rr() * .6})`; g.beginPath(); g.arc(rr() * 1024, rr() * 220, rr() * .7 + .2, 0, TAU); g.fill(); }
+    for (let x = 0; x < 1024; x += 14 + rr() * 22) { const h = 6 + rr() * 34, w = 8 + rr() * 16; g.fillStyle = '#0b0620'; g.fillRect(x, 256 - h, w, h); for (let k = 0; k < h / 6; k++) { g.fillStyle = ['#ff3fa8', '#3fe0ff', '#ffe84a'][(rr() * 3) | 0]; g.globalAlpha = .7; g.fillRect(x + 2 + rr() * (w - 4), 256 - h + 3 + k * 6, 2, 2); g.globalAlpha = 1; } }
+    return c;
+  },
   ghost() {
     const c = cv(128, 256), g = c.getContext('2d'); const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, 'rgba(225,238,255,.92)'); gr.addColorStop(.7, 'rgba(190,210,240,.55)'); gr.addColorStop(1, 'rgba(180,200,235,0)');
     g.fillStyle = gr; g.beginPath(); g.moveTo(26, 250); g.quadraticCurveTo(14, 120, 30, 80); g.quadraticCurveTo(34, 18, 64, 14); g.quadraticCurveTo(96, 18, 100, 80); g.quadraticCurveTo(116, 120, 102, 250);
@@ -1223,6 +1243,18 @@ const World = {
     d.bark = { tex: T(TG.bark), sx: 4, sy: 4 };
     d.decal = { sx: 1, sy: 1, tint: [1, 1, 1, 1], blend: 1, noDepth: 1, two: 1 };
     d.glassT = { sx: 4, sy: 4, tint: [.62, .82, .94, .26], blend: 1, noDepth: 1, two: 1, spec: .3 };
+    d.regolith = { tex: T(TG.stone), sx: 3, sy: 3, tint: [.66, .52, .36, 1], ao: 1 };
+    d.moonrock = { tex: T(TG.stone), sx: 2.4, sy: 2.4, tint: [.46, .38, .34, 1], ao: 1 };
+    d.hull = { sx: 4, sy: 4, tint: [.62, .62, .68, 1], ao: 1, spec: .5 };
+    d.hullD = { sx: 4, sy: 4, tint: [.30, .30, .38, 1], ao: 1, spec: .5 };
+    d.panel = { sx: 4, sy: 4, tint: [.10, .16, .38, 1], ao: 1, spec: .7 };
+    d.arenaF = { tex: T(TG.tile), sx: 4, sy: 4, tint: [.32, .34, .46, 1], spec: .4 };
+    d.arenaR = { tex: T(TG.tile), sx: 4, sy: 4, tint: [.42, .14, .16, 1], spec: .4 };
+    d.arenaG = { tex: T(TG.tile), sx: 4, sy: 4, tint: [.14, .40, .22, 1], spec: .4 };
+    d.arenaY = { tex: T(TG.tile), sx: 4, sy: 4, tint: [.46, .40, .12, 1], spec: .4 };
+    d.arenaB = { tex: T(TG.tile), sx: 4, sy: 4, tint: [.16, .20, .46, 1], spec: .4 };
+    d.arenaW = { sx: 4, sy: 4, tint: [.20, .20, .29, 1], ao: 1, spec: .35 };
+    d.glowR = { sx: 4, sy: 4, tint: [1, .22, .26, 1], unlit: 1 }; d.glowG = { sx: 4, sy: 4, tint: [.25, 1, .45, 1], unlit: 1 }; d.glowY = { sx: 4, sy: 4, tint: [1, .9, .25, 1], unlit: 1 }; d.glowB = { sx: 4, sy: 4, tint: [.3, .5, 1, 1], unlit: 1 };
     d.neon = { sx: 1, sy: 1, tint: [1, 1, 1, 1], blend: 1, noDepth: 1, two: 1, unlit: 1 };
     for (const k in d) {
       const e = d[k]; e.t0 = (e.tint || [1, 1, 1, 1]).slice();
@@ -1400,7 +1432,7 @@ const World = {
 
   /* ---- 導航網格（支援二樓：layer 0/1，電扶梯為傳送門連結） ---- */
   buildNav() {
-    const cs = 2, b = this.bounds, nx = Math.ceil((b.x1 - b.x0) / cs), nz = Math.ceil((b.z1 - b.z0) / cs), nl = this.mezz ? 2 : 1, N = nx * nz, walk = new Uint8Array(nl * N), mz = this.mezz, self = this;
+    const cs = (this.cur && this.cur.navCs) || 2, b = this.bounds, nx = Math.ceil((b.x1 - b.x0) / cs), nz = Math.ceil((b.z1 - b.z0) / cs), nl = this.mezz ? 2 : 1, N = nx * nz, walk = new Uint8Array(nl * N), mz = this.mezz, self = this;
     const blocked = (x, z, r, l) => {
       const base = l ? mz.h : 0;
       for (const q of self.boxes) { if (q.nc || q.y1 < base + .06 || q.y0 > base + 1.6) continue; if (x > q.x0 - r && x < q.x1 + r && z > q.z0 - r && z < q.z1 + r) return true; }
@@ -1930,6 +1962,125 @@ MAPS.mall = {
   pickSpots: [[-10, -8], [10, -8], [-24, 6], [24, 6], [-44, 12], [44, 12], [0, 5], [-36, 24], [36, 24], [-46, 33], [46, 33], [0, 22], [-8, 34], [8, 34], [-45, -33], [45, -33], [-8, -20], [8, -20], [-30, -4], [30, -4],
     [-20, -22, 1], [20, -22, 1], [0, -36, 1], [-46, -22, 1], [46, -22, 1]].map(q => q.length > 2 ? [mfx(q[0]), mfz(q[1]), 1] : [mfx(q[0]), mfz(q[1])]),
   build(W) { buildMall(W); }
+};
+
+/* ================= 地圖 4：無遠弗屆（外太空；面積為熱血高校 1.2 倍，障礙物 1.2 倍多；低重力＋延遲起跳） ================= */
+const SPACE_ENV = { sunCol: [.84, .68, .52], sky: [.40, .33, .50], gnd: [.46, .38, .30], fog: [.42, .35, .50], fogR: [70, 260], interior: [999, 999, 1000, 1000], intK: .7, intH: 7 };
+function buildSpace(W) {
+  const B = (...a) => W.box(...a), rr = rng(5150), BX = 47.6, BZ = 37.8, rects = [];
+  const rect = (x, z, w, d) => rects.push([x - w / 2, z - d / 2, x + w / 2, z + d / 2]);
+  const free = (x, z, w, d, mg) => { for (const q of rects) if (x + w / 2 + mg > q[0] && x - w / 2 - mg < q[2] && z + d / 2 + mg > q[1] && z - d / 2 - mg < q[3]) return false; return true; };
+  const keep = [[-47.6, -15, -36, 15], [36, -15, 47.6, 15]]; // 出生區：保持淨空
+  const inKeep = (x, z, w, d) => keep.some(q => x + w / 2 > q[0] - 1 && x - w / 2 < q[2] + 1 && z + d / 2 > q[1] - 1 && z - d / 2 < q[3] + 1);
+  const put = (mat, x, z, w, d, h, y0, mg) => { if (inKeep(x, z, w, d) || !free(x, z, w, d, mg === undefined ? 1.2 : mg)) return false; B(mat, x, z, w, d, h, y0 || 0); rect(x, z, w, d); return true; };
+  const wall = (mat, x, z, w, d, h, y0) => { B(mat, x, z, w, d, h, y0 || 0); rect(x, z, w, d); };
+  // ---- 地面與邊界岩壁 ----
+  W.quadTop('regolith', -160, -130, 160, 130, 0);
+  for (const [cx, cz, w, d] of [[0, -BZ - 1, 2 * BX + 6, 2], [0, BZ + 1, 2 * BX + 6, 2], [-BX - 1, 0, 2, 2 * BZ + 2], [BX + 1, 0, 2, 2 * BZ + 2]]) B('moonrock', cx, cz, w, d, 5, 0, { colH: 9 });
+  for (let k = 0; k < 26; k++) { const a = rr() * Math.PI * 2, r = 62 + rr() * 38, w = 8 + rr() * 16, h = 8 + rr() * 22; B('moonrock', Math.cos(a) * r * 1.2, Math.sin(a) * r * .95, w, w * (.6 + rr() * .6), h, 0, { collide: false }); } // 遠方山脈（裝飾）
+  // ---- 中央：墜毀的太空船 ----
+  wall('hull', 0, -3.2, 22, .5, 3.4); wall('hull', -5, 3.2, 12, .5, 3.4); wall('hull', 8.5, 3.2, 5, .5, 3.4); // 長艙壁（側門缺口在 x∈[1,6]）
+  wall('hullD', -11.2, 0, .5, 6.9, 3.4); // 尾艙
+  B('hullD', -1, 0, 16, 6.4, .35, 3.4, { collide: false }); rect(-1, 0, 16, 6.4);
+  for (const sx of [-1, 1]) { wall('hull', 11.5, sx * 4.4, 1.4, 3, 2.4); } // 機頭殘骸
+  wall('hullD', -13.5, -4.5, 3, 1.1, 2.0); wall('hullD', -13.5, 4.5, 3, 1.1, 2.0); // 尾翼
+  wall('cOrg', 3.5, 0, 1.6, 1.6, 1.4); wall('cTeal', -4, 1, 1.4, 1.4, 1.6); // 艙內貨箱
+  W.prop([{ g: gSphere(1.6, 12, 8), t: [14, 1.3, 0], c: [.5, .52, .6] }]); // 機頭球罩（裝飾）
+  // ---- 西側：生活艙（紅隊後方） ----
+  for (const [cx, cz, w, d] of [[-30, -6.5, 12, .5], [-30, 6.5, 12, .5], [-36, 0, .5, 12.5]]) wall('hull', cx, cz, w, d, 3.4);
+  wall('hull', -24, -4.2, .5, 4.2, 3.4); wall('hull', -24, 4.2, .5, 4.2, 3.4); // 東牆留 4.2 寬的氣密門
+  wall('cYel', -31, -3.5, 2.4, 1.2, 1.6); wall('cYel', -31, 3.5, 2.4, 1.2, 2.6);
+  W.prop([{ g: gSphere(6.2, 16, 10, 0, Math.PI * 2, 0, 1.2), t: [-30, 3.4, 0], c: [.7, .78, .85] }]);
+  // ---- 東側：雷達站（藍隊後方） ----
+  for (const [cx, cz, w, d] of [[30, -6.5, 12, .5], [30, 6.5, 12, .5], [36, 0, .5, 12.5]]) wall('hullD', cx, cz, w, d, 3.4);
+  wall('hullD', 24, -4.2, .5, 4.2, 3.4); wall('hullD', 24, 4.2, .5, 4.2, 3.4);
+  wall('cTeal', 31, -3.5, 2.4, 1.2, 2.6); wall('cOrg', 31, 3.5, 2.4, 1.2, 1.6);
+  wall('hull', 30, 0, .6, .6, 7); W.prop([{ g: gSphere(2.6, 14, 8, 0, Math.PI * 2, 0, 1.3), t: [30, 7.4, 0], r: [.5, 0, 0], c: [.82, .84, .9] }]);
+  // ---- 太陽能板陣列（可躲、可繞） ----
+  for (const sz of [-1, 1]) for (let k = 0; k < 4; k++) put('panel', -19 + k * 7.2, sz * 22, 5, .3, 2.4, 0, 1.5);
+  for (const sx of [-1, 1]) for (let k = 0; k < 3; k++) put('panel', sx * 15, -10 + k * 9.5, .3, 5, 2.4, 0, 1.5);
+  // ---- 貨櫃堆（可疊高：太空跳躍可登上） ----
+  const cm = ['cYel', 'cOrg', 'cTeal', 'cRed', 'cBlue', 'cGrn'];
+  for (let k = 0; k < 15; k++) { const x = (rr() * 2 - 1) * 40, z = (rr() * 2 - 1) * 32, ax = rr() < .5, w = ax ? 6 : 2.4, d = ax ? 2.4 : 6, m = cm[(rr() * cm.length) | 0]; if (put(m, x, z, w, d, 2.5, 0)) { if (rr() < .55) { B(cm[(rr() * cm.length) | 0], x + (rr() - .5) * 1.5, z, ax ? 3.6 : 2.4, ax ? 2.4 : 3.6, 2.4, 2.5); } } }
+  // ---- 階梯平台：岩塊 1.1 → 2.2 的高台（需二段跳或踩岩階） ----
+  for (const sx of [-1, 1]) { const px = sx * 11, pz = -27; if (put('moonrock', px, pz, 9, 7, 2.2, 0, 1)) { B('moonrock', px - sx * 5.2, pz + 1.5, 2.6, 2.6, 1.1); rect(px - sx * 5.2, pz + 1.5, 2.6, 2.6); } }
+  // ---- 天線塔 / 探測車 ----
+  for (const [x, z] of [[-6, 27], [6, -27]]) { for (const [dx, dz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) put('steel', x + dx * 1.2, z + dz * 1.2, .25, .25, 6, 0, .3); B('hullD', x, z, 3.2, 3.2, .25, 4.2, { collide: false }); }
+  for (const [x, z, ax] of [[-14, 12, 1], [16, -17, 0], [24, 24, 1], [-26, -22, 0]]) put('hull', x, z, ax ? 4 : 2.2, ax ? 2.2 : 4, 1.5, 0, 1);
+  // ---- 隕石坑：圈狀低岩 ----
+  for (const [cx, cz, R] of [[-16, -16, 5], [18, 14, 6], [0, 26, 4]]) for (let k = 0; k < 9; k++) { const a = k * Math.PI * 2 / 9; put('moonrock', cx + Math.cos(a) * R, cz + Math.sin(a) * R, 1.8, 1.8, .7 + rr() * .6, 0, .2); }
+  // ---- 隨機岩石：補足到原熱血高校的 1.25 倍以上障礙物 ----
+  let guard = 0; while (W.boxes.filter(b => !b.nc).length < 318 && guard++ < 6000) {
+    const w = 1.0 + rr() * 2.4, d = 1.0 + rr() * 2.4, h = 1.2 + rr() * 2.8, x = (rr() * 2 - 1) * (BX - 3), z = (rr() * 2 - 1) * (BZ - 3);
+    put(rr() < .5 ? 'moonrock' : 'regolith', x, z, w, d, h, 0, .8);
+  }
+}
+MAPS.space = {
+  id: 'space', skyKind: 'space', space: true, gravK: .469, orbit: { c: [0, 0], r: 31, h: 13, ly: 1.4 }, preview: [0, 14], name: '無遠弗屆', sub: '外太空 · 1.2 倍面積 · 低重力', desc: '身處外太空：紫灰色大氣層與土黃色巨大行星。墜毀的太空船、生活艙、雷達站與大量岩塊貨櫃散布其間。場地機制「延遲重力」：按下跳躍後延遲 1 秒才起跳，但跳得更高（×1.2）、更遠（×1.8）、滯空更久（×1.6）。',
+  bounds: { x0: -47.6, x1: 47.6, z0: -37.8, z1: 37.8 }, flagPos: [[-42, 0], [42, 0]], zoneRed: [-46.5, -12, -37, 12], zoneBlue: [37, -12, 46.5, 12], faceRed: [-8, 0], faceBlue: [8, 0],
+  interior: [999, 999, 1000, 1000], env: SPACE_ENV, night: false, noShadow: false,
+  pickSpots: [[-24, -16], [24, 16], [-24, 16], [24, -16], [0, -22], [0, 22], [-8, 0], [8, 0], [-38, 22], [38, -22], [-38, -22], [38, 22], [-14, 26], [14, -26], [-30, 0], [30, 0], [0, 10], [0, -10], [-44, 30], [44, -30]],
+  build(W) { buildSpace(W); }
+};
+
+/* ================= 地圖 5：超能槍戰（迷宮式窄走道；面積為熱血高校 1.2 倍，障礙物 1.2 倍） ================= */
+const PSY_ENV = { sunCol: [.86, .88, 1.0], sky: [.22, .18, .40], gnd: [.52, .52, .68], fog: [.07, .05, .16], fogR: [40, 170], interior: [999, 999, 1000, 1000], intK: .7, intH: 7 };
+const PSY = { P: 2.8, C: 34, R: 27, TW: .4, WH: 3.2 };
+function buildPsy(W) {
+  const B = (...a) => W.box(...a), rr = rng(20261103), { P, C, R, TW, WH } = PSY, X0 = -C * P / 2, Z0 = -R * P / 2;
+  // vw[i][j]：x = X0+i*P 上、第 j 列的垂直牆；hw[i][j]：z = Z0+j*P 上、第 i 欄的水平牆（i∈[0,C)、j∈[0,R)）
+  const vw = Array.from({ length: C + 1 }, () => new Uint8Array(R)), hw = Array.from({ length: C }, () => new Uint8Array(R + 1));
+  const connected = () => { const seen = new Uint8Array(C * R), st = [0]; seen[0] = 1; let n = 1; while (st.length) { const c = st.pop(), i = c % C, j = (c / C) | 0; const go = (ni, nj, blocked) => { if (blocked || ni < 0 || nj < 0 || ni >= C || nj >= R) return; const k = nj * C + ni; if (!seen[k]) { seen[k] = 1; n++; st.push(k); } }; go(i + 1, j, vw[i + 1][j]); go(i - 1, j, vw[i][j]); go(i, j + 1, hw[i][j + 1]); go(i, j - 1, hw[i][j]); } return n === C * R; };
+  const edges = (o, line, a, L) => { const out = []; for (let k = 0; k < L; k++) out.push(o ? [hw, a + k, line] : [vw, line, a + k]); return out; };
+  const apply = (es, v) => { for (const [arr, i, j] of es) arr[i][j] = v; };
+  const tryRun = (o, line, a, L) => { // o=1 水平線（沿 x），o=0 垂直線
+    const maxA = o ? C : R; if (a < 0 || a + L > maxA) return false; const es = edges(o, line, a, L); if (es.every(e => e[0][e[1]][e[2]])) return false;
+    const prev = es.map(e => e[0][e[1]][e[2]]); apply(es, 1); if (connected()) return true; es.forEach((e, k) => { e[0][e[1]][e[2]] = prev[k]; }); return false;
+  };
+  const inner = (C - 1) * R + C * (R - 1); let walls = 0; const cnt = () => { let n = 0; for (let i = 1; i < C; i++) for (let j = 0; j < R; j++) n += vw[i][j]; for (let i = 0; i < C; i++) for (let j = 1; j < R; j++) n += hw[i][j]; return n; };
+  for (let t = 0; t < 9000 && (walls = cnt()) < inner * .46; t++) { const o = rr() < .5 ? 1 : 0, L = 2 + ((rr() * 7) | 0), line = 1 + ((rr() * ((o ? R : C) - 1)) | 0), a = (rr() * ((o ? C : R) - L + 1)) | 0; tryRun(o, line, a, L); }
+  // 消除 2×2 開放廣場：走道必須維持窄道
+  for (let pass = 0; pass < 3; pass++) for (let i = 0; i < C - 1; i++) for (let j = 0; j < R - 1; j++) {
+    if (vw[i + 1][j] || vw[i + 1][j + 1] || hw[i][j + 1] || hw[i + 1][j + 1]) continue;
+    const opts = [[1, j + 1, i, 1], [1, j + 1, i + 1, 1], [0, i + 1, j, 1], [0, i + 1, j + 1, 1]].sort(() => rr() - .5); for (const q of opts) if (tryRun(q[0], q[1], q[2], q[3])) break;
+  }
+  // 合併成長牆
+  const segs = []; // [x0,z0,x1,z1,low]
+  for (let j = 1; j < R; j++) { let i = 0; while (i < C) { if (!hw[i][j]) { i++; continue; } let k = i; while (k < C && hw[k][j]) k++; segs.push([X0 + i * P, Z0 + j * P, X0 + k * P, Z0 + j * P, k - i >= 2 && rr() < .14]); i = k; } }
+  for (let i = 1; i < C; i++) { let j = 0; while (j < R) { if (!vw[i][j]) { j++; continue; } let k = j; while (k < R && vw[i][k]) k++; segs.push([X0 + i * P, Z0 + j * P, X0 + i * P, Z0 + k * P, k - j >= 2 && rr() < .14]); j = k; } }
+  const reg = x => x < -C * P / 4 ? 'R' : x < 0 ? 'G' : x < C * P / 4 ? 'Y' : 'B', fl = { R: 'arenaR', G: 'arenaG', Y: 'arenaY', B: 'arenaB' }, glow = { R: 'glowR', G: 'glowG', Y: 'glowY', B: 'glowB' };
+  // ---- 地面：四個色區（紅／綠／黃／藍） ----
+  W.quadTop('arenaF', -160, -130, 160, 130, 0);
+  const q4 = C * P / 4; [['R', X0, -q4], ['G', -q4, 0], ['Y', 0, q4], ['B', q4, -X0]].forEach(([k, a, b]) => W.quadTop(fl[k], a, Z0, b, -Z0, .012));
+  // ---- 外牆 ----
+  for (const [cx, cz, w, d] of [[0, Z0 - TW / 2, C * P + 2 * TW, TW + .2], [0, -Z0 + TW / 2, C * P + 2 * TW, TW + .2], [X0 - TW / 2, 0, TW + .2, R * P], [-X0 + TW / 2, 0, TW + .2, R * P]]) B('arenaW', cx, cz, w, d, 4.2, 0, { colH: 9 });
+  // ---- 迷宮牆（黑色牆身＋同色區的發光端柱） ----
+  let nWall = 0;
+  for (const [x0, z0, x1, z1, low] of segs) {
+    const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, w = Math.abs(x1 - x0) + (x1 === x0 ? TW : TW), d = Math.abs(z1 - z0) + (z1 === z0 ? TW : TW), h = low ? 1.25 : WH;
+    B('arenaW', cx, cz, w, d, h, 0); nWall++;
+    const gk = glow[reg(cx)]; for (const [px, pz] of [[x0, z0], [x1, z1]]) B(gk, px, pz, .5, .5, h + .25, 0, { collide: false });
+    if (!low) B(gk, cx, cz, x1 === x0 ? TW + .04 : Math.abs(x1 - x0) * .98, z1 === z0 ? TW + .04 : Math.abs(z1 - z0) * .98, .08, h, { collide: false }); // 牆頂發光條
+  }
+  // ---- 走道內的掩體（箱子／立柱）：目標總障礙物約為熱血高校（251）的 1.2 倍 ≈ 301 ----
+  const target = (typeof window !== 'undefined' && window.__noCrates) ? 0 : 301, cells = []; for (let j = 0; j < R; j++) for (let i = 0; i < C; i++) cells.push([i, j]); cells.sort(() => rr() - .5);
+  const reserved = c => c[0] <= 3 || c[0] >= C - 4; // 兩端出生區保持暢通
+  let crates = 0, used = new Set(); const cm = ['cYel', 'cOrg', 'cTeal', 'cPur', 'cPnk'];
+  for (const c of cells) {
+    if (W.boxes.filter(q => !q.nc).length >= target) break; if (reserved(c)) continue; const [i, j] = c;
+    const zs = vw[i][j] && vw[i + 1][j] && !hw[i][j] && !hw[i][j + 1], xs = hw[i][j] && hw[i][j + 1] && !vw[i][j] && !vw[i + 1][j]; // 只放在直走道（轉角、岔路不放，避免堵死）
+    if (!zs && !xs) continue; if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dz]) => used.has((i + dx) + ',' + (j + dz)))) continue; used.add(i + ',' + j);
+    const cx = X0 + (i + .5) * P, cz = Z0 + (j + .5) * P, tall = rr() < .35, off = (rr() < .5 ? -1 : 1) * .5, h = tall ? 2.0 + rr() * .6 : 1.1, m = cm[(rr() * cm.length) | 0];
+    if (zs) B(m, cx + off, cz, 1.0, 1.0, h); else B(m, cx, cz + off, 1.0, 1.0, h); crates++;
+  }
+  W.psyInfo = { walls: nWall, crates };
+}
+MAPS.psy = {
+  id: 'psy', skyKind: 'neon', navCs: 1.4, orbit: { c: [0, 0], r: 36, h: 60, ly: 1.2 }, preview: [0, 0], name: '超能槍戰', sub: '迷宮窄走道 · 1.2 倍面積', desc: '霓虹迷宮：走道只有兩人寬，紅、綠、黃、藍四個色區交錯。雙方迎面撞上就得開戰，低牆可探頭窺看、箱子與立柱可閃躲遮蔽，是節奏最快的近距離對決。',
+  bounds: { x0: -47.6, x1: 47.6, z0: -37.8, z1: 37.8 }, flagPos: [[-43.4, 0], [43.4, 0]], zoneRed: [-47, -11, -39, 11], zoneBlue: [39, -11, 47, 11], faceRed: [-30, 0], faceBlue: [30, 0],
+  interior: [999, 999, 1000, 1000], env: PSY_ENV, night: false, noShadow: true,
+  pickSpots: [[-30, -22], [30, 22], [-30, 22], [30, -22], [-14, -8], [14, 8], [-14, 8], [14, -8], [0, -26], [0, 26], [-40, 14], [40, -14], [-40, -14], [40, 14], [-6, 0], [6, 0], [-22, 0], [22, 0], [0, 14], [0, -14]],
+  build(W) { buildPsy(W); }
 };
 
 /* ================= 英雄（依參考圖：白襯衫牛仔寬褲／黑T黑長褲／紫帽T工裝褲） ================= */
@@ -2993,7 +3144,7 @@ function moveActor(a, dt) {
     a.x += dx / n; collideH(a); a.z += dz / n; collideH(a);
     const g0 = groundAt(a.x, a.z, a.y); if (g0 > a.y && g0 - a.y <= STEP + .001) a.y = g0;
   }
-  a.vy -= GRAV * dt; a.y += a.vy * dt;
+  a.vy -= GRAV * ((World.cur && World.cur.gravK) || 1) * dt; a.y += a.vy * dt;
   const g = groundAt(a.x, a.z, a.y); a.gy = g;
   if (a.y <= g + .001) { a.y = g; a.vy = 0; a.onGround = true; } else a.onGround = false;
   if (a.onGround && World.ramps.length) { const rp = World.rampAt(a.x, a.z, a.y, .12); if (rp && rp.belt) { a.x += rp.dir[0] * rp.belt * dt; a.z += rp.dir[1] * rp.belt * dt; collideH(a); } }
@@ -3265,17 +3416,21 @@ function updatePlayer(dt) {
     let spd = 5.85; const wantSprint = In.sprint && my > .2 && moving;
     G.stamDelay -= dt;
     const bolt = isOut(p, 12) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn; if (wantSprint && (G.stam > .02 || bolt) && !G.bino) { spd = 8.4; if (!bolt) G.stam = Math.max(0, G.stam - dt * .13); G.stamDelay = .9; } else if (G.stamDelay <= 0) G.stam = Math.min(1, G.stam + dt * .2);
-    const sprinting = spd > 7; p.sprinting = sprinting; spd *= speedMul(p);
+    const sprinting = spd > 7; p.sprinting = sprinting; spd *= speedMul(p); if (World.cur && World.cur.space && !p.onGround) spd *= 1.125; // 外太空：滯空 ×1.6 ⇒ 空中水平速度 ×1.125，跳躍距離 ×1.8
     if (G.bino) spd *= .42; if (p.carry) spd *= .93;
     let wx = (f[0] * my + rx * mx) * spd, wz = (f[1] * my + rz * mx) * spd; if (p.ctrlT > 0 && p.ctrlBy && isStunBy(p.ctrlBy)) { wx = wz = 0; p.yaw = faceYaw(p, p.ctrlBy); } else if (p.ctrlT > 0 && p.ctrlBy) { const dx = p.x - p.ctrlBy.x, dz = p.z - p.ctrlBy.z, dd = Math.hypot(dx, dz) || 1; wx = dx / dd * spd * .3; wz = dz / dd * spd * .3; }
     const k = Math.min(1, dt * (p.onGround ? (p.icy ? 1.3 : 12) : 3));
     p.vx += (wx - p.vx) * k; p.vz += (wz - p.vz) * k;
     const jp = In.jump && !G.jumpHeld && !(G.freezeT > 0) && !(p.frz > 0); G.jumpHeld = In.jump;
     if (p.onGround) { p.jumps = 0; p.dashReady = false; }
+    const SP = !!(World.cur && World.cur.space), vk = SP ? .75 : 1, maxJ = isOut(p, 52) ? 3 : 2; // 外太空：重力 ×0.469、起跳速度 ×0.75 ⇒ 高度 ×1.2、滯空 ×1.6
+    const jumpGround = () => { p.vy = 7.1 * jumpMul(p) * vk; p.onGround = false; p.jumps = 1; Sfx.tone(420, .08, 'triangle', .08, 260); };
+    const jumpAir = () => { const n = p.jumps || 1; p.vy = (isOut(p, 52) ? 7.1 * Math.pow(1.2, n / 2) : 6.9 * jumpMul(p)) * vk; p.jumps = n + 1; p.dashReady = isSumi(p); Sfx.tone(620 + n * 120, .1, 'triangle', .09, 380); };
+    if (SP && (p.jumpQ || 0) > 0) { p.jumpQ -= dt; UI.setEv('jl', Math.max(0, p.jumpQ), '🌑'); if (p.jumpQ <= 0) { p.jumpQ = 0; UI.clrEv('jl'); if (p.onGround) jumpGround(); else if ((p.jumps || 0) < maxJ) jumpAir(); } }
     if (jp) {
-      if (p.onGround) { p.vy = 7.1 * jumpMul(p); p.onGround = false; p.jumps = 1; Sfx.tone(420, .08, 'triangle', .08, 260); }
+      if (p.onGround) { if (SP) { if (!(p.jumpQ > 0)) p.jumpQ = 1; } else jumpGround(); }
       else if (isSumi(p) && p.jumps >= 2 && p.dashReady) { p.dashReady = false; p.dashT = .2025; const fw = ml > .1 ? [f[0] * my + rx * mx, f[1] * my + rz * mx] : f, fl = Math.hypot(fw[0], fw[1]) || 1; p.dashV = [fw[0] / fl * 24, fw[1] / fl * 24]; Sfx.noise(.2, .18, 2500, 0, true); Sfx.tone(300, .2, 'sawtooth', .06, 500); }
-      else if ((p.jumps || 0) < (isOut(p, 52) ? 3 : 2)) { const n = p.jumps || 1; p.vy = isOut(p, 52) ? 7.1 * Math.pow(1.2, n / 2) : 6.9 * jumpMul(p); p.jumps = n + 1; p.dashReady = isSumi(p); Sfx.tone(620 + n * 120, .1, 'triangle', .09, 380); }
+      else if ((p.jumps || 0) < maxJ) { if (SP) { if (!(p.jumpQ > 0)) p.jumpQ = 1; } else jumpAir(); }
     }
     if (p.chg) { if (G.netClient) chargeTick(p, dt); p.vx = p.chg ? p.chg.vx : 0; p.vz = p.chg ? p.chg.vz : 0; }
     if ((p.dashT || 0) > 0) { p.dashT -= dt; p.vx = p.dashV[0]; p.vz = p.dashV[1]; p.vy = Math.max(p.vy, 0); }
@@ -3287,7 +3442,7 @@ function updatePlayer(dt) {
     // 望遠鏡能量
     if (G.bino) { p.binAt = G.time; if (G.netClient && isOut(p, 13) && G.time - (p._bsent ?? -9) > 1) { p._bsent = G.time; netAct(['b']); } }
     if (G.bino && (isOut(p, 13) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn)) G.energy = 1; else if (G.bino) { G.energy -= dt * .22; if (G.energy <= 0) { G.energy = 0; G.bino = false; } } else G.energy = Math.min(1, G.energy + dt * .12);
-  } else { p.vx *= .9; p.vz *= .9; p.deadT += dt; p.respawnT -= dt; p.fall = Math.min(1, p.fall + dt * 2.5); }
+  } else { p.vx *= .9; p.vz *= .9; p.deadT += dt; p.respawnT -= dt; p.fall = Math.min(1, p.fall + dt * 2.5); if (p.jumpQ) { p.jumpQ = 0; UI.clrEv('jl'); } }
   { const want = 0; // 已取消探頭功能
      let tgt = 0; if (want) { let k = 0; for (let s = 1; s <= 11; s++) { if (!leanClear(p, want * s * .05)) break; k = s * .05; } tgt = want * k; } p.lo += (tgt - p.lo) * Math.min(1, dt * 11); p.lean = want; }
   p.fx = f[0]; p.fz = f[1]; if (!p.alive) { In.leanL = In.leanR = false; }
@@ -3631,6 +3786,7 @@ function initRenderAssets() {
   const sky = mergeGeos([{ g: gSphere(1, 20, 12), cfn: (x, y) => { const t = y; if (t < 0) return mixc([.78, .83, .82], [.84, .9, .94], clamp(1 + t * 5, 0, 1)); return mixc(mixc([.84, .9, .95], [.52, .72, .93], clamp(t * 3, 0, 1)), [.30, .52, .86], clamp((t - .35) * 1.4, 0, 1)); } }]);
   SPR.sky = R.mkMesh(sky); SPR.skyMat = R.mat({ unlit: 1, fog: 0, two: 1, noDepth: 1 }); SPR.skyCur = SPR.sky;
   SPR.skyNight = R.mkMesh(mergeGeos([{ g: gSphere(1, 24, 14) }])); SPR.skyNightMat = R.mat({ tex: R.tex(TG.skyNight(), { nomip: true }), unlit: 1, fog: 0, two: 1, noDepth: 1 });
+  SPR.skySpace = SPR.skyNight; SPR.skySpaceMat = R.mat({ tex: R.tex(TG.skySpace(), { nomip: true }), unlit: 1, fog: 0, two: 1, noDepth: 1 }); SPR.skyNeonMat = R.mat({ tex: R.tex(TG.skyNeon(), { nomip: true }), unlit: 1, fog: 0, two: 1, noDepth: 1 });
   SPR.crate = R.mkMesh(mergeGeos([{ g: gBox(.4, .4, .4) }])); SPR.crateMat = R.mat({ tex: R.tex(TG.crate(), {}), spec: .2 });
   SPR.flagPole = R.mkMesh(mergeGeos([{ g: gCyl(.04, .05, 3.6, 8, 1), t: [0, 1.8, 0], c: [.85, .85, .88] }, { g: gSphere(.07, 8, 6), t: [0, 3.65, 0], c: [.9, .8, .3] }]));
   SPR.flagCloth = R.mkMesh(mergeGeos([{ g: gBox(1.2, .75, .03), t: [.62, 3.15, 0] }]));
@@ -3664,9 +3820,9 @@ function sayTex(txt) {
   g.fillStyle = '#2a2018'; g.font = '700 46px "Noto Sans TC","Microsoft JhengHei",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(txt, 256, 56);
   return (_sayC[txt] = R.tex(c, { nomip: true }));
 }
-function drawSkyDome(c) { const n = World.cur && World.cur.night; M4.trs(SPR.skyM, c.x, c.y, c.z, 0, 0, 0, 520, 520, 520); R.draw(n ? SPR.skyNight : SPR.sky, SPR.skyM, n ? SPR.skyNightMat : SPR.skyMat); }
+function drawSkyDome(c) { const m = World.cur, n = m && m.night, sk = m && m.skyKind; M4.trs(SPR.skyM, c.x, c.y, c.z, 0, 0, 0, 520, 520, 520); if (sk === 'space') R.draw(SPR.skySpace, SPR.skyM, SPR.skySpaceMat); else if (sk === 'neon') R.draw(SPR.skySpace, SPR.skyM, SPR.skyNeonMat); else R.draw(n ? SPR.skyNight : SPR.sky, SPR.skyM, n ? SPR.skyNightMat : SPR.skyMat); }
 function drawSkyFx(c, t) {
-  const m = World.cur; if (!m || m.indoor) return;
+  const m = World.cur; if (!m || m.indoor || m.skyKind) return;
   if (m.night) { drawSprite(SPR.glow, c.x + R.sun[0] * 480, c.y + R.sun[1] * 480, c.z + R.sun[2] * 480, 210, 210, [.5, .58, .9], .45); drawSprite(SPR.glow, c.x + R.sun[0] * 480, c.y + R.sun[1] * 480, c.z + R.sun[2] * 480, 62, 62, [.92, .96, 1], 1); return; }
   drawSprite(SPR.glow, c.x + R.sun[0] * 480, c.y + R.sun[1] * 480, c.z + R.sun[2] * 480, 120, 120, [1, .96, .8], .9);
   for (let k = 0; k < CLOUDS.length; k++) { const q = CLOUDS[k]; drawSprite(SPR.puff, c.x + Math.cos(q.a + t * .004) * q.r, q.h, c.z + Math.sin(q.a + t * .004) * q.r, q.w, q.w * .34, [1, 1, 1], .8); }
@@ -3686,7 +3842,7 @@ function applyNightEnv(viewer) {
   }
   G.plateK = (nt.by && viewer !== nt.by && nt.e >= 1.5) ? Math.max(.3, k * .9) : 1;
   const key = k + '|' + tint.join() + '|' + World.id;
-  if (key !== applyNightEnv.key) { for (const kk of ['sunCol', 'sky', 'gnd', 'fog']) R.env[kk] = b[kk].map((v, i) => v * k * tint[i]); for (const m of [SPR.skyMat, SPR.skyNightMat]) for (let q = 0; q < 3; q++) m.tint[q] = k * tint[q]; applyNightEnv.key = key; }
+  if (key !== applyNightEnv.key) { for (const kk of ['sunCol', 'sky', 'gnd', 'fog']) R.env[kk] = b[kk].map((v, i) => v * k * tint[i]); for (const m of [SPR.skyMat, SPR.skyNightMat, SPR.skySpaceMat, SPR.skyNeonMat]) for (let q = 0; q < 3; q++) m.tint[q] = k * tint[q]; applyNightEnv.key = key; }
   if (nv !== applyNightEnv.nv) { applyNightEnv.nv = nv; document.getElementById('nvov').classList.toggle('on', nv); }
 }
 function drawWorldFrame() {
@@ -5102,7 +5258,7 @@ function boot() {
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
 setInterval(() => { try { UI.renderPills(); } catch (e) { } }, 120);
-window.__G = { cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+window.__G = { In, cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 
 // 檢查是否有新版（防止 PWA 快取舊版）

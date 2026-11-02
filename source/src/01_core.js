@@ -387,6 +387,26 @@ const TG = {
     const rr = rng(77); for (let i = 0; i < 520; i++) { const x = rr() * 1024, y = rr() * 250, r = rr() * .6 + .22; g.fillStyle = `rgba(255,255,${220 + rr() * 35 | 0},${.35 + rr() * .6})`; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); }
     g.globalAlpha = .1; for (let i = 0; i < 12; i++) { g.fillStyle = '#6f7fb0'; g.beginPath(); g.ellipse(rr() * 1024, 190 + rr() * 50, 90 + rr() * 80, 9 + rr() * 8, 0, 0, TAU); g.fill(); } g.globalAlpha = 1; return c;
   },
+  skySpace() { // 外太空：紫灰色天空、土黃色大行星
+    const c = cv(1024, 512), g = c.getContext('2d'); const gr = g.createLinearGradient(0, 0, 0, 512);
+    gr.addColorStop(0, '#1b1429'); gr.addColorStop(.3, '#34294a'); gr.addColorStop(.46, '#6f6080'); gr.addColorStop(.5, '#8f7f9c'); gr.addColorStop(.56, '#5c4f6a'); gr.addColorStop(1, '#2b2336'); g.fillStyle = gr; g.fillRect(0, 0, 1024, 512);
+    const rr = rng(5150); for (let i = 0; i < 380; i++) { const x = rr() * 1024, y = rr() * 215, r = rr() * .8 + .25; g.fillStyle = `rgba(255,${235 + rr() * 20 | 0},${215 + rr() * 40 | 0},${.3 + rr() * .6})`; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); }
+    const px = 690, py = 150, pr = 105; g.save(); g.beginPath(); g.arc(px, py, pr, 0, TAU); g.clip();
+    const pg = g.createRadialGradient(px - 30, py - 30, 10, px, py, pr); pg.addColorStop(0, '#f0c565'); pg.addColorStop(.6, '#c98f34'); pg.addColorStop(1, '#7d4f1c'); g.fillStyle = pg; g.fillRect(px - pr, py - pr, pr * 2, pr * 2);
+    for (let b = 0; b < 9; b++) { g.fillStyle = `rgba(${b % 2 ? '120,70,20' : '255,225,150'},${.12 + rr() * .12})`; g.fillRect(px - pr, py - pr + b * 24 + rr() * 6, pr * 2, 9 + rr() * 8); }
+    for (let i = 0; i < 12; i++) { g.fillStyle = 'rgba(90,50,15,.22)'; g.beginPath(); g.ellipse(px + (rr() - .5) * 150, py + (rr() - .5) * 150, 6 + rr() * 14, 4 + rr() * 8, 0, 0, TAU); g.fill(); }
+    const tg = g.createLinearGradient(px - pr, 0, px + pr, 0); tg.addColorStop(0, 'rgba(0,0,0,0)'); tg.addColorStop(.55, 'rgba(0,0,0,0)'); tg.addColorStop(1, 'rgba(15,5,25,.62)'); g.fillStyle = tg; g.fillRect(px - pr, py - pr, pr * 2, pr * 2); g.restore();
+    g.strokeStyle = 'rgba(225,200,140,.6)'; g.lineWidth = 5; g.beginPath(); g.ellipse(px, py, 175, 28, -.28, 0, TAU); g.stroke(); g.lineWidth = 2; g.strokeStyle = 'rgba(190,160,110,.5)'; g.beginPath(); g.ellipse(px, py, 150, 23, -.28, 0, TAU); g.stroke();
+    g.fillStyle = '#b9b0c4'; g.beginPath(); g.arc(250, 105, 24, 0, TAU); g.fill(); g.fillStyle = 'rgba(70,60,90,.45)'; g.beginPath(); g.arc(260, 100, 24, 0, TAU); g.fill(); g.fillStyle = '#b9b0c4'; g.beginPath(); g.arc(250, 105, 20, 0, TAU); g.fill();
+    g.globalAlpha = .12; for (let i = 0; i < 10; i++) { g.fillStyle = '#b99ac8'; g.beginPath(); g.ellipse(rr() * 1024, 215 + rr() * 40, 110 + rr() * 90, 8 + rr() * 8, 0, 0, TAU); g.fill(); } g.globalAlpha = 1; return c;
+  },
+  skyNeon() { // 超能槍戰：深紫夜空與霓虹地平線
+    const c = cv(1024, 512), g = c.getContext('2d'); const gr = g.createLinearGradient(0, 0, 0, 512);
+    gr.addColorStop(0, '#05030d'); gr.addColorStop(.35, '#140a30'); gr.addColorStop(.47, '#3a1260'); gr.addColorStop(.5, '#ff3fa8'); gr.addColorStop(.515, '#2a0f50'); gr.addColorStop(.6, '#0a1a3a'); gr.addColorStop(1, '#04060f'); g.fillStyle = gr; g.fillRect(0, 0, 1024, 512);
+    const rr = rng(2024); for (let i = 0; i < 300; i++) { g.fillStyle = `rgba(200,${190 + rr() * 60 | 0},255,${.3 + rr() * .6})`; g.beginPath(); g.arc(rr() * 1024, rr() * 220, rr() * .7 + .2, 0, TAU); g.fill(); }
+    for (let x = 0; x < 1024; x += 14 + rr() * 22) { const h = 6 + rr() * 34, w = 8 + rr() * 16; g.fillStyle = '#0b0620'; g.fillRect(x, 256 - h, w, h); for (let k = 0; k < h / 6; k++) { g.fillStyle = ['#ff3fa8', '#3fe0ff', '#ffe84a'][(rr() * 3) | 0]; g.globalAlpha = .7; g.fillRect(x + 2 + rr() * (w - 4), 256 - h + 3 + k * 6, 2, 2); g.globalAlpha = 1; } }
+    return c;
+  },
   ghost() {
     const c = cv(128, 256), g = c.getContext('2d'); const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, 'rgba(225,238,255,.92)'); gr.addColorStop(.7, 'rgba(190,210,240,.55)'); gr.addColorStop(1, 'rgba(180,200,235,0)');
     g.fillStyle = gr; g.beginPath(); g.moveTo(26, 250); g.quadraticCurveTo(14, 120, 30, 80); g.quadraticCurveTo(34, 18, 64, 14); g.quadraticCurveTo(96, 18, 100, 80); g.quadraticCurveTo(116, 120, 102, 250);

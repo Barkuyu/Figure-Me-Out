@@ -43,6 +43,18 @@ const World = {
     d.bark = { tex: T(TG.bark), sx: 4, sy: 4 };
     d.decal = { sx: 1, sy: 1, tint: [1, 1, 1, 1], blend: 1, noDepth: 1, two: 1 };
     d.glassT = { sx: 4, sy: 4, tint: [.62, .82, .94, .26], blend: 1, noDepth: 1, two: 1, spec: .3 };
+    d.regolith = { tex: T(TG.stone), sx: 3, sy: 3, tint: [.66, .52, .36, 1], ao: 1 };
+    d.moonrock = { tex: T(TG.stone), sx: 2.4, sy: 2.4, tint: [.46, .38, .34, 1], ao: 1 };
+    d.hull = { sx: 4, sy: 4, tint: [.62, .62, .68, 1], ao: 1, spec: .5 };
+    d.hullD = { sx: 4, sy: 4, tint: [.30, .30, .38, 1], ao: 1, spec: .5 };
+    d.panel = { sx: 4, sy: 4, tint: [.10, .16, .38, 1], ao: 1, spec: .7 };
+    d.arenaF = { tex: T(TG.tile), sx: 4, sy: 4, tint: [.32, .34, .46, 1], spec: .4 };
+    d.arenaR = { tex: T(TG.tile), sx: 4, sy: 4, tint: [.42, .14, .16, 1], spec: .4 };
+    d.arenaG = { tex: T(TG.tile), sx: 4, sy: 4, tint: [.14, .40, .22, 1], spec: .4 };
+    d.arenaY = { tex: T(TG.tile), sx: 4, sy: 4, tint: [.46, .40, .12, 1], spec: .4 };
+    d.arenaB = { tex: T(TG.tile), sx: 4, sy: 4, tint: [.16, .20, .46, 1], spec: .4 };
+    d.arenaW = { sx: 4, sy: 4, tint: [.20, .20, .29, 1], ao: 1, spec: .35 };
+    d.glowR = { sx: 4, sy: 4, tint: [1, .22, .26, 1], unlit: 1 }; d.glowG = { sx: 4, sy: 4, tint: [.25, 1, .45, 1], unlit: 1 }; d.glowY = { sx: 4, sy: 4, tint: [1, .9, .25, 1], unlit: 1 }; d.glowB = { sx: 4, sy: 4, tint: [.3, .5, 1, 1], unlit: 1 };
     d.neon = { sx: 1, sy: 1, tint: [1, 1, 1, 1], blend: 1, noDepth: 1, two: 1, unlit: 1 };
     for (const k in d) {
       const e = d[k]; e.t0 = (e.tint || [1, 1, 1, 1]).slice();
@@ -220,7 +232,7 @@ const World = {
 
   /* ---- 導航網格（支援二樓：layer 0/1，電扶梯為傳送門連結） ---- */
   buildNav() {
-    const cs = 2, b = this.bounds, nx = Math.ceil((b.x1 - b.x0) / cs), nz = Math.ceil((b.z1 - b.z0) / cs), nl = this.mezz ? 2 : 1, N = nx * nz, walk = new Uint8Array(nl * N), mz = this.mezz, self = this;
+    const cs = (this.cur && this.cur.navCs) || 2, b = this.bounds, nx = Math.ceil((b.x1 - b.x0) / cs), nz = Math.ceil((b.z1 - b.z0) / cs), nl = this.mezz ? 2 : 1, N = nx * nz, walk = new Uint8Array(nl * N), mz = this.mezz, self = this;
     const blocked = (x, z, r, l) => {
       const base = l ? mz.h : 0;
       for (const q of self.boxes) { if (q.nc || q.y1 < base + .06 || q.y0 > base + 1.6) continue; if (x > q.x0 - r && x < q.x1 + r && z > q.z0 - r && z < q.z1 + r) return true; }
