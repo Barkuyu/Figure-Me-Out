@@ -187,6 +187,15 @@ const UI = {
     // FPS
     Perf.hud(dt);
   },
+  openDecade() {
+    const b = $('decMenu'), fav = (S.fav || []).filter(i => i !== DECADE_IDX && OUTFITS[i] && !OUTFITS[i].hidden).slice(0, 6); if (!b) return;
+    if (!fav.length) { UI.msg('「我的最愛」是空的：請先在選英雄畫面長按右鍵（手機長按卡片）把英雄加入最愛', 'bad'); return; }
+    b.innerHTML = '<div class="dh">🎭 假面變身：選擇要變身的英雄 <small>（數字鍵 1–6 快選・Esc 取消）</small></div><div class="dg">' + fav.map((i, k) => '<button data-i="' + i + '"><img src="' + outfitIcon(i) + '"><b>' + (k + 1) + '</b><span>' + OUTFITS[i].label + '</span></button>').join('') + '</div><button class="dx">取消</button>';
+    b.classList.remove('hidden'); UI.decOpen = fav; UI.noLock = true; for (const k in keys) keys[k] = false; In.mx = In.my = 0; In.sprint = false; In.jump = false; if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
+    b.querySelectorAll('.dg button').forEach(x => { x.onclick = () => UI.pickDecade(+x.dataset.i); }); b.querySelector('.dx').onclick = () => UI.closeDecade();
+  },
+  closeDecade() { const b = $('decMenu'); if (b) b.classList.add('hidden'); UI.decOpen = null; UI.noLock = false; relockGame(); },
+  pickDecade(idx) { const p = G.player; UI.closeDecade(); if (!p || !p.alive) return; if (G.netClient) netAct(['dt', idx]); else startDecade(p, idx); },
   popup(title, text) { const b = $('kPop'); if (!b) return; b.innerHTML = '<b>' + title + '</b><span>' + text + '</span>'; b.classList.remove('hidden'); b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); clearTimeout(this._pp); this._pp = setTimeout(() => b.classList.add('hidden'), 1500); },
   vdFlash(name, num) { const b = $('vdBox'); if (!b) return; clearTimeout(this._vd1); clearTimeout(this._vd2); b.innerHTML = '<small>🪆 反殺情報・' + name + ' 目前的號碼</small><strong>' + num + '</strong>'; b.classList.remove('hidden'); let n = 0; const step = () => { if (n >= 6) { b.classList.add('hidden'); return; } b.classList.remove('off'); this._vd1 = setTimeout(() => { b.classList.add('off'); this._vd2 = setTimeout(() => { n++; step(); }, 250); }, 250); }; step(); },
   poker(num) { const b = $('pokerBox'); if (!b) return; clearTimeout(this._pk1); clearTimeout(this._pk2); b.innerHTML = '<i class="pc tl">♠</i><i class="pc tr">♥</i><i class="pc bl">♦</i><i class="pc br">♣</i><em>賭一把</em><strong>' + num + '</strong><small>3 秒後消失・65% 為真</small>'; b.classList.remove('hidden'); let n = 0; const step = () => { if (n >= 5) { b.classList.add('hidden'); return; } b.classList.remove('off'); this._pk1 = setTimeout(() => { b.classList.add('off'); this._pk2 = setTimeout(() => { n++; step(); }, 240); }, 360); }; step(); },
@@ -275,6 +284,7 @@ const Input = {
     window.addEventListener('keydown', e => {
       if (e.repeat && e.code !== 'Backspace') { if (e.code === 'Tab' || e.code === 'Space') e.preventDefault(); return; }
       if (Device.auto && S.input === 'auto' && performance.now() - Device.lastTouch > 3000 && /^(Key|Digit|Arrow|Space|Shift|Tab)/.test(e.code)) { Device.auto = false; Device.update(); }
+      if (UI.decOpen && G.state === 'playing') { if (e.code === 'Escape' || e.code === 'KeyR') { UI.closeDecade(); e.preventDefault(); return; } const m = /^(Digit|Numpad)([1-6])$/.exec(e.code); if (m && UI.decOpen[+m[2] - 1] !== undefined) { UI.pickDecade(UI.decOpen[+m[2] - 1]); e.preventDefault(); return; } e.preventDefault(); return; }
       if (G.mode === 'prac' && G.state === 'playing' && !UI.paused && !UI.menuOpen && !CS.o && (e.code === 'KeyH' || (UI.pracOpen && e.code === 'Escape'))) { togglePrac(); e.preventDefault(); return; }
       if ((UI.paused || UI.menuOpen) && G.state === 'playing') { if (e.code === 'Escape' || e.code === 'KeyP') togglePause(); return; }
       if (G.demo && (G.state === 'playing' || G.state === 'ended')) { if (e.code === 'Escape' || e.code === 'KeyP') togglePause(); e.preventDefault(); return; }
@@ -320,7 +330,7 @@ const Input = {
     // ---- 觸控 ----
     const layer = $('app'), joyBase = $('joyBase'), joyKnob = $('joyKnob'), joyHint = $('joyHint');
     const TX = t => VP.px(t.clientX, t.clientY), TY = t => VP.py(t.clientX, t.clientY);
-    const inCtl = t => t.target.closest && t.target.closest('#tut,#pracBtn,#pracPanel,.np,.tbtn,.slot,#pauseBtn,.btn,.chip,.card,.panel,.sbox,#settings,#mp,#howPick,#demoPick,#charsel,#layoutEd,#end,#pause');
+    const inCtl = t => t.target.closest && t.target.closest('#tut,#pracBtn,#pracPanel,#decMenu,.np,.tbtn,.slot,#pauseBtn,.btn,.chip,.card,.panel,.sbox,#settings,#mp,#howPick,#demoPick,#charsel,#layoutEd,#end,#pause');
     layer.addEventListener('touchstart', e => {
       Sfx.init(); Sfx.resume(); if (!Device.mobile || G.state === 'menu' || G.demo || UI.menuOpen || UI.paused) return;
       for (const t of e.changedTouches) {
@@ -571,14 +581,14 @@ function rerollHero() { // 單人「再來一場」：依複選／隨機設定�
   else if (S.multi) { const h = weightedHero(S.multi); if (h !== null) S.outfit = h; }
 }
 function csFlash(t) { CS.flash = t; clearTimeout(CS.ft); CS.ft = setTimeout(() => { CS.flash = ''; if (CS.o) csRefresh(); }, 1600); csRefresh(); }
-function csToggleFav(i) { S.fav = S.fav || []; const k = S.fav.indexOf(i); if (k >= 0) S.fav.splice(k, 1); else S.fav.push(i); saveS(); csBuildCards(); csFlash(k >= 0 ? '已從「我的收藏庫」移除 ' + OUTFITS[i].label : '已加入「我的收藏庫」：' + OUTFITS[i].label); }
+function csToggleFav(i) { S.fav = S.fav || []; const k = S.fav.indexOf(i); if (k < 0 && S.fav.length >= 6) { csFlash('「我的最愛」最多 6 位，已滿。請先長按右鍵移除一位再加入'); return; } if (k >= 0) S.fav.splice(k, 1); else S.fav.push(i); saveS(); csBuildCards(); csFlash(k >= 0 ? '已從「我的收藏庫」移除 ' + OUTFITS[i].label : '已加入「我的收藏庫」：' + OUTFITS[i].label); }
 function csDec(i) { const o = CS.o; if (!o) return; if (isWM(o)) { if (CS.counts[i] > 1) CS.counts[i]--; else delete CS.counts[i]; } else if (o.need > 1) { const k = CS.picks.indexOf(i); if (k >= 0) CS.picks.splice(k, 1); } csRefresh(i); }
 function csRefresh(last) {
   const o = CS.o; if (!o) return; const wm = isWM(o), five = o.need > 1;
   document.querySelectorAll('#cards .card').forEach(c => {
     if (c.dataset.r) { c.classList.toggle('on', CS.rand && !five); return; }
     const i = +c.dataset.i, k = CS.picks.indexOf(i), n = wm ? (CS.counts[i] || 0) : 0, on = wm ? n > 0 : five ? k >= 0 : (!CS.rand && CS.picks[0] === i);
-    c.classList.toggle('on', on); c.classList.toggle('lk', !!o.single && CS.picks.length > 0 && CS.picks[0] !== i); c.classList.toggle('fav', (S.fav || []).includes(i)); const b = c.querySelector('.pk'); if (b) b.textContent = wm ? (n ? '×' + n : '') : (five && k >= 0 ? k + 1 : '');
+    c.classList.toggle('on', on); c.classList.toggle('lk', !!o.single && CS.picks.length > 0 && CS.picks[0] !== i); c.classList.toggle('fav', (S.fav || []).includes(i)); c.classList.toggle('fl', (S.fav || []).length >= 6 && !(S.fav || []).includes(i)); const b = c.querySelector('.pk'); if (b) b.textContent = wm ? (n ? '×' + n : '') : (five && k >= 0 ? k + 1 : '');
   });
   const tot = csTotal();
   $('csHint').textContent = CS.flash || (five ? `已選 ${CS.picks.length} / ${o.need}　（點選順序＝出賽順序；右鍵取消；長按右鍵加入收藏庫）` : wm ? (tot ? `已選 ${tot} 張　左鍵 +1・右鍵 −1・長按右鍵（手機：長按卡片）加入收藏庫；張數越多越容易被抽中，開局隨機抽出一位` : '左鍵選取（再點 +1）・右鍵 −1・長按右鍵（手機：長按卡片）加入收藏庫') : (o.hint || ''));
@@ -604,7 +614,7 @@ function csBuildCards() {
   };
   const sec = (txt, col) => { const hd = document.createElement('div'); hd.className = 'chd'; if (col) hd.style.setProperty('--hc', col); hd.textContent = txt; cards.appendChild(hd); };
   // 我的收藏庫（最上方）
-  const fav = (S.fav || []).filter(i => pool.includes(i)); sec('⭐ 我的收藏庫（' + fav.length + '）', '#ffd24a');
+  const fav = (S.fav || []).filter(i => pool.includes(i)); if ((S.fav || []).length > 6) S.fav = S.fav.slice(0, 6); sec('⭐ 我的收藏庫（' + fav.length + ' / 6）', '#ffd24a');
   if (fav.length) for (const i of fav) cards.appendChild(mk(i)); else { const h = document.createElement('div'); h.className = 'favhint'; h.textContent = '尚無收藏。在任一英雄上「長按滑鼠右鍵」（手機：長按卡片）即可加入，再長按一次可移除。'; cards.appendChild(h); }
   const placed = new Set(), groups = CS.view === 'tier' ? HERO_TIERS : HERO_CLASSES;
   for (const [nm, col, ids] of groups) { const list = ids.filter(i => pool.includes(i)); if (!list.length) continue; sec(nm + '（' + list.length + '）', col); for (const i of list) { placed.add(i); cards.appendChild(mk(i)); } }

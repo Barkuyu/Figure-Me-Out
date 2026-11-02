@@ -164,7 +164,9 @@ body.lay4 #bBack{left:calc(var(--vw)*71.4);right:auto;top:calc(calc(var(--vh)*34
 #pracBtn{position:absolute;left:8px;top:8px;z-index:70;pointer-events:auto;background:rgba(20,40,70,.8);border:1.5px solid #6fc3ff;color:#fff;border-radius:10px;padding:5px 10px;font:700 12px var(--font)}#pracBtn small{opacity:.7;font-weight:400;margin-left:3px}
 #pracPanel{position:absolute;left:8px;top:44px;z-index:71;pointer-events:auto;width:min(300px,calc(var(--vw)*62));max-height:calc(calc(var(--vh)*100) - 56px);overflow:auto;background:rgba(14,18,32,.94);border:1.5px solid #6fc3ff;border-radius:12px;padding:8px 10px;color:#fff}#pracPanel .prh{display:flex;justify-content:space-between;align-items:center;font:800 14px var(--font);margin-bottom:4px}#pracPanel .prh button{background:none;border:0;color:#fff;font-size:16px}
 #pracPanel .pr{margin:6px 0}#pracPanel label{display:block;font:700 11px var(--font);color:#9fd4ff;margin-bottom:3px}#pracPanel .chip{padding:4px 9px;font-size:12px}#pracPanel .prb{display:flex;flex-direction:column;gap:5px}#pracPanel .pb{background:rgba(60,110,170,.55);border:1.5px solid #6fc3ff;color:#fff;border-radius:8px;padding:6px 8px;font:700 12px var(--font);text-align:left}#pracPanel .pb:active{filter:brightness(1.3)}
+#decMenu{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:75;pointer-events:auto;background:rgba(14,18,34,.95);border:2px solid #9ad7ff;border-radius:14px;padding:10px 14px;color:#fff;max-width:calc(var(--vw)*92)}#decMenu .dh{font:800 15px var(--font);margin-bottom:8px;text-align:center}#decMenu .dh small{font-weight:400;opacity:.7;font-size:11px}#decMenu .dg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}#decMenu .dg button{position:relative;background:rgba(60,90,150,.45);border:1.5px solid #9ad7ff;color:#fff;border-radius:10px;padding:6px 8px;font:700 12px var(--font);display:flex;align-items:center;gap:6px}#decMenu .dg img{width:34px;height:34px;border-radius:50%}#decMenu .dg b{position:absolute;left:5px;top:2px;font-size:11px;color:#ffe14a}#decMenu .dx{display:block;margin:8px auto 0;background:#444;border:0;color:#fff;border-radius:8px;padding:5px 18px;font:700 12px var(--font)}
 #voiceBar{position:absolute;left:50%;bottom:26%;transform:translateX(-50%);background:rgba(30,10,60,.8);border:2px solid #ff4fa3;color:#fff;border-radius:999px;padding:4px 16px;font:700 14px var(--font);z-index:40;pointer-events:none;white-space:nowrap;max-width:calc(var(--vw)*80);overflow:hidden;text-overflow:ellipsis}#voiceBar b{color:#ffd24a;letter-spacing:.1em}
+.card.fl{opacity:.5;filter:grayscale(.85)}.card.fl:hover{opacity:.75}
 .card.dis,.card.lk{opacity:.4;filter:grayscale(1);pointer-events:none}.card small.nov{display:block;font-size:10px;font-weight:400;color:#ffb3b3}
 .card .pm{display:none;position:absolute;left:5px;top:4px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.55);border:1.5px solid rgba(255,255,255,.7);align-items:center;justify-content:center;font:800 16px/1 Arial;color:#fff;z-index:2}.card.on .pm{display:flex}.card .pk{font-size:16px}.card.fav::after{content:'⭐';position:absolute;right:6px;bottom:3px;font-size:12px}.favhint{grid-column:1/-1;font-size:12px;opacity:.75;padding:4px 6px}
 .cshint{font-size:12px;opacity:.85;margin:4px 0 6px;min-height:16px}.card{position:relative}.card .pk{position:absolute;right:6px;top:4px;font:800 15px var(--font);color:#ffd24a;text-shadow:0 0 3px #000,0 0 3px #000}#csOk.dis{opacity:.4;filter:grayscale(1);pointer-events:none}
@@ -393,7 +395,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
   <div id="hud" class="hidden">
     <div id="scorebar"><span class="flagic" id="flagR"></span><div class="sc red" id="scR">0</div><span class="sep">-</span><div class="sc blue" id="scB">0</div><span class="flagic" id="flagB"></span></div>
     <div id="timer">5:00</div>
-    <div id="kPop" class="hidden"></div><div id="pokerBox" class="hidden"></div><div id="vdBox" class="hidden"></div><div id="heroSk"></div><div id="voiceBar" class="hidden"></div><div id="arBanner" class="hidden">擂台賽將於10秒後正式開始，請做好準備</div><div id="arBig" class="hidden"></div><div id="kofbar" class="hidden"></div>
+    <div id="kPop" class="hidden"></div><div id="pokerBox" class="hidden"></div><div id="vdBox" class="hidden"></div><div id="decMenu" class="hidden"></div><div id="heroSk"></div><div id="voiceBar" class="hidden"></div><div id="arBanner" class="hidden">擂台賽將於10秒後正式開始，請做好準備</div><div id="arBig" class="hidden"></div><div id="kofbar" class="hidden"></div>
     <div id="countdown" class="hidden"><div id="cdTxt"></div><div id="cdNum"></div></div><div id="modeName"></div>
     <div id="killfeed"></div>
     <div id="crosshair"></div>
@@ -436,7 +438,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.3</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.4</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -629,6 +631,12 @@ const Sfx = {
   key() { this.tone(900, .04, 'square', .05); },
   del() { this.tone(500, .05, 'square', .05); },
   wrong() { this.tone(160, .28, 'sawtooth', .16, -60); },
+  henshin() { // 原創變身音效：卡片插入 → 上升琶音 → 閃光（非任何影視作品的取樣）
+    this.tone(1800, .05, 'square', .09); this.tone(900, .06, 'square', .07, 0, .07);
+    [392, 523, 659, 784, 988, 1319].forEach((f, i) => this.tone(f, .16, 'triangle', .13, f * 1.05, .22 + i * .1));
+    this.noise(.5, .16, 2600, .5, 800); this.tone(2093, .35, 'sine', .14, 2800, .85); this.tone(1568, .35, 'sine', .1, 2400, .9);
+  },
+  glass() { this.noise(.35, .3, 6000, 0, 2500); this.tone(2400, .2, 'triangle', .1, 800); this.tone(3100, .15, 'sine', .08, 1200, .05); },
   kill() { this.tone(660, .1, 'triangle', .2); this.tone(990, .18, 'triangle', .2, 0, .09); this.tone(1320, .22, 'triangle', .16, 0, .2); },
   die() { this.tone(300, .5, 'sawtooth', .18, -240); this.noise(.3, .2, 800); },
   shutter() { this.noise(.05, .35, 4000, 0, true); this.noise(.08, .25, 3000, .07, true); },
@@ -925,6 +933,42 @@ const TG = {
     gr.addColorStop(0, '#03040b'); gr.addColorStop(.45, '#0a1022'); gr.addColorStop(.5, '#17223a'); gr.addColorStop(.58, '#0c1222'); gr.addColorStop(1, '#05070e'); g.fillStyle = gr; g.fillRect(0, 0, 1024, 512);
     const rr = rng(77); for (let i = 0; i < 520; i++) { const x = rr() * 1024, y = rr() * 250, r = rr() * .6 + .22; g.fillStyle = `rgba(255,255,${220 + rr() * 35 | 0},${.35 + rr() * .6})`; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); }
     g.globalAlpha = .1; for (let i = 0; i < 12; i++) { g.fillStyle = '#6f7fb0'; g.beginPath(); g.ellipse(rr() * 1024, 190 + rr() * 50, 90 + rr() * 80, 9 + rr() * 8, 0, 0, TAU); g.fill(); } g.globalAlpha = 1; return c;
+  },
+  parquet() { // 人字拼木地板
+    const c = cv(256, 256), g = c.getContext('2d'), rr = rng(11); g.fillStyle = '#7a5532'; g.fillRect(0, 0, 256, 256);
+    for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) { const t = (x + y) % 2, v = 96 + rr() * 38 | 0; g.fillStyle = `rgb(${v + 28},${v - 4},${v - 52})`; if (t) g.fillRect(x * 16 + 1, y * 16 + 1, 14, 14); else g.fillRect(x * 16 + 1, y * 16 + 1, 14, 14); g.strokeStyle = 'rgba(40,22,10,.45)'; g.lineWidth = 1; for (let k = 1; k < 4; k++) { g.beginPath(); if (t) { g.moveTo(x * 16 + 1, y * 16 + k * 3.5); g.lineTo(x * 16 + 15, y * 16 + k * 3.5); } else { g.moveTo(x * 16 + k * 3.5, y * 16 + 1); g.lineTo(x * 16 + k * 3.5, y * 16 + 15); } g.stroke(); } }
+    return c;
+  },
+  stripe() { // 奶油金直條壁紙
+    const c = cv(128, 128), g = c.getContext('2d'); g.fillStyle = '#efe4c4'; g.fillRect(0, 0, 128, 128);
+    for (let x = 0; x < 128; x += 32) { g.fillStyle = '#d8c690'; g.fillRect(x + 12, 0, 8, 128); g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(x + 4, 0, 4, 128); }
+    return c;
+  },
+  books() { // 書櫃
+    const c = cv(256, 256), g = c.getContext('2d'), rr = rng(23); g.fillStyle = '#f2eadb'; g.fillRect(0, 0, 256, 256);
+    for (let r = 0; r < 4; r++) { const y0 = 8 + r * 62; g.fillStyle = '#3a2a1e'; g.fillRect(0, y0 + 52, 256, 8); let x = 6; while (x < 244) { const w = 8 + rr() * 12, h = 30 + rr() * 22; g.fillStyle = ['#1d3b6b', '#7a1f24', '#2a5a3a', '#d8c28a', '#4a3a6a', '#8a5a2a'][(rr() * 6) | 0]; g.fillRect(x, y0 + 52 - h, w, h); g.fillStyle = 'rgba(255,255,255,.25)'; g.fillRect(x + 2, y0 + 52 - h + 4, 2, h - 8); x += w + 1; } }
+    g.strokeStyle = '#3a2a1e'; g.lineWidth = 8; g.strokeRect(2, 2, 252, 252); return c;
+  },
+  carpetOval() { // 橢圓地毯：外圈深藍帶環形文字
+    const c = cv(1024, 768), g = c.getContext('2d'), cx = 512, cy = 384, A = 500, B = 372; g.clearRect(0, 0, 1024, 768);
+    const ell = (a, b, col) => { g.fillStyle = col; g.beginPath(); g.ellipse(cx, cy, a, b, 0, 0, Math.PI * 2); g.fill(); };
+    ell(A, B, '#1c2a52'); ell(A - 12, B - 10, '#e9dfc6'); ell(A - 112, B - 84, '#1c2a52'); ell(A - 118, B - 89, '#efe6d0'); ell(A - 130, B - 98, '#cdb98a'); ell(A - 136, B - 103, '#e6dcc2');
+    const txt = 'NO PROBLEM OF HUMAN DESTINY IS BEYOND HUMAN BEINGS  ★  FOR THE PEOPLE, FOR THE PEOPLE  ★  ', rx = A - 62, ry = B - 47; g.fillStyle = '#1c2a52'; g.font = '800 40px Georgia,serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    for (let i = 0; i < txt.length; i++) { const t = Math.PI / 2 + (i + .5) / txt.length * Math.PI * 2, x = cx + Math.cos(t) * rx, y = cy + Math.sin(t) * ry, tx = -Math.sin(t) * rx, ty = Math.cos(t) * ry; g.save(); g.translate(x, y); g.rotate(Math.atan2(ty, tx) - Math.PI); g.fillText(txt[i], 0, 0); g.restore(); }
+    return c;
+  },
+  rtile() { // 屋頂水泥方磚
+    const c = cv(256, 256), g = c.getContext('2d'), rr = rng(31); g.fillStyle = '#6f7478'; g.fillRect(0, 0, 256, 256);
+    for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) { const v = 96 + rr() * 26 | 0; g.fillStyle = `rgb(${v},${v + 3},${v + 6})`; g.fillRect(x * 32 + 1.5, y * 32 + 1.5, 29, 29); }
+    g.strokeStyle = 'rgba(30,34,38,.7)'; g.lineWidth = 2; for (let i = 0; i <= 8; i++) { g.beginPath(); g.moveTo(i * 32, 0); g.lineTo(i * 32, 256); g.moveTo(0, i * 32); g.lineTo(256, i * 32); g.stroke(); }
+    for (let i = 0; i < 400; i++) { g.fillStyle = `rgba(${40 + rr() * 60 | 0},${60 + rr() * 60 | 0},${40 + rr() * 30 | 0},.12)`; g.fillRect(rr() * 256, rr() * 256, 2 + rr() * 4, 2 + rr() * 3); } return c;
+  },
+  helipad() { // 直升機坪：深灰底、白色 H
+    const c = cv(512, 512), g = c.getContext('2d'); g.fillStyle = '#5c6065'; g.fillRect(0, 0, 512, 512); g.strokeStyle = '#e8e8e4'; g.lineWidth = 14; g.strokeRect(20, 20, 472, 472);
+    g.fillStyle = '#f2f2ee'; g.fillRect(120, 120, 56, 272); g.fillRect(336, 120, 56, 272); g.fillRect(120, 226, 272, 56); return c;
+  },
+  glassTower() { // 玻璃帷幕大樓
+    const c = cv(128, 128), g = c.getContext('2d'); g.fillStyle = '#2c6f6a'; g.fillRect(0, 0, 128, 128); for (let y = 0; y < 8; y++) for (let x = 0; x < 4; x++) { g.fillStyle = (x + y) % 3 ? '#3f8c86' : '#5aa9a0'; g.fillRect(x * 32 + 2, y * 16 + 2, 28, 12); } return c;
   },
   skySpace() { // 外太空：紫灰色天空、土黃色大行星
     const c = cv(1024, 512), g = c.getContext('2d'); const gr = g.createLinearGradient(0, 0, 0, 512);
@@ -1243,6 +1287,24 @@ const World = {
     d.bark = { tex: T(TG.bark), sx: 4, sy: 4 };
     d.decal = { sx: 1, sy: 1, tint: [1, 1, 1, 1], blend: 1, noDepth: 1, two: 1 };
     d.glassT = { sx: 4, sy: 4, tint: [.62, .82, .94, .26], blend: 1, noDepth: 1, two: 1, spec: .3 };
+    d.parquet = { tex: T(TG.parquet), sx: 2.4, sy: 2.4, spec: .25, ao: 0 };
+    d.stripe = { tex: T(TG.stripe), sx: 2.6, sy: 2.6, ao: 1 };
+    d.books = { tex: T(TG.books, { repeat: false }), sx: 2.4, sy: 2.4, ao: 1 };
+    d.carpet = { tex: T(TG.carpetOval, { repeat: false }), sx: 1, sy: 1, blend: 1, ao: 0 };
+    d.wood = { sx: 4, sy: 4, tint: [.36, .21, .11, 1], ao: 1, spec: .35 };
+    d.leather = { sx: 4, sy: 4, tint: [.55, .30, .12, 1], ao: 1, spec: .3 };
+    d.sofaC = { sx: 4, sy: 4, tint: [.72, .68, .46, 1], ao: 1 };
+    d.drape = { sx: 4, sy: 4, tint: [.55, .06, .08, 1], ao: 1 };
+    d.gold = { sx: 4, sy: 4, tint: [.86, .68, .22, 1], ao: 1, spec: .6 };
+    d.rtile = { tex: T(TG.rtile), sx: 6, sy: 6, ao: 0 };
+    d.helipad = { tex: T(TG.helipad, { repeat: false }), sx: 1, sy: 1, ao: 0 };
+    d.concrete = { sx: 4, sy: 4, tint: [.66, .64, .58, 1], ao: 1 };
+    d.acunit = { sx: 4, sy: 4, tint: [.78, .80, .82, 1], ao: 1, spec: .3 };
+    d.tankM = { sx: 4, sy: 4, tint: [.30, .42, .62, 1], ao: 1, spec: .4 };
+    d.towerG = { tex: T(TG.glassTower), sx: 9, sy: 12, ao: 0, spec: .6 };
+    d.bldgA = { sx: 8, sy: 8, tint: [.78, .74, .66, 1], ao: 0 };
+    d.bldgB = { sx: 8, sy: 8, tint: [.62, .66, .70, 1], ao: 0 };
+    d.hillG = { sx: 8, sy: 8, tint: [.36, .50, .38, 1], ao: 0 };
     d.regolith = { tex: T(TG.stone), sx: 3, sy: 3, tint: [.66, .52, .36, 1], ao: 1 };
     d.moonrock = { tex: T(TG.stone), sx: 2.4, sy: 2.4, tint: [.46, .38, .34, 1], ao: 1 };
     d.hull = { sx: 4, sy: 4, tint: [.62, .62, .68, 1], ao: 1, spec: .5 };
@@ -1967,59 +2029,47 @@ MAPS.mall = {
 /* ================= 地圖 4：無遠弗屆（外太空；面積為熱血高校 1.2 倍，障礙物 1.2 倍多；低重力＋延遲起跳） ================= */
 const SPACE_ENV = { sunCol: [.84, .68, .52], sky: [.40, .33, .50], gnd: [.46, .38, .30], fog: [.42, .35, .50], fogR: [70, 260], interior: [999, 999, 1000, 1000], intK: .7, intH: 7 };
 function buildSpace(W) {
-  const B = (...a) => W.box(...a), rr = rng(5150), BX = 47.6, BZ = 37.8, rects = [];
+  const B = (...a) => W.box(...a), rr = rng(5150), BX = 43, BZ = 35, rects = [];
   const rect = (x, z, w, d) => rects.push([x - w / 2, z - d / 2, x + w / 2, z + d / 2]);
   const free = (x, z, w, d, mg) => { for (const q of rects) if (x + w / 2 + mg > q[0] && x - w / 2 - mg < q[2] && z + d / 2 + mg > q[1] && z - d / 2 - mg < q[3]) return false; return true; };
-  const keep = [[-47.6, -15, -36, 15], [36, -15, 47.6, 15]]; // 出生區：保持淨空
+  const keep = [[-43, -13, -34, 13], [34, -13, 43, 13]]; // 出生區：保持淨空
   const inKeep = (x, z, w, d) => keep.some(q => x + w / 2 > q[0] - 1 && x - w / 2 < q[2] + 1 && z + d / 2 > q[1] - 1 && z - d / 2 < q[3] + 1);
-  const put = (mat, x, z, w, d, h, y0, mg) => { if (inKeep(x, z, w, d) || !free(x, z, w, d, mg === undefined ? 1.2 : mg)) return false; B(mat, x, z, w, d, h, y0 || 0); rect(x, z, w, d); return true; };
+  const put = (mat, x, z, w, d, h, y0, mg) => { if (inKeep(x, z, w, d) || !free(x, z, w, d, mg === undefined ? 1.6 : mg)) return false; B(mat, x, z, w, d, h, y0 || 0); rect(x, z, w, d); return true; };
   const wall = (mat, x, z, w, d, h, y0) => { B(mat, x, z, w, d, h, y0 || 0); rect(x, z, w, d); };
-  // ---- 地面與邊界岩壁 ----
+  const mir = (fn) => { fn(1); fn(-1); }; // 左右對稱
   W.quadTop('regolith', -160, -130, 160, 130, 0);
   for (const [cx, cz, w, d] of [[0, -BZ - 1, 2 * BX + 6, 2], [0, BZ + 1, 2 * BX + 6, 2], [-BX - 1, 0, 2, 2 * BZ + 2], [BX + 1, 0, 2, 2 * BZ + 2]]) B('moonrock', cx, cz, w, d, 5, 0, { colH: 9 });
-  for (let k = 0; k < 26; k++) { const a = rr() * Math.PI * 2, r = 62 + rr() * 38, w = 8 + rr() * 16, h = 8 + rr() * 22; B('moonrock', Math.cos(a) * r * 1.2, Math.sin(a) * r * .95, w, w * (.6 + rr() * .6), h, 0, { collide: false }); } // 遠方山脈（裝飾）
-  // ---- 中央：墜毀的太空船 ----
-  wall('hull', 0, -3.2, 22, .5, 3.4); wall('hull', -5, 3.2, 12, .5, 3.4); wall('hull', 8.5, 3.2, 5, .5, 3.4); // 長艙壁（側門缺口在 x∈[1,6]）
-  wall('hullD', -11.2, 0, .5, 6.9, 3.4); // 尾艙
-  B('hullD', -1, 0, 16, 6.4, .35, 3.4, { collide: false }); rect(-1, 0, 16, 6.4);
-  for (const sx of [-1, 1]) { wall('hull', 11.5, sx * 4.4, 1.4, 3, 2.4); } // 機頭殘骸
-  wall('hullD', -13.5, -4.5, 3, 1.1, 2.0); wall('hullD', -13.5, 4.5, 3, 1.1, 2.0); // 尾翼
-  wall('cOrg', 3.5, 0, 1.6, 1.6, 1.4); wall('cTeal', -4, 1, 1.4, 1.4, 1.6); // 艙內貨箱
-  W.prop([{ g: gSphere(1.6, 12, 8), t: [14, 1.3, 0], c: [.5, .52, .6] }]); // 機頭球罩（裝飾）
-  // ---- 西側：生活艙（紅隊後方） ----
-  for (const [cx, cz, w, d] of [[-30, -6.5, 12, .5], [-30, 6.5, 12, .5], [-36, 0, .5, 12.5]]) wall('hull', cx, cz, w, d, 3.4);
-  wall('hull', -24, -4.2, .5, 4.2, 3.4); wall('hull', -24, 4.2, .5, 4.2, 3.4); // 東牆留 4.2 寬的氣密門
-  wall('cYel', -31, -3.5, 2.4, 1.2, 1.6); wall('cYel', -31, 3.5, 2.4, 1.2, 2.6);
-  W.prop([{ g: gSphere(6.2, 16, 10, 0, Math.PI * 2, 0, 1.2), t: [-30, 3.4, 0], c: [.7, .78, .85] }]);
-  // ---- 東側：雷達站（藍隊後方） ----
-  for (const [cx, cz, w, d] of [[30, -6.5, 12, .5], [30, 6.5, 12, .5], [36, 0, .5, 12.5]]) wall('hullD', cx, cz, w, d, 3.4);
-  wall('hullD', 24, -4.2, .5, 4.2, 3.4); wall('hullD', 24, 4.2, .5, 4.2, 3.4);
-  wall('cTeal', 31, -3.5, 2.4, 1.2, 2.6); wall('cOrg', 31, 3.5, 2.4, 1.2, 1.6);
-  wall('hull', 30, 0, .6, .6, 7); W.prop([{ g: gSphere(2.6, 14, 8, 0, Math.PI * 2, 0, 1.3), t: [30, 7.4, 0], r: [.5, 0, 0], c: [.82, .84, .9] }]);
-  // ---- 太陽能板陣列（可躲、可繞） ----
-  for (const sz of [-1, 1]) for (let k = 0; k < 4; k++) put('panel', -19 + k * 7.2, sz * 22, 5, .3, 2.4, 0, 1.5);
-  for (const sx of [-1, 1]) for (let k = 0; k < 3; k++) put('panel', sx * 15, -10 + k * 9.5, .3, 5, 2.4, 0, 1.5);
-  // ---- 貨櫃堆（可疊高：太空跳躍可登上） ----
+  for (let k = 0; k < 26; k++) { const a = rr() * Math.PI * 2, r = 58 + rr() * 38, w = 8 + rr() * 16, h = 8 + rr() * 22; B('moonrock', Math.cos(a) * r * 1.2, Math.sin(a) * r * .95, w, w * (.6 + rr() * .6), h, 0, { collide: false }); } // 遠方山脈（裝飾）
+  // ---- 中央：墜毀的太空船（主戰場） ----
+  wall('hull', -1, -3.2, 17, .5, 3.4); wall('hull', -4, 3.2, 8, .5, 3.4); wall('hull', 5.5, 3.2, 3.5, .5, 3.4); // 側艙壁：x∈[1.5,3.7] 為側門
+  wall('hullD', -9.7, 0, .5, 6.9, 3.4); B('hullD', -1, 0, 12.5, 6.4, .35, 3.4, { collide: false }); rect(-1, 0, 12.5, 6.4);
+  wall('hull', 9.4, -4.2, 1.4, 2.6, 2.4); wall('hull', 9.4, 4.2, 1.4, 2.6, 2.4); wall('cOrg', 2.5, 0, 1.5, 1.5, 1.5);
+  W.prop([{ g: gSphere(1.4, 12, 8), t: [11.5, 1.2, 0], c: [.5, .52, .6] }]);
+  // ---- 兩側基地：生活艙（紅）／雷達站（藍），左右對稱 ----
+  mir(sg => { const m = sg > 0 ? 'hullD' : 'hull'; for (const [cx, cz, w, d] of [[sg * 26, -5.5, 9, .5], [sg * 26, 5.5, 9, .5], [sg * 30.5, 0, .5, 11.5]]) wall(m, cx, cz, w, d, 3.4); wall(m, sg * 21.5, -3.6, .5, 3.8, 3.4); wall(m, sg * 21.5, 3.6, .5, 3.8, 3.4); wall(sg > 0 ? 'cTeal' : 'cYel', sg * 26.5, -3, 2.2, 1.2, 1.8); wall(sg > 0 ? 'cOrg' : 'cYel', sg * 26.5, 3, 2.2, 1.2, 2.4); });
+  W.prop([{ g: gSphere(5.2, 16, 10, 0, Math.PI * 2, 0, 1.2), t: [-26, 3.4, 0], c: [.7, .78, .85] }]);
+  wall('hull', 26, 0, .6, .6, 7); W.prop([{ g: gSphere(2.4, 14, 8, 0, Math.PI * 2, 0, 1.3), t: [26, 7.4, 0], r: [.5, 0, 0], c: [.82, .84, .9] }]);
+  // ---- 太陽能板：南北各一列 ----
+  for (const sz of [-1, 1]) for (let k = 0; k < 4; k++) put('panel', -13.5 + k * 9, sz * 20, 5, .3, 2.4, 0, 1.5);
+  // ---- 貨櫃堆：成對排列（可疊高，太空跳躍可登上） ----
   const cm = ['cYel', 'cOrg', 'cTeal', 'cRed', 'cBlue', 'cGrn'];
-  for (let k = 0; k < 15; k++) { const x = (rr() * 2 - 1) * 40, z = (rr() * 2 - 1) * 32, ax = rr() < .5, w = ax ? 6 : 2.4, d = ax ? 2.4 : 6, m = cm[(rr() * cm.length) | 0]; if (put(m, x, z, w, d, 2.5, 0)) { if (rr() < .55) { B(cm[(rr() * cm.length) | 0], x + (rr() - .5) * 1.5, z, ax ? 3.6 : 2.4, ax ? 2.4 : 3.6, 2.4, 2.5); } } }
-  // ---- 階梯平台：岩塊 1.1 → 2.2 的高台（需二段跳或踩岩階） ----
-  for (const sx of [-1, 1]) { const px = sx * 11, pz = -27; if (put('moonrock', px, pz, 9, 7, 2.2, 0, 1)) { B('moonrock', px - sx * 5.2, pz + 1.5, 2.6, 2.6, 1.1); rect(px - sx * 5.2, pz + 1.5, 2.6, 2.6); } }
-  // ---- 天線塔 / 探測車 ----
+  [[14, 9], [14, -9], [-14, 9], [-14, -9], [30, 20], [-30, -20], [30, -20], [-30, 20]].forEach(([x, z], k) => { const ax = k % 2 === 0; if (put(cm[k % 6], x, z, ax ? 6 : 2.4, ax ? 2.4 : 6, 2.5, 0, 1.2)) B(cm[(k + 2) % 6], x + (ax ? 1 : 0), z + (ax ? 0 : 1), ax ? 3.6 : 2.4, ax ? 2.4 : 3.6, 2.4, 2.5); });
+  // ---- 階梯平台 ----
+  mir(sg => { const px = sg * 9, pz = -27; if (put('moonrock', px, pz, 8, 6, 2.2, 0, 1)) { B('moonrock', px - sg * 4.8, pz + 1.2, 2.4, 2.4, 1.1); rect(px - sg * 4.8, pz + 1.2, 2.4, 2.4); } });
+  // ---- 天線塔 / 探測車 / 隕石坑 ----
   for (const [x, z] of [[-6, 27], [6, -27]]) { for (const [dx, dz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) put('steel', x + dx * 1.2, z + dz * 1.2, .25, .25, 6, 0, .3); B('hullD', x, z, 3.2, 3.2, .25, 4.2, { collide: false }); }
-  for (const [x, z, ax] of [[-14, 12, 1], [16, -17, 0], [24, 24, 1], [-26, -22, 0]]) put('hull', x, z, ax ? 4 : 2.2, ax ? 2.2 : 4, 1.5, 0, 1);
-  // ---- 隕石坑：圈狀低岩 ----
-  for (const [cx, cz, R] of [[-16, -16, 5], [18, 14, 6], [0, 26, 4]]) for (let k = 0; k < 9; k++) { const a = k * Math.PI * 2 / 9; put('moonrock', cx + Math.cos(a) * R, cz + Math.sin(a) * R, 1.8, 1.8, .7 + rr() * .6, 0, .2); }
-  // ---- 隨機岩石：補足到原熱血高校的 1.25 倍以上障礙物 ----
-  let guard = 0; while (W.boxes.filter(b => !b.nc).length < 318 && guard++ < 6000) {
-    const w = 1.0 + rr() * 2.4, d = 1.0 + rr() * 2.4, h = 1.2 + rr() * 2.8, x = (rr() * 2 - 1) * (BX - 3), z = (rr() * 2 - 1) * (BZ - 3);
-    put(rr() < .5 ? 'moonrock' : 'regolith', x, z, w, d, h, 0, .8);
-  }
+  for (const [x, z, ax] of [[-12, 12, 1], [14, -16, 0], [22, 26, 1], [-22, -26, 0]]) put('hull', x, z, ax ? 4 : 2.2, ax ? 2.2 : 4, 1.5, 0, 1);
+  for (const [cx, cz, R] of [[-14, -14, 4.5], [16, 14, 5]]) for (let k = 0; k < 8; k++) { const a = k * Math.PI * 2 / 8; put('moonrock', cx + Math.cos(a) * R, cz + Math.sin(a) * R, 1.6, 1.6, .7 + rr() * .3, 0, .3); }
+  // ---- 散落岩塊：補足到熱血高校阻擋型障礙物（高度≥1.2 m）的 1.3 倍 ≈ 166 個 ----
+  const blockers = () => W.boxes.filter(b => !b.nc && b.y1 - b.y0 >= 1.2).length; let guard = 0;
+  while (blockers() < 166 && guard++ < 8000) { const w = 1.0 + rr() * 2.2, d = 1.0 + rr() * 2.2, h = 1.3 + rr() * 1.7; put(rr() < .5 ? 'moonrock' : 'regolith', (rr() * 2 - 1) * (BX - 3), (rr() * 2 - 1) * (BZ - 3), w, d, h, 0, 1.4); }
+  guard = 0; for (let k = 0; k < 40 && guard < 3000; guard++) { if (put('moonrock', (rr() * 2 - 1) * (BX - 3), (rr() * 2 - 1) * (BZ - 3), .8 + rr() * .8, .8 + rr() * .8, .5 + rr() * .4, 0, 1.2)) k++; } // 低矮石塊（可探頭觀察）
 }
 MAPS.space = {
-  id: 'space', skyKind: 'space', space: true, gravK: 1.2, orbit: { c: [0, 0], r: 31, h: 13, ly: 1.4 }, preview: [0, 14], name: '無遠弗屆', sub: '外太空 · 1.2 倍面積 · 延遲跳躍', desc: '身處外太空：紫灰色大氣層與土黃色巨大行星。墜毀的太空船、生活艙、雷達站與大量岩塊貨櫃散布其間。場地機制「延遲跳躍」：按下跳躍後延遲 0.3 秒才起跳，但跳得更高（×1.2）、更遠（×2）。',
-  bounds: { x0: -47.6, x1: 47.6, z0: -37.8, z1: 37.8 }, flagPos: [[-42, 0], [42, 0]], zoneRed: [-46.5, -12, -37, 12], zoneBlue: [37, -12, 46.5, 12], faceRed: [-8, 0], faceBlue: [8, 0],
+  id: 'space', skyKind: 'space', space: true, gravK: 1.2, orbit: { c: [0, 0], r: 31, h: 13, ly: 1.4 }, preview: [0, 14], name: '無遠弗屆', sub: '外太空 · 標準面積 86×70 m · 延遲跳躍', desc: '身處外太空：紫灰色大氣層與土黃色巨大行星。面積與熱血高校相同，中央是墜毀的太空船，兩側為生活艙與雷達站；障礙物約為熱血高校的 1.3 倍，動線以太空船為中心、左右對稱。場地機制「延遲跳躍」：按下跳躍後延遲 0.3 秒才起跳，但跳得更高（×1.2）、更遠（×2）。',
+  bounds: { x0: -43, x1: 43, z0: -35, z1: 35 }, flagPos: [[-38.5, 0], [38.5, 0]], zoneRed: [-42, -12, -35, 12], zoneBlue: [35, -12, 42, 12], faceRed: [-8, 0], faceBlue: [8, 0],
   interior: [999, 999, 1000, 1000], env: SPACE_ENV, night: false, noShadow: false,
-  pickSpots: [[-24, -16], [24, 16], [-24, 16], [24, -16], [0, -22], [0, 22], [-8, 0], [8, 0], [-38, 22], [38, -22], [-38, -22], [38, 22], [-14, 26], [14, -26], [-30, 0], [30, 0], [0, 10], [0, -10], [-44, 30], [44, -30]],
+  pickSpots: [[-22, -14], [22, 14], [-22, 14], [22, -14], [0, -20], [0, 20], [-7, 0], [7, 0], [-34, 22], [34, -22], [-34, -22], [34, 22], [-12, 26], [12, -26], [-28, 0], [28, 0], [0, 10], [0, -10], [-38, 28], [38, -28]],
   build(W) { buildSpace(W); }
 };
 
@@ -2081,6 +2131,129 @@ MAPS.psy = {
   interior: [999, 999, 1000, 1000], env: PSY_ENV, night: false, noShadow: true,
   pickSpots: [[-30, -22], [30, 22], [-30, 22], [30, -22], [-14, -8], [14, 8], [-14, 8], [14, -8], [0, -26], [0, 26], [-40, 14], [40, -14], [-40, -14], [40, 14], [-6, 0], [6, 0], [-22, 0], [22, 0], [0, 14], [0, -14]],
   build(W) { buildPsy(W); }
+};
+
+/* ================= 地圖 6：白宮室內辦公室（橢圓辦公室＋西廂／東廂；面積同熱血高校，障礙物 1.1 倍） ================= */
+const OVAL_ENV = { sunCol: [.80, .74, .64], sky: [.55, .52, .50], gnd: [.50, .43, .36], fog: [.62, .57, .52], fogR: [90, 320], interior: [-43.5, -35.5, 43.5, 35.5], intK: .9, intH: 5.6 };
+function buildOval(W) {
+  const B = (...a) => W.box(...a), rr = rng(1600), HX = 43, HZ = 35, WH = 5.4, rects = [];
+  const rect = (x, z, w, d) => rects.push([x - w / 2, z - d / 2, x + w / 2, z + d / 2]);
+  const free = (x, z, w, d, mg) => { for (const q of rects) if (x + w / 2 + mg > q[0] && x - w / 2 - mg < q[2] && z + d / 2 + mg > q[1] && z - d / 2 - mg < q[3]) return false; return true; };
+  const keepClear = []; const inKeep = (x, z, w, d) => keepClear.some(q => x + w / 2 > q[0] && x - w / 2 < q[2] && z + d / 2 > q[1] && z - d / 2 < q[3]);
+  const put = (mat, x, z, w, d, h, y0, mg) => { if (inKeep(x, z, w, d) || !free(x, z, w, d, mg === undefined ? 1.5 : mg)) return false; B(mat, x, z, w, d, h, y0 || 0); rect(x, z, w, d); return true; };
+  const solid = (mat, x, z, w, d, h, y0) => { B(mat, x, z, w, d, h, y0 || 0); rect(x, z, w, d); };
+  // ---- 地板、外牆、天花板 ----
+  W.quadTop('parquet', -70, -55, 70, 55, 0);
+  for (const [cx, cz, w, d] of [[0, -HZ - .3, 2 * HX + 1.2, .6], [0, HZ + .3, 2 * HX + 1.2, .6], [-HX - .3, 0, .6, 2 * HZ], [HX + .3, 0, .6, 2 * HZ]]) B('stripe', cx, cz, w, d, WH, 0, { colH: 9 });
+  B('ceil', 0, 0, 2 * HX, 2 * HZ, .4, WH + .2, { collide: false });
+  for (let x = -36; x <= 36; x += 12) for (let z = -28; z <= 28; z += 14) B('light', x, z, 2.6, .9, .06, WH + .14, { collide: false });
+  // ---- 橢圓辦公室（A=20, B=14.5，中心 (0,-9)） ----
+  const CX = 0, CZ = -9, A = 20, BB = 14.5, N = 80, pt = k => [CX + Math.cos(k / N * Math.PI * 2) * A, CZ + Math.sin(k / N * Math.PI * 2) * BB];
+  const gate = (mx, mz) => { for (const sx of [-9, 9]) if (mz > 3 && Math.abs(mx - sx) < 2.4) return true; if (Math.abs(mz - CZ) < 2.4 && Math.abs(mx) > A - 2.4) return true; return false; };
+  for (let k = 0; k < N; k++) { const p = pt(k), q = pt(k + 1), mx = (p[0] + q[0]) / 2, mz = (p[1] + q[1]) / 2; if (gate(mx, mz)) continue; const w = Math.abs(q[0] - p[0]) + .55, d = Math.abs(q[1] - p[1]) + .55; B('stripe', mx, mz, w, d, WH, 0); }
+  for (const sx of [-9, 9]) for (const dx of [-2.6, 2.6]) { B('whitepaint', sx + dx, CZ + BB - .1, .7, .7, 3.9, 0, { collide: false }); B('whitepaint', sx + dx, CZ + BB - .1, 1.0, 1.0, .35, 3.9, { collide: false }); }
+  for (const sz of [-1]) { B('whitepaint', CX - A, CZ - 2.8, .7, .7, 3.9, 0, { collide: false }); B('whitepaint', CX - A, CZ + 2.8, .7, .7, 3.9, 0, { collide: false }); B('whitepaint', CX + A, CZ - 2.8, .7, .7, 3.9, 0, { collide: false }); B('whitepaint', CX + A, CZ + 2.8, .7, .7, 3.9, 0, { collide: false }); }
+  // 北牆三扇落地窗 + 紅色絲絨窗簾 + 星條旗
+  const NZ = CZ - BB + .6;
+  for (const x of [-5.2, 0, 5.2]) { B('glass', x, NZ - .15, 3.0, .1, 3.6, 1.0, { collide: false }); B('whitepaint', x, NZ - .1, 3.3, .14, .22, 4.7, { collide: false }); }
+  for (const x of [-7.6, -2.6, 2.6, 7.6]) B('drape', x, NZ + .2, 1.5, .5, 4.5, .25, { collide: false });
+  const flag = W.atlasAdd('flagUS', 256, 160, (g, w, h) => { for (let i = 0; i < 13; i++) { g.fillStyle = i % 2 ? '#f4f4f4' : '#b22234'; g.fillRect(0, i * h / 13, w, h / 13 + 1); } g.fillStyle = '#3c3b6e'; g.fillRect(0, 0, w * .42, h * 7 / 13); g.fillStyle = '#fff'; for (let r = 0; r < 5; r++) for (let c = 0; c < 6; c++) g.fillRect(8 + c * 24 + (r % 2) * 12, 8 + r * 14, 4, 4); });
+  for (const sx of [-1, 1]) { B('gold', sx * 10.8, NZ + .6, .12, .12, 5.0, 0, { collide: false }); W.wdecal(flag, sx * 10.8 - 1.6, NZ + .55, sx * 10.8 + 1.6, NZ + .55, 2.1, 4.2, 'decal'); }
+  // 書櫃拱形壁龕（東西兩側各兩座）：碰撞型障礙
+  for (const [ang, w] of [[Math.PI * .72, 4.6], [Math.PI * 1.28, 4.6], [Math.PI * .28, 4.6], [Math.PI * 1.72, 4.6]]) { const x = CX + Math.cos(ang) * (A - 1.1), z = CZ + Math.sin(ang) * (BB - 1.1); B('books', x, z, Math.abs(Math.sin(ang)) > .75 ? w : .6, Math.abs(Math.sin(ang)) > .75 ? .6 : w, 3.4, 0); rect(x, z, 5, 5); }
+  // 總統辦公桌（決心桌）與座椅
+  solid('wood', 0, -21.4, 7.2, 2.6, 1.15); B('gold', 0, -20.15, 7.4, .08, .18, 1.0, { collide: false }); solid('leather', 0, -23.1, 1.5, 1.4, 1.5);
+  for (const sx of [-1, 1]) solid('wood', sx * 4.6, -23.2, 1.1, .7, 1.9); // 邊桌／國旗座
+  // 中庭：地毯、沙發、扶手椅、茶几
+  W.quadTop('carpet', -17, -21.6, 17, 3.6, .012, true);
+  for (const sx of [-1, 1]) { solid('sofaC', sx * 11.6, -9, 1.9, 7.4, .6); solid('sofaC', sx * 12.6, -9, .6, 7.4, 1.25); solid('wood', sx * 11.8, -13.6, 1.4, 1.4, .95); solid('wood', sx * 11.8, -4.4, 1.4, 1.4, .95); }
+  for (const sx of [-1, 1]) { solid('leather', sx * 3.4, -4.4, 1.6, 1.6, .6); solid('leather', sx * 3.4, -3.6, 1.6, .5, 1.3); }
+  solid('stone', 0, -9, 4.4, 2.8, .5); B('gold', 0, -9, .8, .8, .18, .5, { collide: false });
+  for (const sx of [-1, 1]) { W.prop([{ g: gCyl(.05, .05, 1.9, 8, 1), t: [sx * 11.8, 1.9, -13.6], c: [.86, .68, .22] }, { g: gCyl(.2, .34, .42, 12, 1), t: [sx * 11.8, 2.5, -13.6], c: [.96, .92, .78] }, { g: gCyl(.2, .34, .42, 12, 1), t: [sx * 11.8, 2.5, -4.4], c: [.96, .92, .78] }]); }
+  // 掛畫（壁紙牆上）
+  const art = W.atlasAdd('paint', 192, 128, (g, w, h) => { g.fillStyle = '#7fb4d8'; g.fillRect(0, 0, w, h); g.fillStyle = '#d9c28a'; g.fillRect(0, h * .6, w, h * .4); g.fillStyle = '#6e8f5a'; g.beginPath(); g.moveTo(0, h * .6); g.lineTo(w * .3, h * .35); g.lineTo(w * .55, h * .6); g.fill(); g.strokeStyle = '#7a5a22'; g.lineWidth = 10; g.strokeRect(5, 5, w - 10, h - 10); });
+  W.wdecal(art, -13.2, NZ + 1.1, -9.6, NZ + 1.1, 1.9, 3.4, 'decal'); W.wdecal(art, 9.6, NZ + 1.1, 13.2, NZ + 1.1, 1.9, 3.4, 'decal');
+  keepClear.push([-21, -25, 21, 7.5], [-43, -35, -24, -22], [24, -35, 43, -22]);
+  // ---- 西廂／東廂：以 x=±24 的隔牆分出辦公室，每道隔牆開門 ----
+  const wallH = (x0, x1, z, gaps) => { let cur = x0; for (const [g0, g1] of gaps) { if (g0 > cur) solid('stripe', (cur + g0) / 2, z, g0 - cur, .5, WH); cur = g1; } if (x1 > cur) solid('stripe', (cur + x1) / 2, z, x1 - cur, .5, WH); };
+  const wallV = (x, z0, z1, gaps) => { let cur = z0; for (const [g0, g1] of gaps) { if (g0 > cur) solid('stripe', x, (cur + g0) / 2, .5, g0 - cur, WH); cur = g1; } if (z1 > cur) solid('stripe', x, (cur + z1) / 2, .5, z1 - cur, WH); };
+  for (const sg of [-1, 1]) {
+    const x0 = sg < 0 ? -HX : 24, x1 = sg < 0 ? -24 : HX, gx = sg * 33.5;
+    wallV(sg * 24, -HZ, 7.5, [[-30, -26], [-17, -13], [-4, 0]]);
+    for (const z of [-22, -10, 2]) wallH(x0, x1, z, [[gx - 2.2, gx + 2.2]]);
+    solid('wood', sg * 33.5, -16.5, 9, 1.2, 1.0); solid('wood', sg * 28.5, -6, 1.2, 4.5, 1.0); // 長會議桌／櫃台
+  }
+  // 南側大廳：兩排柱子與接待台
+  for (let x = -40; x <= 40; x += 8) for (const z of [14, 28]) solid('whitepaint', x, z, 1.2, 1.2, 4.6);
+  solid('wood', 0, 31, 8, 1.4, 1.1); solid('stone', 0, 20.5, 2.6, 2.6, .9); B('gold', 0, 20.5, 1.2, 1.2, 2.2, .9);
+  // ---- 家具填充：補足到熱血高校 1.1 倍（總數 ≈ 276，阻擋型 ≥ 141） ----
+  const cnt = () => W.boxes.filter(b => !b.nc).length, blk = () => W.boxes.filter(b => !b.nc && b.y1 - b.y0 >= 1.2).length; let guard = 0;
+  const zonesOK = (x, z) => !(Math.abs(x) < 24 && z > -26 && z < 7.5); // 橢圓辦公室內部不再放置
+  while ((cnt() < 276 || blk() < 141) && guard++ < 9000) {
+    const x = (rr() * 2 - 1) * (HX - 2.5), z = (rr() * 2 - 1) * (HZ - 2.5), t = rr(); if (!zonesOK(x, z)) continue;
+    if (t < .35) put('wood', x, z, 1.0 + rr() * .5, .6 + rr() * .4, 1.8 + rr() * .6, 0); // 檔案櫃
+    else if (t < .6) { if (put('stone', x, z, .9, .9, 1.4, 0)) B('grass', x, z, .7, .7, .5, 1.4, { collide: false }); } // 盆栽
+    else if (t < .8) put('whitepaint', x, z, .9, .9, 1.5 + rr() * 2.2, 0); // 雕像基座／立柱
+    else put('wood', x, z, 2.0, 1.0, .85, 0); // 辦公桌（低矮）
+  }
+}
+MAPS.oval = {
+  id: 'oval', indoor: true, noShadow: true, orbit: { c: [0, -6], r: 24, h: 24, ly: 1.4 }, preview: [0, -2], name: '白宮室內辦公室', sub: '橢圓辦公室 · 標準面積 86×70 m', desc: '以美國總統辦公室為藍本放大成對戰場：奶油金條紋壁紙的橢圓大廳、紅色窗簾與星條旗、決心桌、沙發、人字拼木地板與圓形地毯，外圍是西廂／東廂辦公室與柱廊大廳。障礙物為熱血高校的 1.1 倍。',
+  bounds: { x0: -43, x1: 43, z0: -35, z1: 35 }, flagPos: [[-35, -30], [35, -30]], zoneRed: [-42, -33.5, -28, -23], zoneBlue: [28, -33.5, 42, -23], faceRed: [-24, -10], faceBlue: [24, -10],
+  interior: [-43.5, -35.5, 43.5, 35.5], env: OVAL_ENV, night: false,
+  pickSpots: [[-12, -9], [12, -9], [0, -14], [0, -3], [-32, -16], [32, -16], [-32, -4], [32, -4], [-32, 12], [32, 12], [-18, 20], [18, 20], [0, 24], [-8, 32], [8, 32], [-30, 28], [30, 28], [-22, -30], [22, -30], [0, -30]],
+  build(W) { buildOval(W); }
+};
+
+/* ================= 地圖 7：大樓頂端（直升機坪屋頂＋台北天際線；面積同熱血高校，障礙物 1.1 倍） ================= */
+const ROOF_ENV = { sunCol: [.86, .82, .72], sky: [.50, .60, .78], gnd: [.42, .42, .42], fog: [.78, .86, .94], fogR: [110, 420], interior: [999, 999, 1000, 1000], intK: .7, intH: 7 };
+function buildRoof(W) {
+  const B = (...a) => W.box(...a), rr = rng(101), HX = 43, HZ = 35, rects = [];
+  const rect = (x, z, w, d) => rects.push([x - w / 2, z - d / 2, x + w / 2, z + d / 2]);
+  const free = (x, z, w, d, mg) => { for (const q of rects) if (x + w / 2 + mg > q[0] && x - w / 2 - mg < q[2] && z + d / 2 + mg > q[1] && z - d / 2 - mg < q[3]) return false; return true; };
+  const keep = [[-43, -12, -33, 12], [33, -12, 43, 12], [-19, -8, -1, 12]]; // 兩側出生區與直升機坪保持淨空
+  const inKeep = (x, z, w, d) => keep.some(q => x + w / 2 > q[0] && x - w / 2 < q[2] && z + d / 2 > q[1] && z - d / 2 < q[3]);
+  const put = (mat, x, z, w, d, h, y0, mg) => { if (inKeep(x, z, w, d) || !free(x, z, w, d, mg === undefined ? 1.5 : mg)) return false; B(mat, x, z, w, d, h, y0 || 0); rect(x, z, w, d); return true; };
+  const solid = (mat, x, z, w, d, h, y0) => { B(mat, x, z, w, d, h, y0 || 0); rect(x, z, w, d); };
+  // ---- 屋頂地面（灰色方磚）與直升機坪 ----
+  W.quadTop('rtile', -43.6, -35.6, 43.6, 35.6, 0); W.quadTop('rtile', -300, -300, 300, -35.6, -9); W.quadTop('rtile', -300, 35.6, 300, 300, -9);
+  W.quadTop('helipad', -18, -8, -2, 12, .015, true); for (const [x, z] of [[-18, -8], [-2, -8], [-18, 12], [-2, 12]]) B('glowY', x, z, .35, .35, .22, 0, { collide: false });
+  // ---- 女兒牆與欄杆（四周） ----
+  for (const [cx, cz, w, d] of [[0, -HZ - .35, 2 * HX + 1.4, .7], [0, HZ + .35, 2 * HX + 1.4, .7], [-HX - .35, 0, .7, 2 * HZ], [HX + .35, 0, .7, 2 * HZ]]) { B('concrete', cx, cz, w, d, 1.15, 0, { colH: 9 }); B('steel', cx, cz, w, d, .08, 1.15, { collide: false }); }
+  for (let x = -42; x <= 42; x += 3) for (const sz of [-1, 1]) B('steel', x, sz * (HZ + .3), .08, .08, 1.0, 1.15, { collide: false });
+  // ---- 主要結構：機房樓梯間（北側）、電梯機房、水塔、冷氣機組列、太陽能板 ----
+  solid('bldgA', 0, -29, 20, 10, 4.8); B('concrete', 0, -29, 20.6, 10.6, .3, 4.8, { collide: false }); solid('steel', 11.8, -26, 1.6, 5, 1.0); for (let k = 0; k < 6; k++) B('steel', 12.4 + k * .0, -28.5 + k * .8, 1.2, .5, .5 + k * .45, 0); // 外掛鐵梯
+  solid('bldgB', -30, -27, 8, 6, 3.6); solid('bldgB', 28, -26, 9, 7, 3.2);
+  for (const sx of [-1, 1]) { solid('tankM', sx * 14, 24, 4.4, 4.4, 3.2, 1.2); for (const [dx, dz] of [[-1.6, -1.6], [1.6, -1.6], [-1.6, 1.6], [1.6, 1.6]]) B('steel', sx * 14 + dx, 24 + dz, .3, .3, 1.2, 0); W.prop([{ g: gSphere(1.6, 12, 8, 0, Math.PI * 2, 0, 1.4), t: [sx * 14, 4.9, 24], c: [.35, .48, .7] }]); }
+  for (let k = 0; k < 5; k++) { put('acunit', 22 + (k % 3) * 3.2, 4 + Math.floor(k / 3) * 2.4, 2.6, 1.8, 1.4, 0, .6); put('acunit', -22 - (k % 3) * 3.2, -2 - Math.floor(k / 3) * 2.4, 2.6, 1.8, 1.4, 0, .6); }
+  for (let k = 0; k < 4; k++) { put('panel', -30 + k * 6, 29, 4.6, .3, 2.2, 0, 1.2); put('panel', 12 + k * 6, -4, 4.6, .3, 2.2, 0, 1.2); }
+  W.prop([{ g: gCyl(.12, .12, 18, 6, 1), t: [-30, 13, -27], c: [.55, .55, .6] }, { g: gCyl(.12, .12, 12, 6, 1), t: [28, 10, -26], c: [.55, .55, .6] }]); // 天線桿
+  // 長管線與天窗（可跳過、可閃躲）
+  for (const z of [-18, 20]) { B('steel', 0, z, 40, .5, .55, 0); rect(0, z, 40, .5); }
+  for (const x of [-34, 34]) { B('glass', x, 12, 4, 6, 1.0, 0); rect(x, 12, 4, 6); }
+  // ---- 隨機屋頂設備填充（通風口、配電箱、水泥墩）：總數 ≈ 276，阻擋型 ≥ 141 ----
+  const cnt = () => W.boxes.filter(b => !b.nc).length, blk = () => W.boxes.filter(b => !b.nc && b.y1 - b.y0 >= 1.2).length; let guard = 0;
+  while ((cnt() < 276 || blk() < 141) && guard++ < 9000) {
+    const x = (rr() * 2 - 1) * (HX - 2.5), z = (rr() * 2 - 1) * (HZ - 2.5), t = rr();
+    if (t < .3) put('acunit', x, z, 1.8 + rr() * .8, 1.2 + rr() * .6, 1.3 + rr() * .5, 0); // 冷氣室外機
+    else if (t < .55) put('concrete', x, z, 1.0 + rr(), 1.0 + rr(), 1.2 + rr() * 2.0, 0); // 水泥墩／通風井
+    else if (t < .75) put('cOrg', x, z, 1.2, 1.2, 1.3 + rr() * 1.2, 0); // 維修箱
+    else if (t < .9) put('steel', x, z, .7, .7, 1.4 + rr() * 1.5, 0); // 管線立柱
+    else put('wood', x, z, 3 + rr() * 2, 1.0, 1.0, 0); // 木棧板堆
+  }
+  // ---- 背景：台北天際線（玻璃帷幕摩天樓＋周邊大樓＋遠山，皆為裝飾） ----
+  const TX = 14, TZ = -135; B('bldgB', TX, TZ, 46, 34, 16, -9, { collide: false });
+  const segs = 8; for (let k = 0; k < segs; k++) { const w = 21 - k * .75, y0 = 7 + k * 19; B('towerG', TX, TZ, w, w, 19, y0, { collide: false }); B('gold', TX, TZ, w + 1.6, w + 1.6, .8, y0 + 18, { collide: false }); }
+  B('towerG', TX, TZ, 11, 11, 20, 7 + segs * 19, { collide: false }); B('steel', TX, TZ, 1.6, 1.6, 20, 7 + segs * 19 + 20, { collide: false });
+  for (let k = 0; k < 46; k++) { const a = -Math.PI * .95 + rr() * Math.PI * .9, r = 85 + rr() * 90, w = 8 + rr() * 16, h = 14 + rr() * 60; B(rr() < .5 ? 'bldgA' : (rr() < .5 ? 'bldgB' : 'towerG'), Math.cos(a) * r * 1.5, Math.sin(a) * r - 20, w, w * (.7 + rr() * .6), h, -9, { collide: false }); }
+  for (let k = 0; k < 14; k++) B('hillG', -220 + k * 34 + rr() * 12, -290 - rr() * 40, 60 + rr() * 30, 40, 34 + rr() * 30, -9, { collide: false });
+}
+MAPS.roof = {
+  id: 'roof', orbit: { c: [0, 0], r: 30, h: 16, ly: 1.5 }, preview: [-6, 6], name: '大樓頂端', sub: '直升機坪屋頂 · 標準面積 86×70 m', desc: '都會大樓頂端：灰色方磚屋面、白色 H 直升機坪、女兒牆與欄杆，周圍是水塔、冷氣機組、太陽能板與機房，遠方可以看到台北天際線的玻璃帷幕摩天樓與群山。障礙物為熱血高校的 1.1 倍。',
+  bounds: { x0: -43, x1: 43, z0: -35, z1: 35 }, flagPos: [[-38, 0], [38, 0]], zoneRed: [-42, -11, -34, 11], zoneBlue: [34, -11, 42, 11], faceRed: [-8, 2], faceBlue: [8, 2],
+  interior: [999, 999, 1000, 1000], env: ROOF_ENV, night: false,
+  pickSpots: [[-24, -24], [24, 24], [-24, 24], [24, -24], [0, -14], [0, 14], [-10, 2], [10, 2], [-30, 0], [30, 0], [-12, 28], [12, -28], [-38, 26], [38, -26], [-38, -26], [38, 26], [0, 0], [0, 30], [0, -33], [-20, -14]],
+  build(W) { buildRoof(W); }
 };
 
 /* ================= 英雄（依參考圖：白襯衫牛仔寬褲／黑T黑長褲／紫帽T工裝褲） ================= */
@@ -2196,6 +2369,10 @@ OUTFITS.push(
   { key: 'decoy', label: '影武者Decoy', sub: '', skill: { name: '影子突進', desc: '發動後生成外觀相同的替身往前奔跑，穿過障礙物直到碰牆停止；替身持有你的舊號碼，本體立即換上新號碼。冷卻 10 秒。' }, H: 1.78, skin: '#d9b894', hipX: .098, shX: .235, tz: .53, hair: '#111118', hair2: '#111118', female: false, gen: { top: '#23232b', top2: '#e0322e', pants: '#23232b', shoe: '#e0322e', hair: '#111118', style: 'short', acc: ['headband', 'scarftail', 'katana'], accC: '#e0322e' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'spring', label: '彈簧Spring', sub: '', skill: { name: '充能彈簧', desc: '【被動】移動速度提升至 1.2 倍；二段跳升級為三段跳，且每一段的跳躍高度再遞增 1.2 倍。' }, H: 1.7, skin: '#efcaa8', hipX: .095, shX: .23, tz: .53, hair: '#3a5bd9', hair2: '#3a5bd9', female: false, gen: { top: '#ff7a1a', top2: '#ffe14a', pants: '#3a5bd9', shoe: '#ffe14a', hair: '#3a5bd9', style: 'spiky', acc: ['antenna'], accC: '#c9d2e0' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'decade', label: '迪Decade', sub: '', skill: { name: '假面變身', desc: '發動後從「我的最愛」選一位英雄，施法 1 秒即可變身為該英雄（含其技能）。變身英雄被輸入擊殺時，外表會碎裂散落並變回迪、免除該次死亡；冷卻 30 秒從碎裂後才開始計算。' }, H: 1.8, skin: '#e6c6a4', hipX: .1, shX: .24, tz: .53, hair: '#e8eef5', hair2: '#e8eef5', female: false, gen: { top: '#262b38', top2: '#f4f6fa', pants: '#1b1f2a', shoe: '#9ad7ff', hair: '#e8eef5', style: 'short', acc: ['prism', 'cardsash'], accC: '#9ad7ff' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'soom', label: '瞬Soom', sub: '', skill: { name: '無影瞬蹤', desc: '發動後經 1 秒紫色施法，瞬間移動到離你最遠的敵方英雄背後 1 公尺處；20 秒內若進入該名敵人的視野，技能立即刷新。冷卻 20 秒。' }, H: 1.74, skin: '#e9cdb4', hipX: .095, shX: .225, tz: .53, hair: '#7a3cff', hair2: '#9a63ff', female: false, gen: { top: '#1d1033', top2: '#b57bff', pants: '#2a1a4a', shoe: '#b57bff', hair: '#7a3cff', style: 'bob', acc: ['wisps', 'portal'], accC: '#c9a0ff' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] }
 );
 const SKINPATCH = [.975, .975];
@@ -2452,6 +2629,8 @@ function buildOutfit(i) {
     if (ac.includes('pins')) for (let k = 0; k < 5; k++) { const a = -.9 + k * .45; hairP.push({ g: gBox(.008, .15, .008), t: [Math.sin(a) * hw * .75 + .02, hc + hh * .85, -hw * .3 + Math.cos(a) * hw * .3], r: [.25, 0, a * .7], c: accC }); hairP.push({ g: gSphere(.014, 6, 5), t: [Math.sin(a) * hw * .75 + .02 + Math.sin(a * .7) * .07, hc + hh * .85 + .075, -hw * .3 + Math.cos(a) * hw * .3], c: k % 2 ? [.9, .1, .15] : [.2, .2, .25] }); } // 巫毒娃娃：頭上的針
     if (ac.includes('qmark')) { hairP.push({ g: gCyl(.012, .012, .08, 8, 1), t: [0, hc + hh * 1.0, -hw * .4], c: accC }); hairP.push({ g: gSphere(.016, 6, 5), t: [0, hc + hh * .9, -hw * .4], c: accC }); for (let k = 0; k < 6; k++) { const a = -.4 + k * .65; hairP.push({ g: gSphere(.014, 6, 5), t: [Math.sin(a) * .045, hc + hh * 1.12 + Math.cos(a) * .045, -hw * .4], c: accC }); } } // 艾尼：問號
     if (ac.includes('antenna')) { for (let k = 0; k < 7; k++) hairP.push({ g: gCyl(.024, .024, .012, 10, 1), t: [Math.sin(k * 1.3) * .012, hc + hh * .8 + k * .026, -hw * .35], c: accC }); hairP.push({ g: gSphere(.04, 10, 8), t: [0, hc + hh * .8 + .2, -hw * .35], c: [1, .35, .1] }); } // 彈簧：彈簧天線
+    if (ac.includes('prism')) { hairP.push({ g: gCyl(.05, .05, .15, 3, 1), t: [0, hc + hh * .98, -hw * .45], r: [0, .5, 0], c: [.62, .86, 1] }); hairP.push({ g: gCyl(0, .05, .06, 3, 1), t: [0, hc + hh * .98 + .105, -hw * .45], r: [0, .5, 0], c: [.9, .97, 1] }); } // 迪：頭頂稜鏡
+    if (ac.includes('wisps')) for (let k = 0; k < 4; k++) { const a = k * 1.57 + .4; hairP.push({ g: gSphere(.024, 8, 6), t: [Math.sin(a) * hw * 1.5, hc + hh * (.2 + (k % 2) * .5), Math.cos(a) * hw * 1.5 - .02], c: accC }); } // 瞬：環繞的紫焰
     if (ac.includes('flower')) { hairP.push({ g: gSphere(.022, 8, 6), t: [hw * .9, hc + hh * .35, hw * .5], c: accC }); hairP.push({ g: gSphere(.01, 6, 5), t: [hw * .9, hc + hh * .35, hw * .5 + .018], c: [1, .9, .3] }); }
   }
   const hairG = mergeGeos(hairP);
@@ -2586,6 +2765,8 @@ function buildOutfit(i) {
     if (ac.includes('wings')) for (const sg of [-1, 1]) { ex.push({ g: gBox(.04, .5, .2), t: [sg * .17, shY - .12, -.2], r: [.25, 0, sg * .45], c: [1, 1, 1] }); ex.push({ g: gBox(.03, .34, .16), t: [sg * .27, shY - .28, -.21], r: [.3, 0, sg * .6], c: [.97, .95, .85] }); }
     if (ac.includes('scarftail')) { ex.push({ g: gBox(.09, .5, .02), t: [.1, shY - .3, -.17], r: [.2, 0, .15], c: accC }); ex.push({ g: gBox(.08, .38, .02), t: [-.04, shY - .26, -.18], r: [.25, 0, -.1], c: shade(accC, .8) }); }
     if (ac.includes('katana')) { ex.push({ g: gBox(.04, .9, .03), t: [.02, shY - .28, -.2], r: [0, 0, .75], c: [.78, .8, .86] }); ex.push({ g: gBox(.05, .16, .035), t: [.27, shY + .12, -.2], r: [0, 0, .75], c: [.12, .08, .08] }); }
+    if (ac.includes('cardsash')) { const cc = [[1, .35, .4], [1, .75, .25], [.45, .85, .4], [.3, .75, 1], [.6, .45, 1], [1, .5, .8]]; for (let k = 0; k < 6; k++) { const t = (k - 2.5) / 2.5; ex.push({ g: gBox(.07, .1, .02), t: [t * .15, shY - .03 - (t + 1) * .16, .2], r: [0, 0, -.5], c: cc[k] }); } ex.push({ g: gBox(.03, .52, .02), t: [0, shY - .22, .205], r: [0, 0, -.5], c: [.9, .92, .96] }); } // 迪：胸前六張卡（對應「我的最愛」六個名額）
+    if (ac.includes('portal')) for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6; ex.push({ g: gSphere(.028, 6, 5), t: [Math.cos(a) * .3, shY - .18 + Math.sin(a) * .3, -.27], c: accC }); } // 瞬：背後的傳送環
     if (ac.includes('cane')) { ex.push({ g: gCyl(.016, .016, .85, 8, 1), t: [.3, .43, .16], c: [.42, .27, .15] }); ex.push({ g: gSphere(.035, 8, 6), t: [.3, .86, .16], c: [.9, .72, .2] }); }
     if (ac.includes('camera')) { ex.push({ g: gBox(.15, .1, .07), t: [0, shY - .22, .2], c: [.08, .08, .1] }); ex.push({ g: gCyl(.034, .038, .05, 12, 1), t: [0, shY - .22, .245], r: [PI / 2, 0, 0], c: [.7, .7, .74] }); ex.push({ g: gBox(.06, .012, .03), t: [.04, shY - .165, .2], c: [.85, .1, .1] }); }
     if (ac.includes('dovestaff')) { ex.push({ g: gCyl(.018, .018, 1.55, 8, 1), t: [-.34, .78, .12], c: [.62, .45, .25] }); ex.push({ g: gSphere(.05, 8, 6), t: [-.34, 1.58, .12], s: [1.2, .9, 1.4], c: [1, 1, 1] }); ex.push({ g: gBox(.14, .02, .06), t: [-.34, 1.6, .12], r: [0, 0, .3], c: [.95, .95, .95] }); }
@@ -2753,7 +2934,7 @@ function spawnActor(a, fixed) {
   if (a.remote) { a.rsC = (a.rsC || 0) + 1; a.net = null; }
   { const nog = GKEY_HEROES.includes(a.av.outfitIdx); if (a.slots) a.slots.noG = nog; if (a.isPlayer) G.slots.noG = nog; if (nog && a.isPlayer) G.slots[1] = null; }
   if (G.mode === 'hunt' && !G.multi && (a.isPlayer || a.remote)) { a.number = ''; a.fake = null; drawPlate(a); } else assignNumber(a);
-  a.miniT = 0; a.chamT = 0; a.fdT = 0; a.vdT = 0; a.vdHold = 0; if (a.vdKeep && !G.actors.some(o => o !== a && o.number === a.vdKeep)) { a.number = a.vdKeep; drawPlate(a); a.vdHold = 10; } a.vdKeep = null; a.vdShowAt = a.vdKiller ? G.time + 3 : undefined;
+  if (a.decForm != null) { a.decForm = null; setForm(a, DECADE_IDX); } a.miniT = 0; a.chamT = 0; a.fdT = 0; a.vdT = 0; a.vdHold = 0; if (a.vdKeep && !G.actors.some(o => o !== a && o.number === a.vdKeep)) { a.number = a.vdKeep; drawPlate(a); a.vdHold = 10; } a.vdKeep = null; a.vdShowAt = a.vdKiller ? G.time + 3 : undefined;
   if (!a.isPlayer && !a.remote) {
     a.slots = [null, null]; a.mode = 'roam'; a.threatT = 0; a.reader = null;
   }
@@ -2794,18 +2975,18 @@ function spawnAll() {
   for (let i = 0; i < n; i++) spawnActor(A[i], [pts[i][0], pts[i][1], yawFor(i)[0], pts[i][2] | 0]);
 }
 /* ---------- 英雄技能 ---------- */
-const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null, 'steal', 'dack', 'nox', 'charge', null, null, 'rel', 'revert', 'gis', null, 'neg', 'quick', 'ange', null, 'peace', null, null, 'ward', null, null, 'frost', 'beacon', 'drum', 'guard', 'vocal', null, null, null, null, 'medi', 'mirror', 'cham', 'lian', 'mini', 'voodoo', 'enigma', 'decoy', null];
+const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null, 'steal', 'dack', 'nox', 'charge', null, null, 'rel', 'revert', 'gis', null, 'neg', 'quick', 'ange', null, 'peace', null, null, 'ward', null, null, 'frost', 'beacon', 'drum', 'guard', 'vocal', null, null, null, null, 'medi', 'mirror', 'cham', 'lian', 'mini', 'voodoo', 'enigma', 'decoy', null, 'decade', 'soom'];
 const PASSIVE_IDX = [3, 5, 8, 11, 12, 13, 19, 20, 24, 28, 30, 31, 33, 34, 40, 41, 52];
 const GKEY_HEROES = [18, 26, 27]; // 沒有 G 道具格、G 鍵改為技能鍵的英雄
-const HERO_CLASSES = [['先手型', '#ff9a3c', [39, 1, 11, 18, 24, 16, 17, 30, 31, 34, 40, 42, 43]], ['輔助型', '#4fd38a', [29, 26, 27, 32, 33, 35, 36, 37, 38, 41, 44]], ['偽裝型', '#b48cff', [25, 21, 4, 22, 45, 46, 47, 48, 50, 51]], ['突進型', '#ff5a5a', [9, 19, 8, 52]], ['把戲型', '#ffd24a', [0, 2, 6, 10, 15, 20, 49]], ['進攻型', '#4fb0ff', [7, 23, 12, 5, 3, 13, 28]]]; // 英雄分類
-const HERO_TIERS = [['S 級', '#ff4d6d', [15, 39]], ['A 級', '#ffb020', [18, 17, 4, 21, 0, 6, 10, 7, 23, 28, 42, 43, 51]], ['B 級', '#4fb0ff', [16, 29, 26, 27, 32, 35, 36, 25, 9, 19, 8, 2, 12, 13, 40, 41, 47, 48, 49]], ['C 級', '#9aa3b2', [1, 11, 24, 30, 31, 34, 33, 37, 38, 22, 20, 5, 3, 44, 45, 46, 50, 52]]]; // 英雄等級
-const CHANT = { cham: 1, revert: .5, gis: 1, neg: 1.5 }; // 吟唱秒數
+const HERO_CLASSES = [['先手型', '#ff9a3c', [39, 1, 11, 18, 24, 16, 17, 30, 31, 34, 40, 42, 43, 54]], ['輔助型', '#4fd38a', [29, 26, 27, 32, 33, 35, 36, 37, 38, 41, 44]], ['偽裝型', '#b48cff', [25, 21, 4, 22, 45, 46, 47, 48, 50, 51]], ['突進型', '#ff5a5a', [9, 19, 8, 52]], ['把戲型', '#ffd24a', [0, 2, 6, 10, 15, 20, 49, 53]], ['進攻型', '#4fb0ff', [7, 23, 12, 5, 3, 13, 28]]]; // 英雄分類
+const HERO_TIERS = [['S 級', '#ff4d6d', [15, 39, 53]], ['A 級', '#ffb020', [18, 17, 4, 21, 0, 6, 10, 7, 23, 28, 42, 43, 51]], ['B 級', '#4fb0ff', [16, 29, 26, 27, 32, 35, 36, 25, 9, 19, 8, 2, 12, 13, 40, 41, 47, 48, 49, 54]], ['C 級', '#9aa3b2', [1, 11, 24, 30, 31, 34, 33, 37, 38, 22, 20, 5, 3, 44, 45, 46, 50, 52]]]; // 英雄等級
+const CHANT = { soom: 1, cham: 1, revert: .5, gis: 1, neg: 1.5 }; // 吟唱秒數
 const isOut = (a, i) => skOn() && a.av && (a.av.outfitIdx === i || a.passIdx === i); // 對應 OUTFITS：蘇蘇／艾迪／艾伯特／蘇米(被動)／艾瑞克／麥克(被動)
 const skOn = () => G.skillsOn !== false && !(G.sk && G.sk.ban && G.sk.ban.t > 0); // 停戰宣告期間：全場技能停用
 const isSumi = a => isOut(a, 3);
 const jumpMul = a => isSumi(a) ? 1.285 : 1; // 高度 1.65 倍 → 初速 √1.65 倍
 const speedMul = a => isOut(a, 5) ? 2.5 : isOut(a, 13) ? .7 : isOut(a, 52) ? 1.2 : 1;
-const SKILLS = { medi: { name: '暫時的休止符', cd: 15, ico: '🕊️' }, mirror: { name: '鏡像混亂', cd: 15, ico: '🪞' }, cham: { name: '半透明視線', cd: 15, ico: '🦎' }, lian: { name: '死胡同', cd: 20, ico: '⚰️' }, mini: { name: '超級縮小', cd: 20, ico: '🔬' }, voodoo: { name: '巫毒反殺', cd: 20, ico: '🪆' }, enigma: { name: '亂碼術', cd: 18, ico: '❓' }, decoy: { name: '影子突進', cd: 10, ico: '👥' }, vocal: { name: '聲波咒術', cd: 20, ico: '🎤' }, ward: { name: '警戒結界', cd: 20, ico: '☯️' }, frost: { name: '冰封領域', cd: 20, ico: '❄️' }, beacon: { name: '通天視野', cd: 15, ico: '🔴' }, drum: { name: '戰鼓鼓舞', cd: 15, ico: '🥁' }, guard: { name: '替身契約', cd: 15, ico: '🤝' }, revert: { name: '逆流術士', cd: 0, ico: '⏪' }, gis: { name: '連號甜心', cd: 50, ico: '💖' }, neg: { name: '負領域展開', cd: 20, ico: '🎞️' }, quick: { name: '瞬影瞬行', cd: .5, ico: '🏃🏻‍♂️‍➡️' }, ange: { name: '天使之息', cd: 3, ico: '🧚🏻‍♀️' }, peace: { name: '停戰宣告', cd: 15, ico: '🕊️' }, rel: { name: '相對論', cd: 30, ico: '🔀' }, charge: { name: '衝鋒陷陣', cd: 10, ico: '🏃🏻' }, steal: { name: '命運拷貝', cd: 1, ico: '🔮' }, dack: { name: '生化操作', cd: 15, ico: '🧪' }, nox: { name: '夜間戰術', cd: 30, ico: '🌑' }, ink: { name: '烏賊戲法', cd: 25, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 20, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 20, ico: '🐱' }, mind: { name: '心靈控制', cd: 20, ico: '🌀' }, cloak: { name: '幻影易容', cd: 25, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 20, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 15, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 25, ico: '⚡' } };
+const SKILLS = { decade: { name: '假面變身', cd: 30, ico: '🎭' }, soom: { name: '無影瞬蹤', cd: 20, ico: '🌀' }, medi: { name: '暫時的休止符', cd: 15, ico: '🕊️' }, mirror: { name: '鏡像混亂', cd: 15, ico: '🪞' }, cham: { name: '半透明視線', cd: 15, ico: '🦎' }, lian: { name: '死胡同', cd: 20, ico: '⚰️' }, mini: { name: '超級縮小', cd: 20, ico: '🔬' }, voodoo: { name: '巫毒反殺', cd: 20, ico: '🪆' }, enigma: { name: '亂碼術', cd: 18, ico: '❓' }, decoy: { name: '影子突進', cd: 10, ico: '👥' }, vocal: { name: '聲波咒術', cd: 20, ico: '🎤' }, ward: { name: '警戒結界', cd: 20, ico: '☯️' }, frost: { name: '冰封領域', cd: 20, ico: '❄️' }, beacon: { name: '通天視野', cd: 15, ico: '🔴' }, drum: { name: '戰鼓鼓舞', cd: 15, ico: '🥁' }, guard: { name: '替身契約', cd: 15, ico: '🤝' }, revert: { name: '逆流術士', cd: 0, ico: '⏪' }, gis: { name: '連號甜心', cd: 50, ico: '💖' }, neg: { name: '負領域展開', cd: 20, ico: '🎞️' }, quick: { name: '瞬影瞬行', cd: .5, ico: '🏃🏻‍♂️‍➡️' }, ange: { name: '天使之息', cd: 3, ico: '🧚🏻‍♀️' }, peace: { name: '停戰宣告', cd: 15, ico: '🕊️' }, rel: { name: '相對論', cd: 30, ico: '🔀' }, charge: { name: '衝鋒陷陣', cd: 10, ico: '🏃🏻' }, steal: { name: '命運拷貝', cd: 1, ico: '🔮' }, dack: { name: '生化操作', cd: 15, ico: '🧪' }, nox: { name: '夜間戰術', cd: 30, ico: '🌑' }, ink: { name: '烏賊戲法', cd: 25, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 20, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 20, ico: '🐱' }, mind: { name: '心靈控制', cd: 20, ico: '🌀' }, cloak: { name: '幻影易容', cd: 25, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 20, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 15, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 25, ico: '⚡' } };
 const DACK_T = 21; // 濃霧：1 秒戴鏡 + 20 秒噴發
 const immune = a => a.alive && ((isOut(a, 11) && (a.cleanW || 0) > 0) || (a.imm || 0) > 0); // 蕾西亞淨化窗口：無效化一切攻擊與技能
 const REL_WARN = 2, REL_DUR = 20; // 相對論：2 秒警笛 + 20 秒左右互換
@@ -2864,7 +3045,7 @@ function gisStart(a) {
   for (const o of G.actors) { if (!o.number) continue; if (o.realNum === undefined) o.realNum = o.number; const d = pool.length ? pool.pop() : randi(0, 9); o.number = String(d).repeat(o.realNum.length); drawPlate(o); }
 }
 function gisEnd() { if (G.sk.gis) G.sk.gis.t = 0; for (const o of G.actors) if (o.realNum !== undefined) { o.number = o.realNum; o.realNum = undefined; drawPlate(o); } }
-function finishChant(a, k) {
+function finishChant(a, k, ch) {
   if (k === 'revert') {
     const r = a.revert; a.revert = null; a.windowT = 0; if (!r || !r.who || !r.who.alive) { if (a.isPlayer) UI.msg('目標已不在場上，逆流失敗', 'bad'); return; }
     if (G.actors.some(o => o !== r.who && (o.number === r.num || o.realNum === r.num))) { if (a.isPlayer) UI.msg('該組號碼已被他人使用，逆流失敗', 'bad'); return; }
@@ -2872,6 +3053,8 @@ function finishChant(a, k) {
     for (const o of G.actors) { if (o.read) o.read[r.who.id] = 0; if (o.typing && o.typing.target === r.who) o.typing = null; }
     skMsg(a, '發動【逆流術士】！' + r.who.name + ' 的號碼被回溯成舊的一組');
   }
+  else if (k === 'dec') decadeBecome(a, ch && ch.idx);
+  else if (k === 'soom') soomWarp(a);
   else if (k === 'cham') { a.chamT = 6; skMsg(a, '發動【半透明視線】！身形變得半透明，8 公尺外看不清號碼 6 秒'); }
   else if (k === 'gis') { gisStart(a); skMsg(a, '發動【連號甜心】！全場號碼變成連號 4 秒'); }
   else if (k === 'neg') { G.sk.neg = { t: 7, by: a }; skMsg(a, '發動【負領域展開】！全場視角負片化 7 秒'); }
@@ -3015,6 +3198,39 @@ function pracChangeHero(idx) {
   const p = G.player; if (!p) return; S.outfit = idx; p.outfit = idx; p.av = createAvatar(idx); resetSkillState(p); p.skCd = 0; p.fake = null; p.chg = null; p.chant = null;
   const nog = GKEY_HEROES.includes(idx); G.slots.noG = nog; if (nog) G.slots[1] = null; G.typed = ''; drawPlate(p); UI.dirty = true; saveS();
 }
+
+/* ===== 迪Decade：假面變身；瞬Soom：無影瞬蹤 ===== */
+const DECADE_IDX = OUTFITS.findIndex(o => o.key === 'decade');
+function startDecade(a, idx) {
+  if (!skOn() || !a.alive || a.chant || a.decForm != null || (a.skCd || 0) > 0 || a.av.outfitIdx !== DECADE_IDX) return false;
+  idx |= 0; if (idx === DECADE_IDX || !OUTFITS[idx] || OUTFITS[idx].hidden) return false;
+  a.chant = { k: 'dec', t: 1, idx }; skMsg(a, '發動【假面變身】！準備變身為 ' + OUTFITS[idx].label); puffFx(a); if (a.isPlayer || a === G.view) Sfx.henshin(); return true;
+}
+function setForm(a, idx) { a.av = createAvatar(idx); a.outfit = idx; const nog = GKEY_HEROES.includes(idx); if (a.slots) a.slots.noG = nog; if (a.isPlayer) { G.slots.noG = nog; if (nog) G.slots[1] = null; UI.dirty = true; } }
+function decadeBecome(a, idx) {
+  if (!a.alive || !OUTFITS[idx]) return; setForm(a, idx); a.decForm = idx; resetSkillState(a); a.decForm = idx; a.skCd = 0; puffFx(a); puffFx(a); skMsg(a, '變身完成：【' + OUTFITS[idx].label + '】！');
+}
+function decadeShatter(v, k) {
+  const O = v.av.outfit, cols = [O.gen ? O.gen.top : '#888', O.gen ? O.gen.top2 : '#ccc', O.gen ? O.gen.pants : '#444', O.skin || '#ddd']; const rgb2 = h => [parseInt(h.slice(1, 3), 16) / 255, parseInt(h.slice(3, 5), 16) / 255, parseInt(h.slice(5, 7), 16) / 255];
+  for (let i = 0; i < 18; i++) G.fx.push({ k: 'shard', x: v.x, y: v.y + .3 + rand(0, 1.5), z: v.z, vx: rand(-3, 3), vz: rand(-3, 3), vy: rand(1.5, 5), t: 0, d: 3.2, col: rgb2(cols[i % cols.length] || '#888'), g: v.y });
+  const lbl = O.label; setForm(v, DECADE_IDX); v.decForm = null; resetSkillState(v); v.skCd = 30; v.protect = Math.max(v.protect, 1.2); assignNumber(v);
+  for (const o of G.actors) { if (o.read) o.read[v.id] = 0; if (o.typing && o.typing.target === v) o.typing = null; }
+  const m = v.name + ' 的變身英雄【' + lbl + '】被擊碎！變回迪並免除死亡（冷卻 30 秒）'; UI.msg(m, 'item'); netMsg(m, 'item'); if (v.isPlayer || k.isPlayer) Sfx.glass && Sfx.glass();
+}
+function soomWarp(a) {
+  const foes = G.actors.filter(o => o !== a && o.alive && enemyOf(a, o)); if (!foes.length) { a.skCd = 3; if (a.isPlayer) UI.msg('場上沒有敵人可瞬移', 'bad'); return; }
+  let t = null, bd = -1; for (const o of foes) { const d = Math.hypot(o.x - a.x, o.z - a.z); if (d > bd) { bd = d; t = o; } }
+  const f = FWD(t.yaw); let px = t.x - f[0], pz = t.z - f[1];
+  for (const d of [1, .8, .6, 1.3, .45]) { const q = { x: t.x - f[0] * d, y: t.y, z: t.z - f[1] * d }; collideH(q); if (Math.hypot(q.x - t.x, q.z - t.z) > .3) { px = q.x; pz = q.z; break; } }
+  puffFx(a); a.x = px; a.z = pz; a.y = t.y; a.vx = a.vz = a.vy = 0; a.yaw = t.yaw; puffFx(a); a.soomT = 20; a.soomTgt = t;
+  if (a.isPlayer) { G.typed = ''; UI.dirty = true; Sfx.tone(300, .25, 'sine', .15, 900); } else if (a.remote) { a.tpq = { id: (a.tpq ? a.tpq.id : 0) + 1, x: px, y: a.y, z: pz, yaw: a.yaw }; a.net = null; }
+  skMsg(a, '【無影瞬蹤】瞬移到 ' + t.name + ' 背後！');
+}
+function soomTick(a, dt) {
+  if (!(a.soomT > 0)) return; a.soomT -= dt; const t = a.soomTgt; if (!t || !t.alive || !a.alive) { a.soomT = 0; return; }
+  const dx = a.x - t.x, dz = a.z - t.z, d = Math.hypot(dx, dz) || 1, f = FWD(t.yaw);
+  if (d < 40 && (f[0] * dx + f[1] * dz) / d > .55 && los(t.x, t.y + 1.62, t.z, a.x, a.y + 1.5, a.z)) { a.skCd = 0; a.soomT = 0; skMsg(a, '【無影瞬蹤】進入 ' + t.name + ' 的視野，技能立即刷新！'); }
+}
 function castSkill(a) {
   if (!skOn() || !a || !a.alive || G.state !== 'playing' || G.countdown > 0) return false;
   const base = SKILL_OF[a.av.outfitIdx]; if (!base) return false;
@@ -3024,6 +3240,7 @@ function castSkill(a) {
   }
   if (a.ctrlT > 0 && isStunBy(a.ctrlBy)) return false;
   if (SKILL_OF[a.av.outfitIdx] === 'vocal') return false; // 聲波咒術由「按住 R」的語音模組處理
+  if (base === 'decade') { if ((a.skCd || 0) > 0 || a.chant) return false; if (a.isPlayer || a.remote) return false; const pool = VIS_OUTFITS.filter(i => i !== DECADE_IDX && !OUTFITS[i].hidden && i !== 39); return startDecade(a, pick(pool)); }
   if (base === 'revert') { if (!(a.windowT > 0) || a.chant || !a.revert) return false; }
   else if (a.chant) return false;
   if ((a.skCd || 0) > 0) return false;
@@ -3048,6 +3265,7 @@ function runSkill(a, k, useCd) {
   else if (k === 'quick') startCharge(a, true, 'quick');
   else if (k === 'ange') angeCast(a);
   else if (k === 'ward') { a.wdT = 10; a.wd = true; skMsg(a, '發動【警戒結界】！10 秒內範圍內的敵人被壓制'); }
+  else if (k === 'soom') { skMsg(a, '發動【無影瞬蹤】！紫色光芒匯聚中…'); }
   else if (k === 'medi') { G.zones.push({ k: 'peace', x: a.x, z: a.z, r: 6, t: 6, by: a }); skMsg(a, '發動【暫時的休止符】！6 公尺內的所有人 6 秒內無法互相攻擊'); }
   else if (k === 'mirror') { cloneSpawn(a, 'mirror'); skMsg(a, '發動【鏡像混亂】！留下一個同號碼的分身，本體換上新號碼'); }
   else if (k === 'decoy') { cloneSpawn(a, 'decoy'); skMsg(a, '發動【影子突進】！替身朝前方奔去，本體換上新號碼'); }
@@ -3065,7 +3283,7 @@ function runSkill(a, k, useCd) {
   else { a.shieldT = 6; if (a.isPlayer) UI.msg('護盾展開！6 秒內擋下一次攻擊', 'item'); }
   (a.kp || (a.kp = {})).R = G.time + .5; if (a.isPlayer || a === G.view) Sfx.skill(); return true;
 }
-function castSkillPlayer() { const p = G.player; if (!p || G.demo || G.state !== 'playing') return; if (G.netClient) { if ((p.skCd || 0) <= 0 && p.alive && p.ctrlT <= 0) { netAct(['s']); p.skCd = 0.01; if (p.av.outfitIdx === 18) startCharge(p, false, 'derek'); else if (p.av.outfitIdx === 26) startCharge(p, false, 'quick'); } return; } castSkill(p); UI.dirty = true; }
+function castSkillPlayer() { const p = G.player; if (!p || G.demo || G.state !== 'playing') return; if (p.av.outfitIdx === DECADE_IDX && skOn()) { if ((p.skCd || 0) > 0 || !p.alive || p.chant || p.ctrlT > 0) { if ((p.skCd || 0) > 0 && p.alive) UI.msg('假面變身冷卻中：' + Math.ceil(p.skCd) + ' 秒', 'bad'); return; } UI.openDecade(); return; } if (G.netClient) { if ((p.skCd || 0) <= 0 && p.alive && p.ctrlT <= 0) { netAct(['s']); p.skCd = 0.01; if (p.av.outfitIdx === 18) startCharge(p, false, 'derek'); else if (p.av.outfitIdx === 26) startCharge(p, false, 'quick'); } return; } castSkill(p); UI.dirty = true; }
 function skTick(dt) {
   if (G.sk.ink.t > 0) G.sk.ink.t -= dt; if (G.sk.eagle.t > 0) G.sk.eagle.t -= dt; if (G.sk.quake.t > 0) G.sk.quake.t -= dt;
   if (G.sk.night.by) { G.sk.night.e += dt; if (G.sk.night.e >= 31.5 || !G.sk.night.by.alive) G.sk.night.by = null; }
@@ -3078,14 +3296,14 @@ function skTick(dt) {
     if (isOut(a, 11) && a.alive) { a.cleanT = (a.cleanT ?? 2) - dt; if (a.cleanT <= 0) { a.cleanT = 2; a.cleanW = .5; cleanse(a); } else if ((a.cleanW || 0) > 0) { a.cleanW -= dt; cleanse(a, true); } } else a.cleanW = 0;
     if (a.chg) chargeTick(a, dt);
     if (a.frz > 0) a.frz -= dt; if ((a.windowT || 0) > 0) a.windowT -= dt;
-    if (a.miniT > 0) a.miniT -= dt; if (a.chamT > 0) a.chamT -= dt; if (a.fdT > 0) a.fdT -= dt; if (a.vdT > 0) a.vdT -= dt; if (a.enT > 0) { a.enT -= dt; a.enTick -= dt; if (a.enTick <= 0 || a.enT <= 0) { a.enTick = .5; const sh = (a.enT > 0 && a.alive && Math.random() < .5) ? a.enFake : null; if (sh !== a.enShow) { a.enShow = sh; drawPlate(a); } } } else if (a.enShow) { a.enShow = null; drawPlate(a); } if (a.vdHold > 0) { a.vdHold -= dt; if (a.vdHold <= 0) { a.vdHold = 0; if (a.alive) assignNumber(a); } } if (a.vdShowAt !== undefined && a.alive && G.time >= a.vdShowAt) vdShow(a);
+    soomTick(a, dt); if (a.miniT > 0) a.miniT -= dt; if (a.chamT > 0) a.chamT -= dt; if (a.fdT > 0) a.fdT -= dt; if (a.vdT > 0) a.vdT -= dt; if (a.enT > 0) { a.enT -= dt; a.enTick -= dt; if (a.enTick <= 0 || a.enT <= 0) { a.enTick = .5; const sh = (a.enT > 0 && a.alive && Math.random() < .5) ? a.enFake : null; if (sh !== a.enShow) { a.enShow = sh; drawPlate(a); } } } else if (a.enShow) { a.enShow = null; drawPlate(a); } if (a.vdHold > 0) { a.vdHold -= dt; if (a.vdHold <= 0) { a.vdHold = 0; if (a.alive) assignNumber(a); } } if (a.vdShowAt !== undefined && a.alive && G.time >= a.vdShowAt) vdShow(a);
     if (a.wdT > 0) { a.wdT -= dt; a.wd = a.wdT > 0 && a.alive; } else a.wd = false; if (a.drumT > 0) a.drumT -= dt; if (a.freeEn > 0) a.freeEn -= dt;
     if (G.pracCdr && a.isPlayer) a.skCd = 0;
     a.wdHit = wardenAffects(a); a.slowM = a.wdHit ? .5 : 1; a.spdM = a.slowM * (a.drumT > 0 ? 1.45 : 1) * (a.miniT > 0 ? 1.7 : 1); a.icy = iceAffects(a);
     if (isOut(a, 30) && a.alive) { const mv = Math.hypot(a.x - (a._gx ?? a.x), a.z - (a._gz ?? a.z)) / Math.max(dt, .001) > .5; a._gx = a.x; a._gz = a.z; a.stillT = mv ? 0 : (a.stillT || 0) + dt; a.gdSmall = a.stillT > 1.5; } else a.gdSmall = false;
     if (isOut(a, 34) && a.alive) { if (!a.amulet) { a.amT = (a.amT || 0) + dt; if (a.amT >= 30) { a.amulet = true; a.amT = 30; if (a.isPlayer) UI.msg('號碼護符已生成！', 'item'); } } } else if (!isOut(a, 34)) a.amulet = false;
     if ((a.imm || 0) > 0) { a.imm -= dt; cleanse(a, true); }
-    if (a.chant) { if (!a.alive) a.chant = null; else { a.chant.t -= dt; if (a.chant.t <= 0) { const kk = a.chant.k; a.chant = null; finishChant(a, kk); } } }
+    if (a.chant) { if (!a.alive) a.chant = null; else { a.chant.t -= dt; if (a.chant.t <= 0) { const ch = a.chant, kk = ch.k; a.chant = null; finishChant(a, kk, ch); } } }
     if (a.fk) { a.fk.t -= dt; if (a.fk.t <= 0) { const f = a.fk; a.fk = null; if (a.isPlayer) { G.typed = ''; UI.dirty = true; } if (a.alive && f.target.alive && f.target.number === f.num && enemyOf(a, f.target) && f.target.protect <= 0) eliminate(a, f.target); else if (a.isPlayer) UI.msg('致命相機：目標已移動，未能擊殺', 'bad'); } }
     if (isOut(a, 19) && a.alive) {
       if (a.wkPre > 0) { a.wkPre -= dt; if (a.wkPre <= 0) { a.wkT = 6; if (a.isPlayer) UI.msg('如來隱身！6 秒', 'item'); } }
@@ -3318,6 +3536,7 @@ function eliminate(k, v) {
   if (k !== v && v.alive && skOn() && isOut(v, 34) && v.amulet) { G.elimFail = '對方的「號碼護符」抵擋了攻擊'; v.amulet = false; v.amT = 0; blockHit(k, v, '號碼護符'); return; }
   if (k !== v && v.alive && v.shieldT > 0) { G.elimFail = '對方的護盾擋下了攻擊'; blockHit(k, v); return; }
   if (!v.alive || v.protect > 0) { G.elimFail = !v.alive ? '對方已被其他人擊殺' : '對方仍在重生保護中'; return; }
+  if (k !== v && v.decForm != null) { decadeShatter(v, k); return; }
   G.killSeq = (G.killSeq || 0) + 1; v.alive = false; v.deaths++; v.deadT = 0; v.respawnT = 3.2; v.killedBy = k; v.typing = null; v.lure = null;
   if (G.mode === 'arena' && (v.isPlayer || v.remote)) v.respawnT = 10 + 2 * (Math.max(1, G.arena ? G.arena.stage : 1) - 1);
   if (G.mode === 'kof') { v.kout++; v.kleft = v.kleft.filter(i => i !== v.kcur); v.respawnT = 1e9; if (v.kout < 5) { v.kw = (v.isPlayer || v.remote) ? 9999 : 10; v.kbot = rand(2.5, 4.5); } }
@@ -3647,7 +3866,7 @@ function arenaTick(dt) {
   else if (A.ph === 3) { if (A.t <= 0) { A.stage++; A.ph = 1; A.t = 1.8; } }
 }
 /* ---------- KOF 大賽 ---------- */
-function resetSkillState(a) { a.skCd = 0; a.shieldT = 0; a.cloak = false; a.invis = false; a.fake = null; a.fakeT = 0; a.fakeOf = null; a.dackE = -1; a.armed = false; a.stolen = null; a.passIdx = -1; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2; a.cleanW = 0; a.chg = null; a.wkT = 0; a.wkPre = 0; a.say = null; a.blind = 0; a.miniT = 0; a.chamT = 0; a.fdT = 0; a.vdT = 0; a.enT = 0; a.enShow = null; a.vdKeep = null; a.vdHold = 0; a.vdKiller = null; a.vdShowAt = undefined; }
+function resetSkillState(a) { a.skCd = 0; a.shieldT = 0; a.cloak = false; a.invis = false; a.fake = null; a.fakeT = 0; a.fakeOf = null; a.dackE = -1; a.armed = false; a.stolen = null; a.passIdx = -1; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2; a.cleanW = 0; a.chg = null; a.wkT = 0; a.wkPre = 0; a.say = null; a.blind = 0; a.miniT = 0; a.chamT = 0; a.fdT = 0; a.vdT = 0; a.enT = 0; a.enShow = null; a.soomT = 0; a.vdKeep = null; a.vdHold = 0; a.vdKiller = null; a.vdShowAt = undefined; a.decForm = null; }
 const kofVisible = (o, x, z, y) => { if (!o || !o.alive) return false; const dx = x - o.x, dz = z - o.z, d = Math.hypot(dx, dz); if (d > 75) return false; const f = FWD(o.yaw); if ((dx * f[0] + dz * f[1]) / (d || 1) < Math.cos(.95)) return false; return los(o.x, o.y + 1.6, o.z, x, y + 1.6, z); };
 function kofSpawnPos(a, o) {
   let best = null; for (let k = 0; k < 18; k++) { const p = World.pickSpawn(-1, o ? [o] : []) || [0, 0, 0]; if (!kofVisible(o, p[0], p[1], p[2] ? World.mezz.h : 0)) { best = p; break; } if (!best) best = p; }
@@ -3906,6 +4125,8 @@ function drawWorldFrame() {
   for (const a of G.actors) { if (a.alive && a.ctrlT > 0) list.push({ x: a.x, y: a.y + 1.95, z: a.z, w: .9, a: 1, k: 13, d: (a.x - c.x) ** 2 + (a.z - c.z) ** 2 }); if (a.alive && a.cleanFx > 0 && !a.invis) { const q = 1 - a.cleanFx / .7; list.push({ x: a.x, y: a.y + .9, z: a.z, w: 1 + q * 3.2, a: .8 * (1 - q), k: 14, d: (a.x - c.x) ** 2 + (a.z - c.z) ** 2 }); } }
   for (const a of G.actors) { if (!a.alive || a === pl) continue; const dd = (a.x - c.x) ** 2 + (a.z - c.z) ** 2; if (a.shieldT > 0) list.push({ x: a.x, y: a.y + .75, z: a.z, w: 2.3, a: .5 + .2 * Math.sin(G.time * 8), k: 12, d: dd }); if (a.say) list.push({ x: a.x, y: a.y + 1.95, z: a.z, w: 2.0, a: clamp(a.say.t / .25, 0, 1), k: 11, a_: a, d: dd }); }
   for (const f of G.fx) if (f.k === 'puff') { const q = f.t / f.d; list.push({ x: f.x, y: f.y + q * .5, z: f.z, w: 1.2 + q * 1.8, a: .8 * (1 - q), k: 0, d: (f.x - c.x) ** 2 + (f.z - c.z) ** 2 }); }
+  for (const f of G.fx) if (f.k === 'shard') { const y = Math.max(f.g + .05, f.y + f.vy * f.t - 9 * f.t * f.t), fl = f.t > .6 && y <= f.g + .06; list.push({ x: f.x + f.vx * Math.min(f.t, .9), y, z: f.z + f.vz * Math.min(f.t, .9), w: .3, a: 1 - Math.max(0, f.t - 2.4) / .8, k: 15, col: f.col, d: (f.x - c.x) ** 2 + (f.z - c.z) ** 2 }); }
+  for (const a of G.actors) if (a.alive && (a.pcast || (a.chant && (a.chant.k === 'soom' || a.chant.k === 'dec')))) list.push({ x: a.x, y: a.y + .9, z: a.z, w: 2.6 + Math.sin(G.time * 14) * .3, a: .75, k: 15, col: a.chant && a.chant.k === 'dec' ? [.5, .85, 1] : [.7, .3, 1], d: (a.x - c.x) ** 2 + (a.z - c.z) ** 2 });
   for (const f of G.fx) if (f.k === 'flash') { const q = f.t / f.d; list.push({ x: f.x, y: f.y, z: f.z, w: 5 + q * 8, a: 1 - q, k: 3, d: (f.x - c.x) ** 2 + (f.z - c.z) ** 2 }); }
   if (!isDM() && pl) for (const a of G.actors) { if (a === pl || a.invis || !a.alive || a.team !== pl.team) continue; const d2 = (a.x - c.x) ** 2 + (a.z - c.z) ** 2; if (d2 > 3600) continue; list.push({ x: a.x, y: a.y + 1.8, z: a.z, w: 1.5, a: 1, k: 1, a_: a, d: d2 }); }
   list.sort((p, q) => q.d - p.d);
@@ -4164,6 +4385,7 @@ function hostReadPeers(dt) {
 function hostAct(a, ac) {
   if (G.state !== 'playing') return; if (ac[1] === 'kp') { kofPick(a, ac[2] | 0); return; }
   if (!a.alive) return;
+  if (ac[1] === 'dt') { startDecade(a, ac[2] | 0); return; }
   if (ac[1] === 'kn') { const c = String(ac[2]); if (!/^\d{2,6}$/.test(c) || !kenKind(a) || pokerTrap(a, c) || ericHit(a, c)) return; kenSubmit(a, c); return; }
   if (ac[1] === 'k') {
     if (pokerTrap(a, String(ac[3])) || ericHit(a, String(ac[3]))) return;
@@ -4194,11 +4416,11 @@ function buildSnap() {
   const A = G.actors, ac = [];
   for (let i = 0; i < A.length; i++) {
     const a = A[i];
-    const e = [Math.round(a.x * 20), Math.round(a.z * 20), Math.round(a.y * 20), Math.round(a.yaw * 50), Math.round(a.sp * 10), (a.alive ? 1 : 0) | (a.carry ? 2 : 0) | (a.protect > 0 ? 4 : 0) | (a.redT > 0 ? 8 : 0) | (a.lo > .12 ? 32 : a.lo < -.12 ? 16 : 0) | ((a.shieldT > 0 || a.amulet) ? 64 : 0) | (a.wd ? 1024 : 0) | (a.drumT > 0 ? 4096 : 0) | (a.gdSmall ? 8192 : 0) | (a.invis ? 128 : 0) | (a.ctrlT > 0 ? 256 : 0) | (a.dackE >= 1 ? 512 : 0) | (a.miniT > 0 ? 2048 : 0) | (a.chamT > 0 ? 16384 : 0) | (a.fdT > 0 ? 32768 : 0), a.kills, a.deaths, a.fake || a.enShow || a.number];
+    const e = [Math.round(a.x * 20), Math.round(a.z * 20), Math.round(a.y * 20), Math.round(a.yaw * 50), Math.round(a.sp * 10), (a.alive ? 1 : 0) | (a.carry ? 2 : 0) | (a.protect > 0 ? 4 : 0) | (a.redT > 0 ? 8 : 0) | (a.lo > .12 ? 32 : a.lo < -.12 ? 16 : 0) | ((a.shieldT > 0 || a.amulet) ? 64 : 0) | (a.wd ? 1024 : 0) | (a.drumT > 0 ? 4096 : 0) | (a.gdSmall ? 8192 : 0) | (a.invis ? 128 : 0) | (a.ctrlT > 0 ? 256 : 0) | (a.dackE >= 1 ? 512 : 0) | (a.miniT > 0 ? 2048 : 0) | (a.chamT > 0 ? 16384 : 0) | (a.fdT > 0 ? 32768 : 0) | ((a.chant && (a.chant.k === 'soom' || a.chant.k === 'dec')) ? 65536 : 0), a.kills, a.deaths, a.fake || a.enShow || a.number];
     if (a.isPlayer || a.remote) {
       const sl = a.isPlayer ? G.slots : (a.slots || [null, null]); let thr = -1, tp = 0;
       if (a.alive) for (let j = 0; j < A.length; j++) { const b = A[j]; if (b === a || !b.alive || !b.read) continue; let q = b.read[a.id] || 0; if (b.typing && b.typing.target === a) q = 1; if (q > tp && q > .12) { tp = q; thr = j; } }
-      e.push(a.rsC || 0, a.killedBy ? A.indexOf(a.killedBy) : -1, Math.round((a.isPlayer ? G.flashT : a.blind) * 10), thr, Math.round(tp * 10), a.lastSeq || 0, encSl(sl[0]), encSl(sl[1]), Math.round((a.skCd || 0) * 10), Math.round((a.shieldT || 0) * 10), Math.round((a.ctrlT || 0) * 10), a.ctrlBy ? A.indexOf(a.ctrlBy) : -1, (a.clrRev === G.sk.rev.id ? 1 : 0) | (a.clrScr === G.sk.scr.id ? 2 : 0) | (a.clrInk === G.sk.ink.id ? 4 : 0) | (a.clrRel === G.sk.rel.id ? 8 : 0), Math.round((a.wkT || 0) * 10), (a.fake && a.fakeOf) ? Math.round(a.fakeT * 10) : 0, Math.round(Math.max(0, a.windowT || 0) * 10), Math.round(Math.max(0, a.frz || 0) * 10), a.rfC || 0, Math.round(Math.max(0, a.chant ? a.chant.t : 0) * 10), a.amulet ? 0 : Math.round(Math.max(.1, 30 - (a.amT || 0)) * 10), Math.round(Math.max(0, a.freeEn || 0) * 10), a.ntf ? a.ntf.id : 0, a.ntf ? a.ntf.t : '', a.ntf ? a.ntf.s : 0);
+      e.push(a.rsC || 0, a.killedBy ? A.indexOf(a.killedBy) : -1, Math.round((a.isPlayer ? G.flashT : a.blind) * 10), thr, Math.round(tp * 10), a.lastSeq || 0, encSl(sl[0]), encSl(sl[1]), Math.round((a.skCd || 0) * 10), Math.round((a.shieldT || 0) * 10), Math.round((a.ctrlT || 0) * 10), a.ctrlBy ? A.indexOf(a.ctrlBy) : -1, (a.clrRev === G.sk.rev.id ? 1 : 0) | (a.clrScr === G.sk.scr.id ? 2 : 0) | (a.clrInk === G.sk.ink.id ? 4 : 0) | (a.clrRel === G.sk.rel.id ? 8 : 0), Math.round((a.wkT || 0) * 10), (a.fake && a.fakeOf) ? Math.round(a.fakeT * 10) : 0, Math.round(Math.max(0, a.windowT || 0) * 10), Math.round(Math.max(0, a.frz || 0) * 10), a.rfC || 0, Math.round(Math.max(0, a.chant ? a.chant.t : 0) * 10), a.amulet ? 0 : Math.round(Math.max(.1, 30 - (a.amT || 0)) * 10), Math.round(Math.max(0, a.freeEn || 0) * 10), a.ntf ? a.ntf.id : 0, a.ntf ? a.ntf.t : '', a.ntf ? a.ntf.s : 0, a.tpq ? a.tpq.id : 0, a.tpq ? Math.round(a.tpq.x * 20) : 0, a.tpq ? Math.round(a.tpq.y * 20) : 0, a.tpq ? Math.round(a.tpq.z * 20) : 0, a.tpq ? Math.round(a.tpq.yaw * 50) : 0);
     }
     ac.push(e);
   }
@@ -4210,6 +4432,7 @@ function buildSnap() {
     fg: G.mode === 'ctf' ? G.flags.map(f => [f.state === 'home' ? 0 : f.state === 'carried' ? 1 : 2, Math.round(f.x * 10), Math.round(f.z * 10), Math.round(f.y * 10), f.carrier ? A.indexOf(f.carrier) : -1]) : [],
     sk: [Math.round(G.sk.rev.t * 10), G.actors.indexOf(G.sk.rev.by), Math.round(G.sk.scr.t * 10), G.actors.indexOf(G.sk.scr.by), Math.round(G.sk.ink.t * 10), G.actors.indexOf(G.sk.ink.by), Math.round(G.sk.eagle.t * 10), G.actors.indexOf(G.sk.eagle.by), Math.round(G.sk.quake.t * 10), G.actors.indexOf(G.sk.quake.by), G.sk.night.by ? Math.round(G.sk.night.e * 10) : -1, G.actors.indexOf(G.sk.night.by), Math.round(G.sk.rel.t * 10), G.actors.indexOf(G.sk.rel.by), Math.round(G.sk.neg.t * 10), Math.round(Math.max(0, G.sk.ban.t) * 10), G.actors.indexOf(G.sk.ban.by), Math.round(Math.max(0, G.sk.beacon.t) * 10), G.actors.indexOf(G.sk.beacon.by), Math.round(Math.max(0, G.sk.guard.t) * 10), G.actors.indexOf(G.sk.guard.by)],
     zn: G.zones.map(z => [Math.round(z.x * 10), Math.round(z.z * 10), Math.round(z.t * 10), G.actors.indexOf(z.by), z.k === 'peace' ? 1 : 0]),
+    dv: G.actors.map((a, i) => a.decForm != null ? [i, a.decForm] : null).filter(Boolean),
     cl: G.clones.map(c => [c.id, Math.round(c.x * 20), Math.round(c.z * 20), Math.round(c.y * 20), Math.round(c.yaw * 50), c.sp ? 1 : 0, c.number, G.actors.indexOf(c.owner), c.kind === 'mirror' ? 0 : 1]),
     pk: G.pickups.reduce((m, p, i) => m | (p.on ? (1 << i) : 0), 0),
     ar: G.arena ? [G.arena.stage, G.arena.ph, Math.round(G.arena.t * 10), A.map(a => (a.isPlayer || a.remote) && !a.alive ? Math.round(Math.max(0, Math.min(99, a.respawnT)) * 10) : 0)] : 0,
@@ -4276,7 +4499,7 @@ function applySnap(s) {
     const e = s.ac[i], a = A[i]; if (!e || !a) continue;
     const alive = !!(e[5] & 1);
     a.kills = e[6]; a.deaths = e[7]; if (a.number !== e[8]) { a.number = e[8]; drawPlate(a); }
-    a.wd = !!(e[5] & 1024); a.gdSmall = !!(e[5] & 8192); a.chamT = (e[5] & 16384) ? 6 : 0; a.fdT = (e[5] & 32768) ? 3 : 0; a.fd = !!(e[5] & 32768); if (a !== me) a.miniT = (e[5] & 2048) ? 8 : 0; else me.miniT = (e[5] & 2048) ? Math.max(me.miniT || 0, .6) : 0; if (a !== me) a.drumT = (e[5] & 4096) ? 8 : 0; else me.drumT = (e[5] & 4096) ? Math.max(me.drumT || 0, .6) : 0;
+    a.wd = !!(e[5] & 1024); a.gdSmall = !!(e[5] & 8192); a.pcast = !!(e[5] & 65536); a.chamT = (e[5] & 16384) ? 6 : 0; a.fdT = (e[5] & 32768) ? 3 : 0; a.fd = !!(e[5] & 32768); if (a !== me) a.miniT = (e[5] & 2048) ? 8 : 0; else me.miniT = (e[5] & 2048) ? Math.max(me.miniT || 0, .6) : 0; if (a !== me) a.drumT = (e[5] & 4096) ? 8 : 0; else me.drumT = (e[5] & 4096) ? Math.max(me.drumT || 0, .6) : 0;
     a.carry = (e[5] & 2) ? true : null; a.protect = (e[5] & 4) ? 1 : 0; if (a !== me) { a.dackE = (e[5] & 512) ? 2 : -1; a.invis = !!(e[5] & 128); a.ctrlT = (e[5] & 256) ? .3 : 0; a.shieldT = (e[5] & 64) ? 1 : 0; a.redT = (e[5] & 8) ? .4 : 0; a.lo += (((e[5] & 32) ? .45 : (e[5] & 16) ? -.45 : 0) - a.lo) * .4; }
     if (a !== me) {
       a.tx = e[0] / 20; a.tz = e[1] / 20; a.ty = e[2] / 20; a.tyaw = e[3] / 50;
@@ -4293,6 +4516,7 @@ function applySnap(s) {
       const fl = e[11] / 10; if (fl > G.flashT + .05) { G.flashT = fl; G.flashMax = Math.max(1, fl); Sfx.bang(.6); }
       me.wkT = (e[22] || 0) / 10; me.fakeT = (e[23] || 0) / 10; me.windowT = (e[24] || 0) / 10; if ((e[25] || 0) > 0 && !(me.frz > 0)) me.frz = e[25] / 10; else if (!(e[25] > 0)) me.frz = 0; if (NET.rfSeen !== undefined && e[26] !== NET.rfSeen) { G.stam = 1; G.energy = 1; } NET.rfSeen = e[26] || 0; me.chant = e[27] > 0 ? { k: '', t: e[27] / 10 } : null; me.amulet = e[28] === 0 && isOut(me, 34); me.amRem = (e[28] || 0) / 10; if ((e[29] || 0) > 0 && !(me.freeEn > 0)) me.freeEn = e[29] / 10; me.skCd = (e[17] || 0) / 10; me.shieldT = (e[18] || 0) / 10; me.ctrlT = (e[19] || 0) / 10; me.ctrlBy = A[e[20]] || null; { const m = e[21] || 0; me.clrRev = (m & 1) ? 1 : -1; me.clrScr = (m & 2) ? 1 : -1; me.clrInk = (m & 4) ? 1 : -1; me.clrRel = (m & 8) ? 1 : -1; }
       if (e[30] !== undefined) { if (NET.ntfSeen !== undefined && e[30] > 0 && e[30] !== NET.ntfSeen) { const t = String(e[31] || ''); if (t.startsWith('#PK')) { UI.poker(t.slice(3)); G.pkCode = t.slice(3); } else if (t.startsWith('#LK')) { G.lock = Math.max(G.lock, +t.slice(3) || 3); } else if (t.startsWith('#VD')) { const q = t.slice(3).split('|'); UI.vdFlash(q[0], q[1]); } else { const q = t.split('|'); UI.popup(q[0], q.slice(1).join('|')); if (e[32] > 0) stunSelf(e[32] / 1); } } NET.ntfSeen = e[30]; }
+      if (e[33] !== undefined) { if (NET.tpSeen !== undefined && e[33] > 0 && e[33] !== NET.tpSeen) { me.x = e[34] / 20; me.y = e[35] / 20; me.z = e[36] / 20; me.yaw = e[37] / 50; me.vx = me.vz = me.vy = 0; G.typed = ''; UI.dirty = true; } NET.tpSeen = e[33]; }
       const slc = e[15] + ',' + e[16]; if (slc !== NET.slC) { NET.slC = slc; G.slots = [decSl(e[15]), decSl(e[16])]; UI.dirty = true; }
       NET.acts = NET.acts.filter(x => x[0] > e[14]);
       G.threat = e[12] >= 0 && A[e[12]] && me.alive ? { b: A[e[12]], p: e[13] / 10 } : null;
@@ -4311,6 +4535,7 @@ function applySnap(s) {
   if (s.sk) { G.sk.rev = { t: s.sk[0] / 10, by: A[s.sk[1]] || null, id: 1 }; G.sk.scr = { t: s.sk[2] / 10, by: A[s.sk[3]] || null, id: 1 }; G.sk.ink = { t: (s.sk[4] || 0) / 10, by: A[s.sk[5]] || null, id: 1 }; G.sk.eagle = { t: (s.sk[6] || 0) / 10, by: A[s.sk[7]] || null }; G.sk.quake = { t: (s.sk[8] || 0) / 10, by: A[s.sk[9]] || null }; G.sk.night = { e: s.sk[10] >= 0 ? s.sk[10] / 10 : 0, by: s.sk[10] >= 0 ? (A[s.sk[11]] || null) : null }; G.sk.rel = { t: s.sk[12] === undefined ? -1 : s.sk[12] / 10, by: A[s.sk[13]] || null, id: 1 }; G.sk.neg = { t: s.sk[14] === undefined ? -1 : s.sk[14] / 10, by: null }; G.sk.ban = { t: (s.sk[15] || 0) / 10, by: A[s.sk[16]] || null }; G.sk.beacon = { t: (s.sk[17] || 0) / 10, by: A[s.sk[18]] || null }; G.sk.guard = { t: (s.sk[19] || 0) / 10, by: A[s.sk[20]] || null }; }
   G.zones = (s.zn || []).map(z => ({ k: z[4] === 1 ? 'peace' : 'ice', x: z[0] / 10, z: z[1] / 10, r: z[4] === 1 ? 6 : 5, t: z[2] / 10, by: A[z[3]] || null }));
   applyClones(s.cl || [], A);
+  { const dv = new Map((s.dv || []).map(x => [x[0], x[1]])); A.forEach((a, i) => { const ex = dv.has(i) ? dv.get(i) : a.outfit; if (ex !== undefined && OUTFITS[ex] && a.av && a.av.outfitIdx !== ex) { a.av = createAvatar(ex); if (a === me) { const nog = GKEY_HEROES.includes(ex); G.slots.noG = nog; UI.dirty = true; } } }); }
   if (NET.feedSeen < 0) NET.feedSeen = s.fd.length ? s.fd[s.fd.length - 1][0] : 0;
   for (const f of s.fd) if (f[0] > NET.feedSeen) { NET.feedSeen = f[0]; const k = A[f[1]], v = A[f[2]]; if (k && v) { G.feed.push({ t: 6, k: k.name, v: v.name, me: k === me || v === me, st: f[3] || 0, seq: f[0] }); if (k === me && f[3] > 1) UI.streak(f[3], STREAK_PTS[Math.min(f[3], 5) - 1]); if (G.feed.length > 5) G.feed.shift(); G.feedVer++; } }
   if (NET.msgSeen < 0) NET.msgSeen = s.ms.length ? s.ms[s.ms.length - 1][0] : 0;
@@ -4549,6 +4774,15 @@ const UI = {
     // FPS
     Perf.hud(dt);
   },
+  openDecade() {
+    const b = $('decMenu'), fav = (S.fav || []).filter(i => i !== DECADE_IDX && OUTFITS[i] && !OUTFITS[i].hidden).slice(0, 6); if (!b) return;
+    if (!fav.length) { UI.msg('「我的最愛」是空的：請先在選英雄畫面長按右鍵（手機長按卡片）把英雄加入最愛', 'bad'); return; }
+    b.innerHTML = '<div class="dh">🎭 假面變身：選擇要變身的英雄 <small>（數字鍵 1–6 快選・Esc 取消）</small></div><div class="dg">' + fav.map((i, k) => '<button data-i="' + i + '"><img src="' + outfitIcon(i) + '"><b>' + (k + 1) + '</b><span>' + OUTFITS[i].label + '</span></button>').join('') + '</div><button class="dx">取消</button>';
+    b.classList.remove('hidden'); UI.decOpen = fav; UI.noLock = true; for (const k in keys) keys[k] = false; In.mx = In.my = 0; In.sprint = false; In.jump = false; if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
+    b.querySelectorAll('.dg button').forEach(x => { x.onclick = () => UI.pickDecade(+x.dataset.i); }); b.querySelector('.dx').onclick = () => UI.closeDecade();
+  },
+  closeDecade() { const b = $('decMenu'); if (b) b.classList.add('hidden'); UI.decOpen = null; UI.noLock = false; relockGame(); },
+  pickDecade(idx) { const p = G.player; UI.closeDecade(); if (!p || !p.alive) return; if (G.netClient) netAct(['dt', idx]); else startDecade(p, idx); },
   popup(title, text) { const b = $('kPop'); if (!b) return; b.innerHTML = '<b>' + title + '</b><span>' + text + '</span>'; b.classList.remove('hidden'); b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); clearTimeout(this._pp); this._pp = setTimeout(() => b.classList.add('hidden'), 1500); },
   vdFlash(name, num) { const b = $('vdBox'); if (!b) return; clearTimeout(this._vd1); clearTimeout(this._vd2); b.innerHTML = '<small>🪆 反殺情報・' + name + ' 目前的號碼</small><strong>' + num + '</strong>'; b.classList.remove('hidden'); let n = 0; const step = () => { if (n >= 6) { b.classList.add('hidden'); return; } b.classList.remove('off'); this._vd1 = setTimeout(() => { b.classList.add('off'); this._vd2 = setTimeout(() => { n++; step(); }, 250); }, 250); }; step(); },
   poker(num) { const b = $('pokerBox'); if (!b) return; clearTimeout(this._pk1); clearTimeout(this._pk2); b.innerHTML = '<i class="pc tl">♠</i><i class="pc tr">♥</i><i class="pc bl">♦</i><i class="pc br">♣</i><em>賭一把</em><strong>' + num + '</strong><small>3 秒後消失・65% 為真</small>'; b.classList.remove('hidden'); let n = 0; const step = () => { if (n >= 5) { b.classList.add('hidden'); return; } b.classList.remove('off'); this._pk1 = setTimeout(() => { b.classList.add('off'); this._pk2 = setTimeout(() => { n++; step(); }, 240); }, 360); }; step(); },
@@ -4637,6 +4871,7 @@ const Input = {
     window.addEventListener('keydown', e => {
       if (e.repeat && e.code !== 'Backspace') { if (e.code === 'Tab' || e.code === 'Space') e.preventDefault(); return; }
       if (Device.auto && S.input === 'auto' && performance.now() - Device.lastTouch > 3000 && /^(Key|Digit|Arrow|Space|Shift|Tab)/.test(e.code)) { Device.auto = false; Device.update(); }
+      if (UI.decOpen && G.state === 'playing') { if (e.code === 'Escape' || e.code === 'KeyR') { UI.closeDecade(); e.preventDefault(); return; } const m = /^(Digit|Numpad)([1-6])$/.exec(e.code); if (m && UI.decOpen[+m[2] - 1] !== undefined) { UI.pickDecade(UI.decOpen[+m[2] - 1]); e.preventDefault(); return; } e.preventDefault(); return; }
       if (G.mode === 'prac' && G.state === 'playing' && !UI.paused && !UI.menuOpen && !CS.o && (e.code === 'KeyH' || (UI.pracOpen && e.code === 'Escape'))) { togglePrac(); e.preventDefault(); return; }
       if ((UI.paused || UI.menuOpen) && G.state === 'playing') { if (e.code === 'Escape' || e.code === 'KeyP') togglePause(); return; }
       if (G.demo && (G.state === 'playing' || G.state === 'ended')) { if (e.code === 'Escape' || e.code === 'KeyP') togglePause(); e.preventDefault(); return; }
@@ -4682,7 +4917,7 @@ const Input = {
     // ---- 觸控 ----
     const layer = $('app'), joyBase = $('joyBase'), joyKnob = $('joyKnob'), joyHint = $('joyHint');
     const TX = t => VP.px(t.clientX, t.clientY), TY = t => VP.py(t.clientX, t.clientY);
-    const inCtl = t => t.target.closest && t.target.closest('#tut,#pracBtn,#pracPanel,.np,.tbtn,.slot,#pauseBtn,.btn,.chip,.card,.panel,.sbox,#settings,#mp,#howPick,#demoPick,#charsel,#layoutEd,#end,#pause');
+    const inCtl = t => t.target.closest && t.target.closest('#tut,#pracBtn,#pracPanel,#decMenu,.np,.tbtn,.slot,#pauseBtn,.btn,.chip,.card,.panel,.sbox,#settings,#mp,#howPick,#demoPick,#charsel,#layoutEd,#end,#pause');
     layer.addEventListener('touchstart', e => {
       Sfx.init(); Sfx.resume(); if (!Device.mobile || G.state === 'menu' || G.demo || UI.menuOpen || UI.paused) return;
       for (const t of e.changedTouches) {
@@ -4933,14 +5168,14 @@ function rerollHero() { // 單人「再來一場」：依複選／隨機設定�
   else if (S.multi) { const h = weightedHero(S.multi); if (h !== null) S.outfit = h; }
 }
 function csFlash(t) { CS.flash = t; clearTimeout(CS.ft); CS.ft = setTimeout(() => { CS.flash = ''; if (CS.o) csRefresh(); }, 1600); csRefresh(); }
-function csToggleFav(i) { S.fav = S.fav || []; const k = S.fav.indexOf(i); if (k >= 0) S.fav.splice(k, 1); else S.fav.push(i); saveS(); csBuildCards(); csFlash(k >= 0 ? '已從「我的收藏庫」移除 ' + OUTFITS[i].label : '已加入「我的收藏庫」：' + OUTFITS[i].label); }
+function csToggleFav(i) { S.fav = S.fav || []; const k = S.fav.indexOf(i); if (k < 0 && S.fav.length >= 6) { csFlash('「我的最愛」最多 6 位，已滿。請先長按右鍵移除一位再加入'); return; } if (k >= 0) S.fav.splice(k, 1); else S.fav.push(i); saveS(); csBuildCards(); csFlash(k >= 0 ? '已從「我的收藏庫」移除 ' + OUTFITS[i].label : '已加入「我的收藏庫」：' + OUTFITS[i].label); }
 function csDec(i) { const o = CS.o; if (!o) return; if (isWM(o)) { if (CS.counts[i] > 1) CS.counts[i]--; else delete CS.counts[i]; } else if (o.need > 1) { const k = CS.picks.indexOf(i); if (k >= 0) CS.picks.splice(k, 1); } csRefresh(i); }
 function csRefresh(last) {
   const o = CS.o; if (!o) return; const wm = isWM(o), five = o.need > 1;
   document.querySelectorAll('#cards .card').forEach(c => {
     if (c.dataset.r) { c.classList.toggle('on', CS.rand && !five); return; }
     const i = +c.dataset.i, k = CS.picks.indexOf(i), n = wm ? (CS.counts[i] || 0) : 0, on = wm ? n > 0 : five ? k >= 0 : (!CS.rand && CS.picks[0] === i);
-    c.classList.toggle('on', on); c.classList.toggle('lk', !!o.single && CS.picks.length > 0 && CS.picks[0] !== i); c.classList.toggle('fav', (S.fav || []).includes(i)); const b = c.querySelector('.pk'); if (b) b.textContent = wm ? (n ? '×' + n : '') : (five && k >= 0 ? k + 1 : '');
+    c.classList.toggle('on', on); c.classList.toggle('lk', !!o.single && CS.picks.length > 0 && CS.picks[0] !== i); c.classList.toggle('fav', (S.fav || []).includes(i)); c.classList.toggle('fl', (S.fav || []).length >= 6 && !(S.fav || []).includes(i)); const b = c.querySelector('.pk'); if (b) b.textContent = wm ? (n ? '×' + n : '') : (five && k >= 0 ? k + 1 : '');
   });
   const tot = csTotal();
   $('csHint').textContent = CS.flash || (five ? `已選 ${CS.picks.length} / ${o.need}　（點選順序＝出賽順序；右鍵取消；長按右鍵加入收藏庫）` : wm ? (tot ? `已選 ${tot} 張　左鍵 +1・右鍵 −1・長按右鍵（手機：長按卡片）加入收藏庫；張數越多越容易被抽中，開局隨機抽出一位` : '左鍵選取（再點 +1）・右鍵 −1・長按右鍵（手機：長按卡片）加入收藏庫') : (o.hint || ''));
@@ -4966,7 +5201,7 @@ function csBuildCards() {
   };
   const sec = (txt, col) => { const hd = document.createElement('div'); hd.className = 'chd'; if (col) hd.style.setProperty('--hc', col); hd.textContent = txt; cards.appendChild(hd); };
   // 我的收藏庫（最上方）
-  const fav = (S.fav || []).filter(i => pool.includes(i)); sec('⭐ 我的收藏庫（' + fav.length + '）', '#ffd24a');
+  const fav = (S.fav || []).filter(i => pool.includes(i)); if ((S.fav || []).length > 6) S.fav = S.fav.slice(0, 6); sec('⭐ 我的收藏庫（' + fav.length + ' / 6）', '#ffd24a');
   if (fav.length) for (const i of fav) cards.appendChild(mk(i)); else { const h = document.createElement('div'); h.className = 'favhint'; h.textContent = '尚無收藏。在任一英雄上「長按滑鼠右鍵」（手機：長按卡片）即可加入，再長按一次可移除。'; cards.appendChild(h); }
   const placed = new Set(), groups = CS.view === 'tier' ? HERO_TIERS : HERO_CLASSES;
   for (const [nm, col, ids] of groups) { const list = ids.filter(i => pool.includes(i)); if (!list.length) continue; sec(nm + '（' + list.length + '）', col); for (const i of list) { placed.add(i); cards.appendChild(mk(i)); } }

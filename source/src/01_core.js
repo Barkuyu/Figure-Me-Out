@@ -90,6 +90,12 @@ const Sfx = {
   key() { this.tone(900, .04, 'square', .05); },
   del() { this.tone(500, .05, 'square', .05); },
   wrong() { this.tone(160, .28, 'sawtooth', .16, -60); },
+  henshin() { // 原創變身音效：卡片插入 → 上升琶音 → 閃光（非任何影視作品的取樣）
+    this.tone(1800, .05, 'square', .09); this.tone(900, .06, 'square', .07, 0, .07);
+    [392, 523, 659, 784, 988, 1319].forEach((f, i) => this.tone(f, .16, 'triangle', .13, f * 1.05, .22 + i * .1));
+    this.noise(.5, .16, 2600, .5, 800); this.tone(2093, .35, 'sine', .14, 2800, .85); this.tone(1568, .35, 'sine', .1, 2400, .9);
+  },
+  glass() { this.noise(.35, .3, 6000, 0, 2500); this.tone(2400, .2, 'triangle', .1, 800); this.tone(3100, .15, 'sine', .08, 1200, .05); },
   kill() { this.tone(660, .1, 'triangle', .2); this.tone(990, .18, 'triangle', .2, 0, .09); this.tone(1320, .22, 'triangle', .16, 0, .2); },
   die() { this.tone(300, .5, 'sawtooth', .18, -240); this.noise(.3, .2, 800); },
   shutter() { this.noise(.05, .35, 4000, 0, true); this.noise(.08, .25, 3000, .07, true); },
@@ -386,6 +392,42 @@ const TG = {
     gr.addColorStop(0, '#03040b'); gr.addColorStop(.45, '#0a1022'); gr.addColorStop(.5, '#17223a'); gr.addColorStop(.58, '#0c1222'); gr.addColorStop(1, '#05070e'); g.fillStyle = gr; g.fillRect(0, 0, 1024, 512);
     const rr = rng(77); for (let i = 0; i < 520; i++) { const x = rr() * 1024, y = rr() * 250, r = rr() * .6 + .22; g.fillStyle = `rgba(255,255,${220 + rr() * 35 | 0},${.35 + rr() * .6})`; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); }
     g.globalAlpha = .1; for (let i = 0; i < 12; i++) { g.fillStyle = '#6f7fb0'; g.beginPath(); g.ellipse(rr() * 1024, 190 + rr() * 50, 90 + rr() * 80, 9 + rr() * 8, 0, 0, TAU); g.fill(); } g.globalAlpha = 1; return c;
+  },
+  parquet() { // 人字拼木地板
+    const c = cv(256, 256), g = c.getContext('2d'), rr = rng(11); g.fillStyle = '#7a5532'; g.fillRect(0, 0, 256, 256);
+    for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) { const t = (x + y) % 2, v = 96 + rr() * 38 | 0; g.fillStyle = `rgb(${v + 28},${v - 4},${v - 52})`; if (t) g.fillRect(x * 16 + 1, y * 16 + 1, 14, 14); else g.fillRect(x * 16 + 1, y * 16 + 1, 14, 14); g.strokeStyle = 'rgba(40,22,10,.45)'; g.lineWidth = 1; for (let k = 1; k < 4; k++) { g.beginPath(); if (t) { g.moveTo(x * 16 + 1, y * 16 + k * 3.5); g.lineTo(x * 16 + 15, y * 16 + k * 3.5); } else { g.moveTo(x * 16 + k * 3.5, y * 16 + 1); g.lineTo(x * 16 + k * 3.5, y * 16 + 15); } g.stroke(); } }
+    return c;
+  },
+  stripe() { // 奶油金直條壁紙
+    const c = cv(128, 128), g = c.getContext('2d'); g.fillStyle = '#efe4c4'; g.fillRect(0, 0, 128, 128);
+    for (let x = 0; x < 128; x += 32) { g.fillStyle = '#d8c690'; g.fillRect(x + 12, 0, 8, 128); g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(x + 4, 0, 4, 128); }
+    return c;
+  },
+  books() { // 書櫃
+    const c = cv(256, 256), g = c.getContext('2d'), rr = rng(23); g.fillStyle = '#f2eadb'; g.fillRect(0, 0, 256, 256);
+    for (let r = 0; r < 4; r++) { const y0 = 8 + r * 62; g.fillStyle = '#3a2a1e'; g.fillRect(0, y0 + 52, 256, 8); let x = 6; while (x < 244) { const w = 8 + rr() * 12, h = 30 + rr() * 22; g.fillStyle = ['#1d3b6b', '#7a1f24', '#2a5a3a', '#d8c28a', '#4a3a6a', '#8a5a2a'][(rr() * 6) | 0]; g.fillRect(x, y0 + 52 - h, w, h); g.fillStyle = 'rgba(255,255,255,.25)'; g.fillRect(x + 2, y0 + 52 - h + 4, 2, h - 8); x += w + 1; } }
+    g.strokeStyle = '#3a2a1e'; g.lineWidth = 8; g.strokeRect(2, 2, 252, 252); return c;
+  },
+  carpetOval() { // 橢圓地毯：外圈深藍帶環形文字
+    const c = cv(1024, 768), g = c.getContext('2d'), cx = 512, cy = 384, A = 500, B = 372; g.clearRect(0, 0, 1024, 768);
+    const ell = (a, b, col) => { g.fillStyle = col; g.beginPath(); g.ellipse(cx, cy, a, b, 0, 0, Math.PI * 2); g.fill(); };
+    ell(A, B, '#1c2a52'); ell(A - 12, B - 10, '#e9dfc6'); ell(A - 112, B - 84, '#1c2a52'); ell(A - 118, B - 89, '#efe6d0'); ell(A - 130, B - 98, '#cdb98a'); ell(A - 136, B - 103, '#e6dcc2');
+    const txt = 'NO PROBLEM OF HUMAN DESTINY IS BEYOND HUMAN BEINGS  ★  FOR THE PEOPLE, FOR THE PEOPLE  ★  ', rx = A - 62, ry = B - 47; g.fillStyle = '#1c2a52'; g.font = '800 40px Georgia,serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    for (let i = 0; i < txt.length; i++) { const t = Math.PI / 2 + (i + .5) / txt.length * Math.PI * 2, x = cx + Math.cos(t) * rx, y = cy + Math.sin(t) * ry, tx = -Math.sin(t) * rx, ty = Math.cos(t) * ry; g.save(); g.translate(x, y); g.rotate(Math.atan2(ty, tx) - Math.PI); g.fillText(txt[i], 0, 0); g.restore(); }
+    return c;
+  },
+  rtile() { // 屋頂水泥方磚
+    const c = cv(256, 256), g = c.getContext('2d'), rr = rng(31); g.fillStyle = '#6f7478'; g.fillRect(0, 0, 256, 256);
+    for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) { const v = 96 + rr() * 26 | 0; g.fillStyle = `rgb(${v},${v + 3},${v + 6})`; g.fillRect(x * 32 + 1.5, y * 32 + 1.5, 29, 29); }
+    g.strokeStyle = 'rgba(30,34,38,.7)'; g.lineWidth = 2; for (let i = 0; i <= 8; i++) { g.beginPath(); g.moveTo(i * 32, 0); g.lineTo(i * 32, 256); g.moveTo(0, i * 32); g.lineTo(256, i * 32); g.stroke(); }
+    for (let i = 0; i < 400; i++) { g.fillStyle = `rgba(${40 + rr() * 60 | 0},${60 + rr() * 60 | 0},${40 + rr() * 30 | 0},.12)`; g.fillRect(rr() * 256, rr() * 256, 2 + rr() * 4, 2 + rr() * 3); } return c;
+  },
+  helipad() { // 直升機坪：深灰底、白色 H
+    const c = cv(512, 512), g = c.getContext('2d'); g.fillStyle = '#5c6065'; g.fillRect(0, 0, 512, 512); g.strokeStyle = '#e8e8e4'; g.lineWidth = 14; g.strokeRect(20, 20, 472, 472);
+    g.fillStyle = '#f2f2ee'; g.fillRect(120, 120, 56, 272); g.fillRect(336, 120, 56, 272); g.fillRect(120, 226, 272, 56); return c;
+  },
+  glassTower() { // 玻璃帷幕大樓
+    const c = cv(128, 128), g = c.getContext('2d'); g.fillStyle = '#2c6f6a'; g.fillRect(0, 0, 128, 128); for (let y = 0; y < 8; y++) for (let x = 0; x < 4; x++) { g.fillStyle = (x + y) % 3 ? '#3f8c86' : '#5aa9a0'; g.fillRect(x * 32 + 2, y * 16 + 2, 28, 12); } return c;
   },
   skySpace() { // 外太空：紫灰色天空、土黃色大行星
     const c = cv(1024, 512), g = c.getContext('2d'); const gr = g.createLinearGradient(0, 0, 0, 512);
