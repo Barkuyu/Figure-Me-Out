@@ -416,6 +416,10 @@ const TG = {
     for (let i = 0; i < txt.length; i++) { const t = Math.PI / 2 + (i + .5) / txt.length * Math.PI * 2, x = cx + Math.cos(t) * rx, y = cy + Math.sin(t) * ry, tx = -Math.sin(t) * rx, ty = Math.cos(t) * ry; g.save(); g.translate(x, y); g.rotate(Math.atan2(ty, tx) - Math.PI); g.fillText(txt[i], 0, 0); g.restore(); }
     return c;
   },
+  swirl() { // 深灰漩渦紋地毯
+    const c = cv(256, 256), g = c.getContext('2d'); g.fillStyle = '#3b3a3f'; g.fillRect(0, 0, 256, 256); g.strokeStyle = 'rgba(150,148,156,.28)'; g.lineWidth = 2;
+    for (let cy = 0; cy <= 256; cy += 32) for (let cx = (cy / 32 % 2) * 32; cx <= 256; cx += 64) for (let r = 6; r <= 30; r += 6) { g.beginPath(); g.arc(cx, cy, r, 0, Math.PI * 2); g.stroke(); } return c;
+  },
   rtile() { // 屋頂水泥方磚
     const c = cv(256, 256), g = c.getContext('2d'), rr = rng(31); g.fillStyle = '#6f7478'; g.fillRect(0, 0, 256, 256);
     for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) { const v = 96 + rr() * 26 | 0; g.fillStyle = `rgb(${v},${v + 3},${v + 6})`; g.fillRect(x * 32 + 1.5, y * 32 + 1.5, 29, 29); }
