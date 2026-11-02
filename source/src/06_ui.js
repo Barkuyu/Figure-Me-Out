@@ -187,7 +187,7 @@ const UI = {
     // FPS
     Perf.hud(dt);
   },
-  popup(title, text) { const b = $('kPop'); if (!b) return; b.innerHTML = '<b>' + title + '</b><span>' + text + '</span>'; b.classList.remove('hidden'); b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); clearTimeout(this._pp); this._pp = setTimeout(() => b.classList.add('hidden'), 5200); },
+  popup(title, text) { const b = $('kPop'); if (!b) return; b.innerHTML = '<b>' + title + '</b><span>' + text + '</span>'; b.classList.remove('hidden'); b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); clearTimeout(this._pp); this._pp = setTimeout(() => b.classList.add('hidden'), 1500); },
   poker(num) { const b = $('pokerBox'); if (!b) return; clearTimeout(this._pk1); clearTimeout(this._pk2); b.innerHTML = '<i class="pc tl">♠</i><i class="pc tr">♥</i><i class="pc bl">♦</i><i class="pc br">♣</i><em>賭一把</em><strong>' + num + '</strong><small>3 秒後消失・65% 為真</small>'; b.classList.remove('hidden'); let n = 0; const step = () => { if (n >= 5) { b.classList.add('hidden'); return; } b.classList.remove('off'); this._pk1 = setTimeout(() => { b.classList.add('off'); this._pk2 = setTimeout(() => { n++; step(); }, 240); }, 360); }; step(); },
   stunFx(sec) { const e = this.els.deadv; e.style.opacity = .75; clearTimeout(this._st); this._st = setTimeout(() => { if (G.player && G.player.alive) e.style.opacity = 0; }, sec * 1000); },
   goText() { this.goT = 1; this._cd = 0; $('cdNum').textContent = '開始！'; $('cdTxt').textContent = '戰鬥開始'; this.els.countdown.classList.remove('hidden'); },
