@@ -320,7 +320,7 @@ const Input = {
     // ---- 觸控 ----
     const layer = $('app'), joyBase = $('joyBase'), joyKnob = $('joyKnob'), joyHint = $('joyHint');
     const TX = t => VP.px(t.clientX, t.clientY), TY = t => VP.py(t.clientX, t.clientY);
-    const inCtl = t => t.target.closest && t.target.closest('#tut,.np,.tbtn,.slot,#pauseBtn,.btn,.chip,.card,.panel,.sbox,#settings,#mp,#howPick,#demoPick,#charsel,#layoutEd,#end,#pause');
+    const inCtl = t => t.target.closest && t.target.closest('#tut,#pracBtn,#pracPanel,.np,.tbtn,.slot,#pauseBtn,.btn,.chip,.card,.panel,.sbox,#settings,#mp,#howPick,#demoPick,#charsel,#layoutEd,#end,#pause');
     layer.addEventListener('touchstart', e => {
       Sfx.init(); Sfx.resume(); if (!Device.mobile || G.state === 'menu' || G.demo || UI.menuOpen || UI.paused) return;
       for (const t of e.changedTouches) {
