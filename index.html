@@ -422,7 +422,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 5.1</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.0</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -4578,7 +4578,8 @@ function csFinish(auto) {
   if (isWM(o)) { const h = CS.rand ? null : weightedHero(CS.counts); wasRand = h === null; list = [wasRand ? pick(pool) : h]; if (!wasRand) { S.multi = Object.assign({}, CS.counts); S.pref = 'multi'; } }
   else if (o.need === 1) { wasRand = CS.rand || auto || CS.picks[0] === undefined; list = [wasRand ? pick(pool) : CS.picks[0]]; }
   else { list = CS.picks.slice(); const rest = pool.filter(i => !list.includes(i)).sort(() => Math.random() - .5); while (list.length < o.need && rest.length) list.push(rest.pop()); }
-  $('charsel').classList.add('hidden'); CS.o = null; if (G.state === 'playing' && !G.demo && !Device.mobile) { try { Input.lock(); } catch (e) { } } o.onDone(list, wasRand, ex);
+  $('charsel').classList.add('hidden'); CS.o = null; if (G.state === 'playing' && !G.demo && !Device.mobile) { try { Input.lock(); } catch (e) { } } if (list.includes(39)) Voice.warm();
+  o.onDone(list, wasRand, ex);
 }
 function csSetView(v) { CS.view = v; S.csView = v; saveS(); if (CS.o) csBuildCards(); }
 function closePick() { clearInterval(CS.tm); UI.clrEv('cs'); CS.o = null; $('charsel').classList.add('hidden'); showWait(false); }
@@ -4679,11 +4680,18 @@ const Voice = (() => {
   V.ok = () => !!SR && window.isSecureContext !== false && !V.denied;
   V.minLen = () => G.codeLen || 3; V.maxLen = () => G.codeLen || 6;
   V.deny = () => { V.denied = true; if (CS.o) csBuildCards(); UI.msg('此裝置不支援語音，或尚未允許麥克風', 'bad'); };
-  V.warm = async () => { // 選用此英雄時順手取得授權；授權過就記住，不再詢問
-    if (!SR || S.voiceGranted) return true;
-    try { if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) { const st = await navigator.mediaDevices.getUserMedia({ audio: true }); st.getTracks().forEach(t => t.stop()); } S.voiceGranted = true; V.denied = false; saveS(); return true; }
-    catch (e) { if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) { V.denied = true; if (CS.o) csBuildCards(); } return false; }
-  };
+  V.warm = () => new Promise(res => { // 在選英雄畫面取得授權（麥克風＋語音辨識）；本機記住，之後不再於戰鬥中詢問
+    if (!SR) return res(false); if (V.primed || V.warming) return res(!!V.primed);
+    V.warming = true; let done = false;
+    const fin = ok => { if (done) return; done = true; V.warming = false; if (ok) { V.primed = true; V.denied = false; if (!S.voiceGranted) { S.voiceGranted = true; saveS(); } UI.msg('🎤 麥克風授權完成，可使用聲波咒術', 'ok'); } else { V.denied = true; if (CS.o) csBuildCards(); } res(ok); };
+    try {
+      const r = new SR(); r.lang = 'zh-TW'; r.continuous = false; r.interimResults = false;
+      r.onstart = () => { setTimeout(() => { try { r.abort(); } catch (e) { } }, 250); fin(true); };
+      r.onerror = e => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed') fin(false); };
+      r.onend = () => { if (!done) fin(false); };
+      r.start();
+    } catch (e) { fin(false); }
+  });
   V.enemyNums = () => { const p = G.player, set = new Set(); for (const a of G.actors) if (a !== p && a.alive && a.number) set.add(a.number); return set; };
   V.parse = list => { // 取最近一段念出的號碼；多個候選字時，優先採用場上真的存在的號碼，降低誤判
     const L = V.maxLen(), en = V.enemyNums(); let acc = V.prefix;
@@ -4700,7 +4708,7 @@ const Voice = (() => {
     const r = new SR(); r.lang = 'zh-TW'; r.continuous = true; r.interimResults = true; r.maxAlternatives = 5;
     r.onresult = e => { V.nRes = e.results.length; const d = V.parse(e.results); V.text = [...e.results].slice(V.base).map(x => x[0].transcript).join(' '); V.bar(V.text); if (d !== V.digits) { V.digits = d; V.last = performance.now(); V.setTyped(d); clearTimeout(V.sched); if (G.codeLen && d.length >= G.codeLen) V.sched = setTimeout(V.auto, 100); } };
     r.onerror = e => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { V.cancel(); V.deny(); } else if (e.error === 'audio-capture') { V.cancel(); UI.msg('找不到麥克風', 'bad'); } };
-    r.onstart = () => { if (!S.voiceGranted) { S.voiceGranted = true; saveS(); } };
+    r.onstart = () => { V.started = true; V.primed = true; if (!S.voiceGranted) { S.voiceGranted = true; saveS(); } };
     r.onend = () => { if (V.on && V.rec === r) { V.prefix = V.digits; V.base = 0; try { V.rec = V.make(); V.rec.start(); } catch (x) { } } };
     return r;
   };
@@ -4712,7 +4720,7 @@ const Voice = (() => {
     const p = G.player; if (V.on || !p || !p.alive || G.state !== 'playing' || G.countdown > 0 || G.demo) return;
     if (!skOn() || (p.skCd || 0) > 0 || p.ctrlT > 0 || G.lock > 0 || p.chant) return;
     if (!V.ok()) { UI.msg('此裝置不支援語音', 'bad'); return; }
-    V.digits = ''; V.prefix = ''; V.base = 0; V.nRes = 0; V.text = ''; V.fin = false; V.t0 = V.last = performance.now(); G.typed = ''; UI.dirty = true;
+    V.started = false; V.digits = ''; V.prefix = ''; V.base = 0; V.nRes = 0; V.text = ''; V.fin = false; V.t0 = V.last = performance.now(); G.typed = ''; UI.dirty = true;
     try { V.rec = V.make(); V.rec.start(); } catch (e) { V.rec = null; UI.msg('語音啟動失敗，請再試一次', 'bad'); return; }
     V.on = true; p.vocalOn = true; V.bar('');
     V.timer = setTimeout(() => V.end(), 15000); // 最長聆聽 15 秒
@@ -4720,7 +4728,8 @@ const Voice = (() => {
   V.stopRec = () => { try { if (V.rec) { const r = V.rec; V.rec = null; r.onend = null; r.stop(); } } catch (e) { } };
   V.cancel = () => { if (!V.on && !V.fin) return; V.on = false; V.fin = false; clearTimeout(V.timer); clearTimeout(V.sched); V.stopRec(); V.bar(null); if (G.player) G.player.vocalOn = false; };
   V.end = () => { // 放開 R：立即送出剛念出的號碼，並進入冷卻
-    if (!V.on) return; const p = G.player; V.on = false; V.fin = true; clearTimeout(V.timer); clearTimeout(V.sched); if (p) p.vocalOn = false;
+    if (!V.on) return; if (!V.started && performance.now() - V.t0 < 8000) { V.cancel(); UI.msg('授權視窗剛出現，尚未開始收音，不算施放；請再按住一次', 'bad'); return; }
+    const p = G.player; V.on = false; V.fin = true; clearTimeout(V.timer); clearTimeout(V.sched); if (p) p.vocalOn = false;
     const finish = () => {
       V.fin = false; V.bar(null); V.stopRec(); const d = V.digits;
       if (G.player && G.player.alive && G.state === 'playing') { if (d.length >= V.minLen()) { G.typed = d; UI.dirty = true; G.player.voiceT = G.time; submitNumber(); } else { G.typed = ''; UI.dirty = true; if (d.length) UI.msg('號碼沒念完整，請再說一次', 'bad'); } }
@@ -4730,7 +4739,7 @@ const Voice = (() => {
     else { try { if (V.rec) { V.rec.onend = null; V.rec.stop(); } } catch (e) { } setTimeout(finish, 550); } // 還沒湊滿就稍等最終辨識結果
   };
   try { if (navigator.permissions && navigator.permissions.query) navigator.permissions.query({ name: 'microphone' }).then(r => { const f = () => { if (r.state === 'granted') { S.voiceGranted = true; V.denied = false; } else if (r.state === 'denied') V.denied = true; }; f(); r.onchange = f; }).catch(() => { }); } catch (e) { }
-  window.addEventListener('blur', () => { if (V.on) V.end(); });
+  window.addEventListener('blur', () => { if (V.on) V.end(); }); // 授權視窗彈出會觸發 blur：V.end 會在尚未收音時直接取消，不進冷卻
   return V;
 })();
 /* ---------- 啟動 ---------- */
