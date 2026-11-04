@@ -284,8 +284,11 @@ const Input = {
     window.addEventListener('keydown', e => { // 先知模式：選角畫面連續輸入 0913
       const m = /^(Digit|Numpad)([0-9])$/.exec(e.code); if (!CS.o || !m) return;
       PRO.buf = (PRO.buf + m[2]).slice(-4); e.stopImmediatePropagation(); e.preventDefault();
-      if (PRO.buf === '0913') { PRO.buf = ''; PRO.on = true; Sfx.tone && Sfx.tone(880, .15, 'triangle', .1, 1320); $('prophetBox').classList.remove('hidden'); }
+      if (PRO.buf === '0913') proOpen();
     }, true);
+    const proOpen = () => { PRO.buf = ''; PRO.on = true; Sfx.tone && Sfx.tone(880, .15, 'triangle', .1, 1320); $('prophetBox').classList.remove('hidden'); };
+    { let n = 0, t0 = 0; $('csTitle').addEventListener('pointerdown', () => { // 手機版：在選角畫面連點「選擇英雄」標題 6 下
+      if (!Device.mobile || !CS.o) return; const now = performance.now(); n = now - t0 > 1500 ? 1 : n + 1; t0 = now; if (n >= 6) { n = 0; proOpen(); } }); }
     $('prophetOk').onclick = () => $('prophetBox').classList.add('hidden');
     window.addEventListener('keydown', e => {
       if (e.repeat && e.code !== 'Backspace') { if (e.code === 'Tab' || e.code === 'Space') e.preventDefault(); return; }
