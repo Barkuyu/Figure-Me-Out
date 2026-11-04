@@ -370,6 +370,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 #slotS.cd{filter:brightness(.55)}#slotS.cd .ring{opacity:1}#slotS.on{box-shadow:0 0 14px 4px rgba(120,190,255,.9)}
 .np.purple{background:rgba(176,77,255,.75)!important;box-shadow:0 0 22px 8px #b04dff;border-color:#e6c4ff}
 #pflash{position:absolute;inset:0;pointer-events:none;opacity:0;box-shadow:inset 0 0 80px 30px rgba(176,77,255,.9);z-index:4}#pflash.on{opacity:1}
+#prophetBox{position:fixed;inset:0;z-index:99998;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55)}#prophetBox.hidden{display:none}#prophetBox .pbx{background:#fff8e1;border:4px solid #1a1a1a;border-radius:18px;padding:22px 30px 20px;text-align:center;box-shadow:0 8px 0 rgba(0,0,0,.45);max-width:84vw}#prophetBox h3{margin:0 0 6px;font:900 24px var(--font);color:#c10d20}#prophetBox p{margin:0 0 16px;font:700 17px var(--font);color:#333}
 </style>
 </head>
 <body>
@@ -381,7 +382,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
   <div id="hud" class="hidden">
     <div id="scorebar"><span class="flagic" id="flagR"></span><div class="sc red" id="scR">0</div><span class="sep">-</span><div class="sc blue" id="scB">0</div><span class="flagic" id="flagB"></span></div>
     <div id="timer">5:00</div>
-    <div id="kPop" class="hidden"></div><div id="pokerBox" class="hidden"></div><div id="vdBox" class="hidden"></div><div id="decMenu" class="hidden"></div><div id="heroSk"></div><div id="voiceBar" class="hidden"></div><div id="arBanner" class="hidden">擂台賽將於10秒後正式開始，請做好準備</div><div id="arBig" class="hidden"></div><div id="kofbar" class="hidden"></div>
+    <div id="prophetBox" class="hidden"><div class="pbx"><h3>恭喜開啟「先知模式」</h3><p>請盡情享受遊戲吧</p><button class="btn" id="prophetOk">確定</button></div></div><div id="kPop" class="hidden"></div><div id="pokerBox" class="hidden"></div><div id="vdBox" class="hidden"></div><div id="decMenu" class="hidden"></div><div id="heroSk"></div><div id="voiceBar" class="hidden"></div><div id="arBanner" class="hidden">擂台賽將於10秒後正式開始，請做好準備</div><div id="arBig" class="hidden"></div><div id="kofbar" class="hidden"></div>
     <div id="countdown" class="hidden"><div id="cdTxt"></div><div id="cdNum"></div></div><div id="modeName"></div>
     <div id="killfeed"></div>
     <div id="crosshair"></div>

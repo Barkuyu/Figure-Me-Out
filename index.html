@@ -379,6 +379,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 #slotS.cd{filter:brightness(.55)}#slotS.cd .ring{opacity:1}#slotS.on{box-shadow:0 0 14px 4px rgba(120,190,255,.9)}
 .np.purple{background:rgba(176,77,255,.75)!important;box-shadow:0 0 22px 8px #b04dff;border-color:#e6c4ff}
 #pflash{position:absolute;inset:0;pointer-events:none;opacity:0;box-shadow:inset 0 0 80px 30px rgba(176,77,255,.9);z-index:4}#pflash.on{opacity:1}
+#prophetBox{position:fixed;inset:0;z-index:99998;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55)}#prophetBox.hidden{display:none}#prophetBox .pbx{background:#fff8e1;border:4px solid #1a1a1a;border-radius:18px;padding:22px 30px 20px;text-align:center;box-shadow:0 8px 0 rgba(0,0,0,.45);max-width:calc(var(--vw)*84)}#prophetBox h3{margin:0 0 6px;font:900 24px var(--font);color:#c10d20}#prophetBox p{margin:0 0 16px;font:700 17px var(--font);color:#333}
 </style>
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Figure Me Out">
@@ -395,7 +396,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
   <div id="hud" class="hidden">
     <div id="scorebar"><span class="flagic" id="flagR"></span><div class="sc red" id="scR">0</div><span class="sep">-</span><div class="sc blue" id="scB">0</div><span class="flagic" id="flagB"></span></div>
     <div id="timer">5:00</div>
-    <div id="kPop" class="hidden"></div><div id="pokerBox" class="hidden"></div><div id="vdBox" class="hidden"></div><div id="decMenu" class="hidden"></div><div id="heroSk"></div><div id="voiceBar" class="hidden"></div><div id="arBanner" class="hidden">擂台賽將於10秒後正式開始，請做好準備</div><div id="arBig" class="hidden"></div><div id="kofbar" class="hidden"></div>
+    <div id="prophetBox" class="hidden"><div class="pbx"><h3>恭喜開啟「先知模式」</h3><p>請盡情享受遊戲吧</p><button class="btn" id="prophetOk">確定</button></div></div><div id="kPop" class="hidden"></div><div id="pokerBox" class="hidden"></div><div id="vdBox" class="hidden"></div><div id="decMenu" class="hidden"></div><div id="heroSk"></div><div id="voiceBar" class="hidden"></div><div id="arBanner" class="hidden">擂台賽將於10秒後正式開始，請做好準備</div><div id="arBig" class="hidden"></div><div id="kofbar" class="hidden"></div>
     <div id="countdown" class="hidden"><div id="cdTxt"></div><div id="cdNum"></div></div><div id="modeName"></div>
     <div id="killfeed"></div>
     <div id="crosshair"></div>
@@ -1004,6 +1005,9 @@ const TG = {
   },
   white() { const c = cv(4, 4), g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, 4, 4); return c; }
 };
+
+/* 先知模式（選角畫面輸入 0913 開啟；僅本機玩家、本次開啟網頁期間有效） */
+const PRO = { on: false, buf: '' };
 
 /* ================= 輕量 WebGL 渲染器（無外部依賴） ================= */
 const R = (() => {
@@ -2942,7 +2946,8 @@ function drawAvatar(a, opt) {
   if (a.number === '' && !a.fake) return;
   if (a.fdT > 0 || a.fd || (a.fdLie || 0) > .15) return; // 假死：號碼牌不可讀
   if (a.chamT > 0 && R.cam && Math.hypot(a.x - R.cam.x, a.z - R.cam.z) > 8) return; // 半透明：8 公尺外看不清號碼
-  const sc = (a.plateScale || 1) * (a.miniT > 0 ? 1.25 : 1) * (G.bountyId === a ? 1 + Math.min(a.kills - 1, 8) * .14 : 1), k = C.head, pl0 = (O.plateLift || 0) * (C.head || 1), eg = G.sk && G.sk.eagle.t > 0 && G.sk.eagle.by !== a && G.sk.eagle.by; // 靶靶命中：只放大「其他人」的號碼牌，發動者自己的不放大
+  const prK = (PRO.on && G.player && a !== G.player && (isDM() || a.team !== G.player.team)) ? 1.5 : 1; // 先知模式：非同隊玩家的號碼牌 ×1.5
+  const sc = prK * (a.plateScale || 1) * (a.miniT > 0 ? 1.25 : 1) * (G.bountyId === a ? 1 + Math.min(a.kills - 1, 8) * .14 : 1), k = C.head, pl0 = (O.plateLift || 0) * (C.head || 1), eg = G.sk && G.sk.eagle.t > 0 && G.sk.eagle.by !== a && G.sk.eagle.by; // 靶靶命中：只放大「其他人」的號碼牌，發動者自己的不放大
   if (eg) { const yy = a.y + (hipN + chinN + (O.plateY - d.chinY) * k + .12) * bs, ps = sc * 2.2 * bs; M4.trs(M, a.x, yy, a.z, 0, Math.atan2(eg.x - a.x, eg.z - a.z), 0, .40 * ps * 1.1, .19 * ps * 1.1, 1); R.draw(AV.plateMesh, M, plateMatFor(a)); return; }
   placeM(M, U, 0, chinN + (O.plateY - d.chinY) * k + .04 * (sc - 1) + pl0, O.plateZ * k, -.14, 0, .40 * sc * 1.1, .19 * sc * 1.1, 1); R.draw(AV.plateMesh, M, plateMatFor(a));
 }
@@ -3142,7 +3147,7 @@ function endAllSkills() {
 }
 function killByCode(att, code, only) { // 輸入一組號碼，可同時擊殺所有顯示同號的敵方（連號甜心）
   const ts = only || G.actors.filter(o => o !== att && o.alive && o.number && o.number === code && enemyOf(att, o) && o.protect <= 0), ks = G.killSeq || 0;
-  for (const o of ts) eliminate(att, o); if ((G.killSeq || 0) > ks) kenBonus(att, code); return ts.length + (only ? 0 : killClones(att, code));
+  for (const o of ts) eliminate(att, o); const nk = (G.killSeq || 0) - ks; if (nk > 0) kenBonus(att, code); return nk + (only ? 0 : killClones(att, code));
 }
 /* ===== 肯尼系列：序列奇蹟／梅開二度／梅開三度 ===== */
 const WRONG_STUN = 1.5; // 輸入錯誤的定身秒數
@@ -3192,9 +3197,20 @@ function kenSubmit(a, code) { // 肯尼系列的輸入判定（本機／主機�
   const mine = G.actors.filter(o => o !== a && o.alive && o.number && enemyOf(a, o)), dist = o => Math.hypot(o.x - a.x, o.z - a.z), near = l => l.slice().sort((x, y) => dist(x) - dist(y))[0];
   if (kd === 'two' || kd === 'three') {
     const fn = kd === 'two' ? subSeq : subBag, cs = mine.concat(G.clones.filter(c => c.alive && c.owner !== a && (isDM() || c.owner.team !== a.team))).filter(o => fn(code, o.number)); let why = '';
-    if (!cs.length) { const dead = G.actors.find(o => o !== a && !o.alive && o.number && enemyOf(a, o) && fn(code, o.number)); why = dead ? '符合這組數字的玩家「' + dead.name + '」已經被擊殺了' : '場上沒有任何敵方號碼符合你輸入的這 ' + code.length + ' 碼（可能輸入有誤，或目標號碼已更新）'; }
-    else if (near(cs).isClone) { killClone(a, near(cs)); }
-    else { const t = near(cs), ks = G.killSeq || 0; eliminate(a, t); if ((G.killSeq || 0) === ks) why = '鎖定的目標「' + t.name + '」未被擊殺：' + (G.elimFail || '攻擊未生效'); }
+    if (!cs.length) { const dead = G.actors.find(o => o !== a && !o.alive && o.number && enemyOf(a, o) && fn(code, o.number)); if (dead && (dead.deadT || 0) < 3) { notify(a, '慢了一步', '「' + dead.name + '」剛剛已被擊殺，你的輸入沒有錯，不會受到懲罰。', 0); return; } why = dead ? '符合這組數字的玩家「' + dead.name + '」已經被擊殺了' : '場上沒有任何敵方號碼符合你輸入的這 ' + code.length + ' 碼（可能輸入有誤，或目標號碼已更新）'; }
+    else {
+      // 依距離由近到遠逐一嘗試：只要有任何一個符合的目標被成功擊殺（或擊碎迪的變身），就算成功
+      const order = cs.slice().sort((x, y) => dist(x) - dist(y)); let done = false, blocked = null;
+      for (const t of order) {
+        if (t.isClone) { killClone(a, t); done = true; break; }
+        const ks = G.killSeq || 0; eliminate(a, t);
+        if ((G.killSeq || 0) > ks || G.elimFail === 'shatter') { done = true; break; }
+        if (!blocked) blocked = [t, G.elimFail];
+        if (!a.alive) return;
+      }
+      if (done) return;
+      if (blocked) { notify(a, '攻擊被擋下', '你輸入的號碼正確，鎖定了「' + blocked[0].name + '」，但攻擊未生效：' + (blocked[1] || '對方受到保護') + '。輸入沒有錯，不會受到懲罰。', 0); return; }
+    }
     if (why) kenDie(a, why); return;
   }
   let hit = mine.filter(o => o.number === code);
@@ -3603,7 +3619,7 @@ function eliminate(k, v) {
   if (k !== v && v.alive && skOn() && isOut(v, 34) && v.amulet) { G.elimFail = '對方的「號碼護符」抵擋了攻擊'; v.amulet = false; v.amT = 0; blockHit(k, v, '號碼護符'); return; }
   if (k !== v && v.alive && v.shieldT > 0) { G.elimFail = '對方的護盾擋下了攻擊'; blockHit(k, v); return; }
   if (!v.alive || v.protect > 0) { G.elimFail = !v.alive ? '對方已被其他人擊殺' : '對方仍在重生保護中'; return; }
-  if (k !== v && v.decForm != null) { decadeShatter(v, k); return; }
+  if (k !== v && v.decForm != null) { decadeShatter(v, k); G.elimFail = 'shatter'; return; }
   G.killSeq = (G.killSeq || 0) + 1; v.alive = false; v.deaths++; v.deadT = 0; v.respawnT = 3.2; v.killedBy = k; v.typing = null; v.lure = null;
   if (G.mode === 'arena' && (v.isPlayer || v.remote)) v.respawnT = 10 + 2 * (Math.max(1, G.arena ? G.arena.stage : 1) - 1);
   if (G.mode === 'kof') { v.kout++; v.kleft = v.kleft.filter(i => i !== v.kcur); v.respawnT = 1e9; if (v.kout < 5) { v.kw = (v.isPlayer || v.remote) ? 9999 : 10; v.kbot = rand(2.5, 4.5); } }
@@ -3701,8 +3717,8 @@ function updatePlayer(dt) {
     const moving = ml > .08;
     let spd = 5.85; const wantSprint = In.sprint && my > .2 && moving;
     G.stamDelay -= dt;
-    const bolt = isOut(p, 12) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn; if (wantSprint && (G.stam > .02 || bolt) && !G.bino) { spd = 8.4; if (!bolt) G.stam = Math.max(0, G.stam - dt * .13); G.stamDelay = .9; } else if (G.stamDelay <= 0) G.stam = Math.min(1, G.stam + dt * .2);
-    const sprinting = spd > 7; p.sprinting = sprinting; spd *= speedMul(p); if (World.cur && World.cur.space && !p.onGround) spd *= 2; // 外太空：空中水平速度 ×2（滯空時間不變）⇒ 跳躍距離 ×2
+    const bolt = isOut(p, 12) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn; if (wantSprint && (G.stam > .02 || bolt) && !G.bino) { spd = 8.4; if (!bolt) G.stam = Math.max(0, G.stam - dt * .13 / (PRO.on ? 3 : 1)); G.stamDelay = .9; } else if (G.stamDelay <= 0) G.stam = Math.min(1, G.stam + dt * .2);
+    const sprinting = spd > 7; p.sprinting = sprinting; spd *= speedMul(p) * (PRO.on ? 1.2 : 1); if (World.cur && World.cur.space && !p.onGround) spd *= 2; // 外太空：空中水平速度 ×2（滯空時間不變）⇒ 跳躍距離 ×2
     if (G.bino) spd *= .42; if (p.carry) spd *= .93;
     let wx = (f[0] * my + rx * mx) * spd, wz = (f[1] * my + rz * mx) * spd; if (p.ctrlT > 0 && p.ctrlBy && isStunBy(p.ctrlBy)) { wx = wz = 0; p.yaw = faceYaw(p, p.ctrlBy); } else if (p.ctrlT > 0 && p.ctrlBy) { const dx = p.x - p.ctrlBy.x, dz = p.z - p.ctrlBy.z, dd = Math.hypot(dx, dz) || 1; wx = dx / dd * spd * .3; wz = dz / dd * spd * .3; }
     const k = Math.min(1, dt * (p.onGround ? (p.icy ? 1.3 : 12) : 3));
@@ -3727,7 +3743,7 @@ function updatePlayer(dt) {
     p.protect = Math.max(0, p.protect - dt);
     // 望遠鏡能量
     if (G.bino) { p.binAt = G.time; if (G.netClient && isOut(p, 13) && G.time - (p._bsent ?? -9) > 1) { p._bsent = G.time; netAct(['b']); } }
-    if (G.bino && (isOut(p, 13) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn)) G.energy = 1; else if (G.bino) { G.energy -= dt * .22; if (G.energy <= 0) { G.energy = 0; G.bino = false; } } else G.energy = Math.min(1, G.energy + dt * .12);
+    if (G.bino && (isOut(p, 13) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn)) G.energy = 1; else if (G.bino) { G.energy -= dt * .22 / (PRO.on ? 3 : 1); if (G.energy <= 0) { G.energy = 0; G.bino = false; } } else G.energy = Math.min(1, G.energy + dt * .12);
   } else { p.vx *= .9; p.vz *= .9; p.deadT += dt; p.respawnT -= dt; p.fall = Math.min(1, p.fall + dt * 2.5); if (p.jumpQ) { p.jumpQ = 0; UI.clrEv('jl'); } }
   { const want = 0; // 已取消探頭功能
      let tgt = 0; if (want) { let k = 0; for (let s = 1; s <= 11; s++) { if (!leanClear(p, want * s * .05)) break; k = s * .05; } tgt = want * k; } p.lo += (tgt - p.lo) * Math.min(1, dt * 11); p.lean = want; }
@@ -4935,6 +4951,12 @@ const Input = {
   joy: { id: null, ox: 0, oy: 0 }, look: { id: null, lx: 0, ly: 0 }, binHold: false,
   init() {
     const lookScale = () => (R.cam.fov / 1.28), sensNow = () => ((G.player && G.player.wdHit) ? .2 : G.bino ? 1.7 : S.sens); // 開望遠鏡時靈敏度 1.70
+    window.addEventListener('keydown', e => { // 先知模式：選角畫面連續輸入 0913
+      const m = /^(Digit|Numpad)([0-9])$/.exec(e.code); if (!CS.o || !m) return;
+      PRO.buf = (PRO.buf + m[2]).slice(-4); e.stopImmediatePropagation(); e.preventDefault();
+      if (PRO.buf === '0913') { PRO.buf = ''; PRO.on = true; Sfx.tone && Sfx.tone(880, .15, 'triangle', .1, 1320); $('prophetBox').classList.remove('hidden'); }
+    }, true);
+    $('prophetOk').onclick = () => $('prophetBox').classList.add('hidden');
     window.addEventListener('keydown', e => {
       if (e.repeat && e.code !== 'Backspace') { if (e.code === 'Tab' || e.code === 'Space') e.preventDefault(); return; }
       if (Device.auto && S.input === 'auto' && performance.now() - Device.lastTouch > 3000 && /^(Key|Digit|Arrow|Space|Shift|Tab)/.test(e.code)) { Device.auto = false; Device.update(); }
@@ -5561,7 +5583,7 @@ function boot() {
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
 setInterval(() => { try { UI.renderPills(); } catch (e) { } }, 120);
-window.__G = { In, cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+window.__G = { PRO, OUTFITS, kenKind, In, cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 
 // 檢查是否有新版（防止 PWA 快取舊版）

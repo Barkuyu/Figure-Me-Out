@@ -617,7 +617,8 @@ function drawAvatar(a, opt) {
   if (a.number === '' && !a.fake) return;
   if (a.fdT > 0 || a.fd || (a.fdLie || 0) > .15) return; // 假死：號碼牌不可讀
   if (a.chamT > 0 && R.cam && Math.hypot(a.x - R.cam.x, a.z - R.cam.z) > 8) return; // 半透明：8 公尺外看不清號碼
-  const sc = (a.plateScale || 1) * (a.miniT > 0 ? 1.25 : 1) * (G.bountyId === a ? 1 + Math.min(a.kills - 1, 8) * .14 : 1), k = C.head, pl0 = (O.plateLift || 0) * (C.head || 1), eg = G.sk && G.sk.eagle.t > 0 && G.sk.eagle.by !== a && G.sk.eagle.by; // 靶靶命中：只放大「其他人」的號碼牌，發動者自己的不放大
+  const prK = (PRO.on && G.player && a !== G.player && (isDM() || a.team !== G.player.team)) ? 1.5 : 1; // 先知模式：非同隊玩家的號碼牌 ×1.5
+  const sc = prK * (a.plateScale || 1) * (a.miniT > 0 ? 1.25 : 1) * (G.bountyId === a ? 1 + Math.min(a.kills - 1, 8) * .14 : 1), k = C.head, pl0 = (O.plateLift || 0) * (C.head || 1), eg = G.sk && G.sk.eagle.t > 0 && G.sk.eagle.by !== a && G.sk.eagle.by; // 靶靶命中：只放大「其他人」的號碼牌，發動者自己的不放大
   if (eg) { const yy = a.y + (hipN + chinN + (O.plateY - d.chinY) * k + .12) * bs, ps = sc * 2.2 * bs; M4.trs(M, a.x, yy, a.z, 0, Math.atan2(eg.x - a.x, eg.z - a.z), 0, .40 * ps * 1.1, .19 * ps * 1.1, 1); R.draw(AV.plateMesh, M, plateMatFor(a)); return; }
   placeM(M, U, 0, chinN + (O.plateY - d.chinY) * k + .04 * (sc - 1) + pl0, O.plateZ * k, -.14, 0, .40 * sc * 1.1, .19 * sc * 1.1, 1); R.draw(AV.plateMesh, M, plateMatFor(a));
 }

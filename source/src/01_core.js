@@ -462,3 +462,6 @@ const TG = {
   },
   white() { const c = cv(4, 4), g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, 4, 4); return c; }
 };
+
+/* 先知模式（選角畫面輸入 0913 開啟；僅本機玩家、本次開啟網頁期間有效） */
+const PRO = { on: false, buf: '' };

@@ -281,6 +281,12 @@ const Input = {
   joy: { id: null, ox: 0, oy: 0 }, look: { id: null, lx: 0, ly: 0 }, binHold: false,
   init() {
     const lookScale = () => (R.cam.fov / 1.28), sensNow = () => ((G.player && G.player.wdHit) ? .2 : G.bino ? 1.7 : S.sens); // 開望遠鏡時靈敏度 1.70
+    window.addEventListener('keydown', e => { // 先知模式：選角畫面連續輸入 0913
+      const m = /^(Digit|Numpad)([0-9])$/.exec(e.code); if (!CS.o || !m) return;
+      PRO.buf = (PRO.buf + m[2]).slice(-4); e.stopImmediatePropagation(); e.preventDefault();
+      if (PRO.buf === '0913') { PRO.buf = ''; PRO.on = true; Sfx.tone && Sfx.tone(880, .15, 'triangle', .1, 1320); $('prophetBox').classList.remove('hidden'); }
+    }, true);
+    $('prophetOk').onclick = () => $('prophetBox').classList.add('hidden');
     window.addEventListener('keydown', e => {
       if (e.repeat && e.code !== 'Backspace') { if (e.code === 'Tab' || e.code === 'Space') e.preventDefault(); return; }
       if (Device.auto && S.input === 'auto' && performance.now() - Device.lastTouch > 3000 && /^(Key|Digit|Arrow|Space|Shift|Tab)/.test(e.code)) { Device.auto = false; Device.update(); }
@@ -907,7 +913,7 @@ function boot() {
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
 setInterval(() => { try { UI.renderPills(); } catch (e) { } }, 120);
-window.__G = { In, cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+window.__G = { PRO, OUTFITS, kenKind, In, cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 
 // 檢查是否有新版（防止 PWA 快取舊版）

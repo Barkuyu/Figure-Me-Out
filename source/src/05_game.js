@@ -189,7 +189,7 @@ function endAllSkills() {
 }
 function killByCode(att, code, only) { // 輸入一組號碼，可同時擊殺所有顯示同號的敵方（連號甜心）
   const ts = only || G.actors.filter(o => o !== att && o.alive && o.number && o.number === code && enemyOf(att, o) && o.protect <= 0), ks = G.killSeq || 0;
-  for (const o of ts) eliminate(att, o); if ((G.killSeq || 0) > ks) kenBonus(att, code); return ts.length + (only ? 0 : killClones(att, code));
+  for (const o of ts) eliminate(att, o); const nk = (G.killSeq || 0) - ks; if (nk > 0) kenBonus(att, code); return nk + (only ? 0 : killClones(att, code));
 }
 /* ===== 肯尼系列：序列奇蹟／梅開二度／梅開三度 ===== */
 const WRONG_STUN = 1.5; // 輸入錯誤的定身秒數
@@ -239,9 +239,20 @@ function kenSubmit(a, code) { // 肯尼系列的輸入判定（本機／主機�
   const mine = G.actors.filter(o => o !== a && o.alive && o.number && enemyOf(a, o)), dist = o => Math.hypot(o.x - a.x, o.z - a.z), near = l => l.slice().sort((x, y) => dist(x) - dist(y))[0];
   if (kd === 'two' || kd === 'three') {
     const fn = kd === 'two' ? subSeq : subBag, cs = mine.concat(G.clones.filter(c => c.alive && c.owner !== a && (isDM() || c.owner.team !== a.team))).filter(o => fn(code, o.number)); let why = '';
-    if (!cs.length) { const dead = G.actors.find(o => o !== a && !o.alive && o.number && enemyOf(a, o) && fn(code, o.number)); why = dead ? '符合這組數字的玩家「' + dead.name + '」已經被擊殺了' : '場上沒有任何敵方號碼符合你輸入的這 ' + code.length + ' 碼（可能輸入有誤，或目標號碼已更新）'; }
-    else if (near(cs).isClone) { killClone(a, near(cs)); }
-    else { const t = near(cs), ks = G.killSeq || 0; eliminate(a, t); if ((G.killSeq || 0) === ks) why = '鎖定的目標「' + t.name + '」未被擊殺：' + (G.elimFail || '攻擊未生效'); }
+    if (!cs.length) { const dead = G.actors.find(o => o !== a && !o.alive && o.number && enemyOf(a, o) && fn(code, o.number)); if (dead && (dead.deadT || 0) < 3) { notify(a, '慢了一步', '「' + dead.name + '」剛剛已被擊殺，你的輸入沒有錯，不會受到懲罰。', 0); return; } why = dead ? '符合這組數字的玩家「' + dead.name + '」已經被擊殺了' : '場上沒有任何敵方號碼符合你輸入的這 ' + code.length + ' 碼（可能輸入有誤，或目標號碼已更新）'; }
+    else {
+      // 依距離由近到遠逐一嘗試：只要有任何一個符合的目標被成功擊殺（或擊碎迪的變身），就算成功
+      const order = cs.slice().sort((x, y) => dist(x) - dist(y)); let done = false, blocked = null;
+      for (const t of order) {
+        if (t.isClone) { killClone(a, t); done = true; break; }
+        const ks = G.killSeq || 0; eliminate(a, t);
+        if ((G.killSeq || 0) > ks || G.elimFail === 'shatter') { done = true; break; }
+        if (!blocked) blocked = [t, G.elimFail];
+        if (!a.alive) return;
+      }
+      if (done) return;
+      if (blocked) { notify(a, '攻擊被擋下', '你輸入的號碼正確，鎖定了「' + blocked[0].name + '」，但攻擊未生效：' + (blocked[1] || '對方受到保護') + '。輸入沒有錯，不會受到懲罰。', 0); return; }
+    }
     if (why) kenDie(a, why); return;
   }
   let hit = mine.filter(o => o.number === code);
@@ -650,7 +661,7 @@ function eliminate(k, v) {
   if (k !== v && v.alive && skOn() && isOut(v, 34) && v.amulet) { G.elimFail = '對方的「號碼護符」抵擋了攻擊'; v.amulet = false; v.amT = 0; blockHit(k, v, '號碼護符'); return; }
   if (k !== v && v.alive && v.shieldT > 0) { G.elimFail = '對方的護盾擋下了攻擊'; blockHit(k, v); return; }
   if (!v.alive || v.protect > 0) { G.elimFail = !v.alive ? '對方已被其他人擊殺' : '對方仍在重生保護中'; return; }
-  if (k !== v && v.decForm != null) { decadeShatter(v, k); return; }
+  if (k !== v && v.decForm != null) { decadeShatter(v, k); G.elimFail = 'shatter'; return; }
   G.killSeq = (G.killSeq || 0) + 1; v.alive = false; v.deaths++; v.deadT = 0; v.respawnT = 3.2; v.killedBy = k; v.typing = null; v.lure = null;
   if (G.mode === 'arena' && (v.isPlayer || v.remote)) v.respawnT = 10 + 2 * (Math.max(1, G.arena ? G.arena.stage : 1) - 1);
   if (G.mode === 'kof') { v.kout++; v.kleft = v.kleft.filter(i => i !== v.kcur); v.respawnT = 1e9; if (v.kout < 5) { v.kw = (v.isPlayer || v.remote) ? 9999 : 10; v.kbot = rand(2.5, 4.5); } }
@@ -748,8 +759,8 @@ function updatePlayer(dt) {
     const moving = ml > .08;
     let spd = 5.85; const wantSprint = In.sprint && my > .2 && moving;
     G.stamDelay -= dt;
-    const bolt = isOut(p, 12) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn; if (wantSprint && (G.stam > .02 || bolt) && !G.bino) { spd = 8.4; if (!bolt) G.stam = Math.max(0, G.stam - dt * .13); G.stamDelay = .9; } else if (G.stamDelay <= 0) G.stam = Math.min(1, G.stam + dt * .2);
-    const sprinting = spd > 7; p.sprinting = sprinting; spd *= speedMul(p); if (World.cur && World.cur.space && !p.onGround) spd *= 2; // 外太空：空中水平速度 ×2（滯空時間不變）⇒ 跳躍距離 ×2
+    const bolt = isOut(p, 12) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn; if (wantSprint && (G.stam > .02 || bolt) && !G.bino) { spd = 8.4; if (!bolt) G.stam = Math.max(0, G.stam - dt * .13 / (PRO.on ? 3 : 1)); G.stamDelay = .9; } else if (G.stamDelay <= 0) G.stam = Math.min(1, G.stam + dt * .2);
+    const sprinting = spd > 7; p.sprinting = sprinting; spd *= speedMul(p) * (PRO.on ? 1.2 : 1); if (World.cur && World.cur.space && !p.onGround) spd *= 2; // 外太空：空中水平速度 ×2（滯空時間不變）⇒ 跳躍距離 ×2
     if (G.bino) spd *= .42; if (p.carry) spd *= .93;
     let wx = (f[0] * my + rx * mx) * spd, wz = (f[1] * my + rz * mx) * spd; if (p.ctrlT > 0 && p.ctrlBy && isStunBy(p.ctrlBy)) { wx = wz = 0; p.yaw = faceYaw(p, p.ctrlBy); } else if (p.ctrlT > 0 && p.ctrlBy) { const dx = p.x - p.ctrlBy.x, dz = p.z - p.ctrlBy.z, dd = Math.hypot(dx, dz) || 1; wx = dx / dd * spd * .3; wz = dz / dd * spd * .3; }
     const k = Math.min(1, dt * (p.onGround ? (p.icy ? 1.3 : 12) : 3));
@@ -774,7 +785,7 @@ function updatePlayer(dt) {
     p.protect = Math.max(0, p.protect - dt);
     // 望遠鏡能量
     if (G.bino) { p.binAt = G.time; if (G.netClient && isOut(p, 13) && G.time - (p._bsent ?? -9) > 1) { p._bsent = G.time; netAct(['b']); } }
-    if (G.bino && (isOut(p, 13) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn)) G.energy = 1; else if (G.bino) { G.energy -= dt * .22; if (G.energy <= 0) { G.energy = 0; G.bino = false; } } else G.energy = Math.min(1, G.energy + dt * .12);
+    if (G.bino && (isOut(p, 13) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn)) G.energy = 1; else if (G.bino) { G.energy -= dt * .22 / (PRO.on ? 3 : 1); if (G.energy <= 0) { G.energy = 0; G.bino = false; } } else G.energy = Math.min(1, G.energy + dt * .12);
   } else { p.vx *= .9; p.vz *= .9; p.deadT += dt; p.respawnT -= dt; p.fall = Math.min(1, p.fall + dt * 2.5); if (p.jumpQ) { p.jumpQ = 0; UI.clrEv('jl'); } }
   { const want = 0; // 已取消探頭功能
      let tgt = 0; if (want) { let k = 0; for (let s = 1; s <= 11; s++) { if (!leanClear(p, want * s * .05)) break; k = s * .05; } tgt = want * k; } p.lo += (tgt - p.lo) * Math.min(1, dt * 11); p.lean = want; }
