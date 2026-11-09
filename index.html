@@ -440,7 +440,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.4</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.5</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -959,6 +959,39 @@ const TG = {
     for (let i = 0; i < txt.length; i++) { const t = Math.PI / 2 + (i + .5) / txt.length * Math.PI * 2, x = cx + Math.cos(t) * rx, y = cy + Math.sin(t) * ry, tx = -Math.sin(t) * rx, ty = Math.cos(t) * ry; g.save(); g.translate(x, y); g.rotate(Math.atan2(ty, tx) - Math.PI); g.fillText(txt[i], 0, 0); g.restore(); }
     return c;
   },
+  staff() { // 五線譜黑板
+    const c = cv(512, 256), g = c.getContext('2d'); g.fillStyle = '#1f3a2e'; g.fillRect(0, 0, 512, 256);
+    dots(g, 512, 256, 1400, ['#27463a', '#1a3328'], 1, 2, .5);
+    g.strokeStyle = 'rgba(232,236,226,.82)'; g.lineWidth = 2;
+    for (let b = 0; b < 2; b++) for (let i = 0; i < 5; i++) { const y = 46 + b * 118 + i * 14; g.beginPath(); g.moveTo(18, y); g.lineTo(494, y); g.stroke(); }
+    g.fillStyle = 'rgba(236,240,230,.9)';
+    const rr = rng(77);
+    for (let b = 0; b < 2; b++) for (let k = 0; k < 14; k++) { const x = 60 + k * 31 + rr() * 6, y = 46 + b * 118 + (rr() * 4 | 0) * 14 + 7; g.beginPath(); g.ellipse(x, y, 7, 5, -.4, 0, Math.PI * 2); g.fill(); g.fillRect(x + 5, y - 32, 2.5, 32); }
+    g.font = '700 46px Georgia,serif'; g.fillText('𝄞', 24, 86); g.fillText('𝄞', 24, 204); return c;
+  },
+  acous() { // 吸音打孔板
+    const c = cv(128, 128), g = c.getContext('2d'); g.fillStyle = '#b9a98c'; g.fillRect(0, 0, 128, 128);
+    g.fillStyle = 'rgba(60,48,34,.5)'; for (let y = 6; y < 128; y += 11) for (let x = (y / 11 % 2) * 5 + 6; x < 128; x += 11) { g.beginPath(); g.arc(x, y, 2.3, 0, Math.PI * 2); g.fill(); }
+    g.strokeStyle = 'rgba(80,64,44,.35)'; g.lineWidth = 2; g.strokeRect(1, 1, 126, 126); return c;
+  },
+  tileW() { // 白色磚形磁磚（廚房牆）
+    const c = cv(256, 256), g = c.getContext('2d'); g.fillStyle = '#cfd3d2'; g.fillRect(0, 0, 256, 256);
+    for (let r = 0; r < 8; r++) for (let i = -1; i < 5; i++) { const x = i * 64 + (r % 2) * 32, y = r * 32; g.fillStyle = '#f2f4f1'; g.fillRect(x + 2, y + 2, 60, 28); const gr = g.createLinearGradient(0, y + 2, 0, y + 30); gr.addColorStop(0, 'rgba(255,255,255,.5)'); gr.addColorStop(1, 'rgba(180,190,188,.22)'); g.fillStyle = gr; g.fillRect(x + 2, y + 2, 60, 28); }
+    return c;
+  },
+  marble() { // 白色大理石檯面
+    const c = cv(256, 256), g = c.getContext('2d'); g.fillStyle = '#eceae4'; g.fillRect(0, 0, 256, 256);
+    const rr = rng(404); blotch(g, 256, 256, 10, 30, 90, .05);
+    for (let k = 0; k < 16; k++) { g.strokeStyle = `rgba(${120 + rr() * 40 | 0},${120 + rr() * 40 | 0},${125 + rr() * 40 | 0},${.12 + rr() * .2})`; g.lineWidth = .8 + rr() * 2.2; g.beginPath(); let x = rr() * 256, y = rr() * 256; g.moveTo(x, y); for (let i = 0; i < 7; i++) { x += rr() * 70 - 25; y += rr() * 60 - 20; g.lineTo(x, y); } g.stroke(); }
+    return c;
+  },
+  hcarp() { // 演藝廳暗紅花紋地毯
+    const c = cv(256, 256), g = c.getContext('2d'); g.fillStyle = '#5c1118'; g.fillRect(0, 0, 256, 256);
+    dots(g, 256, 256, 2200, ['#6a1820', '#4a0d14', '#74202a'], 1, 2.4, .5);
+    g.strokeStyle = 'rgba(206,168,92,.30)'; g.lineWidth = 2.2;
+    for (let cy = 0; cy <= 256; cy += 64) for (let cx = (cy / 64 % 2) * 32; cx <= 256; cx += 64) { g.beginPath(); g.arc(cx, cy, 17, 0, Math.PI * 2); g.stroke(); g.beginPath(); g.arc(cx, cy, 7, 0, Math.PI * 2); g.stroke(); }
+    return c;
+  },
   swirl() { // 深灰漩渦紋地毯
     const c = cv(256, 256), g = c.getContext('2d'); g.fillStyle = '#3b3a3f'; g.fillRect(0, 0, 256, 256); g.strokeStyle = 'rgba(150,148,156,.28)'; g.lineWidth = 2;
     for (let cy = 0; cy <= 256; cy += 32) for (let cx = (cy / 32 % 2) * 32; cx <= 256; cx += 64) for (let r = 6; r <= 30; r += 6) { g.beginPath(); g.arc(cx, cy, r, 0, Math.PI * 2); g.stroke(); } return c;
@@ -1305,6 +1338,19 @@ const World = {
     d.sofaC = { sx: 4, sy: 4, tint: [.72, .68, .46, 1], ao: 1 };
     d.drape = { sx: 4, sy: 4, tint: [.55, .06, .08, 1], ao: 1 };
     d.gold = { sx: 4, sy: 4, tint: [.86, .68, .22, 1], ao: 1, spec: .6 };
+    d.staff = { tex: T(TG.staff), sx: 6, sy: 3, ao: 1 };
+    d.acous = { tex: T(TG.acous), sx: 2, sy: 2, ao: 1 };
+    d.tileW = { tex: T(TG.tileW), sx: 2.6, sy: 2.6, ao: 1, spec: .35 };
+    d.marble = { tex: T(TG.marble), sx: 3, sy: 3, ao: 1, spec: .5 };
+    d.hcarp = { tex: T(TG.hcarp), sx: 3, sy: 3, ao: 1 };
+    d.velvet = { sx: 4, sy: 4, tint: [.44, .05, .09, 1], ao: 1 };
+    d.brass = { sx: 4, sy: 4, tint: [.80, .62, .26, 1], ao: 1, spec: .7 };
+    d.inox = { sx: 4, sy: 4, tint: [.76, .79, .82, 1], ao: 1, spec: .75 };
+    d.choco = { sx: 4, sy: 4, tint: [.34, .20, .12, 1], ao: 1 };
+    d.cream = { sx: 4, sy: 4, tint: [.98, .93, .79, 1], ao: 1 };
+    d.straw = { sx: 4, sy: 4, tint: [.90, .40, .48, 1], ao: 1 };
+    d.mint = { sx: 4, sy: 4, tint: [.62, .86, .74, 1], ao: 1 };
+    d.ebony = { sx: 4, sy: 4, tint: [.10, .10, .11, 1], ao: 1, spec: .55 };
     d.swirl = { tex: T(TG.swirl), sx: 3, sy: 3, spec: .2, ao: 0 };
     d.ballGold = { sx: 4, sy: 4, tint: [.94, .70, .16, 1], ao: 1, spec: .55 };
     d.cable = { sx: 4, sy: 4, tint: [.86, .66, .2, 1], ao: 1, spec: .4 };
@@ -2270,9 +2316,9 @@ MAPS.roof = {
 };
 
 /* ================= 地圖 8：89 樓觀景台（台北 101 風阻尼球；面積同熱血高校，障礙物 1.1 倍） ================= */
-const SKY89_ENV = { sunCol: [1.0, .9, .74], sky: [.30, .26, .42], gnd: [.68, .62, .58], fog: [.07, .06, .12], fogR: [70, 260], interior: [-43.5, -35.5, 43.5, 35.5], intK: 1.0, intH: 9.4 };
+const SKY89_ENV = { sunCol: [1.0, .9, .74], sky: [.30, .26, .42], gnd: [.68, .62, .58], fog: [.07, .06, .12], fogR: [70, 260], interior: [-43.5, -35.5, 43.5, 35.5], intK: 1.0, intH: 14.0 };
 function buildSky89(W) {
-  const B = (...a) => W.box(...a), rr = rng(8901), HX = 43, HZ = 35, CH = 9.4, rects = [];
+  const B = (...a) => W.box(...a), rr = rng(8901), HX = 43, HZ = 35, CH = 14.0, rects = [];
   const rect = (x, z, w, d) => rects.push([x - w / 2, z - d / 2, x + w / 2, z + d / 2]);
   const free = (x, z, w, d, mg) => { for (const q of rects) if (x + w / 2 + mg > q[0] && x - w / 2 - mg < q[2] && z + d / 2 + mg > q[1] && z - d / 2 - mg < q[3]) return false; return true; };
   const keep = [[-43, -11, -33, 11], [33, -11, 43, 11]]; const inKeep = (x, z, w, d) => keep.some(q => x + w / 2 > q[0] && x - w / 2 < q[2] && z + d / 2 > q[1] && z - d / 2 < q[3]) || Math.hypot(x, z) < 15;
@@ -2282,7 +2328,7 @@ function buildSky89(W) {
   W.quadTop('swirl', -70, -55, 70, 55, 0);
   B('ceil', 0, 0, 2 * HX, 2 * HZ, .4, CH, { collide: false });
   const ring = (R, N, mat, w, h, y0, col, see) => { for (let k = 0; k < N; k++) { const a = k / N * Math.PI * 2, b = (k + 1) / N * Math.PI * 2, x0 = Math.cos(a) * R, z0 = Math.sin(a) * R, x1 = Math.cos(b) * R, z1 = Math.sin(b) * R; B(mat, (x0 + x1) / 2, (z0 + z1) / 2, Math.abs(x1 - x0) + w, Math.abs(z1 - z0) + w, h, y0, col ? { collide: false } : (see === false ? { see: false } : undefined)); } };
-  ring(17, 40, 'warmLight', .5, .12, CH - .12, true); ring(18.2, 40, 'ceil', .9, .7, CH - .7, true); // 天花板暖光環
+  ring(10.6, 48, 'warmLight', .7, .16, CH - .16, true); ring(11.6, 48, 'ceil', 1.1, .9, CH - .9, true); ring(19, 40, 'warmLight', .5, .12, CH - .12, true); // 球體正上方的環形燈槽 + 外圈暖光環
   for (let k = 0; k < 70; k++) B('warmLight', (rr() * 2 - 1) * 40, (rr() * 2 - 1) * 32, .12, .12, .05, CH - .05, { collide: false }); // 星空般的天花板小燈
   for (let x = -36; x <= 36; x += 12) for (let z = -28; z <= 28; z += 14) if (Math.hypot(x, z) > 20) B('light', x, z, 1.1, 1.1, .05, CH - .05, { collide: false });
   // ---- 外牆：整面落地玻璃帷幕（可透視夜景、不可穿越）＋四角階梯缺角（呼應 101 樓層平面） ----
@@ -2290,17 +2336,51 @@ function buildSky89(W) {
   for (let x = -40; x <= 40; x += 8) for (const sz of [-1, 1]) B('steel', x, sz * (HZ + .2), .25, .35, CH, 0, { collide: false });
   for (let z = -32; z <= 32; z += 8) for (const sx of [-1, 1]) B('steel', sx * (HX + .2), z, .35, .25, CH, 0, { collide: false });
   for (const sx of [-1, 1]) for (const sz of [-1, 1]) { solid('arenaW', sx * 40.5, sz * 32.5, 5, 5, CH); solid('arenaW', sx * 37.2, sz * 34.2, 3.4, 1.8, CH); solid('arenaW', sx * 42.2, sz * 28.8, 1.8, 3.4, CH); B('warmLight', sx * 40.5, sz * 32.5, 5.1, 5.1, .08, 1.0, { collide: false }); }
-  // ---- 中央：風阻尼球（階層式金黃球體）、四條吊索、液壓阻尼器與玻璃欄杆 ----
-  const BR = 4.6, BY = 4.0, items = [];
-  for (let k = 0; k < 17; k++) { const y = BY - BR + .3 + k * .52, dy = y - BY, r = Math.sqrt(Math.max(.4, BR * BR - dy * dy)); items.push({ g: gCyl(r, r, .5, 28, 1), t: [0, y, 0], c: [1, .74 + (k % 2) * .05, .2] }); }
+  // ---- 中央：懸吊式風阻尼球（球體完全懸空，四條鋼索自天花板垂下承載，下方液壓阻尼器）----
+  const BR = 3.7, BY = 5.9, BB0 = BY - BR, items = []; // 球心 5.9 m、半徑 3.7 m ⇒ 球底離地 2.2 m，完全懸空
+  { // 階層式圓盤堆疊（上下皆內縮成球形；每片略為外突，形成照片中的層層陰影線）
+    const N = 26, H = (BR * 2 - .5) / N, y0 = BB0 + .25, rAt = y => Math.sqrt(Math.max(.25, BR * BR - (y - BY) * (y - BY)));
+    for (let k = 0; k < N; k++) {
+      const yb = y0 + k * H, yt = yb + H;
+      const rb = rAt(yb), rt = rAt(yt), c = .70 + (k % 2) * .06;
+      items.push({ g: gCyl(Math.max(rt, rb) + .06, Math.max(rt, rb) + .06, H * .34, 30, 1), t: [0, yb + H * .17, 0], c: [1, c - .06, .16] }); // 外突裙邊
+      items.push({ g: gCyl(rt, rb, H, 30, 1), t: [0, (yb + yt) / 2, 0], c: [1, c, .2] });
+    }
+    items.push({ g: gCyl(rAt(y0) * .99, rAt(y0) * .86, .55, 30, 1), t: [0, BB0 + .02, 0], c: [.86, .62, .16] }); // 球底收邊
+    items.push({ g: gCyl(.9, .9, .35, 24, 1), t: [0, BY + BR - .18, 0], c: [1, .82, .26] }); // 球頂圓盤
+  }
   W.prop(items);
-  const cab = [];
-  for (const [sx, sz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const ax = sx * 6.2, az = sz * 6.2, bx = sx * 3.2, bz = sz * 3.2, ay = CH - .3, by = BY + 3.4, L = Math.hypot(ax - bx, az - bz, ay - by), th = Math.atan2(Math.hypot(ax - bx, az - bz), ay - by); cab.push({ g: gCyl(.2, .2, L, 8, 1), t: [(ax + bx) / 2, (ay + by) / 2, (az + bz) / 2], r: sx ? [0, 0, sx * th] : [-sz * th, 0, 0], c: [1, .8, .3] }); }
-  for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2 + .39, x = Math.cos(a) * 6.4, z = Math.sin(a) * 6.4; cab.push({ g: gCyl(.22, .3, 2.6, 8, 1), t: [x, 1.0, z], r: [-Math.sin(a) * .5 * -1, 0, Math.cos(a) * -.5], c: [.82, .85, .9] }); } // 液壓阻尼器
+  const tube = (A, Z, r, col, seg) => { // 由 A 點連到 Z 點的圓柱
+    const dx = Z[0] - A[0], dy = Z[1] - A[1], dz = Z[2] - A[2], L = Math.hypot(dx, dy, dz) || .01;
+    return { g: gCyl(r, r, L, seg || 8, 1), t: [(A[0] + Z[0]) / 2, (A[1] + Z[1]) / 2, (A[2] + Z[2]) / 2], r: [Math.acos(clamp(dy / L, -1, 1)), Math.atan2(dx, dz), 0], c: col };
+  };
+  const cab = [], CT = CH - .25, AR = 5.0, TY = BY + 2.8, TR = Math.sqrt(Math.max(.3, BR * BR - 2.8 * 2.8));
+  for (let k = 0; k < 4; k++) { // 四條主吊索：自天花板斜垂而下，咬在球體上半部
+    const a = k / 4 * Math.PI * 2 + Math.PI / 4, cs = Math.cos(a), sn = Math.sin(a);
+    cab.push(tube([cs * AR, CT, sn * AR], [cs * (TR - .2), TY, sn * (TR - .2)], .24, [.80, .70, .33], 9));
+    cab.push({ g: gCyl(.42, .42, .5, 12, 1), t: [cs * AR, CT + .2, sn * AR], c: [.55, .55, .6] }); // 天花板吊點
+    cab.push({ g: gCyl(.46, .52, .7, 12, 1), t: [cs * (TR - .25), TY - .1, sn * (TR - .25)], r: [.5, Math.atan2(cs, sn), 0], c: [.78, .8, .85] }); // 球面鎖頭
+  }
+  for (let k = 0; k < 8; k++) { // 八支液壓阻尼器：自地面錨座斜撐到球體底盤
+    const a = k / 8 * Math.PI * 2 + Math.PI / 8, cs = Math.cos(a), sn = Math.sin(a);
+    cab.push(tube([cs * 6.1, .35, sn * 6.1], [cs * 2.5, BB0 + .35, sn * 2.5], .26, [.80, .83, .88], 8));
+    cab.push(tube([cs * 6.1, .35, sn * 6.1], [cs * 4.5, BB0 * .6, sn * 4.5], .32, [.62, .65, .70], 8)); // 外筒
+    cab.push({ g: gBox(1.3, .3, 1.3), t: [cs * 6.4, .15, sn * 6.4], r: [0, -a, 0], c: [.34, .34, .38] }); // 地面錨座
+  }
   W.prop(cab);
-  for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2 + Math.PI / 8; W.col(Math.cos(a) * 3.4, Math.sin(a) * 3.4, 4.2, 4.2, 9, 0); } // 球體實體（遮擋視線）
-  W.col(0, 0, 7.5, 7.5, 9, 0); rects.push([-11, -11, 11, 11]);
-  ring(9.2, 40, 'glassT', .5, 1.15, 0, false, false); ring(9.2, 40, 'steel', .6, .07, 1.15, true); // 玻璃欄杆（可透視、不可穿越）
+  // 球體本身：懸空的視線遮蔽（離地 2.7 m，因此不影響地面導航）
+  for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2 + Math.PI / 8; W.col(Math.cos(a) * 2.9, Math.sin(a) * 2.9, 3.6, 3.6, BR * 2 - .6, BB0 + .3); }
+  W.col(0, 0, 6.4, 6.4, BR * 2 - .6, BB0 + .3);
+  rects.push([-11, -11, 11, 11]);
+  // 玻璃欄杆（看得見、走不過）＋ 外圍空氣牆（整段封頂，連跳躍也無法進入球體周圍）
+  ring(9.2, 40, 'glassT', .5, 1.15, 0, false, false); ring(9.2, 40, 'steel', .6, .09, 1.15, true);
+  for (let k = 0; k < 24; k++) { const a = k / 24 * Math.PI * 2; B('steel', Math.cos(a) * 9.2, Math.sin(a) * 9.2, .14, .14, 1.22, 0, { collide: false }); } // 欄杆立柱
+  { // 空氣牆：沿欄杆整圈封到天花板（連跳躍也進不去），內部再以隱形條塊填滿，讓電腦玩家不會把球體區當成可走區域
+    const air = (x0, z0, x1, z1) => W.boxes.push({ x0, x1, z0, z1, y0: 0, y1: CH, see: false, aw: true });
+    const AW = 9.2;
+    for (let k = 0; k < 48; k++) { const a = k / 48 * Math.PI * 2, b = (k + 1) / 48 * Math.PI * 2, x0 = Math.cos(a) * AW, z0 = Math.sin(a) * AW, x1 = Math.cos(b) * AW, z1 = Math.sin(b) * AW; air(Math.min(x0, x1) - .3, Math.min(z0, z1) - .3, Math.max(x0, x1) + .3, Math.max(z0, z1) + .3); }
+    for (let z = -AW; z < AW - .01; z += 1.5) { const z1 = Math.min(z + 1.5, AW), hw = Math.sqrt(Math.max(0, AW * AW - Math.max(Math.abs(z), Math.abs(z1)) ** 2)); if (hw > .3) air(-hw, z, hw, z1); }
+  }
   W.quadTop('ballGold', -.1, -.1, .1, .1, -3); // 保留材質桶
   // ---- 告示牌（參考樓層導覽） ----
   const board = (txt, bg) => W.text(txt, { w: 512, h: 96, bg, fg: '#fff', border: '#d9c28a', font: '800 56px' });
@@ -2309,7 +2389,7 @@ function buildSky89(W) {
   // ---- 兩側服務核心（電梯／服務台），中軸對稱 ----
   for (const sx of [-1, 1]) { solid('hull', sx * 25, -26, 8, 5, 3.6); solid('hull', sx * 25, 26, 8, 5, 3.6); solid('wood', sx * 24, -17, 5, 1.2, 1.1); solid('wood', sx * 24, 17, 5, 1.2, 1.1); }
   // ---- 觀景台設施填充：服務櫃台、展示柱、盆栽、長椅、立牌；總數約 276，阻擋型約 141 以上 ----
-  const cnt = () => W.boxes.filter(b => !b.nc).length, blk = () => W.boxes.filter(b => !b.nc && b.y1 - b.y0 >= 1.2).length; let guard = 0;
+  const cnt = () => W.boxes.filter(b => !b.nc && !b.aw).length, blk = () => W.boxes.filter(b => !b.nc && !b.aw && b.y1 - b.y0 >= 1.2).length; let guard = 0;
   while ((cnt() < 276 || blk() < 141) && guard++ < 9000) {
     const x = (rr() * 2 - 1) * (HX - 3), z = (rr() * 2 - 1) * (HZ - 3), t = rr();
     if (t < .28) put('hull', x, z, 1.0 + rr() * .4, 1.0 + rr() * .4, 2.0 + rr() * 1.2, 0); // 玻璃展示柱
@@ -2325,6 +2405,276 @@ MAPS.sky89 = {
   interior: [-43.5, -35.5, 43.5, 35.5], env: SKY89_ENV, night: false,
   pickSpots: [[-20, -14], [20, 14], [-20, 14], [20, -14], [0, -22], [0, 22], [-14, 0], [14, 0], [-30, -24], [30, 24], [-30, 24], [30, -24], [-8, -16], [8, 16], [-8, 16], [8, -16], [-32, 0], [32, 0], [-18, 28], [18, -28]],
   build(W) { buildSky89(W); }
+};
+
+/* ================= 地圖 9：音樂教室（合奏廳＋琴房走廊；面積同熱血高校 86×70，障礙物數量同熱血高校 251） ================= */
+const MUSIC_ENV = { sunCol: [.95, .90, .78], sky: [.62, .68, .76], gnd: [.55, .48, .38], fog: [.70, .70, .66], fogR: [95, 330], interior: [-43.5, -35.5, 43.5, 35.5], intK: .92, intH: 7.2 };
+function buildMusic(W) {
+  const B = (...a) => W.box(...a), rr = rng(9031), HX = 43, HZ = 35, CH = 7.2, rects = [];
+  const rect = (x, z, w, d) => rects.push([x - w / 2, z - d / 2, x + w / 2, z + d / 2]);
+  const free = (x, z, w, d, mg) => { for (const q of rects) if (x + w / 2 + mg > q[0] && x - w / 2 - mg < q[2] && z + d / 2 + mg > q[1] && z - d / 2 - mg < q[3]) return false; return true; };
+  const keep = [[-43, -11, -34, 11], [34, -11, 43, 11]];
+  const inKeep = (x, z, w, d) => keep.some(q => x + w / 2 > q[0] && x - w / 2 < q[2] && z + d / 2 > q[1] && z - d / 2 < q[3]);
+  const put = (mat, x, z, w, d, h, y0, mg) => { if (inKeep(x, z, w, d) || !free(x, z, w, d, mg === undefined ? 1.4 : mg)) return false; B(mat, x, z, w, d, h, y0 || 0); rect(x, z, w, d); return true; };
+  const solid = (mat, x, z, w, d, h, y0) => { B(mat, x, z, w, d, h, y0 || 0); rect(x, z, w, d); };
+  // ---- 地板、天花板、外牆 ----
+  W.quadTop('parquet', -70, -55, 70, 55, 0);
+  B('ceil', 0, 0, 2 * HX, 2 * HZ, .4, CH, { collide: false });
+  for (let x = -36; x <= 36; x += 9) for (let z = -28; z <= 28; z += 11) B('light', x, z, 2.4, .8, .06, CH - .07, { collide: false });
+  for (const [cx, cz, w, d] of [[0, -HZ - .3, 2 * HX + 1.2, .6], [0, HZ + .3, 2 * HX + 1.2, .6], [-HX - .3, 0, .6, 2 * HZ], [HX + .3, 0, .6, 2 * HZ]]) B('wall', cx, cz, w, d, CH, 0, { colH: 9 });
+  // 牆面吸音板（整圈，不參與碰撞）
+  for (let x = -39; x <= 39; x += 6) for (const sz of [-1, 1]) B('acous', x, sz * (HZ - .35), 5.4, .25, 3.2, 2.0, { collide: false });
+  for (let z = -31; z <= 31; z += 6) for (const sx of [-1, 1]) B('acous', sx * (HX - .35), z, .25, 5.4, 3.2, 2.0, { collide: false });
+  // ---- 北側：合奏舞台（抬高 0.45 m，可直接踏上）＋ 五線譜黑板 ----
+  solid('plank', 0, -28, 34, 11, .45);
+  for (const sx of [-1, 1]) solid('plank', sx * 18.6, -28, 3.2, 11, .3); // 兩側踏階
+  B('staff', 0, -HZ + .45, 24, .3, 3.4, 1.6, { collide: false }); // 五線譜黑板
+  for (const sx of [-1, 1]) B('wood', sx * 13.6, -HZ + .5, 3.0, .4, 2.4, 0, { collide: false });
+  solid('ebony', 0, -26.4, 1.0, 1.0, .25, .45); // 指揮台
+  B('brass', 0, -26.4, .08, .08, 1.1, .7, { collide: false });
+  // 平台鋼琴（琴身＋翻起的琴蓋＋三支琴腳）
+  solid('ebony', -9.5, -24.5, 4.6, 2.8, 1.05, .45);
+  W.prop([{ g: gBox(4.3, .12, 2.5), t: [-9.5, 2.1, -24.5], r: [0, 0, .26], c: [.09, .09, .1] },
+  { g: gBox(4.4, .1, .6), t: [-9.5, 1.56, -25.85], c: [.95, .95, .92] },
+  { g: gCyl(.1, .1, 1.5, 8, 1), t: [-11.4, 1.2, -23.3], c: [.09, .09, .1] }]);
+  // 定音鼓、爵士鼓、豎琴
+  for (let k = 0; k < 3; k++) { const x = 9 + k * 3.4, z = -25.4 + (k % 2) * 1.2; solid('brass', x, z, 2.0, 2.0, 1.0, .45); W.prop([{ g: gCyl(1.0, .78, 1.0, 16, 1), t: [x, .95, z], c: [.80, .62, .26] }, { g: gCyl(1.05, 1.05, .12, 16, 1), t: [x, 1.51, z], c: [.93, .90, .80] }]); }
+  solid('wood', 16.6, -30, 1.6, 2.4, 1.9, .45); // 豎琴
+  W.prop([{ g: gBox(.14, 3.0, .14), t: [16.6, 2.6, -30.9], c: [.72, .56, .24] }, { g: gBox(.14, .14, 2.4), t: [16.6, 4.0, -29.9], r: [.5, 0, 0], c: [.72, .56, .24] }]);
+  // 舞台上的譜架與座椅（三層弧形排列）
+  for (let rw = 0; rw < 3; rw++) for (let k = -5; k <= 5; k++) {
+    const a = k * .14, x = Math.sin(a) * (10 + rw * 3.2), z = -22.5 - Math.cos(a) * (6.5 - rw * 1.4);
+    if (Math.abs(x) > 15) continue;
+    B('ebony', x, z, .5, .5, .9, .45, { see: false }); // 椅子
+    B('steel', x, z - 1.0, .5, .12, 1.15, .45, { collide: false });
+  }
+  rects.push([-18, -35, 18, -21.5]);
+  // ---- 東側：六間隔音琴房（玻璃門可透視，門口錯開） ----
+  for (let i = 0; i < 3; i++) for (const sz of [-1, 1]) {
+    const x0 = 22 + i * 7, cz = sz * 19.5;
+    solid('whitepaint', x0, cz, .5, 13, CH); solid('whitepaint', x0 + 7, cz, .5, 13, CH);
+    solid('whitepaint', x0 + 3.5, cz - sz * 6.5, 7, .5, CH);
+    B('glassT', x0 + 3.5, cz + sz * 6.5, 4.4, .4, CH, 0, { see: false }); rect(x0 + 3.5, cz + sz * 6.5, 4.4, .4);
+    solid('ebony', x0 + 3.5, cz - sz * 4.6, 3.4, 1.2, 1.25); // 直立鋼琴
+    B('cream', x0 + 3.5, cz - sz * 3.8, 3.2, .18, .12, 1.25, { collide: false });
+    solid('wood', x0 + 3.5, cz - sz * 2.6, .9, .7, .55); // 琴椅
+    B('acous', x0 + .35, cz, .22, 11, 3.0, 1.8, { collide: false });
+  }
+  // 東側縱向走廊盡頭的櫃台
+  solid('wood', 39.5, 27, 5.0, 1.4, 1.1);
+  // ---- 西側：樂器櫃牆 ＋ 器材室 ----
+  for (let z = 13; z <= 28; z += 4.4) solid('wood', -40.4, z, 4.4, 4.0, 2.4);
+  for (let z = -30; z <= -17; z += 4.4) solid('wood', -40.4, z, 4.4, 4.0, 2.4);
+  solid('whitepaint', -30, 30, 22, .5, CH); solid('whitepaint', -19, 23.5, .5, 13.5, CH);
+  for (const [x, z] of [[-36, 26], [-30, 26], [-24, 26], [-36, 32], [-24, 32]]) solid('steel', x, z, 3.2, 2.2, 2.2); // 器材室層架
+  // ---- 中央：合奏席（階梯式低台）與座椅排 ----
+  for (let t = 0; t < 3; t++) solid('plank', 0, -2 + t * 5.2, 30 - t * 4, 4.4, .35 + t * .35);
+  for (let t = 0; t < 3; t++) for (let k = -6; k <= 6; k++) { const x = k * 2.2, y0 = .35 + t * .35; if (Math.abs(x) > 13 - t * 1.8) continue; B('ebony', x, -2 + t * 5.2 + 1.2, .5, .5, .9, y0, { see: false }); }
+  rects.push([-16, -5, 16, 12]);
+  // 中央大譜架與音響
+  for (const sx of [-1, 1]) { solid('ebony', sx * 19, 4, 1.4, 1.4, 2.6); B('panel', sx * 19, 4, 1.2, .12, 1.0, 1.4, { collide: false }); }
+  // ---- 南側：聽眾區長椅與置物櫃 ----
+  for (let k = -4; k <= 4; k++) solid('wood', k * 7.4, 31.5, 5.6, 1.0, .95);
+  for (let k = -4; k <= 4; k++) solid('steel', k * 7.4, 26.5, 4.4, 1.2, 2.3);
+  // ---- 告示牌 ----
+  const board = (txt, bg) => W.text(txt, { w: 512, h: 96, bg, fg: '#fff', border: '#d9c28a', font: '800 52px' });
+  W.wdecal(board('音樂教室 Music Room', '#2b3b2f'), -12, -HZ + .34, 12, -HZ + .34, 5.2, 6.4, 'neon');
+  W.wdecal(board('琴房 Practice Rooms', '#2b2f3b'), HX - .34, -12, HX - .34, 12, 5.0, 6.2, 'neon');
+  W.wdecal(board('樂器室 Instrument Store', '#3b2f2b'), -20, HZ - .34, -40, HZ - .34, 5.0, 6.2, 'neon');
+  // ---- 填充到 251 個障礙物（與熱血高校相同） ----
+  const cnt = () => W.boxes.filter(b => !b.nc && !b.aw).length, blk = () => W.boxes.filter(b => !b.nc && !b.aw && b.y1 - b.y0 >= 1.2).length; let guard = 0;
+  while ((cnt() < 251 || blk() < 126) && guard++ < 9000) {
+    const x = (rr() * 2 - 1) * (HX - 3), z = (rr() * 2 - 1) * (HZ - 3), t = rr(), need = blk() < 126;
+    if (need) { const m = ['wood', 'ebony', 'steel', 'cream', 'brass'][(guard * 3 + Math.abs(x * 7 | 0)) % 5]; // 樂器櫃／大提琴箱／喇叭柱／鼓塔
+      if (!put(m, x, z, .8 + rr() * .7, .7 + rr() * .5, 1.4 + rr() * 1.1, 0)) put('steel', x, z, .6, .6, 1.3 + rr() * .5, 0, 1.0); continue; }
+    if (t < .3) put('ebony', x, z, 1.3, .8, 1.3, 0); // 大提琴盒
+    else if (t < .5) put('steel', x, z, .5, .5, 1.2, 0, 1.0); // 譜架
+    else if (t < .7) { if (put('stone', x, z, .9, .9, 1.3, 0)) B('grass', x, z, .7, .7, .5, 1.3, { collide: false }); } // 盆栽
+    else if (t < .85) put('wood', x, z, 2.0, .8, .5, 0, .9); // 長椅
+    else put('cream', x, z, 1.1, 1.1, .85, 0, .9); // 鼓箱
+  }
+}
+MAPS.music = {
+  id: 'music', indoor: true, noShadow: true, orbit: { c: [0, -2], r: 26, h: 16, ly: 2 }, preview: [0, -6], name: '音樂教室', sub: '合奏廳 · 標準面積 86×70 m',
+  desc: '學校的大型音樂教室：北側是抬高的合奏舞台，有平台鋼琴、定音鼓、豎琴與五線譜黑板；東側一整排隔音琴房，西側是樂器櫃牆與器材室，中央三層合奏席可踏上，四周牆面鋪滿吸音板。',
+  bounds: { x0: -43, x1: 43, z0: -35, z1: 35 }, flagPos: [[-38, 0], [38, 0]], zoneRed: [-42, -10, -35, 10], zoneBlue: [35, -10, 42, 10], faceRed: [-10, 0], faceBlue: [10, 0],
+  interior: [-43.5, -35.5, 43.5, 35.5], env: MUSIC_ENV, night: false,
+  pickSpots: [[0, -24], [-9.5, -20], [9.5, -20], [0, 2], [-14, 6], [14, 6], [0, 14], [-28, -6], [28, -6], [-28, 10], [25.5, -19.5], [25.5, 19.5], [32.5, -19.5], [32.5, 19.5], [-32, 26], [-6, 28], [12, 28], [-20, 16], [20, 28], [0, 32]],
+  build(W) { buildMusic(W); }
+};
+
+/* ================= 地圖 10：國家演藝廳（觀眾席階梯＋舞台；面積同熱血高校 86×70，障礙物數量同熱血高校 251） ================= */
+const HALL_ENV = { sunCol: [1.0, .93, .80], sky: [.34, .24, .26], gnd: [.52, .34, .30], fog: [.26, .16, .17], fogR: [95, 330], interior: [-43.5, -35.5, 43.5, 35.5], intK: 1.22, intH: 13.5 };
+function buildHall(W) {
+  const B = (...a) => W.box(...a), rr = rng(10111), HX = 43, HZ = 35, CH = 13.5, rects = [];
+  const rect = (x, z, w, d) => rects.push([x - w / 2, z - d / 2, x + w / 2, z + d / 2]);
+  const free = (x, z, w, d, mg) => { for (const q of rects) if (x + w / 2 + mg > q[0] && x - w / 2 - mg < q[2] && z + d / 2 + mg > q[1] && z - d / 2 - mg < q[3]) return false; return true; };
+  const keep = [[-43, -11, -35, 11], [35, -11, 43, 11]];
+  const inKeep = (x, z, w, d) => keep.some(q => x + w / 2 > q[0] && x - w / 2 < q[2] && z + d / 2 > q[1] && z - d / 2 < q[3]);
+  let lvl = () => 0; // 由地形決定物件底部高度（斜面觀眾席／舞台）
+  const put = (mat, x, z, w, d, h, y0, mg) => { if (inKeep(x, z, w, d) || !free(x, z, w, d, mg === undefined ? 1.1 : mg)) return false; B(mat, x, z, w, d, h, y0 === undefined || y0 === 0 ? lvl(x, z) : y0); rect(x, z, w, d); return true; };
+  const solid = (mat, x, z, w, d, h, y0) => { B(mat, x, z, w, d, h, y0 || 0); rect(x, z, w, d); };
+  // ---- 地板（暗紅花紋地毯）、天花板、外牆 ----
+  W.quadTop('hcarp', -70, -55, 70, 55, 0);
+  B('ceil', 0, 0, 2 * HX, 2 * HZ, .5, CH, { collide: false });
+  for (const [cx, cz, w, d] of [[0, -HZ - .3, 2 * HX + 1.2, .6], [0, HZ + .3, 2 * HX + 1.2, .6], [-HX - .3, 0, .6, 2 * HZ], [HX + .3, 0, .6, 2 * HZ]]) B('wood', cx, cz, w, d, CH, 0, { colH: 12 });
+  for (let x = -38; x <= 38; x += 7.6) for (const sz of [-1, 1]) { B('brass', x, sz * (HZ - .3), .5, .3, CH - 1.4, 1.2, { collide: false }); B('warmLight', x, sz * (HZ - .45), 1.1, .2, .5, 3.4, { collide: false }); } // 金色壁柱與壁燈
+  for (let z = -30; z <= 30; z += 7.5) for (const sx of [-1, 1]) { B('brass', sx * (HX - .3), z, .3, .5, CH - 1.4, 1.2, { collide: false }); B('warmLight', sx * (HX - .45), z, .2, 1.1, .5, 3.4, { collide: false }); }
+  // 天花板藻井與水晶吊燈
+  for (let k = 0; k < 3; k++) { const r = 16 - k * 5; for (let i = 0; i < 48; i++) { const a = i / 48 * Math.PI * 2, b = (i + 1) / 48 * Math.PI * 2, x0 = Math.cos(a) * r, z0 = Math.sin(a) * r + 6, x1 = Math.cos(b) * r, z1 = Math.sin(b) * r + 6; B(k % 2 ? 'brass' : 'warmLight', (x0 + x1) / 2, (z0 + z1) / 2, Math.abs(x1 - x0) + .8, Math.abs(z1 - z0) + .8, .3 + k * .2, CH - .3 - k * .2, { collide: false }); } }
+  for (const [cx, cz] of [[0, 6], [-16, 16], [16, 16], [-16, -4], [16, -4]]) {
+    W.prop([{ g: gCyl(.07, .07, 2.2, 6, 1), t: [cx, CH - 1.3, cz], c: [.8, .62, .26] }, { g: gCyl(.3, 1.5, 1.5, 14, 1), t: [cx, CH - 3.1, cz], c: [1, .95, .8] }, { g: gCyl(1.5, .5, .8, 14, 1), t: [cx, CH - 4.2, cz], c: [1, .93, .74] }]);
+    B('warmLight', cx, cz, 2.6, 2.6, .16, CH - 3.9, { collide: false });
+  }
+  // ---- 舞台（北側，抬高 1.2 m；以極緩的台面斜坡建成，讓電腦玩家也能上台）----
+  const SZ1 = -17, SY = 1.2;
+  W.ramp({ ax: 'z', a: SZ1, b: -34.5, ya: SY, yb: SY + .06, x0: -25, x1: 25, mat: 'plank', wallH: 0 }); // 台面
+  for (const sx of [-1, 1]) W.ramp({ ax: 'z', a: -11.6, b: SZ1 + .2, ya: 0, yb: SY, x0: sx * 20 - 3.2, x1: sx * 20 + 3.2, mat: 'plank', wallH: 0 }); // 上下台的斜坡
+  B('ebony', 0, SZ1 + .35, 50, .5, .5, SY - .15, { collide: false }); // 台唇
+  // 鏡框式台口（兩側柱＋頂樑）與紅絨大幕
+  for (const sx of [-1, 1]) { solid('brass', sx * 26.6, SZ1 - .6, 3.2, 2.6, CH - 1.0); B('velvet', sx * 23.4, SZ1 - 1.2, 3.6, 1.2, 9.0, SY, { collide: false }); }
+  B('velvet', 0, SZ1 - 1.4, 44, 1.0, 3.2, CH - 4.0, { collide: false }); // 上方檐幕
+  for (let k = -5; k <= 5; k++) { if (Math.abs(k) < 3) continue; B('velvet', k * 4.4, SZ1 - 1.1, 2.0, .7, 8.4, SY, { collide: false }); } // 大幕兩側的幕褶（中間拉開）
+  // 舞台後方景片、側幕與樂器
+  solid('ebony', 0, -33.9, 40, .8, 8.0, SY);
+  for (const sx of [-1, 1]) for (const z of [-30, -26, -22]) solid('velvet', sx * 23.2, z, 1.0, 3.4, 7.0, SY);
+  solid('ebony', -8, -27, 4.8, 3.0, 1.0, SY); // 平台鋼琴
+  W.prop([{ g: gBox(4.5, .12, 2.6), t: [-8, SY + 1.8, -27], r: [0, 0, .25], c: [.09, .09, .1] }]);
+  for (let k = 0; k < 6; k++) { const x = 2 + k * 3.2, z = -24.5 + (k % 2) * 1.6; B('ebony', x, z, .5, .5, .9, SY, { see: false }); B('steel', x, z - 1.0, .5, .12, 1.15, SY, { collide: false }); }
+  rects.push([-26, -35, 26, -16]);
+  // ---- 樂池圍欄（舞台前） ----
+  for (let k = -3; k <= 3; k++) B('brass', k * 3.4, -14.4, 2.8, .25, 1.0, 0, { see: false });
+  for (let k = 0; k < 4; k++) { const x = -6 + k * 4; solid('ebony', x, -12.6, .5, .5, .9); }
+  // ---- 觀眾席：整片緩升的斜面（0 → 1.5 m，電腦玩家可正常走動）＋ 三區座椅排與兩條走道 ----
+  const RZ0 = -9, RZ1 = 33, RH = 1.5, rake = z => RH * clamp((z - RZ0) / (RZ1 - RZ0), 0, 1);
+  W.ramp({ ax: 'z', a: RZ0, b: RZ1, ya: 0, yb: RH, x0: -40, x1: 40, mat: 'hcarp', wallH: 0 });
+  for (let t = 0; t < 8; t++) {
+    const z = -5 + t * 4.8, y = rake(z);
+    for (const [cx, w] of [[-26, 20], [0, 22], [26, 20]]) { B('velvet', cx, z, w, 1.5, 1.05, y, { see: false }); B('ebony', cx, z + .65, w, .3, .55, y, { collide: false }); rect(cx, z, w, 2.6); }
+  }
+  // ---- 後方大廳：售票口、吧台、立牌 ----
+  solid('marble', 0, 33, 14, 1.6, 1.15);
+  for (const sx of [-1, 1]) solid('marble', sx * 12, 30, 1.6, 6, 1.15);
+  // ---- 告示牌 ----
+  const board = (txt, bg) => W.text(txt, { w: 512, h: 96, bg, fg: '#f3e2b4', border: '#c9a24a', font: '800 50px' });
+  W.wdecal(board('國家演藝廳 National Theater', '#3a0d14'), -14, HZ - .34, 14, HZ - .34, 6.0, 7.4, 'neon');
+  W.wdecal(board('一樓觀眾席 Stalls', '#3a0d14'), -HX + .34, 14, -HX + .34, -2, 5.6, 6.8, 'neon');
+  W.wdecal(board('包廂 Box Seats', '#3a0d14'), HX - .34, -2, HX - .34, 14, 5.6, 6.8, 'neon');
+  // ---- 填充到 251 個障礙物（與熱血高校相同） ----
+  lvl = (x, z) => z > RZ0 ? rake(z) : (z < SZ1 && Math.abs(x) < 24 ? SY : 0);
+  const cnt = () => W.boxes.filter(b => !b.nc && !b.aw).length, blk = () => W.boxes.filter(b => !b.nc && !b.aw && b.y1 - b.y0 >= 1.2).length; let guard = 0;
+  while ((cnt() < 251 || blk() < 120) && guard++ < 40000) {
+    const x = (rr() * 2 - 1) * (HX - 2.5), z = (rr() * 2 - 1) * (HZ - 2.5), t = rr(), need = blk() < 120;
+    if (need) { const m = ['brass', 'velvet', 'ebony', 'marble'][(guard * 3 + Math.abs(z * 5 | 0)) % 4]; // 金柱／絨布屏風／音響塔／石座
+      if (!put(m, x, z, .7 + rr() * .6, .7 + rr() * .6, 1.5 + rr() * 1.6, 0)) put('brass', x, z, .5, .5, 1.3, 0, .9); continue; }
+    if (t < .3) put('ebony', x, z, 1.1, 1.1, 1.4, 0); // 音響塔
+    else if (t < .5) { if (put('marble', x, z, 1.0, 1.0, 1.1, 0)) B('grass', x, z, .8, .8, .6, lvl(x, z) + 1.1, { collide: false }); } // 盆栽
+    else if (t < .7) put('velvet', x, z, 2.2, 1.2, 1.0, 0, 1.1); // 候位長椅
+    else if (t < .85) put('brass', x, z, .6, .6, 1.1, 0, 1.0); // 繩欄柱
+    else put('marble', x, z, 1.6, 1.0, .9, 0, 1.0); // 吧檯小桌
+  }
+}
+MAPS.hall = {
+  id: 'hall', indoor: true, noShadow: true, orbit: { c: [0, 2], r: 28, h: 20, ly: 3 }, preview: [0, 6], name: '國家演藝廳', sub: '觀眾席與舞台 · 標準面積 86×70 m',
+  desc: '金紅色調的大型劇院：北側抬高 1.2 公尺的鏡框式舞台、紅絨大幕與平台鋼琴；中央八層階梯觀眾席層層升高，兩側是 3.2 公尺高的包廂（走斜坡上去），天花板掛著水晶吊燈。',
+  bounds: { x0: -43, x1: 43, z0: -35, z1: 35 }, flagPos: [[-38, 0], [38, 0]], zoneRed: [-42, -10, -36, 10], zoneBlue: [36, -10, 42, 10], faceRed: [-12, 0], faceBlue: [12, 0],
+  interior: [-43.5, -35.5, 43.5, 35.5], env: HALL_ENV, night: false,
+  pickSpots: [[0, -26], [-8, -22], [8, -22], [0, -13], [-12, -6], [12, -6], [0, 2], [-24, 6], [24, 6], [0, 12], [-12, 18], [12, 18], [0, 26], [-30, 30], [30, 30], [-38, 8], [38, 8], [-20, -26], [20, -26], [0, 32]],
+  build(W) { buildHall(W); }
+};
+
+/* ================= 地圖 11：甜點烘焙室（中央廚房＋展示區；面積同熱血高校 86×70，障礙物數量同熱血高校 251） ================= */
+const BAKE_ENV = { sunCol: [1.0, .96, .88], sky: [.74, .80, .86], gnd: [.72, .70, .66], fog: [.80, .80, .78], fogR: [100, 340], interior: [-43.5, -35.5, 43.5, 35.5], intK: 1.0, intH: 6.6 };
+function buildBakery(W) {
+  const B = (...a) => W.box(...a), rr = rng(11213), HX = 43, HZ = 35, CH = 6.6, rects = [];
+  const rect = (x, z, w, d) => rects.push([x - w / 2, z - d / 2, x + w / 2, z + d / 2]);
+  const free = (x, z, w, d, mg) => { for (const q of rects) if (x + w / 2 + mg > q[0] && x - w / 2 - mg < q[2] && z + d / 2 + mg > q[1] && z - d / 2 - mg < q[3]) return false; return true; };
+  const keep = [[-43, -11, -35, 11], [35, -11, 43, 11]];
+  const inKeep = (x, z, w, d) => keep.some(q => x + w / 2 > q[0] && x - w / 2 < q[2] && z + d / 2 > q[1] && z - d / 2 < q[3]);
+  const put = (mat, x, z, w, d, h, y0, mg) => { if (inKeep(x, z, w, d) || !free(x, z, w, d, mg === undefined ? 1.2 : mg)) return false; B(mat, x, z, w, d, h, y0 || 0); rect(x, z, w, d); return true; };
+  const solid = (mat, x, z, w, d, h, y0) => { B(mat, x, z, w, d, h, y0 || 0); rect(x, z, w, d); };
+  // 一座分層蛋糕（純裝飾，不參與碰撞）
+  const cake = (x, z, y, R, tiers, col) => {
+    const it = []; let r = R, yy = y;
+    for (let k = 0; k < tiers; k++) { it.push({ g: gCyl(r, r, .42, 20, 1), t: [x, yy + .21, z], c: col }); it.push({ g: gCyl(r + .05, r + .05, .1, 20, 1), t: [x, yy + .46, z], c: [.99, .95, .86] }); yy += .52; r *= .74; }
+    for (let k = 0; k < 7; k++) { const a = k / 7 * Math.PI * 2; it.push({ g: gCyl(.1, .1, .16, 8, 1), t: [x + Math.cos(a) * r * .8, yy + .06, z + Math.sin(a) * r * .8], c: [.92, .32, .36] }); }
+    W.prop(it);
+  };
+  // ---- 地板（白色磁磚）、天花板、外牆 ----
+  W.quadTop('tileW', -70, -55, 70, 55, 0);
+  for (let k = -3; k <= 3; k++) B('straw', k * 11, 27.6, 9.4, 3.6, .02, .02, { collide: false }); // 外場區的粉色地坪
+  B('ceil', 0, 0, 2 * HX, 2 * HZ, .4, CH, { collide: false });
+  for (let x = -38; x <= 38; x += 7.6) for (let z = -30; z <= 30; z += 10) B('light', x, z, 3.2, .7, .06, CH - .07, { collide: false });
+  for (const [cx, cz, w, d] of [[0, -HZ - .3, 2 * HX + 1.2, .6], [0, HZ + .3, 2 * HX + 1.2, .6], [-HX - .3, 0, .6, 2 * HZ], [HX + .3, 0, .6, 2 * HZ]]) { B('whitepaint', cx, cz, w, d, CH, 0, { colH: 9 }); B('tileW', cx, cz, w - .05, d - .05, 2.4, 0, { collide: false }); }
+  // ---- 北側：烤箱牆、發酵櫃與抽油煙罩 ----
+  for (let k = -4; k <= 4; k++) {
+    const x = k * 8.4; solid('inox', x, -32.6, 7.2, 3.2, 2.6);
+    for (const y of [.5, 1.35]) B('ebony', x, -30.9, 5.6, .25, .7, y, { collide: false }); // 爐門玻璃
+    B('brass', x, -30.9, 5.6, .3, .12, 2.25, { collide: false });
+    B('inox', x, -31.4, 7.6, 2.4, .5, 3.6, { collide: false }); // 抽油煙罩
+  }
+  // ---- 冷藏庫（西北角的獨立房間，門口朝南） ----
+  solid('inox', -32, -22, 20, .6, CH); solid('inox', -42, -16, .6, 12, CH); solid('inox', -22.3, -16, .6, 12, CH);
+  solid('inox', -36.5, -10.3, 11, .6, CH); B('glassT', -28.5, -10.3, 5, .5, CH, 0, { see: false }); rect(-28.5, -10.3, 5, .5); // 冷藏庫門口留在 x -26 ~ -22
+  for (const z of [-19.5, -15.5]) for (const sx of [-37, -27]) solid('steel', sx, z, 7.0, 1.2, 2.3); // 冷藏層架
+  // ---- 中央：四排不鏽鋼工作檯（中間留走道） ----
+  for (let r0 = 0; r0 < 4; r0++) for (let k = 0; k < 3; k++) {
+    const x = -22 + k * 22 + (r0 % 2) * 2, z = -4 + r0 * 9;
+    solid('inox', x, z, 9.5, 2.2, .95);
+    B('marble', x, z, 9.8, 2.5, .14, .95, { collide: false }); // 大理石檯面
+    if ((r0 + k) % 2 === 0) cake(x + 2.6, z, 1.09, .8, 3, [.99, .93, .79]); else { cake(x - 2.6, z, 1.09, .7, 2, [.42, .26, .16]); }
+    for (let i = 0; i < 3; i++) B('cream', x - 3.4 + i * 3.4, z + .6, .55, .55, .3, 1.09, { collide: false }); // 麵糰
+  }
+  // ---- 攪拌機排（西側） ----
+  for (let k = 0; k < 4; k++) {
+    const z = -4 + k * 9; solid('inox', -32, z, 2.6, 2.6, 1.5);
+    W.prop([{ g: gCyl(1.0, .8, 1.1, 16, 1), t: [-32, 2.05, z], c: [.80, .83, .86] }, { g: gCyl(.18, .18, 1.1, 8, 1), t: [-32, 3.1, z], c: [.55, .57, .6] }, { g: gBox(1.0, .35, .5), t: [-32, 3.6, z], c: [.72, .75, .78] }]);
+  }
+  // ---- 南側：展示冷櫃與外場座位 ----
+  for (let k = -3; k <= 3; k++) {
+    const x = k * 11; solid('marble', x, 30.5, 9.4, 1.8, 1.05);
+    B('glassT', x, 30.5, 9.6, 2.0, 1.0, 1.05, { see: false, collide: false });
+    for (let i = 0; i < 3; i++) cake(x - 3 + i * 3, 30.5, 1.08, .55, 2, i === 1 ? [.90, .40, .48] : [.62, .86, .74]);
+  }
+  for (let k = -3; k <= 3; k++) { solid('wood', k * 11, 25, 2.2, 2.2, .78); for (const sx of [-1, 1]) solid('wood', k * 11 + sx * 2.2, 25, .9, .9, 1.0); }
+  // ---- 東側：原料倉（麵粉袋堆）與洗滌區 ----
+  for (let k = 0; k < 5; k++) { const z = -32 + k * 6; solid('cream', 37.5, z, 4.6, 4.0, 1.5); B('cream', 37.5, z, 4.0, 3.4, .9, 1.5, { collide: false }); }
+  for (let k = 0; k < 3; k++) solid('inox', 26 + k * 0, -22 + k * 5, 6.0, 2.0, 1.0); // 洗滌槽
+  // ---- 冷卻架（高大障礙，散布在中段） ----
+  for (const [x, z] of [[-13, -18], [-3, -18], [7, -18], [17, -18], [-13, 20], [-3, 20], [7, 20], [17, 20], [27, 8], [27, 16]]) {
+    solid('steel', x, z, 1.4, 3.6, 2.4);
+    for (let i = 0; i < 4; i++) B('inox', x, z, 1.5, 3.4, .07, .5 + i * .6, { collide: false });
+  }
+  // ---- 中央大蛋糕展示台 ----
+  solid('marble', 0, 8, 5.2, 5.2, 1.0);
+  cake(0, 8, 1.0, 2.1, 4, [.99, .91, .76]);
+  for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2; B('brass', Math.cos(a) * 4.6, 8 + Math.sin(a) * 4.6, .3, .3, 1.0, 0, { collide: false }); }
+  // ---- 告示牌 ----
+  const board = (txt, bg) => W.text(txt, { w: 512, h: 96, bg, fg: '#fff', border: '#e7c9a0', font: '800 50px' });
+  W.wdecal(board('甜點烘焙室 Pâtisserie', '#7a4a26'), -13, -HZ + .34, 13, -HZ + .34, 4.4, 5.6, 'neon');
+  W.wdecal(board('冷藏庫 Cold Room', '#3a4a52'), -34, -10.0, -41, -10.0, 4.0, 5.0, 'neon');
+  W.wdecal(board('外場 Café', '#7a4a26'), 13, HZ - .34, -13, HZ - .34, 4.4, 5.6, 'neon');
+  W.wdecal(board('原料倉 Dry Store', '#5a4a2a'), HX - .34, -14, HX - .34, 2, 4.0, 5.0, 'neon');
+  // ---- 填充到 251 個障礙物（與熱血高校相同） ----
+  const cnt = () => W.boxes.filter(b => !b.nc && !b.aw).length, blk = () => W.boxes.filter(b => !b.nc && !b.aw && b.y1 - b.y0 >= 1.2).length; let guard = 0;
+  while ((cnt() < 251 || blk() < 126) && guard++ < 40000) {
+    const x = (rr() * 2 - 1) * (HX - 2.5), z = (rr() * 2 - 1) * (HZ - 2.5), t = rr(), need = blk() < 126;
+    if (need) { const m = ['steel', 'inox', 'cream', 'wood'][(guard * 3 + Math.abs(x * 3 | 0)) % 4]; // 推車架／層架／粉袋塔／木架
+      if (!put(m, x, z, .8 + rr() * .6, .8 + rr() * .5, 1.3 + rr() * 1.2, 0)) put('inox', x, z, .7, .7, 1.3, 0, .9); continue; }
+    if (t < .3) put('inox', x, z, 1.6, 1.0, .95, 0); // 不鏽鋼小檯
+    else if (t < .5) { if (put('cream', x, z, 1.2, 1.2, 1.1, 0)) B(['choco', 'straw', 'mint'][guard % 3], x, z, 1.0, 1.0, .5, 1.1, { collide: false }); } // 麵粉袋堆與色彩托盤
+    else if (t < .68) { if (put('marble', x, z, 1.3, 1.3, 1.0, 0)) cake(x, z, 1.0, .5, 2, rr() < .5 ? [.90, .40, .48] : [.34, .20, .12]); } // 蛋糕小台
+    else if (t < .84) put(guard % 2 ? 'wood' : 'straw', x, z, 1.0, 1.0, .75, 0, .9); // 圓凳／木箱
+    else put('inox', x, z, .8, .8, 1.3, 0, .9); // 攪拌桶
+  }
+}
+MAPS.bakery = {
+  id: 'bakery', indoor: true, noShadow: true, orbit: { c: [0, 4], r: 26, h: 16, ly: 2 }, preview: [0, 2], name: '甜點烘焙室', sub: '中央廚房 · 標準面積 86×70 m',
+  desc: '明亮的大型烘焙廚房：北面一整排烤箱與抽油煙罩，西北角是獨立冷藏庫，中央四排不鏽鋼工作檯與大理石檯面擺滿蛋糕，南側展示冷櫃與外場座位，東側是麵粉倉與洗滌區。',
+  bounds: { x0: -43, x1: 43, z0: -35, z1: 35 }, flagPos: [[-38, 0], [38, 0]], zoneRed: [-42, -10, -36, 10], zoneBlue: [36, -10, 42, 10], faceRed: [-10, 0], faceBlue: [10, 0],
+  interior: [-43.5, -35.5, 43.5, 35.5], env: BAKE_ENV, night: false,
+  pickSpots: [[0, 0], [-11, -9], [11, -9], [0, 14], [-22, 4], [22, 4], [0, -27], [-16, -27], [16, -27], [-32, -16], [31, -28], [31, 16], [-20, 28], [20, 28], [0, 22], [-33, 24], [33, 28], [-8, 8], [8, -18], [0, 32]],
+  build(W) { buildBakery(W); }
 };
 
 /* ================= 英雄（依參考圖：白襯衫牛仔寬褲／黑T黑長褲／紫帽T工裝褲） ================= */
