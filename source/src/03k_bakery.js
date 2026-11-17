@@ -72,8 +72,8 @@ function buildBakery(W) {
   W.wdecal(board('原料倉 Dry Store', '#5a4a2a'), HX - .34, -14, HX - .34, 2, 4.0, 5.0, 'neon');
   // ---- 填充到 251 個障礙物（與熱血高校相同） ----
   const cnt = () => W.boxes.filter(b => !b.nc && !b.aw).length, blk = () => W.boxes.filter(b => !b.nc && !b.aw && b.y1 - b.y0 >= 1.2).length; let guard = 0;
-  while ((cnt() < 251 || blk() < 126) && guard++ < 40000) {
-    const x = (rr() * 2 - 1) * (HX - 2.5), z = (rr() * 2 - 1) * (HZ - 2.5), t = rr(), need = blk() < 126;
+  while ((cnt() < 126 || blk() < 63) && guard++ < 40000) {
+    const x = (rr() * 2 - 1) * (HX - 2.5), z = (rr() * 2 - 1) * (HZ - 2.5), t = rr(), need = blk() < 63;
     if (need) { const m = ['steel', 'inox', 'cream', 'wood'][(guard * 3 + Math.abs(x * 3 | 0)) % 4]; // 推車架／層架／粉袋塔／木架
       if (!put(m, x, z, .8 + rr() * .6, .8 + rr() * .5, 1.3 + rr() * 1.2, 0)) put('inox', x, z, .7, .7, 1.3, 0, .9); continue; }
     if (t < .3) put('inox', x, z, 1.6, 1.0, .95, 0); // 不鏽鋼小檯

@@ -33,7 +33,7 @@ function buildMusic(W) {
   solid('wood', 16.6, -30, 1.6, 2.4, 1.9, .45); // 豎琴
   W.prop([{ g: gBox(.14, 3.0, .14), t: [16.6, 2.6, -30.9], c: [.72, .56, .24] }, { g: gBox(.14, .14, 2.4), t: [16.6, 4.0, -29.9], r: [.5, 0, 0], c: [.72, .56, .24] }]);
   // 舞台上的譜架與座椅（三層弧形排列）
-  for (let rw = 0; rw < 3; rw++) for (let k = -5; k <= 5; k++) {
+  for (let rw = 0; rw < 2; rw++) for (let k = -5; k <= 5; k += 2) {
     const a = k * .14, x = Math.sin(a) * (10 + rw * 3.2), z = -22.5 - Math.cos(a) * (6.5 - rw * 1.4);
     if (Math.abs(x) > 15) continue;
     B('ebony', x, z, .5, .5, .9, .45, { see: false }); // 椅子
@@ -60,13 +60,13 @@ function buildMusic(W) {
   for (const [x, z] of [[-36, 26], [-30, 26], [-24, 26], [-36, 32], [-24, 32]]) solid('steel', x, z, 3.2, 2.2, 2.2); // 器材室層架
   // ---- 中央：合奏席（階梯式低台）與座椅排 ----
   for (let t = 0; t < 3; t++) solid('plank', 0, -2 + t * 5.2, 30 - t * 4, 4.4, .35 + t * .35);
-  for (let t = 0; t < 3; t++) for (let k = -6; k <= 6; k++) { const x = k * 2.2, y0 = .35 + t * .35; if (Math.abs(x) > 13 - t * 1.8) continue; B('ebony', x, -2 + t * 5.2 + 1.2, .5, .5, .9, y0, { see: false }); }
+  for (let t = 0; t < 3; t++) for (let k = -6; k <= 6; k += 2) { const x = k * 2.2, y0 = .35 + t * .35; if (Math.abs(x) > 13 - t * 1.8) continue; B('ebony', x, -2 + t * 5.2 + 1.2, .5, .5, .9, y0, { see: false }); }
   rects.push([-16, -5, 16, 12]);
   // 中央大譜架與音響
   for (const sx of [-1, 1]) { solid('ebony', sx * 19, 4, 1.4, 1.4, 2.6); B('panel', sx * 19, 4, 1.2, .12, 1.0, 1.4, { collide: false }); }
   // ---- 南側：聽眾區長椅與置物櫃 ----
-  for (let k = -4; k <= 4; k++) solid('wood', k * 7.4, 31.5, 5.6, 1.0, .95);
-  for (let k = -4; k <= 4; k++) solid('steel', k * 7.4, 26.5, 4.4, 1.2, 2.3);
+  for (let k = -4; k <= 4; k += 2) solid('wood', k * 7.4, 31.5, 5.6, 1.0, .95);
+  for (let k = -4; k <= 4; k += 2) solid('steel', k * 7.4, 26.5, 4.4, 1.2, 2.3);
   // ---- 告示牌 ----
   const board = (txt, bg) => W.text(txt, { w: 512, h: 96, bg, fg: '#fff', border: '#d9c28a', font: '800 52px' });
   W.wdecal(board('音樂教室 Music Room', '#2b3b2f'), -12, -HZ + .34, 12, -HZ + .34, 5.2, 6.4, 'neon');
@@ -74,8 +74,8 @@ function buildMusic(W) {
   W.wdecal(board('樂器室 Instrument Store', '#3b2f2b'), -20, HZ - .34, -40, HZ - .34, 5.0, 6.2, 'neon');
   // ---- 填充到 251 個障礙物（與熱血高校相同） ----
   const cnt = () => W.boxes.filter(b => !b.nc && !b.aw).length, blk = () => W.boxes.filter(b => !b.nc && !b.aw && b.y1 - b.y0 >= 1.2).length; let guard = 0;
-  while ((cnt() < 251 || blk() < 126) && guard++ < 9000) {
-    const x = (rr() * 2 - 1) * (HX - 3), z = (rr() * 2 - 1) * (HZ - 3), t = rr(), need = blk() < 126;
+  while ((cnt() < 126 || blk() < 63) && guard++ < 9000) {
+    const x = (rr() * 2 - 1) * (HX - 3), z = (rr() * 2 - 1) * (HZ - 3), t = rr(), need = blk() < 63;
     if (need) { const m = ['wood', 'ebony', 'steel', 'cream', 'brass'][(guard * 3 + Math.abs(x * 7 | 0)) % 5]; // 樂器櫃／大提琴箱／喇叭柱／鼓塔
       if (!put(m, x, z, .8 + rr() * .7, .7 + rr() * .5, 1.4 + rr() * 1.1, 0)) put('steel', x, z, .6, .6, 1.3 + rr() * .5, 0, 1.0); continue; }
     if (t < .3) put('ebony', x, z, 1.3, .8, 1.3, 0); // 大提琴盒

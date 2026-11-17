@@ -34,8 +34,8 @@ function buildSpace(W) {
   for (const [cx, cz, R] of [[-14, -14, 4.5], [16, 14, 5]]) for (let k = 0; k < 8; k++) { const a = k * Math.PI * 2 / 8; put('moonrock', cx + Math.cos(a) * R, cz + Math.sin(a) * R, 1.6, 1.6, .7 + rr() * .3, 0, .3); }
   // ---- 散落岩塊：補足到熱血高校阻擋型障礙物（高度≥1.2 m）的 1.3 倍 ≈ 166 個 ----
   const blockers = () => W.boxes.filter(b => !b.nc && b.y1 - b.y0 >= 1.2).length; let guard = 0;
-  while (blockers() < 166 && guard++ < 8000) { const w = 1.0 + rr() * 2.2, d = 1.0 + rr() * 2.2, h = 1.3 + rr() * 1.7; put(rr() < .5 ? 'moonrock' : 'regolith', (rr() * 2 - 1) * (BX - 3), (rr() * 2 - 1) * (BZ - 3), w, d, h, 0, 1.4); }
-  guard = 0; for (let k = 0; k < 40 && guard < 3000; guard++) { if (put('moonrock', (rr() * 2 - 1) * (BX - 3), (rr() * 2 - 1) * (BZ - 3), .8 + rr() * .8, .8 + rr() * .8, .5 + rr() * .4, 0, 1.2)) k++; } // 低矮石塊（可探頭觀察）
+  while (blockers() < 83 && guard++ < 8000) { const w = 1.0 + rr() * 2.2, d = 1.0 + rr() * 2.2, h = 1.3 + rr() * 1.7; put(rr() < .5 ? 'moonrock' : 'regolith', (rr() * 2 - 1) * (BX - 3), (rr() * 2 - 1) * (BZ - 3), w, d, h, 0, 1.4); }
+  guard = 0; for (let k = 0; k < 20 && guard < 3000; guard++) { if (put('moonrock', (rr() * 2 - 1) * (BX - 3), (rr() * 2 - 1) * (BZ - 3), .8 + rr() * .8, .8 + rr() * .8, .5 + rr() * .4, 0, 1.2)) k++; } // 低矮石塊（可探頭觀察）
 }
 MAPS.space = {
   id: 'space', skyKind: 'space', space: true, gravK: 1.2, orbit: { c: [0, 0], r: 31, h: 13, ly: 1.4 }, preview: [0, 14], name: '無遠弗屆', sub: '外太空 · 標準面積 86×70 m · 延遲跳躍', desc: '身處外太空：紫灰色大氣層與土黃色巨大行星。面積與熱血高校相同，中央是墜毀的太空船，兩側為生活艙與雷達站；障礙物約為熱血高校的 1.3 倍，動線以太空船為中心、左右對稱。場地機制「延遲跳躍」：按下跳躍後延遲 0.3 秒才起跳，但跳得更高（×1.2）、更遠（×2）。',

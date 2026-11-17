@@ -440,7 +440,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.5</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.6</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -1387,6 +1387,14 @@ const World = {
   resetBuckets() { for (const k in this.defs) this.bk[k] = { p: [], n: [], u: [], c: [], i: [] }; },
   /* 世界座標 UV 的軸對齊盒子 */
   pushBox(mat, x0, y0, z0, x1, y1, z1) {
+    const w = x1 - x0, h = y1 - y0, dd = z1 - z0, mn = Math.min(w, dd), mx = Math.max(w, dd);
+    // 障礙物一律倒圓角（切角），避免尖銳邊；牆面、地板、天花板等結構件維持原狀以免接縫露出
+    const wallLike = mn <= .75 && mx >= 3 && h >= 1.8, slabLike = h <= .7 && mx >= 6;
+    const r = Math.min(.16, w / 5, dd / 5, h / 5);
+    if (h > .25 && mx <= 14 && r > .02 && !wallLike && !slabLike) { this.pushBoxR(mat, x0, y0, z0, x1, y1, z1, r); return; }
+    this.pushBoxSharp(mat, x0, y0, z0, x1, y1, z1);
+  },
+  pushBoxSharp(mat, x0, y0, z0, x1, y1, z1) {
     const b = this.bk[mat], sx = this.defs[mat].sx, sy = this.defs[mat].sy;
     const F = [[1, 0, 0, [x1, y0, z1], [x1, y0, z0], [x1, y1, z0], [x1, y1, z1]], [-1, 0, 0, [x0, y0, z0], [x0, y0, z1], [x0, y1, z1], [x0, y1, z0]],
     [0, 1, 0, [x0, y1, z1], [x1, y1, z1], [x1, y1, z0], [x0, y1, z0]], [0, -1, 0, [x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1]],
@@ -1401,6 +1409,42 @@ const World = {
       }
       b.i.push(o, o + 1, o + 2, o, o + 2, o + 3);
     }
+  },
+  /* 切角方塊：六個主面內縮 r，十二條邊補 45° 斜面、八個角補三角形，角落因此不再尖銳。
+     貼地的方塊底部不內縮，避免和地板之間出現縫隙。 */
+  pushBoxR(mat, x0, y0, z0, x1, y1, z1, r) {
+    const b = this.bk[mat], sx = this.defs[mat].sx, sy = this.defs[mat].sy;
+    const iy0 = y0 < .01 ? 0 : r, X = [x0, x1], Y = [y0, y1], Z = [z0, z1];
+    const IX = s => s ? -r : r, IY = s => s ? -r : iy0, IZ = s => s ? -r : r;
+    // 每個角落在三個主面上各有一個頂點
+    const vX = (a, c, e) => [X[a], Y[c] + IY(c), Z[e] + IZ(e)];
+    const vY = (a, c, e) => [X[a] + IX(a), Y[c], Z[e] + IZ(e)];
+    const vZ = (a, c, e) => [X[a] + IX(a), Y[c] + IY(c), Z[e]];
+    const face = (nx, ny, nz, pts) => {
+      if (pts.length < 3) return;
+      // 退化面（寬度為 0）直接略過
+      const e1 = [pts[1][0] - pts[0][0], pts[1][1] - pts[0][1], pts[1][2] - pts[0][2]], e2 = [pts[2][0] - pts[0][0], pts[2][1] - pts[0][1], pts[2][2] - pts[0][2]];
+      const cr = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]];
+      if (Math.hypot(cr[0], cr[1], cr[2]) < 1e-7) return;
+      const q = cr[0] * nx + cr[1] * ny + cr[2] * nz < 0 ? pts.slice().reverse() : pts; // 統一朝外
+      const o = b.p.length / 3, ax = Math.abs(nx), ay = Math.abs(ny), az = Math.abs(nz);
+      for (const p of q) {
+        b.p.push(p[0], p[1], p[2]); b.n.push(nx, ny, nz); b.c.push(1, 1, 1);
+        let u, v; if (ay >= ax && ay >= az) { u = p[0] / sx; v = p[2] / sx; } else if (ax >= az) { u = p[2] / sx; v = p[1] / sy; } else { u = p[0] / sx; v = p[1] / sy; }
+        b.u.push(u, v);
+      }
+      for (let k = 2; k < q.length; k++) b.i.push(o, o + k - 1, o + k);
+    };
+    const N = 1 / Math.sqrt(2), N3 = 1 / Math.sqrt(3);
+    for (const a of [0, 1]) { const s = a ? 1 : -1; face(s, 0, 0, [vX(a, 0, 0), vX(a, 0, 1), vX(a, 1, 1), vX(a, 1, 0)]); }
+    for (const c of [0, 1]) { if (c === 0 && y0 < .01) continue; const s = c ? 1 : -1; face(0, s, 0, [vY(0, c, 0), vY(0, c, 1), vY(1, c, 1), vY(1, c, 0)]); }
+    for (const e of [0, 1]) { const s = e ? 1 : -1; face(0, 0, s, [vZ(0, 0, e), vZ(1, 0, e), vZ(1, 1, e), vZ(0, 1, e)]); }
+    // 十二條邊的 45° 斜面
+    for (const a of [0, 1]) for (const e of [0, 1]) { const sa = a ? 1 : -1, se = e ? 1 : -1; face(sa * N, 0, se * N, [vX(a, 0, e), vZ(a, 0, e), vZ(a, 1, e), vX(a, 1, e)]); }
+    for (const a of [0, 1]) for (const c of [0, 1]) { const sa = a ? 1 : -1, sc = c ? 1 : -1; face(sa * N, sc * N, 0, [vX(a, c, 0), vY(a, c, 0), vY(a, c, 1), vX(a, c, 1)]); }
+    for (const c of [0, 1]) for (const e of [0, 1]) { const sc = c ? 1 : -1, se = e ? 1 : -1; face(0, sc * N, se * N, [vY(0, c, e), vZ(0, c, e), vZ(1, c, e), vY(1, c, e)]); }
+    // 八個角的三角面
+    for (const a of [0, 1]) for (const c of [0, 1]) for (const e of [0, 1]) face((a ? 1 : -1) * N3, (c ? 1 : -1) * N3, (e ? 1 : -1) * N3, [vX(a, c, e), vY(a, c, e), vZ(a, c, e)]);
   },
   quadTop(mat, x0, z0, x1, z1, y, unit) {
     const b = this.bk[mat], sx = this.defs[mat].sx, o = b.p.length / 3;
@@ -1449,6 +1493,11 @@ const World = {
   wdecal(r, x0, z0, x1, z1, y0, y1, mat) { this.addQuad(mat || 'decal', r, [x0, y0, z0], [x1, y0, z1], [x1, y1, z1], [x0, y1, z0]); },
   box(mat, cx, cz, w, d, h, y0, o) {
     y0 = y0 || 0; o = o || {};
+    // 啟用減量的地圖：可自由擺設的障礙物隔一個留一個（結構件如牆、地板不受影響）
+    if (this.thin && o.keep !== true) {
+      const mn = Math.min(w, d), mx = Math.max(w, d);
+      if (h > .25 && h <= 5 && mx <= 11 && !(mn <= .75 && mx >= 3 && h >= 1.8) && !(h <= .7 && mx >= 6)) { if (++this.thinN % 2 === 0) return; }
+    }
     const x0 = cx - w / 2, x1 = cx + w / 2, z0 = cz - d / 2, z1 = cz + d / 2;
     if (o.render !== false) this.pushBox(mat, x0, y0, z0, x1, y0 + h, z1);
     if (o.collide !== false) this.boxes.push({ x0, x1, z0, z1, y0, y1: y0 + (o.colH || h), see: o.see !== false });
@@ -1501,7 +1550,7 @@ const World = {
     const m = MAPS[id]; this.id = id; this.cur = m; this.bounds = m.bounds; this.mezz = m.mezz || null; this.flagPos = m.flagPos; this.gymBox = m.interior;
     this.resetBuckets(); this.atlasReset(); this.setLook(m.look || null);
     Object.assign(R.env, m.env); this.baseEnv = JSON.parse(JSON.stringify(m.env)); if (typeof Perf !== 'undefined') R.setShadow(Perf.shadowWanted && !Perf.shadowOff && !m.noShadow);
-    m.build(this);
+    this.thin = !!m.thin; this.thinN = 0; m.build(this); this.thin = false;
     const ar = this.at; this.atTex = R.tex(ar.c, {}); this.defs.decal.m.tex = this.defs.neon.m.tex = this.atTex; this.defs.decal.m.useTexOnly = true;
     for (const k in this.bk) { const b = this.bk[k]; if (!b.p.length) continue; this.meshes.push({ mesh: R.mkMesh({ p: b.p, n: b.n, u: b.u, c: b.c, i: b.i }), m: this.defs[k].m, k }); }
     this.buildNav(); this.makeSpawns(); this.ready = true;
@@ -2061,7 +2110,7 @@ function buildMall(W0) {
   for (const x of [-26, 26]) { B('cBlue', x, -33, 3.5, 3, .5, FH); B('cBlue', x, -33, 2, 2, 1.0, FH + .5); }
   W.prop(mann);
   // ---- 新增障礙物：數量為原有裝飾障礙物的 1.3 倍，高度 1.4～3.3 公尺不等 ----
-  { const base = W0.boxes.filter(b => !b.nc && Math.max(b.x1 - b.x0, b.z1 - b.z0) <= 9 && (b.y1 - b.y0) <= 3.5 && (b.y1 - b.y0) >= .45).length, add = Math.round(base * .3), rr = rng(20261102), mats = ['cBlk', 'cRed', 'cBlue', 'cYel', 'cGrn', 'cPur', 'cOrg', 'cTeal', 'cPnk'], BX = 43, my1 = -2.2, mine = FH;
+  { const base = W0.boxes.filter(b => !b.nc && Math.max(b.x1 - b.x0, b.z1 - b.z0) <= 9 && (b.y1 - b.y0) <= 3.5 && (b.y1 - b.y0) >= .45).length, add = 0, rr = rng(20261102), mats = ['cBlk', 'cRed', 'cBlue', 'cYel', 'cGrn', 'cPur', 'cOrg', 'cTeal', 'cPnk'], BX = 43, my1 = -2.2, mine = FH;
     const clear = (x, z, w, d, y0, h, mg) => { for (const b of W0.boxes) { if (b.nc) continue; if (!(b.y0 < y0 + h && b.y1 > y0 + .05)) continue; if (x + w / 2 + mg > b.x0 && x - w / 2 - mg < b.x1 && z + d / 2 + mg > b.z0 && z - d / 2 - mg < b.z1) return false; } for (const r of W0.ramps) if (x > r.x0 - 3 && x < r.x1 + 3 && z > r.z0 - 3 && z < r.z1 + 3) return false; return true; };
     const zones = [[mfx(-51), mfz(27), mfx(-39), mfz(38)], [mfx(39), mfz(27), mfx(51), mfz(38)]];
     let placed = 0, tries = 0; W0.obstacles = 0;
@@ -2075,7 +2124,7 @@ function buildMall(W0) {
   }
 }
 MAPS.mall = {
-  id: 'mall', orbit: { c: [0, mfz(12)], r: 11, h: 7.4, ly: 1.4 }, preview: [0, mfz(22)], name: '追逃商城', sub: '1F 86×70 m · 樓中樓二樓', desc: '1F 面積與熱血高校相同（86×70 m），樓中樓二樓面積不變，占 1F 近一半。兩座電扶梯通往二樓，可從欄杆直接跳下一樓；店鋪、攤位與大量高低障礙物（1.4～3.3 公尺）處處可躲可踩。',
+  id: 'mall', thin: true, orbit: { c: [0, mfz(12)], r: 11, h: 7.4, ly: 1.4 }, preview: [0, mfz(22)], name: '追逃商城', sub: '1F 86×70 m · 樓中樓二樓', desc: '1F 面積與熱血高校相同（86×70 m），樓中樓二樓面積不變，占 1F 近一半。兩座電扶梯通往二樓，可從欄杆直接跳下一樓；店鋪、攤位與大量高低障礙物（1.4～3.3 公尺）處處可躲可踩。',
   bounds: { x0: -43, x1: 43, z0: -35, z1: 35 }, flagPos: [[mfx(-46), mfz(30.5)], [mfx(46), mfz(30.5)]], zoneRed: [mfx(-51), mfz(27), mfx(-39), mfz(38)], zoneBlue: [mfx(39), mfz(27), mfx(51), mfz(38)], faceRed: [0, mfz(8)], faceBlue: [0, mfz(8)],
   interior: [-43.5, -35.5, 43.5, 35.5], env: { sunCol: [.52, .50, .46], sky: [.76, .76, .79], gnd: [.60, .57, .52], fog: [.70, .72, .78], fogR: [80, 260], interior: [-43.5, -35.5, 43.5, 35.5], intK: 1.0, intH: 9.8 }, night: false, indoor: true, noShadow: true,
   mezz: { x0: -43, x1: 43, z0: -35, z1: -2.2, h: MALL_FH },
@@ -2121,8 +2170,8 @@ function buildSpace(W) {
   for (const [cx, cz, R] of [[-14, -14, 4.5], [16, 14, 5]]) for (let k = 0; k < 8; k++) { const a = k * Math.PI * 2 / 8; put('moonrock', cx + Math.cos(a) * R, cz + Math.sin(a) * R, 1.6, 1.6, .7 + rr() * .3, 0, .3); }
   // ---- 散落岩塊：補足到熱血高校阻擋型障礙物（高度≥1.2 m）的 1.3 倍 ≈ 166 個 ----
   const blockers = () => W.boxes.filter(b => !b.nc && b.y1 - b.y0 >= 1.2).length; let guard = 0;
-  while (blockers() < 166 && guard++ < 8000) { const w = 1.0 + rr() * 2.2, d = 1.0 + rr() * 2.2, h = 1.3 + rr() * 1.7; put(rr() < .5 ? 'moonrock' : 'regolith', (rr() * 2 - 1) * (BX - 3), (rr() * 2 - 1) * (BZ - 3), w, d, h, 0, 1.4); }
-  guard = 0; for (let k = 0; k < 40 && guard < 3000; guard++) { if (put('moonrock', (rr() * 2 - 1) * (BX - 3), (rr() * 2 - 1) * (BZ - 3), .8 + rr() * .8, .8 + rr() * .8, .5 + rr() * .4, 0, 1.2)) k++; } // 低矮石塊（可探頭觀察）
+  while (blockers() < 83 && guard++ < 8000) { const w = 1.0 + rr() * 2.2, d = 1.0 + rr() * 2.2, h = 1.3 + rr() * 1.7; put(rr() < .5 ? 'moonrock' : 'regolith', (rr() * 2 - 1) * (BX - 3), (rr() * 2 - 1) * (BZ - 3), w, d, h, 0, 1.4); }
+  guard = 0; for (let k = 0; k < 20 && guard < 3000; guard++) { if (put('moonrock', (rr() * 2 - 1) * (BX - 3), (rr() * 2 - 1) * (BZ - 3), .8 + rr() * .8, .8 + rr() * .8, .5 + rr() * .4, 0, 1.2)) k++; } // 低矮石塊（可探頭觀察）
 }
 MAPS.space = {
   id: 'space', skyKind: 'space', space: true, gravK: 1.2, orbit: { c: [0, 0], r: 31, h: 13, ly: 1.4 }, preview: [0, 14], name: '無遠弗屆', sub: '外太空 · 標準面積 86×70 m · 延遲跳躍', desc: '身處外太空：紫灰色大氣層與土黃色巨大行星。面積與熱血高校相同，中央是墜毀的太空船，兩側為生活艙與雷達站；障礙物約為熱血高校的 1.3 倍，動線以太空船為中心、左右對稱。場地機制「延遲跳躍」：按下跳躍後延遲 0.3 秒才起跳，但跳得更高（×1.2）、更遠（×2）。',
@@ -2130,66 +2179,6 @@ MAPS.space = {
   interior: [999, 999, 1000, 1000], env: SPACE_ENV, night: false, noShadow: false,
   pickSpots: [[-22, -14], [22, 14], [-22, 14], [22, -14], [0, -20], [0, 20], [-7, 0], [7, 0], [-34, 22], [34, -22], [-34, -22], [34, 22], [-12, 26], [12, -26], [-28, 0], [28, 0], [0, 10], [0, -10], [-38, 28], [38, -28]],
   build(W) { buildSpace(W); }
-};
-
-/* ================= 地圖 5：超能槍戰（迷宮式窄走道；面積為熱血高校 1.2 倍，障礙物 1.2 倍） ================= */
-const PSY_ENV = { sunCol: [.86, .88, 1.0], sky: [.22, .18, .40], gnd: [.52, .52, .68], fog: [.07, .05, .16], fogR: [40, 170], interior: [999, 999, 1000, 1000], intK: .7, intH: 7 };
-const PSY = { P: 2.8, C: 34, R: 27, TW: .4, WH: 3.2 };
-function buildPsy(W) {
-  const B = (...a) => W.box(...a), rr = rng(20261103), { P, C, R, TW, WH } = PSY, X0 = -C * P / 2, Z0 = -R * P / 2;
-  // vw[i][j]：x = X0+i*P 上、第 j 列的垂直牆；hw[i][j]：z = Z0+j*P 上、第 i 欄的水平牆（i∈[0,C)、j∈[0,R)）
-  const vw = Array.from({ length: C + 1 }, () => new Uint8Array(R)), hw = Array.from({ length: C }, () => new Uint8Array(R + 1));
-  const connected = () => { const seen = new Uint8Array(C * R), st = [0]; seen[0] = 1; let n = 1; while (st.length) { const c = st.pop(), i = c % C, j = (c / C) | 0; const go = (ni, nj, blocked) => { if (blocked || ni < 0 || nj < 0 || ni >= C || nj >= R) return; const k = nj * C + ni; if (!seen[k]) { seen[k] = 1; n++; st.push(k); } }; go(i + 1, j, vw[i + 1][j]); go(i - 1, j, vw[i][j]); go(i, j + 1, hw[i][j + 1]); go(i, j - 1, hw[i][j]); } return n === C * R; };
-  const edges = (o, line, a, L) => { const out = []; for (let k = 0; k < L; k++) out.push(o ? [hw, a + k, line] : [vw, line, a + k]); return out; };
-  const apply = (es, v) => { for (const [arr, i, j] of es) arr[i][j] = v; };
-  const tryRun = (o, line, a, L) => { // o=1 水平線（沿 x），o=0 垂直線
-    const maxA = o ? C : R; if (a < 0 || a + L > maxA) return false; const es = edges(o, line, a, L); if (es.every(e => e[0][e[1]][e[2]])) return false;
-    const prev = es.map(e => e[0][e[1]][e[2]]); apply(es, 1); if (connected()) return true; es.forEach((e, k) => { e[0][e[1]][e[2]] = prev[k]; }); return false;
-  };
-  const inner = (C - 1) * R + C * (R - 1); let walls = 0; const cnt = () => { let n = 0; for (let i = 1; i < C; i++) for (let j = 0; j < R; j++) n += vw[i][j]; for (let i = 0; i < C; i++) for (let j = 1; j < R; j++) n += hw[i][j]; return n; };
-  for (let t = 0; t < 9000 && (walls = cnt()) < inner * .46; t++) { const o = rr() < .5 ? 1 : 0, L = 2 + ((rr() * 7) | 0), line = 1 + ((rr() * ((o ? R : C) - 1)) | 0), a = (rr() * ((o ? C : R) - L + 1)) | 0; tryRun(o, line, a, L); }
-  // 消除 2×2 開放廣場：走道必須維持窄道
-  for (let pass = 0; pass < 3; pass++) for (let i = 0; i < C - 1; i++) for (let j = 0; j < R - 1; j++) {
-    if (vw[i + 1][j] || vw[i + 1][j + 1] || hw[i][j + 1] || hw[i + 1][j + 1]) continue;
-    const opts = [[1, j + 1, i, 1], [1, j + 1, i + 1, 1], [0, i + 1, j, 1], [0, i + 1, j + 1, 1]].sort(() => rr() - .5); for (const q of opts) if (tryRun(q[0], q[1], q[2], q[3])) break;
-  }
-  // 合併成長牆
-  const segs = []; // [x0,z0,x1,z1,low]
-  for (let j = 1; j < R; j++) { let i = 0; while (i < C) { if (!hw[i][j]) { i++; continue; } let k = i; while (k < C && hw[k][j]) k++; segs.push([X0 + i * P, Z0 + j * P, X0 + k * P, Z0 + j * P, k - i >= 2 && rr() < .14]); i = k; } }
-  for (let i = 1; i < C; i++) { let j = 0; while (j < R) { if (!vw[i][j]) { j++; continue; } let k = j; while (k < R && vw[i][k]) k++; segs.push([X0 + i * P, Z0 + j * P, X0 + i * P, Z0 + k * P, k - j >= 2 && rr() < .14]); j = k; } }
-  const reg = x => x < -C * P / 4 ? 'R' : x < 0 ? 'G' : x < C * P / 4 ? 'Y' : 'B', fl = { R: 'arenaR', G: 'arenaG', Y: 'arenaY', B: 'arenaB' }, glow = { R: 'glowR', G: 'glowG', Y: 'glowY', B: 'glowB' };
-  // ---- 地面：四個色區（紅／綠／黃／藍） ----
-  W.quadTop('arenaF', -160, -130, 160, 130, 0);
-  const q4 = C * P / 4; [['R', X0, -q4], ['G', -q4, 0], ['Y', 0, q4], ['B', q4, -X0]].forEach(([k, a, b]) => W.quadTop(fl[k], a, Z0, b, -Z0, .012));
-  // ---- 外牆 ----
-  for (const [cx, cz, w, d] of [[0, Z0 - TW / 2, C * P + 2 * TW, TW + .2], [0, -Z0 + TW / 2, C * P + 2 * TW, TW + .2], [X0 - TW / 2, 0, TW + .2, R * P], [-X0 + TW / 2, 0, TW + .2, R * P]]) B('arenaW', cx, cz, w, d, 4.2, 0, { colH: 9 });
-  // ---- 迷宮牆（黑色牆身＋同色區的發光端柱） ----
-  let nWall = 0;
-  for (const [x0, z0, x1, z1, low] of segs) {
-    const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, w = Math.abs(x1 - x0) + (x1 === x0 ? TW : TW), d = Math.abs(z1 - z0) + (z1 === z0 ? TW : TW), h = low ? 1.25 : WH;
-    B('arenaW', cx, cz, w, d, h, 0); nWall++;
-    const gk = glow[reg(cx)]; for (const [px, pz] of [[x0, z0], [x1, z1]]) B(gk, px, pz, .5, .5, h + .25, 0, { collide: false });
-    if (!low) B(gk, cx, cz, x1 === x0 ? TW + .04 : Math.abs(x1 - x0) * .98, z1 === z0 ? TW + .04 : Math.abs(z1 - z0) * .98, .08, h, { collide: false }); // 牆頂發光條
-  }
-  // ---- 走道內的掩體（箱子／立柱）：目標總障礙物約為熱血高校（251）的 1.2 倍 ≈ 301 ----
-  const target = (typeof window !== 'undefined' && window.__noCrates) ? 0 : 301, cells = []; for (let j = 0; j < R; j++) for (let i = 0; i < C; i++) cells.push([i, j]); cells.sort(() => rr() - .5);
-  const reserved = c => c[0] <= 3 || c[0] >= C - 4; // 兩端出生區保持暢通
-  let crates = 0, used = new Set(); const cm = ['cYel', 'cOrg', 'cTeal', 'cPur', 'cPnk'];
-  for (const c of cells) {
-    if (W.boxes.filter(q => !q.nc).length >= target) break; if (reserved(c)) continue; const [i, j] = c;
-    const zs = vw[i][j] && vw[i + 1][j] && !hw[i][j] && !hw[i][j + 1], xs = hw[i][j] && hw[i][j + 1] && !vw[i][j] && !vw[i + 1][j]; // 只放在直走道（轉角、岔路不放，避免堵死）
-    if (!zs && !xs) continue; if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dz]) => used.has((i + dx) + ',' + (j + dz)))) continue; used.add(i + ',' + j);
-    const cx = X0 + (i + .5) * P, cz = Z0 + (j + .5) * P, tall = rr() < .35, off = (rr() < .5 ? -1 : 1) * .5, h = tall ? 2.0 + rr() * .6 : 1.1, m = cm[(rr() * cm.length) | 0];
-    if (zs) B(m, cx + off, cz, 1.0, 1.0, h); else B(m, cx, cz + off, 1.0, 1.0, h); crates++;
-  }
-  W.psyInfo = { walls: nWall, crates };
-}
-MAPS.psy = {
-  id: 'psy', skyKind: 'neon', navCs: 1.4, orbit: { c: [0, 0], r: 36, h: 60, ly: 1.2 }, preview: [0, 0], name: '超能槍戰', sub: '迷宮窄走道 · 1.2 倍面積', desc: '霓虹迷宮：走道只有兩人寬，紅、綠、黃、藍四個色區交錯。雙方迎面撞上就得開戰，低牆可探頭窺看、箱子與立柱可閃躲遮蔽，是節奏最快的近距離對決。',
-  bounds: { x0: -47.6, x1: 47.6, z0: -37.8, z1: 37.8 }, flagPos: [[-43.4, 0], [43.4, 0]], zoneRed: [-47, -11, -39, 11], zoneBlue: [39, -11, 47, 11], faceRed: [-30, 0], faceBlue: [30, 0],
-  interior: [999, 999, 1000, 1000], env: PSY_ENV, night: false, noShadow: true,
-  pickSpots: [[-30, -22], [30, 22], [-30, 22], [30, -22], [-14, -8], [14, 8], [-14, 8], [14, -8], [0, -26], [0, 26], [-40, 14], [40, -14], [-40, -14], [40, 14], [-6, 0], [6, 0], [-22, 0], [22, 0], [0, 14], [0, -14]],
-  build(W) { buildPsy(W); }
 };
 
 /* ================= 地圖 6：白宮室內辦公室（橢圓辦公室＋西廂／東廂；面積同熱血高校，障礙物 1.1 倍） ================= */
@@ -2248,7 +2237,7 @@ function buildOval(W) {
   // ---- 家具填充：補足到熱血高校 1.1 倍（總數 ≈ 276，阻擋型 ≥ 141） ----
   const cnt = () => W.boxes.filter(b => !b.nc).length, blk = () => W.boxes.filter(b => !b.nc && b.y1 - b.y0 >= 1.2).length; let guard = 0;
   const zonesOK = (x, z) => !(Math.abs(x) < 24 && z > -26 && z < 7.5); // 橢圓辦公室內部不再放置
-  while ((cnt() < 276 || blk() < 141) && guard++ < 9000) {
+  while ((cnt() < 138 || blk() < 70) && guard++ < 9000) {
     const x = (rr() * 2 - 1) * (HX - 2.5), z = (rr() * 2 - 1) * (HZ - 2.5), t = rr(); if (!zonesOK(x, z)) continue;
     if (t < .35) put('wood', x, z, 1.0 + rr() * .5, .6 + rr() * .4, 1.8 + rr() * .6, 0); // 檔案櫃
     else if (t < .6) { if (put('stone', x, z, .9, .9, 1.4, 0)) B('grass', x, z, .7, .7, .5, 1.4, { collide: false }); } // 盆栽
@@ -2292,7 +2281,7 @@ function buildRoof(W) {
   for (const x of [-34, 34]) { B('glass', x, 12, 4, 6, 1.0, 0); rect(x, 12, 4, 6); }
   // ---- 隨機屋頂設備填充（通風口、配電箱、水泥墩）：總數 ≈ 276，阻擋型 ≥ 141 ----
   const cnt = () => W.boxes.filter(b => !b.nc).length, blk = () => W.boxes.filter(b => !b.nc && b.y1 - b.y0 >= 1.2).length; let guard = 0;
-  while ((cnt() < 276 || blk() < 141) && guard++ < 9000) {
+  while ((cnt() < 138 || blk() < 70) && guard++ < 9000) {
     const x = (rr() * 2 - 1) * (HX - 2.5), z = (rr() * 2 - 1) * (HZ - 2.5), t = rr();
     if (t < .3) put('acunit', x, z, 1.8 + rr() * .8, 1.2 + rr() * .6, 1.3 + rr() * .5, 0); // 冷氣室外機
     else if (t < .55) put('concrete', x, z, 1.0 + rr(), 1.0 + rr(), 1.2 + rr() * 2.0, 0); // 水泥墩／通風井
@@ -2390,7 +2379,7 @@ function buildSky89(W) {
   for (const sx of [-1, 1]) { solid('hull', sx * 25, -26, 8, 5, 3.6); solid('hull', sx * 25, 26, 8, 5, 3.6); solid('wood', sx * 24, -17, 5, 1.2, 1.1); solid('wood', sx * 24, 17, 5, 1.2, 1.1); }
   // ---- 觀景台設施填充：服務櫃台、展示柱、盆栽、長椅、立牌；總數約 276，阻擋型約 141 以上 ----
   const cnt = () => W.boxes.filter(b => !b.nc && !b.aw).length, blk = () => W.boxes.filter(b => !b.nc && !b.aw && b.y1 - b.y0 >= 1.2).length; let guard = 0;
-  while ((cnt() < 276 || blk() < 141) && guard++ < 9000) {
+  while ((cnt() < 138 || blk() < 70) && guard++ < 9000) {
     const x = (rr() * 2 - 1) * (HX - 3), z = (rr() * 2 - 1) * (HZ - 3), t = rr();
     if (t < .28) put('hull', x, z, 1.0 + rr() * .4, 1.0 + rr() * .4, 2.0 + rr() * 1.2, 0); // 玻璃展示柱
     else if (t < .5) { if (put('stone', x, z, 1.0, 1.0, 1.3, 0)) B('grass', x, z, .8, .8, .5, 1.3, { collide: false }); } // 盆栽
@@ -2442,7 +2431,7 @@ function buildMusic(W) {
   solid('wood', 16.6, -30, 1.6, 2.4, 1.9, .45); // 豎琴
   W.prop([{ g: gBox(.14, 3.0, .14), t: [16.6, 2.6, -30.9], c: [.72, .56, .24] }, { g: gBox(.14, .14, 2.4), t: [16.6, 4.0, -29.9], r: [.5, 0, 0], c: [.72, .56, .24] }]);
   // 舞台上的譜架與座椅（三層弧形排列）
-  for (let rw = 0; rw < 3; rw++) for (let k = -5; k <= 5; k++) {
+  for (let rw = 0; rw < 2; rw++) for (let k = -5; k <= 5; k += 2) {
     const a = k * .14, x = Math.sin(a) * (10 + rw * 3.2), z = -22.5 - Math.cos(a) * (6.5 - rw * 1.4);
     if (Math.abs(x) > 15) continue;
     B('ebony', x, z, .5, .5, .9, .45, { see: false }); // 椅子
@@ -2469,13 +2458,13 @@ function buildMusic(W) {
   for (const [x, z] of [[-36, 26], [-30, 26], [-24, 26], [-36, 32], [-24, 32]]) solid('steel', x, z, 3.2, 2.2, 2.2); // 器材室層架
   // ---- 中央：合奏席（階梯式低台）與座椅排 ----
   for (let t = 0; t < 3; t++) solid('plank', 0, -2 + t * 5.2, 30 - t * 4, 4.4, .35 + t * .35);
-  for (let t = 0; t < 3; t++) for (let k = -6; k <= 6; k++) { const x = k * 2.2, y0 = .35 + t * .35; if (Math.abs(x) > 13 - t * 1.8) continue; B('ebony', x, -2 + t * 5.2 + 1.2, .5, .5, .9, y0, { see: false }); }
+  for (let t = 0; t < 3; t++) for (let k = -6; k <= 6; k += 2) { const x = k * 2.2, y0 = .35 + t * .35; if (Math.abs(x) > 13 - t * 1.8) continue; B('ebony', x, -2 + t * 5.2 + 1.2, .5, .5, .9, y0, { see: false }); }
   rects.push([-16, -5, 16, 12]);
   // 中央大譜架與音響
   for (const sx of [-1, 1]) { solid('ebony', sx * 19, 4, 1.4, 1.4, 2.6); B('panel', sx * 19, 4, 1.2, .12, 1.0, 1.4, { collide: false }); }
   // ---- 南側：聽眾區長椅與置物櫃 ----
-  for (let k = -4; k <= 4; k++) solid('wood', k * 7.4, 31.5, 5.6, 1.0, .95);
-  for (let k = -4; k <= 4; k++) solid('steel', k * 7.4, 26.5, 4.4, 1.2, 2.3);
+  for (let k = -4; k <= 4; k += 2) solid('wood', k * 7.4, 31.5, 5.6, 1.0, .95);
+  for (let k = -4; k <= 4; k += 2) solid('steel', k * 7.4, 26.5, 4.4, 1.2, 2.3);
   // ---- 告示牌 ----
   const board = (txt, bg) => W.text(txt, { w: 512, h: 96, bg, fg: '#fff', border: '#d9c28a', font: '800 52px' });
   W.wdecal(board('音樂教室 Music Room', '#2b3b2f'), -12, -HZ + .34, 12, -HZ + .34, 5.2, 6.4, 'neon');
@@ -2483,8 +2472,8 @@ function buildMusic(W) {
   W.wdecal(board('樂器室 Instrument Store', '#3b2f2b'), -20, HZ - .34, -40, HZ - .34, 5.0, 6.2, 'neon');
   // ---- 填充到 251 個障礙物（與熱血高校相同） ----
   const cnt = () => W.boxes.filter(b => !b.nc && !b.aw).length, blk = () => W.boxes.filter(b => !b.nc && !b.aw && b.y1 - b.y0 >= 1.2).length; let guard = 0;
-  while ((cnt() < 251 || blk() < 126) && guard++ < 9000) {
-    const x = (rr() * 2 - 1) * (HX - 3), z = (rr() * 2 - 1) * (HZ - 3), t = rr(), need = blk() < 126;
+  while ((cnt() < 126 || blk() < 63) && guard++ < 9000) {
+    const x = (rr() * 2 - 1) * (HX - 3), z = (rr() * 2 - 1) * (HZ - 3), t = rr(), need = blk() < 63;
     if (need) { const m = ['wood', 'ebony', 'steel', 'cream', 'brass'][(guard * 3 + Math.abs(x * 7 | 0)) % 5]; // 樂器櫃／大提琴箱／喇叭柱／鼓塔
       if (!put(m, x, z, .8 + rr() * .7, .7 + rr() * .5, 1.4 + rr() * 1.1, 0)) put('steel', x, z, .6, .6, 1.3 + rr() * .5, 0, 1.0); continue; }
     if (t < .3) put('ebony', x, z, 1.3, .8, 1.3, 0); // 大提琴盒
@@ -2563,8 +2552,8 @@ function buildHall(W) {
   // ---- 填充到 251 個障礙物（與熱血高校相同） ----
   lvl = (x, z) => z > RZ0 ? rake(z) : (z < SZ1 && Math.abs(x) < 24 ? SY : 0);
   const cnt = () => W.boxes.filter(b => !b.nc && !b.aw).length, blk = () => W.boxes.filter(b => !b.nc && !b.aw && b.y1 - b.y0 >= 1.2).length; let guard = 0;
-  while ((cnt() < 251 || blk() < 120) && guard++ < 40000) {
-    const x = (rr() * 2 - 1) * (HX - 2.5), z = (rr() * 2 - 1) * (HZ - 2.5), t = rr(), need = blk() < 120;
+  while ((cnt() < 126 || blk() < 60) && guard++ < 40000) {
+    const x = (rr() * 2 - 1) * (HX - 2.5), z = (rr() * 2 - 1) * (HZ - 2.5), t = rr(), need = blk() < 60;
     if (need) { const m = ['brass', 'velvet', 'ebony', 'marble'][(guard * 3 + Math.abs(z * 5 | 0)) % 4]; // 金柱／絨布屏風／音響塔／石座
       if (!put(m, x, z, .7 + rr() * .6, .7 + rr() * .6, 1.5 + rr() * 1.6, 0)) put('brass', x, z, .5, .5, 1.3, 0, .9); continue; }
     if (t < .3) put('ebony', x, z, 1.1, 1.1, 1.4, 0); // 音響塔
@@ -2657,8 +2646,8 @@ function buildBakery(W) {
   W.wdecal(board('原料倉 Dry Store', '#5a4a2a'), HX - .34, -14, HX - .34, 2, 4.0, 5.0, 'neon');
   // ---- 填充到 251 個障礙物（與熱血高校相同） ----
   const cnt = () => W.boxes.filter(b => !b.nc && !b.aw).length, blk = () => W.boxes.filter(b => !b.nc && !b.aw && b.y1 - b.y0 >= 1.2).length; let guard = 0;
-  while ((cnt() < 251 || blk() < 126) && guard++ < 40000) {
-    const x = (rr() * 2 - 1) * (HX - 2.5), z = (rr() * 2 - 1) * (HZ - 2.5), t = rr(), need = blk() < 126;
+  while ((cnt() < 126 || blk() < 63) && guard++ < 40000) {
+    const x = (rr() * 2 - 1) * (HX - 2.5), z = (rr() * 2 - 1) * (HZ - 2.5), t = rr(), need = blk() < 63;
     if (need) { const m = ['steel', 'inox', 'cream', 'wood'][(guard * 3 + Math.abs(x * 3 | 0)) % 4]; // 推車架／層架／粉袋塔／木架
       if (!put(m, x, z, .8 + rr() * .6, .8 + rr() * .5, 1.3 + rr() * 1.2, 0)) put('inox', x, z, .7, .7, 1.3, 0, .9); continue; }
     if (t < .3) put('inox', x, z, 1.6, 1.0, .95, 0); // 不鏽鋼小檯
@@ -5936,7 +5925,7 @@ function boot() {
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
 setInterval(() => { try { UI.renderPills(); } catch (e) { } }, 120);
-window.__G = { PRO, OUTFITS, kenKind, In, cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+window.__G = { PRO, OUTFITS, VIS_OUTFITS, HERO_CLASSES, HERO_TIERS, SKILL_OF, SKILLS, setPreview, kenKind, In, cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 
 // 檢查是否有新版（防止 PWA 快取舊版）

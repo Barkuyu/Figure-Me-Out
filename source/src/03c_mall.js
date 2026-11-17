@@ -166,7 +166,7 @@ function buildMall(W0) {
   for (const x of [-26, 26]) { B('cBlue', x, -33, 3.5, 3, .5, FH); B('cBlue', x, -33, 2, 2, 1.0, FH + .5); }
   W.prop(mann);
   // ---- 新增障礙物：數量為原有裝飾障礙物的 1.3 倍，高度 1.4～3.3 公尺不等 ----
-  { const base = W0.boxes.filter(b => !b.nc && Math.max(b.x1 - b.x0, b.z1 - b.z0) <= 9 && (b.y1 - b.y0) <= 3.5 && (b.y1 - b.y0) >= .45).length, add = Math.round(base * .3), rr = rng(20261102), mats = ['cBlk', 'cRed', 'cBlue', 'cYel', 'cGrn', 'cPur', 'cOrg', 'cTeal', 'cPnk'], BX = 43, my1 = -2.2, mine = FH;
+  { const base = W0.boxes.filter(b => !b.nc && Math.max(b.x1 - b.x0, b.z1 - b.z0) <= 9 && (b.y1 - b.y0) <= 3.5 && (b.y1 - b.y0) >= .45).length, add = 0, rr = rng(20261102), mats = ['cBlk', 'cRed', 'cBlue', 'cYel', 'cGrn', 'cPur', 'cOrg', 'cTeal', 'cPnk'], BX = 43, my1 = -2.2, mine = FH;
     const clear = (x, z, w, d, y0, h, mg) => { for (const b of W0.boxes) { if (b.nc) continue; if (!(b.y0 < y0 + h && b.y1 > y0 + .05)) continue; if (x + w / 2 + mg > b.x0 && x - w / 2 - mg < b.x1 && z + d / 2 + mg > b.z0 && z - d / 2 - mg < b.z1) return false; } for (const r of W0.ramps) if (x > r.x0 - 3 && x < r.x1 + 3 && z > r.z0 - 3 && z < r.z1 + 3) return false; return true; };
     const zones = [[mfx(-51), mfz(27), mfx(-39), mfz(38)], [mfx(39), mfz(27), mfx(51), mfz(38)]];
     let placed = 0, tries = 0; W0.obstacles = 0;
@@ -180,7 +180,7 @@ function buildMall(W0) {
   }
 }
 MAPS.mall = {
-  id: 'mall', orbit: { c: [0, mfz(12)], r: 11, h: 7.4, ly: 1.4 }, preview: [0, mfz(22)], name: '追逃商城', sub: '1F 86×70 m · 樓中樓二樓', desc: '1F 面積與熱血高校相同（86×70 m），樓中樓二樓面積不變，占 1F 近一半。兩座電扶梯通往二樓，可從欄杆直接跳下一樓；店鋪、攤位與大量高低障礙物（1.4～3.3 公尺）處處可躲可踩。',
+  id: 'mall', thin: true, orbit: { c: [0, mfz(12)], r: 11, h: 7.4, ly: 1.4 }, preview: [0, mfz(22)], name: '追逃商城', sub: '1F 86×70 m · 樓中樓二樓', desc: '1F 面積與熱血高校相同（86×70 m），樓中樓二樓面積不變，占 1F 近一半。兩座電扶梯通往二樓，可從欄杆直接跳下一樓；店鋪、攤位與大量高低障礙物（1.4～3.3 公尺）處處可躲可踩。',
   bounds: { x0: -43, x1: 43, z0: -35, z1: 35 }, flagPos: [[mfx(-46), mfz(30.5)], [mfx(46), mfz(30.5)]], zoneRed: [mfx(-51), mfz(27), mfx(-39), mfz(38)], zoneBlue: [mfx(39), mfz(27), mfx(51), mfz(38)], faceRed: [0, mfz(8)], faceBlue: [0, mfz(8)],
   interior: [-43.5, -35.5, 43.5, 35.5], env: { sunCol: [.52, .50, .46], sky: [.76, .76, .79], gnd: [.60, .57, .52], fog: [.70, .72, .78], fogR: [80, 260], interior: [-43.5, -35.5, 43.5, 35.5], intK: 1.0, intH: 9.8 }, night: false, indoor: true, noShadow: true,
   mezz: { x0: -43, x1: 43, z0: -35, z1: -2.2, h: MALL_FH },

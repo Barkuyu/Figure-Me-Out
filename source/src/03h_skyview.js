@@ -73,7 +73,7 @@ function buildSky89(W) {
   for (const sx of [-1, 1]) { solid('hull', sx * 25, -26, 8, 5, 3.6); solid('hull', sx * 25, 26, 8, 5, 3.6); solid('wood', sx * 24, -17, 5, 1.2, 1.1); solid('wood', sx * 24, 17, 5, 1.2, 1.1); }
   // ---- 觀景台設施填充：服務櫃台、展示柱、盆栽、長椅、立牌；總數約 276，阻擋型約 141 以上 ----
   const cnt = () => W.boxes.filter(b => !b.nc && !b.aw).length, blk = () => W.boxes.filter(b => !b.nc && !b.aw && b.y1 - b.y0 >= 1.2).length; let guard = 0;
-  while ((cnt() < 276 || blk() < 141) && guard++ < 9000) {
+  while ((cnt() < 138 || blk() < 70) && guard++ < 9000) {
     const x = (rr() * 2 - 1) * (HX - 3), z = (rr() * 2 - 1) * (HZ - 3), t = rr();
     if (t < .28) put('hull', x, z, 1.0 + rr() * .4, 1.0 + rr() * .4, 2.0 + rr() * 1.2, 0); // 玻璃展示柱
     else if (t < .5) { if (put('stone', x, z, 1.0, 1.0, 1.3, 0)) B('grass', x, z, .8, .8, .5, 1.3, { collide: false }); } // 盆栽

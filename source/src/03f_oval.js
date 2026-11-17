@@ -54,7 +54,7 @@ function buildOval(W) {
   // ---- 家具填充：補足到熱血高校 1.1 倍（總數 ≈ 276，阻擋型 ≥ 141） ----
   const cnt = () => W.boxes.filter(b => !b.nc).length, blk = () => W.boxes.filter(b => !b.nc && b.y1 - b.y0 >= 1.2).length; let guard = 0;
   const zonesOK = (x, z) => !(Math.abs(x) < 24 && z > -26 && z < 7.5); // 橢圓辦公室內部不再放置
-  while ((cnt() < 276 || blk() < 141) && guard++ < 9000) {
+  while ((cnt() < 138 || blk() < 70) && guard++ < 9000) {
     const x = (rr() * 2 - 1) * (HX - 2.5), z = (rr() * 2 - 1) * (HZ - 2.5), t = rr(); if (!zonesOK(x, z)) continue;
     if (t < .35) put('wood', x, z, 1.0 + rr() * .5, .6 + rr() * .4, 1.8 + rr() * .6, 0); // 檔案櫃
     else if (t < .6) { if (put('stone', x, z, .9, .9, 1.4, 0)) B('grass', x, z, .7, .7, .5, 1.4, { collide: false }); } // 盆栽

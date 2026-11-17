@@ -58,8 +58,8 @@ function buildHall(W) {
   // ---- 填充到 251 個障礙物（與熱血高校相同） ----
   lvl = (x, z) => z > RZ0 ? rake(z) : (z < SZ1 && Math.abs(x) < 24 ? SY : 0);
   const cnt = () => W.boxes.filter(b => !b.nc && !b.aw).length, blk = () => W.boxes.filter(b => !b.nc && !b.aw && b.y1 - b.y0 >= 1.2).length; let guard = 0;
-  while ((cnt() < 251 || blk() < 120) && guard++ < 40000) {
-    const x = (rr() * 2 - 1) * (HX - 2.5), z = (rr() * 2 - 1) * (HZ - 2.5), t = rr(), need = blk() < 120;
+  while ((cnt() < 126 || blk() < 60) && guard++ < 40000) {
+    const x = (rr() * 2 - 1) * (HX - 2.5), z = (rr() * 2 - 1) * (HZ - 2.5), t = rr(), need = blk() < 60;
     if (need) { const m = ['brass', 'velvet', 'ebony', 'marble'][(guard * 3 + Math.abs(z * 5 | 0)) % 4]; // 金柱／絨布屏風／音響塔／石座
       if (!put(m, x, z, .7 + rr() * .6, .7 + rr() * .6, 1.5 + rr() * 1.6, 0)) put('brass', x, z, .5, .5, 1.3, 0, .9); continue; }
     if (t < .3) put('ebony', x, z, 1.1, 1.1, 1.4, 0); // 音響塔

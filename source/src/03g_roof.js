@@ -26,7 +26,7 @@ function buildRoof(W) {
   for (const x of [-34, 34]) { B('glass', x, 12, 4, 6, 1.0, 0); rect(x, 12, 4, 6); }
   // ---- 隨機屋頂設備填充（通風口、配電箱、水泥墩）：總數 ≈ 276，阻擋型 ≥ 141 ----
   const cnt = () => W.boxes.filter(b => !b.nc).length, blk = () => W.boxes.filter(b => !b.nc && b.y1 - b.y0 >= 1.2).length; let guard = 0;
-  while ((cnt() < 276 || blk() < 141) && guard++ < 9000) {
+  while ((cnt() < 138 || blk() < 70) && guard++ < 9000) {
     const x = (rr() * 2 - 1) * (HX - 2.5), z = (rr() * 2 - 1) * (HZ - 2.5), t = rr();
     if (t < .3) put('acunit', x, z, 1.8 + rr() * .8, 1.2 + rr() * .6, 1.3 + rr() * .5, 0); // 冷氣室外機
     else if (t < .55) put('concrete', x, z, 1.0 + rr(), 1.0 + rr(), 1.2 + rr() * 2.0, 0); // 水泥墩／通風井

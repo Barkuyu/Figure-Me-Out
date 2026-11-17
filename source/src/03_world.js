@@ -101,6 +101,14 @@ const World = {
   resetBuckets() { for (const k in this.defs) this.bk[k] = { p: [], n: [], u: [], c: [], i: [] }; },
   /* 世界座標 UV 的軸對齊盒子 */
   pushBox(mat, x0, y0, z0, x1, y1, z1) {
+    const w = x1 - x0, h = y1 - y0, dd = z1 - z0, mn = Math.min(w, dd), mx = Math.max(w, dd);
+    // 障礙物一律倒圓角（切角），避免尖銳邊；牆面、地板、天花板等結構件維持原狀以免接縫露出
+    const wallLike = mn <= .75 && mx >= 3 && h >= 1.8, slabLike = h <= .7 && mx >= 6;
+    const r = Math.min(.16, w / 5, dd / 5, h / 5);
+    if (h > .25 && mx <= 14 && r > .02 && !wallLike && !slabLike) { this.pushBoxR(mat, x0, y0, z0, x1, y1, z1, r); return; }
+    this.pushBoxSharp(mat, x0, y0, z0, x1, y1, z1);
+  },
+  pushBoxSharp(mat, x0, y0, z0, x1, y1, z1) {
     const b = this.bk[mat], sx = this.defs[mat].sx, sy = this.defs[mat].sy;
     const F = [[1, 0, 0, [x1, y0, z1], [x1, y0, z0], [x1, y1, z0], [x1, y1, z1]], [-1, 0, 0, [x0, y0, z0], [x0, y0, z1], [x0, y1, z1], [x0, y1, z0]],
     [0, 1, 0, [x0, y1, z1], [x1, y1, z1], [x1, y1, z0], [x0, y1, z0]], [0, -1, 0, [x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1]],
@@ -115,6 +123,42 @@ const World = {
       }
       b.i.push(o, o + 1, o + 2, o, o + 2, o + 3);
     }
+  },
+  /* 切角方塊：六個主面內縮 r，十二條邊補 45° 斜面、八個角補三角形，角落因此不再尖銳。
+     貼地的方塊底部不內縮，避免和地板之間出現縫隙。 */
+  pushBoxR(mat, x0, y0, z0, x1, y1, z1, r) {
+    const b = this.bk[mat], sx = this.defs[mat].sx, sy = this.defs[mat].sy;
+    const iy0 = y0 < .01 ? 0 : r, X = [x0, x1], Y = [y0, y1], Z = [z0, z1];
+    const IX = s => s ? -r : r, IY = s => s ? -r : iy0, IZ = s => s ? -r : r;
+    // 每個角落在三個主面上各有一個頂點
+    const vX = (a, c, e) => [X[a], Y[c] + IY(c), Z[e] + IZ(e)];
+    const vY = (a, c, e) => [X[a] + IX(a), Y[c], Z[e] + IZ(e)];
+    const vZ = (a, c, e) => [X[a] + IX(a), Y[c] + IY(c), Z[e]];
+    const face = (nx, ny, nz, pts) => {
+      if (pts.length < 3) return;
+      // 退化面（寬度為 0）直接略過
+      const e1 = [pts[1][0] - pts[0][0], pts[1][1] - pts[0][1], pts[1][2] - pts[0][2]], e2 = [pts[2][0] - pts[0][0], pts[2][1] - pts[0][1], pts[2][2] - pts[0][2]];
+      const cr = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]];
+      if (Math.hypot(cr[0], cr[1], cr[2]) < 1e-7) return;
+      const q = cr[0] * nx + cr[1] * ny + cr[2] * nz < 0 ? pts.slice().reverse() : pts; // 統一朝外
+      const o = b.p.length / 3, ax = Math.abs(nx), ay = Math.abs(ny), az = Math.abs(nz);
+      for (const p of q) {
+        b.p.push(p[0], p[1], p[2]); b.n.push(nx, ny, nz); b.c.push(1, 1, 1);
+        let u, v; if (ay >= ax && ay >= az) { u = p[0] / sx; v = p[2] / sx; } else if (ax >= az) { u = p[2] / sx; v = p[1] / sy; } else { u = p[0] / sx; v = p[1] / sy; }
+        b.u.push(u, v);
+      }
+      for (let k = 2; k < q.length; k++) b.i.push(o, o + k - 1, o + k);
+    };
+    const N = 1 / Math.sqrt(2), N3 = 1 / Math.sqrt(3);
+    for (const a of [0, 1]) { const s = a ? 1 : -1; face(s, 0, 0, [vX(a, 0, 0), vX(a, 0, 1), vX(a, 1, 1), vX(a, 1, 0)]); }
+    for (const c of [0, 1]) { if (c === 0 && y0 < .01) continue; const s = c ? 1 : -1; face(0, s, 0, [vY(0, c, 0), vY(0, c, 1), vY(1, c, 1), vY(1, c, 0)]); }
+    for (const e of [0, 1]) { const s = e ? 1 : -1; face(0, 0, s, [vZ(0, 0, e), vZ(1, 0, e), vZ(1, 1, e), vZ(0, 1, e)]); }
+    // 十二條邊的 45° 斜面
+    for (const a of [0, 1]) for (const e of [0, 1]) { const sa = a ? 1 : -1, se = e ? 1 : -1; face(sa * N, 0, se * N, [vX(a, 0, e), vZ(a, 0, e), vZ(a, 1, e), vX(a, 1, e)]); }
+    for (const a of [0, 1]) for (const c of [0, 1]) { const sa = a ? 1 : -1, sc = c ? 1 : -1; face(sa * N, sc * N, 0, [vX(a, c, 0), vY(a, c, 0), vY(a, c, 1), vX(a, c, 1)]); }
+    for (const c of [0, 1]) for (const e of [0, 1]) { const sc = c ? 1 : -1, se = e ? 1 : -1; face(0, sc * N, se * N, [vY(0, c, e), vZ(0, c, e), vZ(1, c, e), vY(1, c, e)]); }
+    // 八個角的三角面
+    for (const a of [0, 1]) for (const c of [0, 1]) for (const e of [0, 1]) face((a ? 1 : -1) * N3, (c ? 1 : -1) * N3, (e ? 1 : -1) * N3, [vX(a, c, e), vY(a, c, e), vZ(a, c, e)]);
   },
   quadTop(mat, x0, z0, x1, z1, y, unit) {
     const b = this.bk[mat], sx = this.defs[mat].sx, o = b.p.length / 3;
@@ -163,6 +207,11 @@ const World = {
   wdecal(r, x0, z0, x1, z1, y0, y1, mat) { this.addQuad(mat || 'decal', r, [x0, y0, z0], [x1, y0, z1], [x1, y1, z1], [x0, y1, z0]); },
   box(mat, cx, cz, w, d, h, y0, o) {
     y0 = y0 || 0; o = o || {};
+    // 啟用減量的地圖：可自由擺設的障礙物隔一個留一個（結構件如牆、地板不受影響）
+    if (this.thin && o.keep !== true) {
+      const mn = Math.min(w, d), mx = Math.max(w, d);
+      if (h > .25 && h <= 5 && mx <= 11 && !(mn <= .75 && mx >= 3 && h >= 1.8) && !(h <= .7 && mx >= 6)) { if (++this.thinN % 2 === 0) return; }
+    }
     const x0 = cx - w / 2, x1 = cx + w / 2, z0 = cz - d / 2, z1 = cz + d / 2;
     if (o.render !== false) this.pushBox(mat, x0, y0, z0, x1, y0 + h, z1);
     if (o.collide !== false) this.boxes.push({ x0, x1, z0, z1, y0, y1: y0 + (o.colH || h), see: o.see !== false });
@@ -215,7 +264,7 @@ const World = {
     const m = MAPS[id]; this.id = id; this.cur = m; this.bounds = m.bounds; this.mezz = m.mezz || null; this.flagPos = m.flagPos; this.gymBox = m.interior;
     this.resetBuckets(); this.atlasReset(); this.setLook(m.look || null);
     Object.assign(R.env, m.env); this.baseEnv = JSON.parse(JSON.stringify(m.env)); if (typeof Perf !== 'undefined') R.setShadow(Perf.shadowWanted && !Perf.shadowOff && !m.noShadow);
-    m.build(this);
+    this.thin = !!m.thin; this.thinN = 0; m.build(this); this.thin = false;
     const ar = this.at; this.atTex = R.tex(ar.c, {}); this.defs.decal.m.tex = this.defs.neon.m.tex = this.atTex; this.defs.decal.m.useTexOnly = true;
     for (const k in this.bk) { const b = this.bk[k]; if (!b.p.length) continue; this.meshes.push({ mesh: R.mkMesh({ p: b.p, n: b.n, u: b.u, c: b.c, i: b.i }), m: this.defs[k].m, k }); }
     this.buildNav(); this.makeSpawns(); this.ready = true;
