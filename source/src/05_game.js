@@ -2,6 +2,11 @@
 const STEP = .45, RAD = .22, GRAV = 22, EYE = 1.62;
 const isDM = () => G.mode === 'dm' || G.mode === 'hunt' || G.mode === 'kof';
 const VIS_OUTFITS = OUTFITS.map((o, i) => o.hidden ? -1 : i).filter(i => i >= 0);
+// 舊存檔若還留著已移除的英雄，一律清掉，避免選到隱藏角色
+if (!VIS_OUTFITS.includes(S.outfit)) S.outfit = VIS_OUTFITS[0];
+if (Array.isArray(S.fav)) S.fav = S.fav.filter(i => VIS_OUTFITS.includes(i));
+if (S.multi) for (const k in S.multi) if (!VIS_OUTFITS.includes(+k)) delete S.multi[k];
+if (typeof S.pref === 'number' && !VIS_OUTFITS.includes(S.pref)) S.pref = undefined;
 const NAMES = ['Honda', '小明', '阿杰', 'Mia', 'Ken', 'Luna', 'Jay', 'Yuki', '小美', 'Leo', '阿宏', 'Nina', 'Ray', '小雨', 'Zoe', 'Max', '阿德', 'Coco', 'Tom', 'Eli'];
 /* 新增模式只要在這裡加一筆；demo:false 代表電腦無法示範（需真人操作），示範選單會自動排除並提示 */
 const MODES = {
@@ -91,16 +96,17 @@ function spawnAll() {
 /* ---------- 英雄技能 ---------- */
 const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null, 'steal', 'dack', 'nox', 'charge', null, null, 'rel', 'revert', 'gis', null, 'neg', 'quick', 'ange', null, 'peace', null, null, 'ward', null, null, 'frost', 'beacon', 'drum', 'guard', 'vocal', null, null, null, null, 'medi', 'mirror', 'cham', 'lian', 'mini', 'voodoo', 'enigma', 'decoy', null, 'decade', 'soom'];
 const PASSIVE_IDX = [3, 5, 8, 11, 12, 13, 19, 20, 24, 28, 30, 31, 33, 34, 40, 41, 52];
-const GKEY_HEROES = [18, 26, 27]; // 沒有 G 道具格、G 鍵改為技能鍵的英雄
+const GKEY_HEROES = [18, 26]; // 沒有 G 道具格、G 鍵改為技能鍵的英雄
 const HERO_CLASSES = [['先手型', '#ff9a3c', [39, 1, 11, 18, 24, 16, 17, 30, 31, 34, 40, 42, 43, 54]], ['輔助型', '#4fd38a', [29, 26, 27, 32, 33, 35, 36, 37, 38, 41, 44]], ['偽裝型', '#b48cff', [25, 21, 4, 22, 45, 46, 47, 48, 50, 51]], ['突進型', '#ff5a5a', [9, 19, 8, 52]], ['把戲型', '#ffd24a', [0, 2, 6, 10, 15, 20, 49, 53]], ['進攻型', '#4fb0ff', [7, 23, 12, 5, 3, 13, 28]]]; // 英雄分類
 const HERO_TIERS = [['S 級', '#ff4d6d', [15, 39, 53]], ['A 級', '#ffb020', [18, 17, 4, 21, 0, 6, 10, 7, 23, 28, 42, 43, 51]], ['B 級', '#4fb0ff', [16, 29, 26, 27, 32, 35, 36, 25, 9, 19, 8, 2, 12, 13, 40, 41, 47, 48, 49, 54]], ['C 級', '#9aa3b2', [1, 11, 24, 30, 31, 34, 33, 37, 38, 22, 20, 5, 3, 44, 45, 46, 50, 52]]]; // 英雄等級
 const CHANT = { soom: 1, cham: 1, revert: .5, gis: 1, neg: 1.5 }; // 吟唱秒數
 const isOut = (a, i) => skOn() && a.av && (a.av.outfitIdx === i || a.passIdx === i); // 對應 OUTFITS：蘇蘇／艾迪／艾伯特／蘇米(被動)／艾瑞克／麥克(被動)
-const skOn = () => G.skillsOn !== false && !(G.sk && G.sk.ban && G.sk.ban.t > 0); // 停戰宣告期間：全場技能停用
+const skOn = () => G.skillsOn !== false && !(G.sk && G.sk.ban && G.sk.ban.t > 0) && !frozenAll(); // 停戰宣告／暫時的休止符期間：全場技能停用
+const frozenAll = () => !!(G.sk && G.sk.frz && G.sk.frz.t > 0); // 暫時的休止符：全場動作停滯
 const isSumi = a => isOut(a, 3);
 const jumpMul = a => isSumi(a) ? 1.285 : 1; // 高度 1.65 倍 → 初速 √1.65 倍
-const speedMul = a => isOut(a, 5) ? 2.5 : isOut(a, 13) ? .7 : isOut(a, 52) ? 1.2 : 1;
-const SKILLS = { decade: { name: '假面變身', cd: 30, ico: '🎭' }, soom: { name: '無影瞬蹤', cd: 20, ico: '🌀' }, medi: { name: '暫時的休止符', cd: 15, ico: '🕊️' }, mirror: { name: '鏡像混亂', cd: 15, ico: '🪞' }, cham: { name: '半透明視線', cd: 15, ico: '🦎' }, lian: { name: '死胡同', cd: 20, ico: '⚰️' }, mini: { name: '超級縮小', cd: 20, ico: '🔬' }, voodoo: { name: '巫毒反殺', cd: 20, ico: '🪆' }, enigma: { name: '亂碼術', cd: 18, ico: '❓' }, decoy: { name: '影子突進', cd: 10, ico: '👥' }, vocal: { name: '聲波咒術', cd: 20, ico: '🎤' }, ward: { name: '警戒結界', cd: 20, ico: '☯️' }, frost: { name: '冰封領域', cd: 20, ico: '❄️' }, beacon: { name: '通天視野', cd: 15, ico: '🔴' }, drum: { name: '戰鼓鼓舞', cd: 15, ico: '🥁' }, guard: { name: '替身契約', cd: 15, ico: '🤝' }, revert: { name: '逆流術士', cd: 0, ico: '⏪' }, gis: { name: '連號甜心', cd: 50, ico: '💖' }, neg: { name: '負領域展開', cd: 20, ico: '🎞️' }, quick: { name: '瞬影瞬行', cd: .5, ico: '🏃🏻‍♂️‍➡️' }, ange: { name: '天使之息', cd: 3, ico: '🧚🏻‍♀️' }, peace: { name: '停戰宣告', cd: 15, ico: '🕊️' }, rel: { name: '相對論', cd: 30, ico: '🔀' }, charge: { name: '衝鋒陷陣', cd: 10, ico: '🏃🏻' }, steal: { name: '命運拷貝', cd: 1, ico: '🔮' }, dack: { name: '生化操作', cd: 15, ico: '🧪' }, nox: { name: '夜間戰術', cd: 30, ico: '🌑' }, ink: { name: '烏賊戲法', cd: 25, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 20, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 20, ico: '🐱' }, mind: { name: '心靈控制', cd: 20, ico: '🌀' }, cloak: { name: '幻影易容', cd: 25, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 20, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 15, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 25, ico: '⚡' } };
+const speedMul = a => isOut(a, 5) ? 2.5 : isOut(a, 13) ? .7 : isOut(a, 52) ? 1.5 : 1;
+const SKILLS = { decade: { name: '假面變身', cd: 30, ico: '🎭' }, soom: { name: '無影瞬蹤', cd: 8, ico: '🌀' }, medi: { name: '暫時的休止符', cd: 15, ico: '🕊️' }, mirror: { name: '鏡像混亂', cd: 15, ico: '🪞' }, cham: { name: '半透明視線', cd: 15, ico: '🦎' }, lian: { name: '死胡同', cd: 20, ico: '⚰️' }, mini: { name: '超級縮小', cd: 20, ico: '🔬' }, voodoo: { name: '巫毒反殺', cd: 20, ico: '🪆' }, enigma: { name: '亂碼術', cd: 18, ico: '❓' }, decoy: { name: '影子突進', cd: 10, ico: '👥' }, vocal: { name: '聲波咒術', cd: 6, ico: '🎤' }, ward: { name: '警戒結界', cd: 20, ico: '☯️' }, frost: { name: '冰封領域', cd: 20, ico: '❄️' }, beacon: { name: '通天視野', cd: 15, ico: '🔴' }, drum: { name: '戰鼓鼓舞', cd: 15, ico: '🥁' }, guard: { name: '替身契約', cd: 15, ico: '🤝' }, revert: { name: '逆流術士', cd: 0, ico: '⏪' }, gis: { name: '連號甜心', cd: 15, ico: '💖' }, neg: { name: '負領域展開', cd: 10, ico: '🎞️' }, quick: { name: '瞬影瞬行', cd: .5, ico: '🏃🏻‍♂️‍➡️' }, ange: { name: '天使之息', cd: 3, ico: '🧚🏻‍♀️' }, peace: { name: '停戰宣告', cd: 10, ico: '🕊️' }, rel: { name: '相對論', cd: 30, ico: '🔀' }, charge: { name: '衝鋒陷陣', cd: 10, ico: '🏃🏻' }, steal: { name: '命運拷貝', cd: 1, ico: '🔮' }, dack: { name: '生化操作', cd: 15, ico: '🧪' }, nox: { name: '夜間戰術', cd: 30, ico: '🌑' }, ink: { name: '烏賊戲法', cd: 25, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 15, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 8, ico: '🐱' }, mind: { name: '心靈控制', cd: 12, ico: '🌀' }, cloak: { name: '幻影易容', cd: 25, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 20, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 15, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 25, ico: '⚡' } };
 const DACK_T = 21; // 濃霧：1 秒戴鏡 + 20 秒噴發
 const immune = a => a.alive && ((isOut(a, 11) && (a.cleanW || 0) > 0) || (a.imm || 0) > 0); // 蕾西亞淨化窗口：無效化一切攻擊與技能
 const REL_WARN = 2, REL_DUR = 20; // 相對論：2 秒警笛 + 20 秒左右互換
@@ -111,7 +117,7 @@ const skillOf = a => SKILL_OF[a.av.outfitIdx] ? SKILLS[SKILL_OF[a.av.outfitIdx]]
 const revActive = a => G.sk && G.sk.rev.t > 0 && G.sk.rev.by !== a && a.clrRev !== G.sk.rev.id;
 const inkActive = a => G.sk && G.sk.ink.t > 0 && G.sk.ink.by !== a && a.clrInk !== G.sk.ink.id;
 const scrPhase2 = a => G.sk && G.sk.scr.t >= SCR_FLASH && G.sk.scr.by !== a && a.clrScr !== G.sk.scr.id;
-function skReset() { G.sk = { night: { e: 0, by: null }, quake: { t: 0, by: null }, rev: { t: 0, by: null, id: 0 }, scr: { t: -1, by: null, id: 0 }, ink: { t: 0, by: null, id: 0 }, eagle: { t: 0, by: null }, rel: { t: -1, by: null, id: 0 }, neg: { t: -1, by: null }, ban: { t: 0, by: null }, gis: { t: 0, by: null }, beacon: { t: 0, by: null }, guard: { t: 0, by: null } }; G.skId = 0; G.zones = []; for (const a of G.actors) { a.skCd = 0; a.shieldT = 0; a.say = null; a.cloak = false; a.invis = false; a.dackE = -1; a.armed = false; a.stolen = null; a.passIdx = -1; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2; a.cleanW = 0; a.binAt = -99; a.chg = null; a.wkT = 0; a.wkPre = 0; a.frz = 0; a.imm = 0; a.chant = null; a.windowT = 0; a.fk = null; a.realNum = undefined; a.revert = null; a.wdT = 0; a.wd = false; a.drumT = 0; a.stillT = 0; a.gdSmall = false; a.amulet = false; a.amT = 0; a.freeEn = 0; a.slowM = 1; a.spdM = 1; a.icy = false; a.wdHit = false; a.clrRev = a.clrScr = a.clrInk = a.clrRel = -1; } }
+function skReset() { G.sk = { night: { e: 0, by: null }, quake: { t: 0, by: null }, rev: { t: 0, by: null, id: 0 }, scr: { t: -1, by: null, id: 0 }, ink: { t: 0, by: null, id: 0 }, eagle: { t: 0, by: null }, rel: { t: -1, by: null, id: 0 }, neg: { t: -1, by: null }, ban: { t: 0, by: null }, frz: { t: 0, by: null }, gis: { t: 0, by: null }, beacon: { t: 0, by: null }, guard: { t: 0, by: null } }; G.skId = 0; G.zones = []; for (const a of G.actors) { a.amInit = 0; a.amT = 0; a.amulet = false; a.gdInv = false; a.gdFade = 0; a.mkT = 0; a.mkD = 0; a.skCd = 0; a.shieldT = 0; a.say = null; a.cloak = false; a.invis = false; a.dackE = -1; a.armed = false; a.stolen = null; a.passIdx = -1; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2; a.cleanW = 0; a.binAt = -99; a.chg = null; a.wkT = 0; a.wkPre = 0; a.frz = 0; a.imm = 0; a.chant = null; a.windowT = 0; a.fk = null; a.realNum = undefined; a.revert = null; a.wdT = 0; a.wd = false; a.drumT = 0; a.stillT = 0; a.gdSmall = false; a.amulet = false; a.amT = 0; a.freeEn = 0; a.slowM = 1; a.spdM = 1; a.icy = false; a.wdHit = false; a.clrRev = a.clrScr = a.clrInk = a.clrRel = -1; } }
 function cleanse(a, quiet) { a.blind = 0; a.ctrlT = 0; a.redT = 0; a.clrRev = G.sk.rev.id; a.clrScr = G.sk.scr.id; a.clrInk = G.sk.ink.id; a.clrRel = G.sk.rel.id; if (quiet) { if (a.isPlayer) { G.flashT = 0; G.freezeT = 0; G.lock = 0; } return; } a.cleanFx = .7; if (a.isPlayer) { G.flashT = 0; G.freezeT = 0; G.lock = 0; UI.cleanse(); } }
 function ericHit(p, code) { // 艾瑞克的偽裝號碼被輸入：立即冷卻；若輸入者輸的是自己頭上的號碼則淘汰（不計擊殺／積分）
   const e = G.actors.find(o => o.alive && o !== p && o.fake === code && o.fakeOf); if (!e) return false;
@@ -155,7 +161,7 @@ function chargeTick(a, dt) {
 }
 function repdigit(n) { return String(randi(0, 9)).repeat(n); }
 function gisStart(a) {
-  const pool = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].sort(() => Math.random() - .5); G.sk.gis = { t: 4, by: a };
+  const pool = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].sort(() => Math.random() - .5); G.sk.gis = { t: 10, by: a };
   for (const o of G.actors) { if (!o.number) continue; if (o.realNum === undefined) o.realNum = o.number; const d = pool.length ? pool.pop() : randi(0, 9); o.number = String(d).repeat(o.realNum.length); drawPlate(o); }
 }
 function gisEnd() { if (G.sk.gis) G.sk.gis.t = 0; for (const o of G.actors) if (o.realNum !== undefined) { o.number = o.realNum; o.realNum = undefined; drawPlate(o); } }
@@ -170,7 +176,7 @@ function finishChant(a, k, ch) {
   else if (k === 'dec') decadeBecome(a, ch && ch.idx);
   else if (k === 'soom') soomWarp(a);
   else if (k === 'cham') { a.chamT = 6; skMsg(a, '發動【半透明視線】！身形變得半透明，8 公尺外看不清號碼 6 秒'); }
-  else if (k === 'gis') { gisStart(a); skMsg(a, '發動【連號甜心】！全場號碼變成連號 4 秒'); }
+  else if (k === 'gis') { gisStart(a); skMsg(a, '發動【連號甜心】！全場號碼變成連號 10 秒'); }
   else if (k === 'neg') { G.sk.neg = { t: 7, by: a }; skMsg(a, '發動【負領域展開】！全場視角負片化 7 秒'); }
 }
 function angeCast(a) {
@@ -230,7 +236,7 @@ function pokerTrap(a, code) { // 輸入了「賭一把撲克」的假號碼：�
 }
 function pokerCast(a) {
   const en = G.actors.filter(o => o !== a && o.alive && o.number && enemyOf(a, o)); let num; a.pkFake = null;
-  if (en.length && Math.random() < .65) num = pick(en).number; // 取真實號碼（不受偽裝／變造影響）
+  if (en.length && Math.random() < .5) num = pick(en).number; // 取真實號碼（不受偽裝／變造影響）
   else { const L = G.codeLen || randi(3, 6); do { num = String(randi(Math.pow(10, L - 1), Math.pow(10, L) - 1)); } while (G.actors.some(o => o.number === num || o.fake === num)); a.pkFake = { num, t: G.time + 25 }; }
   if (a.isPlayer) { UI.poker(num); G.pkCode = num; } else if (a.remote) a.ntf = { id: (a.ntf ? a.ntf.id : 0) + 1, t: '#PK' + num, s: 0 };
 }
@@ -379,7 +385,7 @@ function runSkill(a, k, useCd) {
   else if (k === 'ink') { G.sk.ink = { t: 3, by: a, id: ++G.skId }; for (const o of G.actors) if (o !== a && o.alive && !o.isPlayer && !o.remote && !immune(o)) { o.blind = Math.max(o.blind, 3); o.typing = null; } skMsg(a, '發動【烏賊戲法】！其他人的視野被墨汁遮住'); }
   else if (k === 'eagle') { G.sk.eagle = { t: 7, by: a }; skMsg(a, '發動【靶靶命中】！所有號碼牌轉向放大'); }
   else if (k === 'lydia') { puffFx(a); a.cloak = true; a.cloakE = 0; if (a.isPlayer) UI.msg('隱身 5 秒（擊殺可延長，輸錯號碼會現形）', 'item'); }
-  else if (k === 'mind') { let n = 0; for (const o of G.actors) { if (o === a || !o.alive) continue; if (Math.hypot(o.x - a.x, o.z - a.z) <= 5 && !immune(o)) { o.ctrlT = 2.5; o.ctrlBy = a; o.typing = null; n++; } } skMsg(a, '發動【心靈控制】！' + (n ? n + ' 人被控制' : '範圍內無人')); }
+  else if (k === 'mind') { let n = 0; for (const o of G.actors) { if (o === a || !o.alive) continue; if (Math.hypot(o.x - a.x, o.z - a.z) <= 3 && !immune(o)) { o.ctrlT = 3.5; o.ctrlBy = a; o.typing = null; n++; } } skMsg(a, '發動【心靈控制】！' + (n ? n + ' 人被控制' : '範圍內無人')); }
   else if (k === 'cloak') {
     puffFx(a); let best = null, bd = 1e9; const fx = FWD(a.yaw);
     for (const o of G.actors) { if (o === a || !o.alive || o.fake) continue; const dx = o.x - a.x, dz = o.z - a.z, d = Math.hypot(dx, dz) || 1, front = (dx * fx[0] + dz * fx[1]) / d; const sc = d + (front > .3 && los(a.x, a.y + 1.6, a.z, o.x, o.y + 1.65, o.z) ? 0 : 40); if (sc < bd) { bd = sc; best = o; } }
@@ -391,7 +397,12 @@ function runSkill(a, k, useCd) {
   else if (k === 'ange') angeCast(a);
   else if (k === 'ward') { a.wdT = 10; a.wd = true; skMsg(a, '發動【警戒結界】！10 秒內範圍內的敵人被壓制'); }
   else if (k === 'soom') { skMsg(a, '發動【無影瞬蹤】！紫色光芒匯聚中…'); }
-  else if (k === 'medi') { G.zones.push({ k: 'peace', x: a.x, z: a.z, r: 6, t: 6, by: a }); skMsg(a, '發動【暫時的休止符】！6 公尺內的所有人 6 秒內無法互相攻擊'); }
+  else if (k === 'medi') { // 全場停滯 3 秒：連半空中的人也定格
+    G.sk.frz = { t: 3, by: a };
+    for (const o of G.actors) { o.typing = null; o.chg = null; if (o.isPlayer) { G.typed = ''; UI.dirty = true; } }
+    Sfx.tone(180, .5, 'sine', .14, 90); UI.shake && UI.shake();
+    skMsg(a, '發動【暫時的休止符】！全場動作停滯 3 秒');
+  }
   else if (k === 'mirror') { cloneSpawn(a, 'mirror'); skMsg(a, '發動【鏡像混亂】！留下一個同號碼的分身，本體換上新號碼'); }
   else if (k === 'decoy') { cloneSpawn(a, 'decoy'); skMsg(a, '發動【影子突進】！替身朝前方奔去，本體換上新號碼'); }
   else if (k === 'lian') { a.fdT = 3; a.protect = Math.max(a.protect, 3.05); a.frz = Math.max(a.frz || 0, 3); a.typing = null; a.chg = null; if (a.isPlayer) { G.lock = 3; G.typed = ''; UI.dirty = true; } else if (a.remote) a.ntf = { id: (a.ntf ? a.ntf.id : 0) + 1, t: '#LK3', s: 0 }; skMsg(a, '發動【死胡同】！假裝被擊殺倒下 3 秒'); }
@@ -425,8 +436,18 @@ function skTick(dt) {
     if (a.wdT > 0) { a.wdT -= dt; a.wd = a.wdT > 0 && a.alive; } else a.wd = false; if (a.drumT > 0) a.drumT -= dt; if (a.freeEn > 0) a.freeEn -= dt;
     if (G.pracCdr && a.isPlayer) a.skCd = 0;
     a.wdHit = wardenAffects(a); a.slowM = a.wdHit ? .5 : 1; a.spdM = a.slowM * (a.drumT > 0 ? 1.45 : 1) * (a.miniT > 0 ? 1.7 : 1); a.icy = iceAffects(a);
-    if (isOut(a, 30) && a.alive) { const mv = Math.hypot(a.x - (a._gx ?? a.x), a.z - (a._gz ?? a.z)) / Math.max(dt, .001) > .5; a._gx = a.x; a._gz = a.z; a.stillT = mv ? 0 : (a.stillT || 0) + dt; a.gdSmall = a.stillT > 1.5; } else a.gdSmall = false;
-    if (isOut(a, 34) && a.alive) { if (!a.amulet) { a.amT = (a.amT || 0) + dt; if (a.amT >= 30) { a.amulet = true; a.amT = 30; if (a.isPlayer) UI.msg('號碼護符已生成！', 'item'); } } } else if (!isOut(a, 34)) a.amulet = false;
+    if (isOut(a, 30) && a.alive) { // 隱匿：站定滿 2 秒原地隱形；一移動，0.5 秒後現形
+      const mv = Math.hypot(a.x - (a._gx ?? a.x), a.z - (a._gz ?? a.z)) / Math.max(dt, .001) > .5; a._gx = a.x; a._gz = a.z;
+      a.stillT = mv ? 0 : (a.stillT || 0) + dt;
+      if (a.stillT > 2) { a.gdInv = true; a.gdFade = 0; } else if (mv) { a.gdFade = (a.gdFade || 0) + dt; if (a.gdFade >= .5) a.gdInv = false; }
+    } else { a.gdInv = false; a.gdFade = 0; }
+    if (isOut(a, 5) && a.alive) { // 疾風之速：每跑滿 3 公尺就隱形 0.3 秒
+      a.mkD = (a.mkD || 0) + Math.hypot(a.x - (a._mx ?? a.x), a.z - (a._mz ?? a.z)); a._mx = a.x; a._mz = a.z;
+      if (a.mkD >= 3) { a.mkD = 0; a.mkT = .3; }
+      if ((a.mkT || 0) > 0) a.mkT -= dt;
+    } else { a.mkT = 0; a.mkD = 0; }
+    if (a.av && a.av.outfitIdx === 34 && a.alive) { if (!a.amInit) { a.amInit = 1; a.amulet = true; a.amT = 30; } // 對局一開始就直接持有一道護符
+      else if (!a.amulet) { a.amT += dt; if (a.amT >= 30) { a.amulet = true; a.amT = 30; if (a.isPlayer) UI.msg('號碼護符已生成！', 'item'); } } } else if (!(a.av && a.av.outfitIdx === 34)) a.amulet = false;
     if ((a.imm || 0) > 0) { a.imm -= dt; cleanse(a, true); }
     if (a.chant) { if (!a.alive) a.chant = null; else { a.chant.t -= dt; if (a.chant.t <= 0) { const ch = a.chant, kk = ch.k; a.chant = null; finishChant(a, kk, ch); } } }
     if (a.fk) { a.fk.t -= dt; if (a.fk.t <= 0) { const f = a.fk; a.fk = null; if (a.isPlayer) { G.typed = ''; UI.dirty = true; } if (a.alive && f.target.alive && f.target.number === f.num && enemyOf(a, f.target) && f.target.protect <= 0) eliminate(a, f.target); else if (a.isPlayer) UI.msg('致命相機：目標已移動，未能擊殺', 'bad'); } }
@@ -438,13 +459,19 @@ function skTick(dt) {
     { const vy = a.remote ? (a.y - (a._py ?? a.y)) / Math.max(dt, .001) : a.vy; a._py = a.y; if (a._og && !og) { a.rayJ = vy > 2.2; a.airT = 0; } if (a.rayJ) { if (og && a.airT > .06) a.rayJ = false; else a.airT = (a.airT || 0) + dt; } a._og = og; }
     if (a.cloak) { a.cloakE += dt; if (a.cloakE >= 5 || !a.alive) a.cloak = false; }
     const ray = isOut(a, 8) && a.rayJ, ly = a.cloak && !(a.cloakE >= 1.5 && (a.cloakE % 1.5) < .1);
-    a.invis = a.alive && (ray || ly || a.wkT > 0);
+    a.invis = a.alive && (ray || ly || a.wkT > 0 || a.gdInv || (a.mkT || 0) > 0);
   }
   for (const a of G.actors) { if (a.fake) { a.fakeT -= dt; if (a.fakeT <= 0 || !a.alive || (a.fakeOf && (!a.fakeOf.alive || a.fakeOf.number !== a.fake))) uncloak(a, a.alive && !!a.fakeOf); } if (!a.wdHit) a.skCd = Math.max(0, (a.skCd || 0) - dt); a.shieldT = Math.max(0, (a.shieldT || 0) - dt); if (a.say) { a.say.t -= dt; if (a.say.t <= 0) a.say = null; } }
   if (G.sk.rel.t >= 0) { G.sk.rel.t += dt; if (G.sk.rel.t >= REL_WARN + REL_DUR) G.sk.rel.t = -1; }
   for (const z of G.zones) if (z.k === 'peace' && z.by) { if (z.by.alive) { z.x = z.by.x; z.z = z.by.z; } else z.t = 0; }
   for (let i = G.zones.length - 1; i >= 0; i--) { G.zones[i].t -= dt; if (G.zones[i].t <= 0) G.zones.splice(i, 1); } if (G.sk.beacon.t > 0) G.sk.beacon.t -= dt; if (G.sk.guard.t > 0) G.sk.guard.t -= dt;
-  if (G.sk.neg.t >= 0) { G.sk.neg.t -= dt; if (G.sk.neg.t <= 0) G.sk.neg.t = -1; } if (G.sk.ban.t > 0) G.sk.ban.t -= dt; if (G.sk.gis.t > 0) { G.sk.gis.t -= dt; if (G.sk.gis.t <= 0) gisEnd(); }
+  if (G.sk.neg.t >= 0) { G.sk.neg.t -= dt; if (G.sk.neg.t <= 0) G.sk.neg.t = -1; } if (G.sk.ban.t > 0) G.sk.ban.t -= dt;
+  if (G.sk.frz.t > 0) { // 暫時的休止符：全場停滯（含滯空）
+    G.sk.frz.t -= dt;
+    for (const o of G.actors) { o.frz = Math.max(o.frz || 0, .12); o.vx = 0; o.vz = 0; o.vy = 0; }
+    if (G.player) { G.lock = Math.max(G.lock, .12); G.typed = ''; }
+    if (G.sk.frz.t <= 0) { G.sk.frz.t = 0; for (const o of G.actors) o.frz = 0; if (G.player) G.lock = 0; }
+  } if (G.sk.gis.t > 0) { G.sk.gis.t -= dt; if (G.sk.gis.t <= 0) gisEnd(); }
   if (G.sk.rev.t > 0) G.sk.rev.t -= dt; if (G.sk.scr.t >= 0) { G.sk.scr.t += dt; if (G.sk.scr.t >= SCR_TOTAL) G.sk.scr.t = -1; }
 }
 function blockHit(att, t, nm) {
@@ -487,7 +514,7 @@ function moveActor(a, dt) {
     a.x += dx / n; collideH(a); a.z += dz / n; collideH(a);
     const g0 = groundAt(a.x, a.z, a.y); if (g0 > a.y && g0 - a.y <= STEP + .001) a.y = g0;
   }
-  a.vy -= GRAV * ((World.cur && World.cur.gravK) || 1) * dt; a.y += a.vy * dt;
+  if (frozenAll()) { a.vy = 0; } else { a.vy -= GRAV * ((World.cur && World.cur.gravK) || 1) * dt; a.y += a.vy * dt; }
   const g = groundAt(a.x, a.z, a.y); a.gy = g;
   if (a.y <= g + .001) { a.y = g; a.vy = 0; a.onGround = true; } else a.onGround = false;
   if (a.onGround && World.ramps.length) { const rp = World.rampAt(a.x, a.z, a.y, .12); if (rp && rp.belt) { a.x += rp.dir[0] * rp.belt * dt; a.z += rp.dir[1] * rp.belt * dt; collideH(a); } }
@@ -595,12 +622,13 @@ function felixShot(p) { // 致命相機：照片中能清楚讀到完整號碼�
     const dp = Math.hypot(o.x - p.x, o.z - p.z); if (dp < bd) { bd = dp; best = o; }
   }
   if (!best) { UI.msg('致命相機：10 公尺內沒有可清楚辨識號碼的對手', 'bad'); return; }
-  UI.msg('致命相機鎖定 ' + best.name + '，1.5 秒自動輸入中…', 'good'); G.typed = '';
-  const L = best.number.length; for (let k = 1; k <= L; k++) setTimeout(() => { if (G.state === 'playing' && p.alive) { G.typed = best.number.slice(0, k); UI.dirty = true; Sfx.key(); } }, 1500 * (k - 1) / L + 40);
-  setTimeout(() => { if (G.typed === best.number) { G.typed = ''; UI.dirty = true; } }, 1560);
+  UI.msg('致命相機鎖定 ' + best.name + '，0.75 秒自動輸入中…', 'good'); G.typed = '';
+  const L = best.number.length; for (let k = 1; k <= L; k++) setTimeout(() => { if (G.state === 'playing' && p.alive) { G.typed = best.number.slice(0, k); UI.dirty = true; Sfx.key(); } }, 750 * (k - 1) / L + 40);
+  setTimeout(() => { if (G.typed === best.number) { G.typed = ''; UI.dirty = true; } }, 810);
   if (G.netClient) netAct(['fk', G.actors.indexOf(best), best.number]); else p.fk = { t: 1.5, target: best, num: best.number };
 }
 function useItem(i) {
+  if (frozenAll()) return; // 暫時的休止符：道具也不能用
   const p = G.player; if (!p || !p.alive || G.state !== 'playing' || G.countdown > 0) return;
   const it = G.slots[i]; if (!it || G.itemCd > 0 || (G.bino && !(it.type === 'cam' && isOut(p, 28))) || p.ctrlT > 0) return;
   if (it.type === 'cam') { G.photoReq = true; G.fp.camT = .55; Sfx.shutter(); UI.flashWhite(.35); G.itemCd = 1.0; if (isOut(p, 28)) felixShot(p); }
@@ -769,7 +797,7 @@ function updatePlayer(dt) {
     if (p.onGround) { p.jumps = 0; p.dashReady = false; }
     const SP = !!(World.cur && World.cur.space), vk = SP ? 1.2 : 1, maxJ = isOut(p, 52) ? 3 : 2; // 外太空：重力 ×1.2、起跳速度 ×1.2 ⇒ 高度 ×1.2、滯空時間不變
     const jumpGround = () => { p.vy = 7.1 * jumpMul(p) * vk; p.onGround = false; p.jumps = 1; Sfx.tone(420, .08, 'triangle', .08, 260); };
-    const jumpAir = () => { const n = p.jumps || 1; p.vy = (isOut(p, 52) ? 7.1 * Math.pow(1.2, n / 2) : 6.9 * jumpMul(p)) * vk; p.jumps = n + 1; p.dashReady = isSumi(p); Sfx.tone(620 + n * 120, .1, 'triangle', .09, 380); };
+    const jumpAir = () => { const n = p.jumps || 1; p.vy = (isOut(p, 52) ? 7.1 * Math.pow(1.3, n / 2) : 6.9 * jumpMul(p)) * vk; p.jumps = n + 1; p.dashReady = isSumi(p); Sfx.tone(620 + n * 120, .1, 'triangle', .09, 380); };
     if (SP && (p.jumpQ || 0) > 0) { p.jumpQ -= dt; UI.setEv('jl', Math.max(0, p.jumpQ), '🌑'); if (p.jumpQ <= 0) { p.jumpQ = 0; UI.clrEv('jl'); if (p.onGround) jumpGround(); else if ((p.jumps || 0) < maxJ) jumpAir(); } }
     if (jp) {
       if (p.onGround) { if (SP) { if (!(p.jumpQ > 0)) p.jumpQ = .3; } else jumpGround(); }
@@ -991,7 +1019,7 @@ function arenaTick(dt) {
   else if (A.ph === 3) { if (A.t <= 0) { A.stage++; A.ph = 1; A.t = 1.8; } }
 }
 /* ---------- KOF 大賽 ---------- */
-function resetSkillState(a) { a.skCd = 0; a.shieldT = 0; a.cloak = false; a.invis = false; a.fake = null; a.fakeT = 0; a.fakeOf = null; a.dackE = -1; a.armed = false; a.stolen = null; a.passIdx = -1; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2; a.cleanW = 0; a.chg = null; a.wkT = 0; a.wkPre = 0; a.say = null; a.blind = 0; a.miniT = 0; a.chamT = 0; a.fdT = 0; a.vdT = 0; a.enT = 0; a.enShow = null; a.soomT = 0; a.vdKeep = null; a.vdHold = 0; a.vdKiller = null; a.vdShowAt = undefined; a.decForm = null; }
+function resetSkillState(a) { a.amInit = 0; a.amulet = false; a.amT = 0; a.skCd = 0; a.shieldT = 0; a.cloak = false; a.invis = false; a.fake = null; a.fakeT = 0; a.fakeOf = null; a.dackE = -1; a.armed = false; a.stolen = null; a.passIdx = -1; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2; a.cleanW = 0; a.chg = null; a.wkT = 0; a.wkPre = 0; a.say = null; a.blind = 0; a.miniT = 0; a.chamT = 0; a.fdT = 0; a.vdT = 0; a.enT = 0; a.enShow = null; a.soomT = 0; a.vdKeep = null; a.vdHold = 0; a.vdKiller = null; a.vdShowAt = undefined; a.decForm = null; }
 const kofVisible = (o, x, z, y) => { if (!o || !o.alive) return false; const dx = x - o.x, dz = z - o.z, d = Math.hypot(dx, dz); if (d > 75) return false; const f = FWD(o.yaw); if ((dx * f[0] + dz * f[1]) / (d || 1) < Math.cos(.95)) return false; return los(o.x, o.y + 1.6, o.z, x, y + 1.6, z); };
 function kofSpawnPos(a, o) {
   let best = null; for (let k = 0; k < 18; k++) { const p = World.pickSpawn(-1, o ? [o] : []) || [0, 0, 0]; if (!kofVisible(o, p[0], p[1], p[2] ? World.mezz.h : 0)) { best = p; break; } if (!best) best = p; }
@@ -1222,7 +1250,7 @@ function drawWorldFrame() {
   for (const a of G.actors) {
     if (a === pl || a.invis) continue; if (!a.alive && a.deadT > 3) continue;
     if (!R.visible(a.x, a.y + .9, a.z, 1.4)) continue;
-    a.plateScale = ps * (a.gdSmall ? .4 : 1); drawAvatar(a);
+    a.plateScale = ps; drawAvatar(a);
   }
   for (const q of G.clones) { if (!R.visible(q.x, q.y + .9, q.z, 1.4)) continue; q.plateScale = ps; drawAvatar(q); }
   // 通天視野：全隊可見的敵人紅光柱

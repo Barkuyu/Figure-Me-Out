@@ -371,6 +371,8 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 .np.purple{background:rgba(176,77,255,.75)!important;box-shadow:0 0 22px 8px #b04dff;border-color:#e6c4ff}
 #pflash{position:absolute;inset:0;pointer-events:none;opacity:0;box-shadow:inset 0 0 80px 30px rgba(176,77,255,.9);z-index:4}#pflash.on{opacity:1}
 #prophetBox{position:fixed;inset:0;z-index:99998;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55)}#prophetBox.hidden{display:none}#prophetBox .pbx{background:#fff8e1;border:4px solid #1a1a1a;border-radius:18px;padding:22px 30px 20px;text-align:center;box-shadow:0 8px 0 rgba(0,0,0,.45);max-width:84vw}#prophetBox h3{margin:0 0 6px;font:900 24px var(--font);color:#c10d20}#prophetBox p{margin:0 0 16px;font:700 17px var(--font);color:#333}
+#msg.quake{animation:msgQuake .09s linear infinite}@keyframes msgQuake{0%{transform:translate(-50%,0) rotate(-1.4deg)}25%{transform:translate(calc(-50% - 9px),3px) rotate(1.6deg)}50%{transform:translate(calc(-50% + 8px),-3px) rotate(-1.2deg)}75%{transform:translate(calc(-50% - 6px),2px) rotate(1deg)}100%{transform:translate(-50%,0) rotate(-1.4deg)}}
+#frzOv{position:fixed;inset:0;z-index:60;pointer-events:none;background:rgba(255,255,255,.1);mix-blend-mode:overlay;animation:frzBlink .16s steps(1) infinite}#frzOv.hidden{display:none}@keyframes frzBlink{0%{opacity:.85}50%{opacity:.12}100%{opacity:.85}}
 </style>
 </head>
 <body>
@@ -386,7 +388,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <div id="countdown" class="hidden"><div id="cdTxt"></div><div id="cdNum"></div></div><div id="modeName"></div>
     <div id="killfeed"></div>
     <div id="crosshair"></div>
-    <div id="msg"></div><div id="streak"></div>
+    <div id="frzOv" class="hidden"></div><div id="msg"></div><div id="streak"></div>
     <div id="carry" class="hidden">🚩 你正帶著旗幟，快回基地！</div>
     <div id="warn" class="hidden"><svg id="warnArrow" viewBox="0 0 24 24"><path d="M12 2 L22 21 L12 16 L2 21 Z" fill="currentColor"/></svg></div>
     <div id="warnBox" class="hidden"><div id="warnTxt">⚠ 有人正在讀你的號碼！</div><div class="bar"><i id="warnFill"></i></div></div>

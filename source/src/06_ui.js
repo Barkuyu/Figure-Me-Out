@@ -203,6 +203,15 @@ const UI = {
   goText() { this.goT = 1; this._cd = 0; $('cdNum').textContent = '開始！'; $('cdTxt').textContent = '戰鬥開始'; this.els.countdown.classList.remove('hidden'); },
   cdUpdate(dt) {
     { const neg = !!(G.sk && G.sk.neg && G.sk.neg.t > 0); if (neg !== this._neg) { this._neg = neg; $('gl').style.filter = neg ? 'invert(1)' : ''; } }
+    { // 暫時的休止符：畫面黑白閃爍、訊息橫幅震動
+      const fz = !!(G.sk && G.sk.frz && G.sk.frz.t > 0);
+      if (fz !== this._fz) {
+        this._fz = fz; $('frzOv').classList.toggle('hidden', !fz);
+        if (!this._neg) $('gl').style.filter = fz ? 'grayscale(1) contrast(1.35)' : '';
+        if (fz) this.msg('全場停滯中 — 暫時的休止符', 'bad');
+        $('msg').classList.toggle('quake', fz);
+      }
+    }
     const e = this.els.countdown; if (G.kofCd && G.kofT > 0 && !(G.countdown > 0)) { const k = Math.ceil(G.kofT), n = $('cdNum'); if (k !== this._kk2) { this._kk2 = k; n.textContent = k > 1 ? 'Ready…' : 'Go！'; n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; $('cdTxt').textContent = '下一位出戰英雄登場'; } e.classList.remove('hidden'); return; } if (this._kk2) { this._kk2 = 0; e.classList.add('hidden'); }
     const c = Math.ceil(G.countdown || 0);
     if (c > 0) { if (c !== this._cd) { this._cd = c; const n = $('cdNum'); n.textContent = G.kofCd ? (c > 1 ? 'Ready…' : 'Go！') : c; n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; $('cdTxt').textContent = G.kofCd ? '下一位出戰英雄登場' : '遊戲將在 ' + c + ' 秒後開始・請先觀察四周'; } e.classList.remove('hidden'); }
@@ -422,7 +431,7 @@ function howPanel(id) {
 <h3>📱 手機（橫向）</h3><div class="hgrid">${hCard('🕹️', '左半邊拖曳', '搖桿移動')}${hCard('🏃', '右側「跑」鍵', '按住衝刺（耗體力）')}${hCard('👆', '右側空白拖曳', '轉視角')}${hCard('🔢', '左右數字鍵', '輸滿位數自動送出')}${hCard('⬆️', '跳躍鍵', '空中再按＝二段跳')}${hCard('🔭', '望遠鏡', '壓住使用、放開取消，壓住時滑動轉視角')}${hCard('🎒', '道具格', '點按使用')}</div>
 <div class="hnote">🔋 衝刺會消耗體力條；望遠鏡有能量條，用完需等待回復。</div>`;
   if (id === 'item') return `<div class="hnote">開局沒有道具，走過地圖上的 <b>？箱</b> 才會取得；兩格已滿時不會更換。</div><div class="hgrid">${Object.entries({ cam: '拍照後照片短暫停留，方便看清號碼', quake: '讓其他人畫面劇烈橫向晃動 2 秒', scope: '約 13° 超遠距放大，再按一次＝拍照', fake: '頭上號碼偽裝成別的數字 7 秒', spring: '立即刷新英雄技能冷卻', poker: '畫面中央閃現一組號碼（3 秒）：65% 是場上某位敵人的真號碼，35% 是假的——輸入假號碼會直接陣亡並延長重生冷卻到 5 秒；上限 2 張' }).map(([k, d]) => hCard(ITEMS[k].ico, ITEMS[k].name, d, 'big')).join('')}${hCard('🔭', '望遠鏡（內建）', '遠距離讀碼，有能量限制', 'big')}</div>`;
-  if (id === 'chr') { return `<div class="hnote">按 <span class="kc">R</span>（手機：技能鍵）施放，圓環顯示冷卻。可在「遊戲設定」整體關閉技能。 Derek、快克、安琪沒有 G 道具格，其技能改由 <span class="kc">G</span> 鍵施放。 伏克需要裝置支援語音辨識並允許麥克風，不支援時該英雄會反灰；按住 <span class="kc">R</span> 念號碼、放開即送出。</div>${HERO_CLASSES.map(([nm, col, ids]) => `<div class="chd" style="--hc:${col}">${nm}（${ids.length}）</div><div class="hchars">${ids.map(i => { const o = OUTFITS[i]; return `<div class="hch"><img src="${outfitIcon(i)}"><div><b>${o.label}</b><u>${o.skill.name}</u><span>${o.skill.desc}</span></div></div>`; }).join('')}</div>`).join('')}`; }
+  if (id === 'chr') { return `<div class="hnote">按 <span class="kc">R</span>（手機：技能鍵）施放，圓環顯示冷卻。可在「遊戲設定」整體關閉技能。 Derek、快克沒有 G 道具格，其技能改由 <span class="kc">G</span> 鍵施放。 伏克需要裝置支援語音辨識並允許麥克風，不支援時該英雄會反灰；按住 <span class="kc">R</span> 念號碼、放開即送出。</div>${HERO_CLASSES.map(([nm, col, all]) => { const ids = all.filter(i => VIS_OUTFITS.includes(i)); return !ids.length ? '' : `<div class="chd" style="--hc:${col}">${nm}（${ids.length}）</div><div class="hchars">${ids.map(i => { const o = OUTFITS[i]; return `<div class="hch"><img src="${outfitIcon(i)}"><div><b>${o.label}</b><u>${o.skill.name}</u><span>${o.skill.desc}</span></div></div>`; }).join('')}</div>`; }).join('')}`; }
   if (id === 'spec') return `<h3>🏟️ 擂台逃殺（單人／多人合作）</h3>
 <div class="hrule">玩家方對抗一波強過一波的電腦軍團；電腦同屬一國，彼此不會互相攻擊。多人遊玩時，電腦人數會依真人人數成倍增加（場上總人數上限 20 人）。</div>
 <div class="hsteps h4">${hStep(1, '⏱️', '3 秒倒數', '進入畫面後先倒數 3 秒')}${hStep(2, '📢', '10 秒準備', '藍底通知＋右上角倒數，剩 3 秒響提示音')}${hStep(3, '🔔', 'Stage 1', '鳴響開賽聲，電腦登場')}${hStep(4, '🏆', 'Clear！！', '全數擊倒後進入下一關')}</div>
@@ -552,7 +561,7 @@ function toMenu() { go(() => { netLeave(); resetToMenuUI(); }); }
 function stopGameUI() { resetToMenuUI(); UI.els.menu.classList.add('hidden'); }
 function resetToMenuUI() {
   closePrac(); $('pracBtn').classList.add('hidden'); if (UI.gPrac || UI.pracSaved) endPrac();
-  $('gl').style.filter = ''; UI._neg = false;
+  $('gl').style.filter = ''; UI._neg = false; UI._fz = false; { const f = $('frzOv'); if (f) f.classList.add('hidden'); } $('msg').classList.remove('quake');
   $('keysov').classList.add('hidden');
   UI.ev = {}; UI._pk = null; closePick(); G.arena = null; G.kofCd = false;
   hideTut(); if (G.sk) { G.sk.night = { e: 0, by: null }; G.sk.ink.t = 0; G.sk.rev.t = 0; G.sk.rel.t = -1; G.sk.quake.t = 0; G.sk.eagle.t = 0; } G.scopeOn = false; applyNightEnv(null); $('dfog').style.opacity = 0; $('dself').style.opacity = 0; $('ink').classList.remove('on'); $('gset').classList.add('hidden');
@@ -916,7 +925,7 @@ function boot() {
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
 setInterval(() => { try { UI.renderPills(); } catch (e) { } }, 120);
-window.__G = { PRO, OUTFITS, VIS_OUTFITS, HERO_CLASSES, HERO_TIERS, SKILL_OF, SKILLS, setPreview, kenKind, In, cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+window.__G = { PRO, speedMul, OUTFITS, VIS_OUTFITS, HERO_CLASSES, HERO_TIERS, SKILL_OF, SKILLS, setPreview, kenKind, In, cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 
 // 檢查是否有新版（防止 PWA 快取舊版）
