@@ -12,7 +12,7 @@ OUTFITS.push(
     torso: [[.001, -.12], [.15, -.1], [.19, .0], [.2, .1], [.19, .22], [.17, .34], [.13, .46], [.08, .54], [.001, .56]] },
   { key: 'eric', label: '戲法Trick', sub: '', skill: { name: '幻影易容', desc: '號碼偽裝成最近玩家，最長 20 秒。偽裝號碼一被輸入就解除並冷卻 25 秒；輸入自己號碼者淘汰（不計分）。' }, H: 1.78, skin: '#d2a27c', hipX: .1, shX: .235, tz: .52, hair: '#2d2824', hair2: '#6d6760',
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
-  { key: 'mike', label: '快腳QuickMove', sub: '', skill: { name: '疾風之速', desc: '移動速度是一般英雄的 2.5 倍；每移動 3 公尺就隱形 0.3 秒。' }, H: 1.74, skin: '#e2b896', hipX: .1, shX: .235, tz: .54, hair: '#b0702f', hair2: '#d89b52', passive: true,
+  { key: 'mike', label: '襲影軍官Quick', sub: '', skill: { name: '疾風之速', desc: '移動速度是一般英雄的 2.5 倍；每移動 3 公尺就隱形 0.3 秒。' }, H: 1.74, skin: '#dcb18e', hipX: .1, shX: .235, tz: .54, gen: { top: '#262238', top2: '#b98cff', pants: '#19172a', shoe: '#120f1c', hair: '#2a2740', style: 'short', acc: ['aerohelm', 'epaulet', 'streak'], accC: '#b98cff' }, hair: '#b0702f', hair2: '#d89b52', passive: true,
     torso: [[.001, -.1], [.22, -.1], [.235, -.02], [.225, .1], [.23, .24], [.26, .38], [.275, .47], [.26, .54], [.18, .575], [.075, .6], [.06, .63], [.001, .63]] }
 );
 OUTFITS.push(
@@ -30,7 +30,7 @@ OUTFITS.push(
     torso: [[.001, -.16], [.2, -.16], [.19, -.08], [.16, .05], [.15, .17], [.152, .28], [.17, .38], [.18, .46], [.17, .51], [.12, .545], [.056, .56], [.05, .595], [.001, .595]] },
   { key: 'bolt', label: '偵探Detect', sub: '', skill: { name: '長跑高手', desc: '跑步不耗體力；跑步中吃到「？」箱必得偵查鏡。' }, H: 1.8, skin: '#b9825a', hipX: .095, shX: .235, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#ff9d1c', top2: '#fff', pants: '#222831', shoe: '#ffee58', hair: '#15110e', style: 'short', acc: ['headband'], accC: '#e02828' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
-  { key: 'dylon', label: '窺視PeeP', sub: '', skill: { name: '窺探專家', desc: '速度 70%，望遠鏡不耗能量；用完 8 秒內擊殺，積分／人頭 ×2。' }, H: 1.74, skin: '#d9aa84', hipX: .095, shX: .235, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#7a5a3a', top2: '#c9b28a', pants: '#3b3226', shoe: '#2a2018', hair: '#6b4a2a', style: 'short', acc: ['glasses','scarf'], accC: '#a83a2a' },
+  { key: 'dylon', label: '偵視軍官PeeP', sub: '', skill: { name: '窺探專家', desc: '速度 70%，望遠鏡不耗能量；用完 8 秒內擊殺，積分／人頭 ×2。' }, H: 1.74, skin: '#d9aa84', hipX: .095, shX: .235, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#4a4330', top2: '#ffd24a', pants: '#363022', shoe: '#1f1b14', hair: '#4a3a24', style: 'short', acc: ['scopehelm', 'epaulet', 'sidescope'], accC: '#d8b24a' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'troll', label: '干擾者', hidden: true, sub: '', skill: { name: '', desc: '' }, H: 1.78, skin: '#1c1c1f', hipX: .1, shX: .235, tz: .52, hair: '#111', hair2: '#222', gen: { top: '#16161a', top2: '#d8d8dc', pants: '#16161a', shoe: '#101012', hair: '#111', style: 'mask', acc: ['skullbelt'], accC: '#c9c9cf' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] }
@@ -38,11 +38,11 @@ OUTFITS.push(
 OUTFITS.push(
   { key: 'mufaza', label: '法老Pharaoh', sub: '', skill: { name: '命運拷貝', desc: '發動後竊取下個擊殺對象的技能；偷到的主動技能用完不進冷卻。' }, H: 1.84, skin: '#a9714a', hipX: .1, shX: .245, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#8a1f1f', top2: '#e0a82e', pants: '#4a2f1c', shoe: '#2a1a10', hair: '#a8641c', style: 'long', acc: ['headband'], accC: '#e0a82e' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.235, .36], [.255, .46], [.25, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
-  { key: 'dack', label: '濃霧Fog', sub: '', skill: { name: '生化操作', desc: '戴上透視鏡後釋放濃霧 20 秒（右上角倒數）。冷卻 15 秒。' }, H: 1.76, skin: '#e0b896', hipX: .095, shX: .23, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#e8eef0', top2: '#3fbf6a', pants: '#2b3a40', shoe: '#1a2226', hair: '#2f8a5a', style: 'spiky', acc: ['goggles'], accC: '#6fe0a0' },
+  { key: 'dack', label: '生化軍官Fog', sub: '', skill: { name: '生化操作', desc: '戴上透視鏡後釋放濃霧 20 秒（右上角倒數）。冷卻 15 秒。' }, H: 1.76, skin: '#e0b896', hipX: .095, shX: .23, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#3f5248', top2: '#8fe36a', pants: '#2b3a33', shoe: '#19211d', hair: '#2f4a3a', style: 'short', acc: ['gasmask', 'epaulet', 'canister'], accC: '#8fe36a' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
-  { key: 'nox', label: '夜視Nightcare', sub: '', skill: { name: '夜間戰術', desc: '召喚黑雲使全場變暗 30 秒，自己戴夜視鏡看清號碼。冷卻 30 秒。' }, H: 1.78, skin: '#c9a07c', hipX: .095, shX: .235, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#1a1d2a', top2: '#8ff04a', pants: '#14161f', shoe: '#0c0d12', hair: '#1c1c22', style: 'short', acc: ['goggles'], accC: '#3cff6a' },
+  { key: 'nox', label: '夜督軍官Night', sub: '', skill: { name: '夜間戰術', desc: '召喚黑雲使全場變暗 30 秒，自己戴夜視鏡看清號碼。冷卻 30 秒。' }, H: 1.78, skin: '#c9a07c', hipX: .095, shX: .235, tz: .54, hair: '#222', hair2: '#444', female: false, gen: { top: '#161a27', top2: '#4de0ff', pants: '#10131c', shoe: '#0a0c11', hair: '#15161d', style: 'short', acc: ['nvhelm', 'epaulet'], accC: '#243049' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
-  { key: 'derek', label: '衝撞Bumppp', sub: '', skill: { name: '衝鋒陷陣', desc: '按 G 鍵朝移動方向衝撞（無 G 道具格）：撞到的人暈眩 2.5 秒並面向你，自己彈退。冷卻 10 秒；只要成功擊殺就立即刷新。' }, H: 1.9, skin: '#f0c9a8', hipX: .105, shX: .29, tz: .5, hair: '#e6c15a', hair2: '#f3dc8c', female: false, gen: { top: '#2b2d33', top2: '#d4a017', pants: '#4b5238', shoe: '#17171a', hair: '#e6c15a', style: 'bald', acc: ['pickel', 'pauldron'], accC: '#d4a017' },
+  { key: 'derek', label: '衝鋒軍官Bumppp', sub: '', skill: { name: '衝鋒陷陣', desc: '按 G 鍵朝移動方向衝撞（無 G 道具格）：撞到的人暈眩 2.5 秒並面向你，自己彈退。冷卻 10 秒；只要成功擊殺就立即刷新。' }, H: 1.9, skin: '#f0c9a8', hipX: .105, shX: .29, tz: .5, hair: '#e6c15a', hair2: '#f3dc8c', female: false, gen: { top: '#2f333a', top2: '#ff7a2a', pants: '#262a30', shoe: '#15161a', hair: '#3a3d44', style: 'bald', acc: ['ramhelm', 'epaulet', 'riotpad'], accC: '#4a5058' },
     torso: [[.001, -.1], [.21, -.1], [.22, -.02], [.205, .1], [.215, .22], [.265, .36], [.29, .46], [.28, .53], [.19, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'wukong', label: '悟空MonkeyKing', sub: '', skill: { name: '如來隱身', desc: '被動：輸入擊殺後噴白煙，隱身 6 秒（期間再擊殺重新計時），隱身時跑步與望遠鏡不耗能量。隱身結束後冷卻 10 秒。' }, H: 1.64, skin: '#d9a066', hipX: .09, shX: .2, tz: .56, hair: '#3b2414', hair2: '#6b4526', female: false, passive: true, gen: { top: '#c0392b', top2: '#f1c40f', pants: '#e0902a', shoe: '#5a3a1c', hair: '#3b2414', style: 'spiky', acc: ['headband', 'feathers', 'monkeyears', 'tail', 'staff'], accC: '#f5c518' },
     torso: [[.001, -.1], [.19, -.1], [.195, -.02], [.18, .1], [.185, .22], [.205, .36], [.21, .46], [.205, .53], [.16, .57], [.07, .595], [.056, .63], [.001, .63]] },
@@ -112,7 +112,7 @@ OUTFITS.push(
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'spring', label: '彈簧Spring', sub: '', skill: { name: '充能彈簧', desc: '【被動】移動速度提升至 1.5 倍；二段跳升級為三段跳，且每一段的跳躍高度再遞增 1.3 倍。' }, H: 1.7, skin: '#efcaa8', hipX: .095, shX: .23, tz: .53, hair: '#3a5bd9', hair2: '#3a5bd9', female: false, gen: { top: '#ff7a1a', top2: '#ffe14a', pants: '#3a5bd9', shoe: '#ffe14a', hair: '#3a5bd9', style: 'spiky', acc: ['antenna'], accC: '#c9d2e0' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
-  { key: 'decade', label: '迪Decade', sub: '', skill: { name: '假面變身', desc: '發動後從「我的最愛」選一位英雄，施法 1 秒即可變身為該英雄（含其技能）。變身英雄被輸入擊殺時，外表會碎裂散落並變回迪、免除該次死亡；冷卻 30 秒從碎裂後才開始計算。' }, H: 1.8, skin: '#e6c6a4', hipX: .1, shX: .24, tz: .53, hair: '#e8eef5', hair2: '#e8eef5', female: false, gen: { top: '#262b38', top2: '#f4f6fa', pants: '#1b1f2a', shoe: '#9ad7ff', hair: '#e8eef5', style: 'short', acc: ['prism', 'cardsash'], accC: '#9ad7ff' },
+  { key: 'decade', label: '迪Decade', sub: '', skill: { name: '假面變身', desc: '發動後從「我的最愛」選一位英雄，施法 1 秒即可變身為該英雄（含其技能）。變身英雄被輸入擊殺時，外表會碎裂散落並變回迪、免除該次死亡；冷卻 30 秒從碎裂後才開始計算。' }, H: 1.8, skin: '#e6c6a4', hipX: .1, shX: .24, tz: .53, hair: '#e8eef5', hair2: '#e8eef5', female: false, gen: { top: '#262b38', top2: '#f4f6fa', pants: '#1b1f2a', shoe: '#9ad7ff', hair: '#e8eef5', style: 'short', acc: ['riderMask', 'prism', 'cardsash'], accC: '#9ad7ff' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'soom', label: '瞬Soom', sub: '', skill: { name: '無影瞬蹤', desc: '發動後經 1 秒紫色施法，瞬間移動到離你最遠的敵方英雄背後 1 公尺處；20 秒內若進入該名敵人的視野，技能立即刷新。冷卻 8 秒。' }, H: 1.74, skin: '#e9cdb4', hipX: .095, shX: .225, tz: .53, hair: '#7a3cff', hair2: '#9a63ff', female: false, gen: { top: '#1d1033', top2: '#b57bff', pants: '#2a1a4a', shoe: '#b57bff', hair: '#7a3cff', style: 'bob', acc: ['wisps', 'portal'], accC: '#c9a0ff' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
@@ -124,7 +124,7 @@ OUTFITS.push(
     torso: [[.001, -.1], [.206, -.1], [.212, -.02], [.198, .1], [.204, .22], [.238, .36], [.258, .46], [.252, .53], [.186, .57], [.072, .595], [.058, .63], [.001, .63]] },
   { key: 'lizard', label: '壁虎Lizard', sub: '', skill: { name: '攀牆附影', desc: '【被動】貼住牆面或障礙物 0.5 秒後身形逐漸淡去而隱形（0.3 秒淡出）；貼牆時可像壁虎一樣沿著牆面上下爬行，在牆上按「跳躍」即可彈離牆面回到地面。' }, H: 1.66, skin: '#8fc07a', hipX: .096, shX: .226, tz: .5, hair: '#2f6b35', hair2: '#4b8f46', female: false, gen: { top: '#3f8a4a', top2: '#9fd66a', pants: '#2c6236', shoe: '#1f4426', hair: '#2f6b35', style: 'spiky', acc: ['lizcrest', 'liztail', 'chameyes'], accC: '#58a85a' },
     torso: [[.001, -.1], [.196, -.1], [.202, -.02], [.188, .1], [.194, .22], [.226, .36], [.244, .46], [.24, .53], [.176, .57], [.068, .595], [.055, .63], [.001, .63]] },
-  { key: 'ghost', label: '鬼影Ghost', sub: '', skill: { name: '鬼影穿梭', desc: '【被動】無法跳躍，「跳躍」鍵改為向前衝刺一小段。可以直接穿過任何牆壁與障礙物（最外圍的場地外牆除外），也能停在障礙物內部藏身。' }, H: 1.79, skin: '#cfd8e4', hipX: .1, shX: .232, tz: .52, hair: '#7f8aa0', hair2: '#aab6c8', female: false, gen: { top: '#434e63', top2: '#8fa0bd', pants: '#333c4d', shoe: '#2a313f', hair: '#7f8aa0', style: 'long', acc: ['hood', 'tatters'], accC: '#5b6880' },
+  { key: 'ghost', label: '鬼影Ghost', sub: '', skill: { name: '鬼影穿梭', desc: '【被動】無法跳躍，「跳躍」鍵改為向前衝刺一小段。可以直接穿過任何牆壁與障礙物（最外圍的場地外牆除外），也能停在障礙物內部藏身。' }, H: 1.84, noLegs: true, skin: '#c6ccd2', hipX: .1, shX: .232, tz: .52, hair: '#7f8aa0', hair2: '#aab6c8', female: false, gen: { top: '#b9bfc6', top2: '#8c939c', pants: '#aeb5bd', shoe: '#9aa1a9', hair: '#c3c9cf', style: 'bald', acc: ['wraithhood', 'mistTail', 'clawhands'], accC: '#b4bac2' },
     torso: [[.001, -.1], [.198, -.1], [.204, -.02], [.19, .1], [.196, .22], [.228, .36], [.248, .46], [.244, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'officer', label: '作戰軍官Officer', sub: '', skill: { name: '全圖搜索', desc: '【被動】配備衛星偵測系統：畫面左上角常駐圓形雷達，以俯視方式顯示全場地形與障礙物，並即時標出敵方（紅點）與我方（藍點）位置。10 公尺內有敵方玩家時，跑步不消耗能量。' }, H: 1.77, skin: '#d9b48e', hipX: .108, shX: .246, tz: .56, hair: '#2b3038', hair2: '#464d58', female: false, gen: { top: '#243049', top2: '#c8ad5e', pants: '#1b2336', shoe: '#14181f', hair: '#2b3038', style: 'short', acc: ['peakcap', 'epaulet', 'satdish'], accC: '#243049' },
     torso: [[.001, -.1], [.208, -.1], [.214, -.02], [.2, .1], [.206, .22], [.24, .36], [.26, .46], [.254, .53], [.188, .57], [.074, .595], [.06, .63], [.001, .63]] }
@@ -371,6 +371,64 @@ function buildOutfit(i) {
     if (ac.includes('plume')) { hairP.push({ g: gBox(.026, .09, .16), t: [0, hc + hh * .7, -.075], c: accC }); hairP.push({ g: gCyl(hw * 1.08, hw * 1.08, .02, 22, 1, true), t: [0, hc + hh * .2, -.004], s: [1, 1, 1.18], c: [.75, .78, .84] }); }
     if (ac.includes('pompadour')) { hairP.push({ g: gSphere(1, 20, 12, 0, TAU, 0, 1.3), t: [0, hc + .02, -.006], s: [hw * 1.06, hh * .6, hw * 1.06 * 1.18], c: h1 }); hairP.push({ g: gBox(hw * 1.5, .09, hw * 1.5), t: [0, hc + hh * .66, -hw * .25], r: [.4, 0, 0], c: shade(h1, 1.1) }); hairP.push({ g: gBox(hw * 1.2, .07, hw * 1.1), t: [0, hc + hh * .8, -hw * .55], r: [.7, 0, 0], c: shade(h1, 1.2) }); }
     if (ac.includes('catears')) for (const sg of [-1, 1]) hairP.push({ g: gCyl(0, .035, .08, 4, 1), t: [sg * hw * .7, hc + hh * .62, .0], r: [0, 0, -sg * .25], c: [.1, .09, .12] });
+    if (ac.includes('wraithhood')) { // 鬼影：沒有五官的幽魂頭部，只有一道發亮的眼縫
+      hairP.push({ g: gSphere(1, 24, 18), t: [0, hc + .01, -.012], s: [hw * 1.22, hh * .66, hw * 1.3], c: accC });
+      hairP.push({ g: gSphere(1, 24, 18, 0, TAU, 0, 1.95), t: [0, hc - hh * .2, -.012], s: [hw * 1.2, hh * .6, hw * 1.28], c: shade(accC, .97) });
+      hairP.push({ g: gSphere(1, 18, 12, 0, TAU, 0, 1.1), t: [0, hc + hh * .5, -.09], s: [hw * .9, hh * .5, hw * .8], r: [-.5, 0, 0], c: shade(accC, 1.08) });
+      hairP.push({ g: gBox(hw * 1.5, .028, .03), t: [0, hc + hh * .05, hw * 1.08], r: [.06, 0, .05], c: [.16, .16, .2] });
+      hairP.push({ g: gSphere(.026, 8, 7), t: [hw * .42, hc + hh * .06, hw * 1.08], c: [1, .55, .75] });
+      for (let k = 0; k < 5; k++) hairP.push({ g: gBox(.018, .11 + k * .02, .015), t: [(k - 2) * hw * .42, hc - hh * .5 - .03, hw * .5], r: [.3, 0, (k - 2) * .14], c: shade(accC, .9) }); // 下襬霧絲
+    }
+    if (ac.includes('riderMask')) { // 迪：完全罩住頭部的頭盔，看不到任何人臉表情（原創造型）
+      hairP.push({ g: gSphere(1, 24, 18), t: [0, hc + .005, -.004], s: [hw * 1.22, hh * .62, hw * 1.3], c: [.10, .10, .13] });
+      hairP.push({ g: gSphere(1, 24, 18, 0, TAU, 0, 1.9), t: [0, hc - hh * .18, -.004], s: [hw * 1.2, hh * .58, hw * 1.28], c: [.14, .14, .18] });
+      hairP.push({ g: gBox(hw * 2.0, hh * .26, .055), t: [0, hc + hh * .1, hw * 1.0], r: [.1, 0, 0], c: [.05, .05, .07] }); // 面窗
+      hairP.push({ g: gBox(hw * 1.84, hh * .15, .045), t: [0, hc + hh * .12, hw * 1.04], r: [.1, 0, 0], c: shade(accC, 1.25) }); // 發光橫帶
+      hairP.push({ g: gBox(hw * 2.04, .028, .05), t: [0, hc + hh * .3, hw * .98], c: [.7, .72, .78] });
+      for (let k = 0; k < 5; k++) hairP.push({ g: gBox(.015, .05, .03), t: [(k - 2) * .032, hc - hh * .46, hw * .92], c: [.6, .62, .68] }); // 口部通風柵
+      hairP.push({ g: gBox(.028, .09, hw * 2.1), t: [0, hc + hh * .54, -.01], c: shade(accC, 1.1) }); // 頭頂稜脊
+      for (const sg of [-1, 1]) hairP.push({ g: gBox(.03, .05, .09), t: [sg * hw * 1.16, hc - hh * .04, .0], c: [.55, .57, .62] }); // 耳側裝置
+    }
+    if (ac.includes('clawhands')) for (const sg of [-1, 1]) for (let k = 0; k < 3; k++) hairP.push({ g: gCyl(0, .012, .1, 5, 1), t: [sg * (O.shX + .055 + k * .022), hipY + .1, .03 + k * .01], r: [-.35, 0, sg * (.12 + k * .1)], c: shade(accC, .88) }); // 細長的爪
+    if (ac.includes('nvhelm')) { // 夜督軍官：夜視鏡頭盔
+      hairP.push({ g: gSphere(1, 20, 14, 0, TAU, 0, 1.15), t: [0, hc + .035, -.01], s: [hw * 1.16, hh * .72, hw * 1.3], c: shade(accC, .75) });
+      hairP.push({ g: gBox(hw * 2.3, .035, .055), t: [0, hc + hh * .18, hw * 1.02], c: shade(accC, .5) });
+      hairP.push({ g: gBox(hw * 1.5, .07, .05), t: [0, hc + hh * .58, hw * .62], r: [-.3, 0, 0], c: shade(accC, .55) });
+      for (const sg of [-1, 1]) { hairP.push({ g: gCyl(.034, .038, .17, 12, 1), t: [sg * hw * .5, hc + hh * .5, hw * 1.0], r: [1.45, 0, 0], c: [.16, .18, .2] });
+        hairP.push({ g: gCyl(.03, .03, .012, 12, 1), t: [sg * hw * .5, hc + hh * .5, hw * 1.0 + .095], r: [1.45, 0, 0], c: [.35, 1, .95] }); }
+      hairP.push({ g: gBox(.05, .05, .03), t: [hw * 1.18, hc + hh * .5, .02], c: [.4, 1, .9] });
+    }
+    if (ac.includes('ramhelm')) { // 衝鋒軍官：防暴頭盔與衝角脊
+      hairP.push({ g: gSphere(1, 20, 14, 0, TAU, 0, 1.25), t: [0, hc + .03, -.01], s: [hw * 1.2, hh * .78, hw * 1.34], c: shade(accC, .7) });
+      for (let k = 0; k < 6; k++) hairP.push({ g: gBox(.05, .055 - k * .004, .07), t: [0, hc + hh * .72 - k * .012, -.1 + k * .042], c: accC }); // 頭頂脊
+      hairP.push({ g: gCyl(hw * 1.24, hw * 1.24, .028, 22, 1), t: [0, hc + hh * .08, -.01], s: [1, 1, 1.12], c: shade(accC, .45) });
+      hairP.push({ g: gBox(hw * 1.9, hh * .5, .04), t: [0, hc - hh * .12, hw * 1.08], r: [.12, 0, 0], c: [.12, .13, .16] }); // 面罩
+      for (let k = 0; k < 4; k++) hairP.push({ g: gBox(.016, hh * .52, .02), t: [(k - 1.5) * .042, hc - hh * .12, hw * 1.12], c: shade(accC, .5) });
+      for (const sg of [-1, 1]) hairP.push({ g: gCyl(.03, .05, .1, 8, 1), t: [sg * hw * 1.18, hc + hh * .34, 0], r: [0, 0, sg * 1.2], c: [.9, .52, .18] }); // 側邊衝角
+    }
+    if (ac.includes('gasmask')) { // 生化軍官：防毒面具與濾罐
+      hairP.push({ g: gSphere(1, 18, 12, 0, TAU, 0, 1.05), t: [0, hc + .04, -.012], s: [hw * 1.12, hh * .62, hw * 1.24], c: shade(accC, .65) });
+      hairP.push({ g: gSphere(1, 18, 14), t: [0, hc - hh * .06, hw * .4], s: [hw * 1.08, hh * .54, hw * .95], c: [.22, .25, .23] });
+      for (const sg of [-1, 1]) { hairP.push({ g: gCyl(.042, .042, .03, 14, 1), t: [sg * hw * .52, hc + hh * .06, hw * .96], r: [1.57, 0, 0], c: [.8, .86, .8] });
+        hairP.push({ g: gCyl(.034, .034, .018, 14, 1), t: [sg * hw * .52, hc + hh * .06, hw * 1.1], r: [1.57, 0, 0], c: accC }); }
+      hairP.push({ g: gCyl(.05, .058, .11, 14, 1), t: [0, hc - hh * .42, hw * .9], r: [1.2, 0, 0], c: [.45, .5, .44] }); // 濾罐
+      hairP.push({ g: gCyl(.042, .042, .02, 14, 1), t: [0, hc - hh * .56, hw * 1.12], r: [1.2, 0, 0], c: accC });
+    }
+    if (ac.includes('scopehelm')) { // 偵視軍官：單眼觀測鏡
+      hairP.push({ g: gCyl(hw * 1.1, hw * 1.14, .085, 20, 1), t: [0, hc + hh * .5, -.01], s: [1, 1, 1.14], c: shade(accC, .7) });
+      hairP.push({ g: gCyl(hw * 1.16, hw * 1.16, .016, 20, 1), t: [0, hc + hh * .4, -.01], s: [1, 1, 1.14], c: shade(accC, .45) });
+      hairP.push({ g: gBox(hw * 1.9, .028, .022), t: [0, hc + hh * .33, hw * .95], c: [.1, .1, .12] });
+      hairP.push({ g: gCyl(.05, .062, .2, 14, 1), t: [hw * .5, hc + hh * .06, hw * 1.05], r: [1.5, 0, 0], c: [.2, .22, .2] }); // 觀測鏡筒
+      hairP.push({ g: gCyl(.052, .052, .016, 14, 1), t: [hw * .5, hc + hh * .06, hw * 1.05 + .11], r: [1.5, 0, 0], c: accC });
+      hairP.push({ g: gBox(.09, .022, .03), t: [hw * .12, hc + hh * .06, hw * .9], c: [.25, .26, .24] });
+      hairP.push({ g: gSphere(.022, 8, 7), t: [-hw * .45, hc + hh * .04, hw * 1.0], c: [.08, .08, .1] });
+    }
+    if (ac.includes('aerohelm')) { // 襲影軍官：流線頭盔
+      hairP.push({ g: gSphere(1, 22, 14, 0, TAU, 0, 1.3), t: [0, hc + .028, -.012], s: [hw * 1.14, hh * .8, hw * 1.42], c: shade(accC, .72) });
+      hairP.push({ g: gBox(hw * 1.95, hh * .34, .035), t: [0, hc + hh * .06, hw * 1.08], r: [.1, 0, 0], c: [.09, .1, .14] }); // 風鏡
+      hairP.push({ g: gBox(hw * 1.95, .018, .038), t: [0, hc + hh * .26, hw * 1.09], c: accC });
+      for (let k = 0; k < 4; k++) hairP.push({ g: gBox(.022, .012, .14 + k * .03), t: [(k % 2 ? 1 : -1) * (hw * .32 + (k >> 1) * .05), hc + hh * .56 - (k >> 1) * .03, -.11 - k * .012], c: accC }); // 後方導流鰭
+    }
     if (ac.includes('mortar')) { // 數學博士：學士方帽 + 流蘇
       hairP.push({ g: gCyl(hw * 1.02, hw * 1.06, .07, 20, 1), t: [0, hc + hh * .62, -.004], s: [1, 1, 1.16], c: shade(accC, .55) });
       hairP.push({ g: gBox(.46, .022, .46), t: [0, hc + hh * .72, -.01], r: [0, .18, 0], c: shade(accC, .4) });
@@ -570,6 +628,18 @@ function buildOutfit(i) {
     if (ac.includes('goldstar')) for (let k = 0; k < 5; k++) { const a = k * TAU / 5; ex.push({ g: gBox(.02, .06, .01), t: [Math.sin(a) * .05, shY - .2 + Math.cos(a) * .05, .22], r: [0, 0, -a], c: [1, .85, .2] }); }
     if (ac.includes('bowtie')) { for (const sg of [-1, 1]) ex.push({ g: gSphere(.035, 8, 6), t: [sg * .035, shY + .02, .12], s: [1.3, .8, .6], c: [.75, .12, .12] }); ex.push({ g: gSphere(.016, 6, 5), t: [0, shY + .02, .125], c: [.5, .08, .08] }); }
     if (ac.includes('pauldron')) for (const sg of [-1, 1]) { ex.push({ g: gSphere(.12, 10, 8), t: [sg * (O.shX + .035), shY - .005, 0], s: [1, .62, 1.1], c: [.82, .65, .15] }); ex.push({ g: gSphere(.095, 10, 8), t: [sg * (O.shX + .05), shY + .02, 0], s: [1, .5, 1], c: [.5, .52, .56] }); }
+    if (ac.includes('mistTail')) { // 幽靈：取代雙腿的霧尾
+      for (let k = 0; k < 11; k++) {
+        const t = k / 10, r = .145 * (1 - t * .95), sway = Math.sin(t * 3.4) * .05;
+        ex.push({ g: gSphere(1, 12, 9), t: [sway, hipY - .02 - t * .62, -t * .16], s: [r, .075 + .025 * (1 - t), r * 1.1], c: shade(accC, 1 - t * .22) });
+      }
+      for (let k = 0; k < 3; k++) ex.push({ g: gBox(.055, .3 - k * .06, .02), t: [(k - 1) * .09, hipY - .5 - k * .07, -.1 - k * .05], r: [0, 0, (k - 1) * .35], c: shade(accC, .78) });
+      ex.push({ g: gSphere(1, 14, 10), t: [0, hipY + .03, -.01], s: [.155, .12, .17], c: shade(accC, 1.06) });
+    }
+    if (ac.includes('riotpad')) { for (const sg of [-1, 1]) { ex.push({ g: gSphere(1, 14, 10, 0, TAU, 0, 1.1), t: [sg * (O.shX + .015), shY - .02, 0], s: [.085, .075, .105], c: shade(accC, .85) }); ex.push({ g: gBox(.14, .022, .13), t: [sg * (O.shX + .01), shY + .045, 0], c: [.9, .52, .18] }); } ex.push({ g: gBox(.3, .14, .05), t: [0, shY - .3, .14], c: shade(accC, .6) }); } // 衝鋒軍官：防暴肩甲與胸板
+    if (ac.includes('canister')) { for (const sg of [-1, 1]) ex.push({ g: gCyl(.055, .055, .34, 14, 1), t: [sg * .09, shY - .3, -.18], c: [.42, .5, .4] }); ex.push({ g: gBox(.22, .05, .07), t: [0, shY - .1, -.18], c: [.3, .34, .3] }); ex.push({ g: gCyl(.016, .016, .22, 8, 1), t: [.14, shY - .18, -.1], r: [.4, 0, .5], c: accC }); } // 生化軍官：背後氣罐
+    if (ac.includes('sidescope')) { ex.push({ g: gCyl(.04, .046, .2, 12, 1), t: [-O.shX - .02, shY - .06, .02], r: [.2, 0, .35], c: [.26, .24, .18] }); ex.push({ g: gBox(.05, .07, .03), t: [O.shX - .02, shY - .14, .11], c: accC }); ex.push({ g: gBox(.26, .03, .02), t: [0, shY - .26, .14], r: [0, 0, .22], c: [.3, .27, .2] }); } // 偵視軍官：肩掛觀測鏡與背帶
+    if (ac.includes('streak')) for (let k = 0; k < 5; k++) { const w = .16 - k * .022; ex.push({ g: gBox(w, .02, .26 + k * .06), t: [(k - 2) * .07, shY - .16 - k * .035, -.16 - k * .05], r: [0, 0, (k - 2) * .1], c: k % 2 ? accC : shade(accC, 1.3) }); } // 襲影軍官：速度殘影
     if (ac.includes('abacus')) { ex.push({ g: gBox(.3, .2, .03), t: [.26, hipY + .3, .1], r: [0, -.5, 0], c: [.45, .28, .15] }); for (let r0 = 0; r0 < 3; r0++) for (let k = 0; k < 4; k++) ex.push({ g: gSphere(.019, 7, 6), t: [.26 + (k - 1.5) * .055 * Math.cos(.5), hipY + .36 - r0 * .062, .1 + (k - 1.5) * .055 * Math.sin(-.5)], c: k % 2 ? [.92, .86, .72] : [.75, .2, .22] }); } // 數學博士：腰間算盤
     if (ac.includes('coin')) { ex.push({ g: gCyl(.07, .07, .014, 16, 1), t: [-.26, hipY + .26, .13], r: [1.4, 0, .3], c: [.95, .82, .32] }); ex.push({ g: gCyl(.045, .045, .018, 16, 1), t: [-.26, hipY + .26, .13], r: [1.4, 0, .3], c: [.78, .64, .2] }); } // 概算師：翻面的硬幣
     if (ac.includes('lizcrest')) { for (let k = 0; k < 7; k++) ex.push({ g: gCyl(0, .035 - k * .003, .075 - k * .006, 4, 1), t: [0, shY - .06 - k * .075, -.145 + k * .004], r: [-.25, 0, 0], c: shade(accC, 1.25) }); for (const sg of [-1, 1]) ex.push({ g: gSphere(.036, 8, 7), t: [sg * .2, shY - .02, -.1], c: shade(accC, .85) }); } // 壁虎：背脊鰭
@@ -584,12 +654,37 @@ function buildOutfit(i) {
     if (O.key === 'ray') ex.push({ g: gBox(.26, .02, .02), t: [0, hipY + .3, .21], c: [.22, .82, 1] });
     if (O.key === 'eagle') ex.push({ g: gBox(.05, .04, .02), t: [.12, hipY + .45, .2], c: [.88, .7, .2] });
   }
+  // 號碼牌一定要看得清楚：量出頭部造型（髮型、帽子、面罩…）在號碼牌高度範圍內最前方的位置，把牌子往前推到它前面
+  const plY = chinY + .6 * hh + .1, pLo = plY - .26, pHi = plY + .26; let plZ = .1;
+  for (const it of hairP) {
+    const g = it.g; if (!g || !g.p || !g.p.length) continue;
+    const t = it.t || [0, 0, 0], sv = it.s || [1, 1, 1], rv = it.r;
+    let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9, z0 = 1e9, z1 = -1e9;
+    for (let k = 0; k < g.p.length; k += 3) {
+      const x = g.p[k] * sv[0], y = g.p[k + 1] * sv[1], z = g.p[k + 2] * sv[2];
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; if (z < z0) z0 = z; if (z > z1) z1 = z;
+    }
+    let lo = y0, hi = y1, fz = z1;
+    if (rv && (rv[0] || rv[1] || rv[2])) { // 有旋轉：把 8 個角依 Rz·Ry·Rx 轉過去再取範圍
+      const cx = Math.cos(rv[0]), sx2 = Math.sin(rv[0]), cy = Math.cos(rv[1]), sy2 = Math.sin(rv[1]), cz = Math.cos(rv[2]), sz2 = Math.sin(rv[2]);
+      lo = 1e9; hi = -1e9; fz = -1e9;
+      for (let c = 0; c < 8; c++) {
+        const px = c & 1 ? x1 : x0, py = c & 2 ? y1 : y0, pz = c & 4 ? z1 : z0;
+        const ry = cx * py - sx2 * pz, rz = sx2 * py + cx * pz;      // Rx
+        const qx = cy * px + sy2 * rz, qz = -sy2 * px + cy * rz;      // Ry
+        const wy = sz2 * qx + cz * ry;                                // Rz（只需要 y 與 z）
+        if (wy < lo) lo = wy; if (wy > hi) hi = wy; if (qz > fz) fz = qz;
+      }
+    }
+    lo += t[1]; hi += t[1]; fz += t[2];
+    if (hi > pLo && lo < pHi && fz > plZ) plZ = fz;
+  }
   const exG = ex.length ? mergeGeos(ex) : null;
   const faceTex = R.tex(paintFace(O), { aniso: 8 }), torsoTex = R.tex(paintTorso(O), { aniso: 8 });
   return {
     O, dim, meshes: { extra: exG ? R.mkMesh(exG) : null, torso: R.mkMesh(tg), head: R.mkMesh(hg), hair: R.mkMesh(hairG), armL: R.mkMesh(armG[0]), armR: R.mkMesh(armG[1]), legL: R.mkMesh(legG[0]), legR: R.mkMesh(legG[1]) },
     mats: { torso: R.mat({ tex: torsoTex, spec: O.key === 'f' ? .04 : .08 }), head: R.mat({ tex: faceTex, spec: .12 }), cloth: R.mat({ spec: .05 }), hair: R.mat({ spec: .4 }) },
-    skin, plateY: chinY + .6 * hh + .1, plateZ: .1
+    skin, noLegs: !!O.noLegs, plateY: plY, plateZ: plZ + .075
   };
 }
 const AV = { cache: [], plateMesh: null, bandMesh: null, bandMat: [], blob: null, blobMat: null, tmp: M4.create(), tmp2: M4.create(), Mr: M4.create() };
@@ -647,7 +742,8 @@ function drawAvatar(a, opt) {
   const ph = a.animT || 0, sp = a.sp || 0, red = a.redT > 0 && !R.shadowPass;
   if (red) { const e = .45 + .3 * Math.sin(G.time * 14); for (const m of [ms.torso, ms.head, ms.cloth, ms.hair]) { m.emis = [e, .02, .02]; m.tint = [1, .62, .62, 1]; } }
   const bob = Math.abs(Math.sin(ph * 2)) * .03 * sp, fall = Math.max(a.fall || 0, a.fdLie || 0), bs = a.miniT > 0 ? .4 : 1, tr = (a.chamT > 0 || ((a.lzFade || 0) > 0 && (a.lzFade || 0) < 1)) && !R.shadowPass; // 壁虎淡出中也用半透明
-  M4.trs(Mr, a.x, a.y + bob, a.z, -fall * (PI / 2), a.yaw + PI, 0, bs, bs, bs);
+  const ghostLift = O.noLegs ? .34 + Math.sin(G.time * 1.7 + (a.id || 0)) * .07 : 0; // 幽靈體質：離地漂浮並緩慢上下起伏
+  M4.trs(Mr, a.x, a.y + bob + ghostLift, a.z, -fall * (PI / 2), a.yaw + PI, 0, bs, bs, bs);
   if (tr) for (const m of [ms.torso, ms.head, ms.cloth, ms.hair]) { m._bl = m.blend; m.blend = 1; m.tint = [m.tint[0], m.tint[1], m.tint[2], .38]; }
   const hipN = d.hipY * C.legS, shN = (d.shY - d.hipY) * C.torS, chinN = (d.chinY - d.hipY) * C.torS;
   const lean = clamp((a.lo || 0) / LEANMAX, -1, 1) * .38;
@@ -655,9 +751,11 @@ function drawAvatar(a, opt) {
   placeM(M, U, 0, 0, 0, 0, 0, C.wide, C.torS, C.wide, 0, -d.hipY, 0); R.draw(mt.torso, M, ms.torso); if (mt.extra) R.draw(mt.extra, M, ms.cloth);
   placeM(M, U, 0, chinN, 0, 0, 0, C.head, C.head, C.head, 0, -d.chinY, 0); R.draw(mt.head, M, ms.head); R.draw(mt.hair, M, ms.hair);
   const sw = Math.sin(ph) * .85 * sp, arm = a.armUp || 0;
-  // 腿
-  placeM(M, Mr, -d.hipX * C.wide, hipN, 0, sw, 0, C.wide, C.legS, C.wide); R.draw(mt.legL, M, ms.cloth);
-  placeM(M, Mr, d.hipX * C.wide, hipN, 0, -sw, 0, C.wide, C.legS, C.wide); R.draw(mt.legR, M, ms.cloth);
+  // 腿（幽靈體質的英雄沒有雙腿，改以飄動的霧尾呈現）
+  if (!O.noLegs) {
+    placeM(M, Mr, -d.hipX * C.wide, hipN, 0, sw, 0, C.wide, C.legS, C.wide); R.draw(mt.legL, M, ms.cloth);
+    placeM(M, Mr, d.hipX * C.wide, hipN, 0, -sw, 0, C.wide, C.legS, C.wide); R.draw(mt.legR, M, ms.cloth);
+  }
   // 手（隨上半身傾斜）
   const sy = shN - .03;
   placeM(M, U, -d.shX * C.wide + .02, sy, 0, -sw * .8 - .05 - arm, .05, C.wide, C.armS, C.wide); R.draw(mt.armL, M, ms.cloth);
