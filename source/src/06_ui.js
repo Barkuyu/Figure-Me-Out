@@ -53,6 +53,36 @@ const UI = {
     this.els.photo.classList.remove('hidden', 'fade'); this.photoT = 2.2; this.dirty = true;
   },
   cleanse() { const c = $('cleanse'); c.classList.remove('on'); void c.offsetWidth; c.classList.add('on'); },
+  parSlots(p) { // 概算師：道具欄改成「奇數 / 偶數」兩顆判定鍵
+    const ok = simpleReady(p);
+    for (const [el, t] of [[this.els.slotF, '奇數'], [this.els.slotG, '偶數']]) {
+      el.classList.add('par'); el.classList.toggle('off', !ok); el.classList.remove('has', 'felix');
+      el.querySelector('.ico').textContent = t;
+      el.querySelector('small').textContent = (p.spCd || 0) > 0 ? Math.ceil(p.spCd) : ((p.spBuff || 0) > 0 ? '∞' : '');
+    }
+  },
+  mmap(p) { // 作戰軍官：左上角圓形衛星雷達
+    const cv = $('mmap'), on = isOut(p, 60) && p.alive && G.state === 'playing';
+    cv.classList.toggle('hidden', !on); if (!on || !World.cur) return;
+    const W = 200, R0 = W / 2, bb = World.bounds, sw = bb.x1 - bb.x0, sh = bb.z1 - bb.z0, sc = (W - 12) / Math.max(sw, sh);
+    if (this._mmId !== World.cur.id) { // 地形只畫一次，之後每幀只疊上光點
+      this._mmId = World.cur.id; const oc = this._mmBg = document.createElement('canvas'); oc.width = oc.height = W;
+      const g = oc.getContext('2d'); g.fillStyle = '#0d1a12'; g.fillRect(0, 0, W, W);
+      g.fillStyle = 'rgba(120,210,160,.30)'; g.strokeStyle = 'rgba(150,240,190,.22)'; g.lineWidth = 1;
+      g.fillRect(R0 - sw * sc / 2, R0 - sh * sc / 2, sw * sc, sh * sc);
+      g.fillStyle = 'rgba(190,255,215,.55)';
+      for (const b of World.boxes) { if (b.nc || b.aw || b.y1 - b.y0 < .8) continue; const x = R0 + (b.x0 - (bb.x0 + sw / 2)) * sc, y = R0 + (b.z0 - (bb.z0 + sh / 2)) * sc; g.fillRect(x, y, Math.max(1.2, (b.x1 - b.x0) * sc), Math.max(1.2, (b.z1 - b.z0) * sc)); }
+    }
+    const g = cv.getContext('2d'); g.clearRect(0, 0, W, W); g.drawImage(this._mmBg, 0, 0);
+    const px = v => R0 + (v - (bb.x0 + sw / 2)) * sc, pz = v => R0 + (v - (bb.z0 + sh / 2)) * sc;
+    for (const a of G.actors) {
+      if (!a.alive || a === p) continue; const en = enemyOf(p, a);
+      g.fillStyle = en ? '#ff4455' : '#49a6ff'; g.beginPath(); g.arc(px(a.x), pz(a.z), 3.4, 0, 6.2832); g.fill();
+    }
+    g.save(); g.translate(px(p.x), pz(p.z)); g.rotate(-p.yaw); // 自己：白色箭頭
+    g.fillStyle = '#fff'; g.beginPath(); g.moveTo(0, -6.5); g.lineTo(4.4, 5); g.lineTo(0, 2.6); g.lineTo(-4.4, 5); g.closePath(); g.fill(); g.restore();
+    g.strokeStyle = 'rgba(160,255,200,.5)'; g.lineWidth = 2; g.beginPath(); g.arc(R0, R0, R0 - 3, 0, 6.2832); g.stroke();
+  },
   slotHTML(el, s) {
     const ico = el.querySelector('.ico'), n = el.querySelector('small');
     if (!s) { ico.textContent = ''; n.textContent = ''; el.classList.remove('has', 'felix'); return; }
@@ -158,9 +188,10 @@ const UI = {
     // 輸入
     if (this.dirty || this.lastTyped !== G.typed) {
       const LN = inLen(G.player), t = LN ? G.typed + '_'.repeat(Math.max(0, LN - G.typed.length)) : (G.typed.length ? G.typed : '＿＿＿') + (G.typed.length && G.typed.length < 6 ? '_' : ''); e.typed.textContent = t; e.typed.className = G.typed.length ? '' : 'empty'; e.photoCap.textContent = t; this.lastTyped = G.typed;
-      this.slotHTML(e.slotF, G.slots[0]); this.slotHTML(e.slotG, G.slots[1]);
+      if (!isOut(p, 56)) { e.slotF.classList.remove('par', 'off'); e.slotG.classList.remove('par', 'off'); this.slotHTML(e.slotF, G.slots[0]); this.slotHTML(e.slotG, G.slots[1]) };
       this.dirty = false;
     }
+    if (isOut(p, 56)) this.parSlots(p); // 概算師：奇偶鍵的可按狀態每幀都要更新
     this.skillHUD(dt, p); this.modeHUD(dt, p);
     e.slotF.classList.toggle('cd', G.itemCd > 0); e.slotG.classList.toggle('cd', G.itemCd > 0);
     if (Math.abs(G.stam - (this._st ?? -1)) > .004) { this._st = G.stam; e.stamFill.style.transform = `scaleX(${G.stam.toFixed(3)})`; }
@@ -202,7 +233,8 @@ const UI = {
   stunFx(sec) { const e = this.els.deadv; e.style.opacity = .75; clearTimeout(this._st); this._st = setTimeout(() => { if (G.player && G.player.alive) e.style.opacity = 0; }, sec * 1000); },
   goText() { this.goT = 1; this._cd = 0; $('cdNum').textContent = '開始！'; $('cdTxt').textContent = '戰鬥開始'; this.els.countdown.classList.remove('hidden'); },
   cdUpdate(dt) {
-    { const neg = !!(G.sk && G.sk.neg && G.sk.neg.t > 0); if (neg !== this._neg) { this._neg = neg; $('gl').style.filter = neg ? 'invert(1)' : ''; } }
+    if (G.player) this.mmap(G.player);
+    { const neg = !!(G.sk && G.sk.neg && G.sk.neg.t > 0) && !visImmune(G.player); if (neg !== this._neg) { this._neg = neg; $('gl').style.filter = neg ? 'invert(1)' : ''; } }
     { // 暫時的休止符：畫面黑白閃爍、訊息橫幅震動
       const fz = !!(G.sk && G.sk.frz && G.sk.frz.t > 0);
       if (fz !== this._fz) {
@@ -312,8 +344,8 @@ const Input = {
         if (/^Numpad[0-9]$/.test(e.code)) { typeDigit(e.code.slice(6)); e.preventDefault(); return; }
         if (e.code === 'Backspace') { backspace(); e.preventDefault(); return; }
         if (e.code === 'Enter' || e.code === 'NumpadEnter') { submitNumber(); e.preventDefault(); return; }
-        if (e.code === 'KeyF') { useItem(0); return; }
-        if (e.code === 'KeyG') { if (G.player && GKEY_HEROES.includes(G.player.av.outfitIdx)) castSkillPlayer(); else useItem(1); return; }
+        if (e.code === 'KeyF') { const q = G.player; if (q && isOut(q, 56)) simpleGuess(q, true); else useItem(0); return; }
+        if (e.code === 'KeyG') { const q = G.player; if (q && GKEY_HEROES.includes(q.av.outfitIdx)) castSkillPlayer(); else if (q && isOut(q, 56)) simpleGuess(q, false); else useItem(1); return; }
         if (e.code === 'KeyR') { if (G.player && SKILL_OF[G.player.av.outfitIdx] === 'vocal') { if (!e.repeat) Voice.start(); } else castSkillPlayer(); return; }
         if (e.code === 'KeyQ') { toggleBino(); return; }
         if (e.code === 'Escape') { if (!this.pointerLocked()) togglePause(); return; }
@@ -391,7 +423,7 @@ const Input = {
     press($('bBack'), () => backspace());
     { const ss = $('slotS'), vocal = () => G.player && SKILL_OF[G.player.av.outfitIdx] === 'vocal'; press(ss, () => { if (vocal()) Voice.start(); else castSkillPlayer(); }, () => { if (vocal()) Voice.end(); }); ss.addEventListener('click', () => { if (!Device.mobile && !vocal()) castSkillPlayer(); }); ss.addEventListener('mousedown', () => { if (!Device.mobile && vocal()) Voice.start(); }); ss.addEventListener('mouseup', () => { if (!Device.mobile && vocal()) Voice.end(); }); ss.addEventListener('mouseleave', () => { if (!Device.mobile && vocal()) Voice.end(); }); }
     press($('bRun'), () => { In.sprintT = !In.sprintT; In.sprint = In.sprintT; $('bRun').classList.toggle('tog', In.sprintT); }, () => { });
-    for (const [id, i] of [['slotF', 0], ['slotG', 1]]) { const el = $(id); press(el, () => useItem(i)); el.addEventListener('click', () => { if (!Device.mobile) useItem(i); }); }
+    for (const [id, i] of [['slotF', 0], ['slotG', 1]]) { const el = $(id); const act = () => { const p = G.player; if (p && isOut(p, 56)) simpleGuess(p, i === 0); else useItem(i); }; press(el, act); el.addEventListener('click', () => { if (!Device.mobile) act(); }); }
     press($('pauseBtn'), () => setPause(true));
   },
   pointerLocked() { return document.pointerLockElement === $('gl'); },
@@ -634,14 +666,14 @@ function csBuildCards() {
   // 我的收藏庫（最上方）
   const fav = (S.fav || []).filter(i => pool.includes(i)); if ((S.fav || []).length > 6) S.fav = S.fav.slice(0, 6); sec('⭐ 我的收藏庫（' + fav.length + ' / 6）', '#ffd24a');
   if (fav.length) for (const i of fav) cards.appendChild(mk(i)); else { const h = document.createElement('div'); h.className = 'favhint'; h.textContent = o.browse ? '尚無收藏。在任一英雄上「長按滑鼠右鍵」（手機：長按卡片）即可加入，再長按一次可移除。' : '尚無收藏。請到主畫面的「英雄圖鑑」長按英雄卡片加入我的最愛。'; cards.appendChild(h); }
-  const placed = new Set(), groups = CS.view === 'tier' ? HERO_TIERS : HERO_CLASSES;
+  const placed = new Set(), groups = CS.view === 'tier' ? HERO_TIERS : CS.view === 'act' ? HERO_ACT() : HERO_CLASSES;
   for (const [nm, col, ids] of groups) { const list = ids.filter(i => pool.includes(i)); if (!list.length) continue; sec(nm + '（' + list.length + '）', col); for (const i of list) { placed.add(i); cards.appendChild(mk(i)); } }
   const rest = pool.filter(i => !placed.has(i)); if (rest.length) { sec('其他'); for (const i of rest) cards.appendChild(mk(i)); }
   if (!o.browse && !o.single) { sec('🎲 隨機', '#c9a8ff'); cards.appendChild(rc); } csRefresh();
   [...$('csView').children].forEach(b => b.classList.toggle('on', b.dataset.v === CS.view));
 }
 function openPick(o) {
-  CS.o = o; CS.rand = false; CS.flash = ''; CS.lastClick = null; CS.view = S.csView === 'tier' ? 'tier' : 'class'; $('csTitle').textContent = o.title || '選擇英雄'; $('csOk').textContent = o.okText || '確認'; $('csOk').style.display = o.browse ? 'none' : ''; $('csBack').style.display = o.back ? '' : 'none';
+  CS.o = o; CS.rand = false; CS.flash = ''; CS.lastClick = null; CS.view = ['tier', 'act'].includes(S.csView) ? S.csView : 'class'; $('csTitle').textContent = o.title || '選擇英雄'; $('csOk').textContent = o.okText || '確認'; $('csOk').style.display = o.browse ? 'none' : ''; $('csBack').style.display = o.back ? '' : 'none';
   const pool = o.allowed || VIS_OUTFITS; CS.counts = {}; CS.picks = [];
   if (isWM(o)) {
     CS.rand = S.pref === 'rand';
@@ -925,7 +957,7 @@ function boot() {
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
 setInterval(() => { try { UI.renderPills(); } catch (e) { } }, 120);
-window.__G = { PRO, csBuildCards, closePick, speedMul, OUTFITS, VIS_OUTFITS, HERO_CLASSES, HERO_TIERS, SKILL_OF, SKILLS, setPreview, kenKind, In, cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+window.__G = { PRO, R, eliminate, inLen, simpleReady, simpleGuess, grantItem, csSetView, csBuildCards, closePick, speedMul, OUTFITS, VIS_OUTFITS, HERO_CLASSES, HERO_TIERS, SKILL_OF, SKILLS, setPreview, kenKind, In, cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 
 // 檢查是否有新版（防止 PWA 快取舊版）

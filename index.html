@@ -382,6 +382,8 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 #prophetBox{position:fixed;inset:0;z-index:99998;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55)}#prophetBox.hidden{display:none}#prophetBox .pbx{background:#fff8e1;border:4px solid #1a1a1a;border-radius:18px;padding:22px 30px 20px;text-align:center;box-shadow:0 8px 0 rgba(0,0,0,.45);max-width:calc(var(--vw)*84)}#prophetBox h3{margin:0 0 6px;font:900 24px var(--font);color:#c10d20}#prophetBox p{margin:0 0 16px;font:700 17px var(--font);color:#333}
 #msg.quake{animation:msgQuake .09s linear infinite}@keyframes msgQuake{0%{transform:translate(-50%,0) rotate(-1.4deg)}25%{transform:translate(calc(-50% - 9px),3px) rotate(1.6deg)}50%{transform:translate(calc(-50% + 8px),-3px) rotate(-1.2deg)}75%{transform:translate(calc(-50% - 6px),2px) rotate(1deg)}100%{transform:translate(-50%,0) rotate(-1.4deg)}}
 #frzOv{position:fixed;inset:0;z-index:60;pointer-events:none;background:rgba(255,255,255,.1);mix-blend-mode:overlay;animation:frzBlink .16s steps(1) infinite}#frzOv.hidden{display:none}@keyframes frzBlink{0%{opacity:.85}50%{opacity:.12}100%{opacity:.85}}
+#mmap{position:fixed;left:14px;top:96px;width:138px;height:138px;z-index:28;border-radius:50%;border:3px solid rgba(255,255,255,.5);box-shadow:0 4px 14px rgba(0,0,0,.5),inset 0 0 18px rgba(0,0,0,.6);background:rgba(8,14,10,.78);pointer-events:none}#mmap.hidden{display:none}
+.slot.par{font:900 17px var(--font)}.slot.par .ico{font-size:17px;letter-spacing:1px}.slot.par.off{opacity:.38;filter:grayscale(1)}
 </style>
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Figure Me Out">
@@ -402,7 +404,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     <div id="countdown" class="hidden"><div id="cdTxt"></div><div id="cdNum"></div></div><div id="modeName"></div>
     <div id="killfeed"></div>
     <div id="crosshair"></div>
-    <div id="frzOv" class="hidden"></div><div id="msg"></div><div id="streak"></div>
+    <canvas id="mmap" width="200" height="200" class="hidden"></canvas><div id="frzOv" class="hidden"></div><div id="msg"></div><div id="streak"></div>
     <div id="carry" class="hidden">🚩 你正帶著旗幟，快回基地！</div>
     <div id="warn" class="hidden"><svg id="warnArrow" viewBox="0 0 24 24"><path d="M12 2 L22 21 L12 16 L2 21 Z" fill="currentColor"/></svg></div>
     <div id="warnBox" class="hidden"><div id="warnTxt">⚠ 有人正在讀你的號碼！</div><div class="bar"><i id="warnFill"></i></div></div>
@@ -442,7 +444,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 
   <div id="menu">
     <div class="panel" id="panel">
-      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.7</span></div>
+      <div class="logo"><div class="en"><span class="l1">FIGURE</span><br><span class="l2">ME OUT</span></div><div class="zh"><span class="l1 z">眼明</span><br><span class="l2 z">手快</span></div><span class="ver">ver&nbsp; 2.8</span></div>
             <div id="devbadge"></div>
       <div id="errBox"></div>
       <div class="mbtns">
@@ -519,7 +521,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
     </div>
   </div></div>
   <div id="charsel" class="hidden"><div class="panel">
-    <div class="cshd"><h2 id="csTitle" style="font:400 30px var(--disp);margin:0">選擇英雄</h2><div class="csview" id="csView"><button data-v="class">依種類區分</button><button data-v="tier">依等級區分</button></div></div>
+    <div class="cshd"><h2 id="csTitle" style="font:400 30px var(--disp);margin:0">選擇英雄</h2><div class="csview" id="csView"><button data-v="class">依種類區分</button><button data-v="tier">依等級區分</button><button data-v="act">依主動/被動區分</button></div></div>
     <div class="cards" id="cards"></div>
     <div id="csHint" class="cshint"></div><div class="btnrow" style="justify-content:flex-start"><button class="btn" id="csOk">確認，開始遊戲</button><button class="btn alt" id="csBack">返回</button></div>
   </div><div class="cinfo cinfoR"><div class="crow"><b>英雄</b><span id="cName"></span></div><div class="crow"><b>技能</b><span id="cPass"></span></div></div></div>
@@ -2785,7 +2787,19 @@ OUTFITS.push(
   { key: 'decade', label: '迪Decade', sub: '', skill: { name: '假面變身', desc: '發動後從「我的最愛」選一位英雄，施法 1 秒即可變身為該英雄（含其技能）。變身英雄被輸入擊殺時，外表會碎裂散落並變回迪、免除該次死亡；冷卻 30 秒從碎裂後才開始計算。' }, H: 1.8, skin: '#e6c6a4', hipX: .1, shX: .24, tz: .53, hair: '#e8eef5', hair2: '#e8eef5', female: false, gen: { top: '#262b38', top2: '#f4f6fa', pants: '#1b1f2a', shoe: '#9ad7ff', hair: '#e8eef5', style: 'short', acc: ['prism', 'cardsash'], accC: '#9ad7ff' },
     torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'soom', label: '瞬Soom', sub: '', skill: { name: '無影瞬蹤', desc: '發動後經 1 秒紫色施法，瞬間移動到離你最遠的敵方英雄背後 1 公尺處；20 秒內若進入該名敵人的視野，技能立即刷新。冷卻 8 秒。' }, H: 1.74, skin: '#e9cdb4', hipX: .095, shX: .225, tz: .53, hair: '#7a3cff', hair2: '#9a63ff', female: false, gen: { top: '#1d1033', top2: '#b57bff', pants: '#2a1a4a', shoe: '#b57bff', hair: '#7a3cff', style: 'bob', acc: ['wisps', 'portal'], accC: '#c9a0ff' },
-    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] }
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'mathdoc', label: '數學博士 Math Doc.', sub: '', skill: { name: '精算師', desc: '按 R 發動後 20 秒內，全場（含自己）的擊殺方式改為「輸入對方頭上數字的總和」，所有人的輸入欄同時縮短為兩位數。例：頭上 1111 輸入 04、0000 輸入 00、9999 輸入 36。冷卻 15 秒。' }, H: 1.72, skin: '#e3c3a2', hipX: .104, shX: .236, tz: .55, hair: '#cfd4dc', hair2: '#e8ecf2', female: false, gen: { top: '#1b2338', top2: '#d8b24a', pants: '#171c2a', shoe: '#2a3144', hair: '#cfd4dc', style: 'short', acc: ['mortar', 'sigma', 'glasses', 'abacus'], accC: '#2a3350' },
+    torso: [[.001, -.1], [.2, -.1], [.205, -.02], [.19, .1], [.195, .22], [.23, .36], [.25, .46], [.245, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'simple', label: '概算師Simple', sub: '', skill: { name: '二分法', desc: '【被動】道具欄改成「奇數」「偶數」兩顆按鍵，因此不會撿取任何道具。當 20 秒內曾出現在你正面、且是離你最近的敵方英雄時按鍵即可判定：若對方頭上數字的總和奇偶與你所按相符，立刻擊殺，並在接下來 120 秒內跑步與望遠鏡都不消耗能量（之後若再判斷錯誤則提前結束）；判斷錯誤則該名敵人立刻換號碼、重新計時 20 秒，兩顆按鍵冷卻 5 秒。' }, H: 1.68, skin: '#f0dcc6', hipX: .098, shX: .222, tz: .52, hair: '#20232b', hair2: '#f2f4f8', female: true, gen: { top: '#f4f6fa', top2: '#15171d', pants: '#22252e', shoe: '#f4f6fa', hair: '#20232b', style: 'bob', acc: ['halfvisor', 'coin'], accC: '#55e0c0' },
+    torso: [[.001, -.1], [.19, -.1], [.195, -.02], [.18, .1], [.186, .22], [.218, .36], [.236, .46], [.232, .53], [.17, .57], [.066, .595], [.053, .63], [.001, .63]] },
+  { key: 'radar', label: '雷達Radar', sub: '', skill: { name: '紅野掃視', desc: '按 R 發動，頭頂無人機以 5 公尺為半徑探照 8 秒：範圍內所有隱形的敵人立即現形，期間你也不受任何視線干擾類技能影響（變暗、墨汁、負片、致盲皆無效）。冷卻 10 秒。' }, H: 1.76, skin: '#c89a74', hipX: .106, shX: .244, tz: .56, hair: '#3a3f33', hair2: '#565c4a', female: false, gen: { top: '#3f4a33', top2: '#aab24a', pants: '#2c3326', shoe: '#1e221a', hair: '#3a3f33', style: 'spiky', acc: ['drone', 'goggles'], accC: '#b8c24e' },
+    torso: [[.001, -.1], [.206, -.1], [.212, -.02], [.198, .1], [.204, .22], [.238, .36], [.258, .46], [.252, .53], [.186, .57], [.072, .595], [.058, .63], [.001, .63]] },
+  { key: 'lizard', label: '壁虎Lizard', sub: '', skill: { name: '攀牆附影', desc: '【被動】貼住牆面或障礙物 0.5 秒後身形逐漸淡去而隱形（0.3 秒淡出）；貼牆時可像壁虎一樣沿著牆面上下爬行，在牆上按「跳躍」即可彈離牆面回到地面。' }, H: 1.66, skin: '#8fc07a', hipX: .096, shX: .226, tz: .5, hair: '#2f6b35', hair2: '#4b8f46', female: false, gen: { top: '#3f8a4a', top2: '#9fd66a', pants: '#2c6236', shoe: '#1f4426', hair: '#2f6b35', style: 'spiky', acc: ['lizcrest', 'liztail', 'chameyes'], accC: '#58a85a' },
+    torso: [[.001, -.1], [.196, -.1], [.202, -.02], [.188, .1], [.194, .22], [.226, .36], [.244, .46], [.24, .53], [.176, .57], [.068, .595], [.055, .63], [.001, .63]] },
+  { key: 'ghost', label: '鬼影Ghost', sub: '', skill: { name: '鬼影穿梭', desc: '【被動】無法跳躍，「跳躍」鍵改為向前衝刺一小段。可以直接穿過任何牆壁與障礙物（最外圍的場地外牆除外），也能停在障礙物內部藏身。' }, H: 1.79, skin: '#cfd8e4', hipX: .1, shX: .232, tz: .52, hair: '#7f8aa0', hair2: '#aab6c8', female: false, gen: { top: '#434e63', top2: '#8fa0bd', pants: '#333c4d', shoe: '#2a313f', hair: '#7f8aa0', style: 'long', acc: ['hood', 'tatters'], accC: '#5b6880' },
+    torso: [[.001, -.1], [.198, -.1], [.204, -.02], [.19, .1], [.196, .22], [.228, .36], [.248, .46], [.244, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
+  { key: 'officer', label: '作戰軍官Officer', sub: '', skill: { name: '全圖搜索', desc: '【被動】配備衛星偵測系統：畫面左上角常駐圓形雷達，以俯視方式顯示全場地形與障礙物，並即時標出敵方（紅點）與我方（藍點）位置。10 公尺內有敵方玩家時，跑步不消耗能量。' }, H: 1.77, skin: '#d9b48e', hipX: .108, shX: .246, tz: .56, hair: '#2b3038', hair2: '#464d58', female: false, gen: { top: '#243049', top2: '#c8ad5e', pants: '#1b2336', shoe: '#14181f', hair: '#2b3038', style: 'short', acc: ['peakcap', 'epaulet', 'satdish'], accC: '#243049' },
+    torso: [[.001, -.1], [.208, -.1], [.214, -.02], [.2, .1], [.206, .22], [.24, .36], [.26, .46], [.254, .53], [.188, .57], [.074, .595], [.06, .63], [.001, .63]] }
 );
 const SKINPATCH = [.975, .975];
 
@@ -3029,6 +3043,40 @@ function buildOutfit(i) {
     if (ac.includes('plume')) { hairP.push({ g: gBox(.026, .09, .16), t: [0, hc + hh * .7, -.075], c: accC }); hairP.push({ g: gCyl(hw * 1.08, hw * 1.08, .02, 22, 1, true), t: [0, hc + hh * .2, -.004], s: [1, 1, 1.18], c: [.75, .78, .84] }); }
     if (ac.includes('pompadour')) { hairP.push({ g: gSphere(1, 20, 12, 0, TAU, 0, 1.3), t: [0, hc + .02, -.006], s: [hw * 1.06, hh * .6, hw * 1.06 * 1.18], c: h1 }); hairP.push({ g: gBox(hw * 1.5, .09, hw * 1.5), t: [0, hc + hh * .66, -hw * .25], r: [.4, 0, 0], c: shade(h1, 1.1) }); hairP.push({ g: gBox(hw * 1.2, .07, hw * 1.1), t: [0, hc + hh * .8, -hw * .55], r: [.7, 0, 0], c: shade(h1, 1.2) }); }
     if (ac.includes('catears')) for (const sg of [-1, 1]) hairP.push({ g: gCyl(0, .035, .08, 4, 1), t: [sg * hw * .7, hc + hh * .62, .0], r: [0, 0, -sg * .25], c: [.1, .09, .12] });
+    if (ac.includes('mortar')) { // 數學博士：學士方帽 + 流蘇
+      hairP.push({ g: gCyl(hw * 1.02, hw * 1.06, .07, 20, 1), t: [0, hc + hh * .62, -.004], s: [1, 1, 1.16], c: shade(accC, .55) });
+      hairP.push({ g: gBox(.46, .022, .46), t: [0, hc + hh * .72, -.01], r: [0, .18, 0], c: shade(accC, .4) });
+      for (let k = 0; k < 7; k++) hairP.push({ g: gSphere(.016, 6, 5), t: [.2, hc + hh * .70 - k * .034, .17], c: accC });
+      hairP.push({ g: gSphere(.026, 7, 6), t: [0, hc + hh * .75, -.01], c: accC });
+    }
+    if (ac.includes('sigma')) for (let k = 0; k < 8; k++) { const a = k / 8 * TAU; hairP.push({ g: gBox(.034, .034, .012), t: [Math.sin(a) * hw * 1.5, hc + hh * .95 + Math.sin(a * 2) * .018, Math.cos(a) * hw * 1.5], r: [0, -a, 0], c: [1, .84, .32] }); } // 浮在頭頂的算式環
+    if (ac.includes('halfvisor')) { // 概算師：黑白各半的面罩
+      hairP.push({ g: gBox(hw * 1.12, .105, .03), t: [-hw * .56, hc + hh * .1, hw * .92], c: [.96, .97, .99] });
+      hairP.push({ g: gBox(hw * 1.12, .105, .03), t: [hw * .56, hc + hh * .1, hw * .92], c: [.09, .09, .12] });
+      hairP.push({ g: gBox(.016, .12, .035), t: [0, hc + hh * .1, hw * .93], c: accC });
+      hairP.push({ g: gCyl(hw * 1.1, hw * 1.1, .026, 22, 1, true), t: [0, hc + hh * .3, -.004], s: [1, 1, 1.18], c: [.55, .57, .62] });
+    }
+    if (ac.includes('drone')) { // 雷達：頭頂盤旋的探照無人機
+      hairP.push({ g: gCyl(.055, .07, .05, 12, 1), t: [0, hc + hh * 1.5, 0], c: [.26, .3, .26] });
+      hairP.push({ g: gSphere(.052, 10, 8, 0, TAU, 0, .55), t: [0, hc + hh * 1.5 - .03, 0], s: [1, -1, 1], c: accC });
+      for (let k = 0; k < 4; k++) { const a = k * TAU / 4 + .78, rx = Math.sin(a) * .105, rz = Math.cos(a) * .105;
+        hairP.push({ g: gBox(.045, .012, .016), t: [rx * .55, hc + hh * 1.5, rz * .55], r: [0, -a, 0], c: [.2, .22, .24] });
+        hairP.push({ g: gCyl(.034, .034, .008, 10, 1), t: [rx, hc + hh * 1.5 + .012, rz], c: [.62, .68, .72] }); }
+      hairP.push({ g: gCyl(.016, .03, .05, 8, 1), t: [0, hc + hh * 1.5 - .055, 0], c: [1, .35, .3] });
+    }
+    if (ac.includes('hood')) { // 鬼影：中空兜帽
+      hairP.push({ g: gSphere(1, 20, 14, 0, TAU, 0, 1.25), t: [0, hc + .03, -.03], s: [hw * 1.3, hh * .82, hw * 1.42], c: accC });
+      hairP.push({ g: gCyl(0, hw * .92, .22, 14, 1), t: [0, hc + hh * .92, -.05], r: [-.32, 0, 0], c: accC });
+      hairP.push({ g: gSphere(1, 16, 12), t: [0, hc + hh * .04, hw * .5], s: [hw * .86, hh * .5, hw * .5], c: [.03, .03, .05] });
+      for (const sg of [-1, 1]) hairP.push({ g: gSphere(.02, 7, 6), t: [sg * hw * .34, hc + hh * .06, hw * .82], c: [.6, .95, 1] });
+    }
+    if (ac.includes('peakcap')) { // 作戰軍官：大盤帽
+      hairP.push({ g: gCyl(hw * 1.16, hw * 1.1, .105, 22, 1), t: [0, hc + hh * .58, -.008], s: [1, 1, 1.14], c: accC });
+      hairP.push({ g: gCyl(hw * 1.2, hw * 1.2, .018, 22, 1), t: [0, hc + hh * .44, -.008], s: [1, 1, 1.14], c: shade(accC, .6) });
+      hairP.push({ g: gCyl(hw * 1.05, hw * 1.05, .02, 20, 1), t: [0, hc + hh * .51, hw * .62], s: [1.05, 1, .9], r: [-.22, 0, 0], c: [.08, .08, .1] });
+      hairP.push({ g: gBox(hw * 2.1, .034, .02), t: [0, hc + hh * .5, hw * .96], c: [.86, .7, .26] });
+      hairP.push({ g: gSphere(.028, 8, 7), t: [0, hc + hh * .62, hw * .9], c: [.9, .76, .3] });
+    }
     if (ac.includes('headband')) hairP.push({ g: gCyl(hw * 1.09, hw * 1.09, .022, 22, 1, true), t: [0, hc + hh * .22, -.004], s: [1, 1, 1.18], c: accC });
     if (ac.includes('steps')) for (let k = 0; k < 3; k++) hairP.push({ g: gCyl(hw * (.66 - k * .17), hw * (.66 - k * .17), .036, 18, 1), t: [0, hc + hh * .8 + k * .036, -hw * .32], c: k === 1 ? shade(accC, .78) : accC }); // 肯尼：由下往上遞減的三層階梯帽
     if (ac.includes('tiara')) for (let k = 0; k < 5; k++) { hairP.push({ g: gCyl(0, .019, .145 - k * .027, 5, 1), t: [(k - 2) * hw * .34, hc + hh * .72 + (.145 - k * .027) / 2, -hw * .42], c: accC }); hairP.push({ g: gSphere(.012, 6, 5), t: [(k - 2) * hw * .34, hc + hh * .72 + (.145 - k * .027) + .01, -hw * .42], c: [.5, 1, .9] }); } // 肯尼女士：高度由大到小的五尖冠
@@ -3194,6 +3242,13 @@ function buildOutfit(i) {
     if (ac.includes('goldstar')) for (let k = 0; k < 5; k++) { const a = k * TAU / 5; ex.push({ g: gBox(.02, .06, .01), t: [Math.sin(a) * .05, shY - .2 + Math.cos(a) * .05, .22], r: [0, 0, -a], c: [1, .85, .2] }); }
     if (ac.includes('bowtie')) { for (const sg of [-1, 1]) ex.push({ g: gSphere(.035, 8, 6), t: [sg * .035, shY + .02, .12], s: [1.3, .8, .6], c: [.75, .12, .12] }); ex.push({ g: gSphere(.016, 6, 5), t: [0, shY + .02, .125], c: [.5, .08, .08] }); }
     if (ac.includes('pauldron')) for (const sg of [-1, 1]) { ex.push({ g: gSphere(.12, 10, 8), t: [sg * (O.shX + .035), shY - .005, 0], s: [1, .62, 1.1], c: [.82, .65, .15] }); ex.push({ g: gSphere(.095, 10, 8), t: [sg * (O.shX + .05), shY + .02, 0], s: [1, .5, 1], c: [.5, .52, .56] }); }
+    if (ac.includes('abacus')) { ex.push({ g: gBox(.3, .2, .03), t: [.26, hipY + .3, .1], r: [0, -.5, 0], c: [.45, .28, .15] }); for (let r0 = 0; r0 < 3; r0++) for (let k = 0; k < 4; k++) ex.push({ g: gSphere(.019, 7, 6), t: [.26 + (k - 1.5) * .055 * Math.cos(.5), hipY + .36 - r0 * .062, .1 + (k - 1.5) * .055 * Math.sin(-.5)], c: k % 2 ? [.92, .86, .72] : [.75, .2, .22] }); } // 數學博士：腰間算盤
+    if (ac.includes('coin')) { ex.push({ g: gCyl(.07, .07, .014, 16, 1), t: [-.26, hipY + .26, .13], r: [1.4, 0, .3], c: [.95, .82, .32] }); ex.push({ g: gCyl(.045, .045, .018, 16, 1), t: [-.26, hipY + .26, .13], r: [1.4, 0, .3], c: [.78, .64, .2] }); } // 概算師：翻面的硬幣
+    if (ac.includes('lizcrest')) { for (let k = 0; k < 7; k++) ex.push({ g: gCyl(0, .035 - k * .003, .075 - k * .006, 4, 1), t: [0, shY - .06 - k * .075, -.145 + k * .004], r: [-.25, 0, 0], c: shade(accC, 1.25) }); for (const sg of [-1, 1]) ex.push({ g: gSphere(.036, 8, 7), t: [sg * .2, shY - .02, -.1], c: shade(accC, .85) }); } // 壁虎：背脊鰭
+    if (ac.includes('liztail')) for (let k = 0; k < 10; k++) ex.push({ g: gSphere(.052 - k * .0042, 8, 6), t: [Math.sin(k * .55) * .035, hipY - .02 - k * .028, -.17 - k * .062], c: k % 2 ? shade(accC, .82) : accC }); // 壁虎：粗尾
+    if (ac.includes('tatters')) for (let k = 0; k < 9; k++) { const a = (k / 9) * TAU; ex.push({ g: gBox(.055, .2 + (k % 3) * .14, .02), t: [Math.sin(a) * .2, hipY - .08 - (k % 3) * .05, Math.cos(a) * .17], r: [0, -a, Math.sin(a) * .18], c: accC }); } // 鬼影：破布下襬
+    if (ac.includes('satdish')) { ex.push({ g: gBox(.26, .3, .14), t: [0, shY - .22, -.19], c: [.2, .24, .22] }); ex.push({ g: gCyl(.012, .012, .3, 8, 1), t: [.07, shY + .04, -.21], r: [.25, 0, .18], c: [.6, .64, .66] }); ex.push({ g: gSphere(1, 14, 10, 0, TAU, 0, .6), t: [.115, shY + .19, -.25], s: [.095, .055, .095], r: [.5, 0, .18], c: [.84, .87, .9] }); ex.push({ g: gSphere(.016, 6, 5), t: [.115, shY + .17, -.23], c: [1, .4, .3] }); } // 作戰軍官：衛星天線背包
+    if (ac.includes('epaulet')) for (const sg of [-1, 1]) { ex.push({ g: gBox(.1, .026, .11), t: [sg * (O.shX - .02), shY + .015, 0], c: accC }); for (let k = 0; k < 3; k++) ex.push({ g: gSphere(.013, 6, 5), t: [sg * (O.shX - .02), shY + .03, -.03 + k * .03], c: [.95, .84, .36] }); } // 軍官肩章
     if (ac.includes('tail')) for (let k = 0; k < 8; k++) ex.push({ g: gSphere(.032 - k * .0016, 7, 5), t: [0, hipY - .03 + k * .052 + Math.max(0, k - 4) * .035, -.15 - k * .03], c: k > 6 ? [.95, .8, .3] : [.8, .52, .2] });
     if (ac.includes('staff')) { ex.push({ g: gCyl(.02, .02, 1.45, 8, 1), t: [.04, hipY + .46, -.24], r: [0, 0, .55], c: [.95, .72, .12] }); for (const e2 of [-1, 1]) ex.push({ g: gCyl(.03, .03, .13, 8, 1), t: [.04 + e2 * Math.sin(.55) * .72, hipY + .46 + e2 * Math.cos(.55) * .72, -.24], r: [0, 0, .55], c: [.75, .12, .12] }); }
     if (ac.includes('scarf')) ex.push({ g: gCyl(.16, .17, .07, 16, 1, true), t: [0, shY - .0, .0], s: [1.1, 1, 1], c: accC });
@@ -3263,7 +3318,7 @@ function drawAvatar(a, opt) {
   const O = a.av.outfit, d = O.dim, Mr = AV.Mr, T = AV.tmp, M = AV.tmp2, mt = O.meshes, ms = O.mats, C = CHIBI;
   const ph = a.animT || 0, sp = a.sp || 0, red = a.redT > 0 && !R.shadowPass;
   if (red) { const e = .45 + .3 * Math.sin(G.time * 14); for (const m of [ms.torso, ms.head, ms.cloth, ms.hair]) { m.emis = [e, .02, .02]; m.tint = [1, .62, .62, 1]; } }
-  const bob = Math.abs(Math.sin(ph * 2)) * .03 * sp, fall = Math.max(a.fall || 0, a.fdLie || 0), bs = a.miniT > 0 ? .4 : 1, tr = (a.chamT > 0) && !R.shadowPass;
+  const bob = Math.abs(Math.sin(ph * 2)) * .03 * sp, fall = Math.max(a.fall || 0, a.fdLie || 0), bs = a.miniT > 0 ? .4 : 1, tr = (a.chamT > 0 || ((a.lzFade || 0) > 0 && (a.lzFade || 0) < 1)) && !R.shadowPass; // 壁虎淡出中也用半透明
   M4.trs(Mr, a.x, a.y + bob, a.z, -fall * (PI / 2), a.yaw + PI, 0, bs, bs, bs);
   if (tr) for (const m of [ms.torso, ms.head, ms.cloth, ms.hair]) { m._bl = m.blend; m.blend = 1; m.tint = [m.tint[0], m.tint[1], m.tint[2], .38]; }
   const hipN = d.hipY * C.legS, shN = (d.shY - d.hipY) * C.torS, chinN = (d.chinY - d.hipY) * C.torS;
@@ -3393,10 +3448,17 @@ function spawnAll() {
   for (let i = 0; i < n; i++) spawnActor(A[i], [pts[i][0], pts[i][1], yawFor(i)[0], pts[i][2] | 0]);
 }
 /* ---------- 英雄技能 ---------- */
-const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null, 'steal', 'dack', 'nox', 'charge', null, null, 'rel', 'revert', 'gis', null, 'neg', 'quick', 'ange', null, 'peace', null, null, 'ward', null, null, 'frost', 'beacon', 'drum', 'guard', 'vocal', null, null, null, null, 'medi', 'mirror', 'cham', 'lian', 'mini', 'voodoo', 'enigma', 'decoy', null, 'decade', 'soom'];
-const PASSIVE_IDX = [3, 5, 8, 11, 12, 13, 19, 20, 24, 28, 30, 31, 33, 34, 40, 41, 52];
+const SKILL_OF = ['rev', 'shield', 'scr', null, 'cloak', null, 'ink', 'eagle', null, 'lydia', 'mind', null, null, null, null, 'steal', 'dack', 'nox', 'charge', null, null, 'rel', 'revert', 'gis', null, 'neg', 'quick', 'ange', null, 'peace', null, null, 'ward', null, null, 'frost', 'beacon', 'drum', 'guard', 'vocal', null, null, null, null, 'medi', 'mirror', 'cham', 'lian', 'mini', 'voodoo', 'enigma', 'decoy', null, 'decade', 'soom', 'math', null, 'radar', null, null, null];
+const PASSIVE_IDX = [3, 5, 8, 11, 12, 13, 19, 20, 24, 28, 30, 31, 33, 34, 40, 41, 52, 56, 58, 59, 60];
 const GKEY_HEROES = [18, 26]; // 沒有 G 道具格、G 鍵改為技能鍵的英雄
-const HERO_CLASSES = [['先手型', '#ff9a3c', [39, 1, 11, 18, 24, 16, 17, 30, 31, 34, 40, 42, 43, 54]], ['輔助型', '#4fd38a', [29, 26, 27, 32, 33, 35, 36, 37, 38, 41, 44]], ['偽裝型', '#b48cff', [25, 21, 4, 22, 45, 46, 47, 48, 50, 51]], ['突進型', '#ff5a5a', [9, 19, 8, 52]], ['把戲型', '#ffd24a', [0, 2, 6, 10, 15, 20, 49, 53]], ['進攻型', '#4fb0ff', [7, 23, 12, 5, 3, 13, 28]]]; // 英雄分類
+const HERO_CLASSES = [['先手型', '#ff9a3c', [39, 1, 11, 18, 24, 16, 17, 30, 31, 34, 40, 42, 43, 54, 56]], ['輔助型', '#4fd38a', [29, 26, 27, 32, 33, 35, 36, 37, 38, 41, 44, 57, 60]], ['偽裝型', '#b48cff', [25, 21, 4, 22, 45, 46, 47, 48, 50, 51, 58]], ['突進型', '#ff5a5a', [9, 19, 8, 52, 59]], ['把戲型', '#ffd24a', [0, 2, 6, 10, 15, 20, 49, 53, 55]], ['進攻型', '#4fb0ff', [7, 23, 12, 5, 3, 13, 28]]]; // 英雄分類
+// 選角畫面「依主動 / 被動區分」：各自再依 S → A → B → C 由上往下排
+function HERO_ACT() {
+  const rank = i => HERO_TIERS.findIndex(t => t[2].includes(i)), ord = l => l.slice().sort((x, y) => (rank(x) < 0 ? 9 : rank(x)) - (rank(y) < 0 ? 9 : rank(y)));
+  const act = [], pas = [];
+  for (let i = 0; i < OUTFITS.length; i++) { if (OUTFITS[i].hidden) continue; (SKILL_OF[i] && !PASSIVE_IDX.includes(i) ? act : pas).push(i); }
+  return [['主動技能', '#ff9a3c', ord(act)], ['被動技能', '#4fd38a', ord(pas)]];
+}
 const HERO_TIERS = [['S 級', '#ff4d6d', [15, 39, 53]], ['A 級', '#ffb020', [18, 17, 4, 21, 0, 6, 10, 7, 23, 28, 42, 43, 51]], ['B 級', '#4fb0ff', [16, 29, 26, 27, 32, 35, 36, 25, 9, 19, 8, 2, 12, 13, 40, 41, 47, 48, 49, 54]], ['C 級', '#9aa3b2', [1, 11, 24, 30, 31, 34, 33, 37, 38, 22, 20, 5, 3, 44, 45, 46, 50, 52]]]; // 英雄等級
 const CHANT = { soom: 1, cham: 1, revert: .5, gis: 1, neg: 1.5 }; // 吟唱秒數
 const isOut = (a, i) => skOn() && a.av && (a.av.outfitIdx === i || a.passIdx === i); // 對應 OUTFITS：蘇蘇／艾迪／艾伯特／蘇米(被動)／艾瑞克／麥克(被動)
@@ -3405,7 +3467,7 @@ const frozenAll = () => !!(G.sk && G.sk.frz && G.sk.frz.t > 0); // 暫時的休�
 const isSumi = a => isOut(a, 3);
 const jumpMul = a => isSumi(a) ? 1.285 : 1; // 高度 1.65 倍 → 初速 √1.65 倍
 const speedMul = a => isOut(a, 5) ? 2.5 : isOut(a, 13) ? .7 : isOut(a, 52) ? 1.5 : 1;
-const SKILLS = { decade: { name: '假面變身', cd: 30, ico: '🎭' }, soom: { name: '無影瞬蹤', cd: 8, ico: '🌀' }, medi: { name: '暫時的休止符', cd: 15, ico: '🕊️' }, mirror: { name: '鏡像混亂', cd: 15, ico: '🪞' }, cham: { name: '半透明視線', cd: 15, ico: '🦎' }, lian: { name: '死胡同', cd: 20, ico: '⚰️' }, mini: { name: '超級縮小', cd: 20, ico: '🔬' }, voodoo: { name: '巫毒反殺', cd: 20, ico: '🪆' }, enigma: { name: '亂碼術', cd: 18, ico: '❓' }, decoy: { name: '影子突進', cd: 10, ico: '👥' }, vocal: { name: '聲波咒術', cd: 6, ico: '🎤' }, ward: { name: '警戒結界', cd: 20, ico: '☯️' }, frost: { name: '冰封領域', cd: 20, ico: '❄️' }, beacon: { name: '通天視野', cd: 15, ico: '🔴' }, drum: { name: '戰鼓鼓舞', cd: 15, ico: '🥁' }, guard: { name: '替身契約', cd: 15, ico: '🤝' }, revert: { name: '逆流術士', cd: 0, ico: '⏪' }, gis: { name: '連號甜心', cd: 15, ico: '💖' }, neg: { name: '負領域展開', cd: 10, ico: '🎞️' }, quick: { name: '瞬影瞬行', cd: .5, ico: '🏃🏻‍♂️‍➡️' }, ange: { name: '天使之息', cd: 3, ico: '🧚🏻‍♀️' }, peace: { name: '停戰宣告', cd: 10, ico: '🕊️' }, rel: { name: '相對論', cd: 30, ico: '🔀' }, charge: { name: '衝鋒陷陣', cd: 10, ico: '🏃🏻' }, steal: { name: '命運拷貝', cd: 1, ico: '🔮' }, dack: { name: '生化操作', cd: 15, ico: '🧪' }, nox: { name: '夜間戰術', cd: 30, ico: '🌑' }, ink: { name: '烏賊戲法', cd: 25, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 15, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 8, ico: '🐱' }, mind: { name: '心靈控制', cd: 12, ico: '🌀' }, cloak: { name: '幻影易容', cd: 25, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 20, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 15, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 25, ico: '⚡' } };
+const SKILLS = { decade: { name: '假面變身', cd: 30, ico: '🎭' }, math: { name: '精算師', cd: 15, t: 20, ico: '🧮' }, radar: { name: '紅野掃視', cd: 10, t: 8, ico: '📡' }, soom: { name: '無影瞬蹤', cd: 8, ico: '🌀' }, medi: { name: '暫時的休止符', cd: 15, ico: '🕊️' }, mirror: { name: '鏡像混亂', cd: 15, ico: '🪞' }, cham: { name: '半透明視線', cd: 15, ico: '🦎' }, lian: { name: '死胡同', cd: 20, ico: '⚰️' }, mini: { name: '超級縮小', cd: 20, ico: '🔬' }, voodoo: { name: '巫毒反殺', cd: 20, ico: '🪆' }, enigma: { name: '亂碼術', cd: 18, ico: '❓' }, decoy: { name: '影子突進', cd: 10, ico: '👥' }, vocal: { name: '聲波咒術', cd: 6, ico: '🎤' }, ward: { name: '警戒結界', cd: 20, ico: '☯️' }, frost: { name: '冰封領域', cd: 20, ico: '❄️' }, beacon: { name: '通天視野', cd: 15, ico: '🔴' }, drum: { name: '戰鼓鼓舞', cd: 15, ico: '🥁' }, guard: { name: '替身契約', cd: 15, ico: '🤝' }, revert: { name: '逆流術士', cd: 0, ico: '⏪' }, gis: { name: '連號甜心', cd: 15, ico: '💖' }, neg: { name: '負領域展開', cd: 10, ico: '🎞️' }, quick: { name: '瞬影瞬行', cd: .5, ico: '🏃🏻‍♂️‍➡️' }, ange: { name: '天使之息', cd: 3, ico: '🧚🏻‍♀️' }, peace: { name: '停戰宣告', cd: 10, ico: '🕊️' }, rel: { name: '相對論', cd: 30, ico: '🔀' }, charge: { name: '衝鋒陷陣', cd: 10, ico: '🏃🏻' }, steal: { name: '命運拷貝', cd: 1, ico: '🔮' }, dack: { name: '生化操作', cd: 15, ico: '🧪' }, nox: { name: '夜間戰術', cd: 30, ico: '🌑' }, ink: { name: '烏賊戲法', cd: 25, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 15, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 8, ico: '🐱' }, mind: { name: '心靈控制', cd: 12, ico: '🌀' }, cloak: { name: '幻影易容', cd: 25, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 20, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 15, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 25, ico: '⚡' } };
 const DACK_T = 21; // 濃霧：1 秒戴鏡 + 20 秒噴發
 const immune = a => a.alive && ((isOut(a, 11) && (a.cleanW || 0) > 0) || (a.imm || 0) > 0); // 蕾西亞淨化窗口：無效化一切攻擊與技能
 const REL_WARN = 2, REL_DUR = 20; // 相對論：2 秒警笛 + 20 秒左右互換
@@ -3414,9 +3476,10 @@ const relMirror = (a, wx, wz) => { const rx = Math.cos(a.yaw), rz = -Math.sin(a.
 const SCR_FLASH = 0, SCR_TOTAL = 5.0; // 預警閃光 3 秒（4 次短閃 + 1.8 秒長閃）+ 錯亂 5 秒
 const skillOf = a => SKILL_OF[a.av.outfitIdx] ? SKILLS[SKILL_OF[a.av.outfitIdx]] : null;
 const revActive = a => G.sk && G.sk.rev.t > 0 && G.sk.rev.by !== a && a.clrRev !== G.sk.rev.id;
-const inkActive = a => G.sk && G.sk.ink.t > 0 && G.sk.ink.by !== a && a.clrInk !== G.sk.ink.id;
+const visImmune = a => !!(a && a.rdT > 0); // 紅野掃視：免疫一切視線干擾
+const inkActive = a => G.sk && G.sk.ink.t > 0 && G.sk.ink.by !== a && a.clrInk !== G.sk.ink.id && !visImmune(a);
 const scrPhase2 = a => G.sk && G.sk.scr.t >= SCR_FLASH && G.sk.scr.by !== a && a.clrScr !== G.sk.scr.id;
-function skReset() { G.sk = { night: { e: 0, by: null }, quake: { t: 0, by: null }, rev: { t: 0, by: null, id: 0 }, scr: { t: -1, by: null, id: 0 }, ink: { t: 0, by: null, id: 0 }, eagle: { t: 0, by: null }, rel: { t: -1, by: null, id: 0 }, neg: { t: -1, by: null }, ban: { t: 0, by: null }, frz: { t: 0, by: null }, gis: { t: 0, by: null }, beacon: { t: 0, by: null }, guard: { t: 0, by: null } }; G.skId = 0; G.zones = []; for (const a of G.actors) { a.amInit = 0; a.amT = 0; a.amulet = false; a.gdInv = false; a.gdFade = 0; a.mkT = 0; a.mkD = 0; a.skCd = 0; a.shieldT = 0; a.say = null; a.cloak = false; a.invis = false; a.dackE = -1; a.armed = false; a.stolen = null; a.passIdx = -1; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2; a.cleanW = 0; a.binAt = -99; a.chg = null; a.wkT = 0; a.wkPre = 0; a.frz = 0; a.imm = 0; a.chant = null; a.windowT = 0; a.fk = null; a.realNum = undefined; a.revert = null; a.wdT = 0; a.wd = false; a.drumT = 0; a.stillT = 0; a.gdSmall = false; a.amulet = false; a.amT = 0; a.freeEn = 0; a.slowM = 1; a.spdM = 1; a.icy = false; a.wdHit = false; a.clrRev = a.clrScr = a.clrInk = a.clrRel = -1; } }
+function skReset() { G.sk = { night: { e: 0, by: null }, quake: { t: 0, by: null }, rev: { t: 0, by: null, id: 0 }, scr: { t: -1, by: null, id: 0 }, ink: { t: 0, by: null, id: 0 }, eagle: { t: 0, by: null }, rel: { t: -1, by: null, id: 0 }, neg: { t: -1, by: null }, ban: { t: 0, by: null }, frz: { t: 0, by: null }, math: { t: 0, by: null }, gis: { t: 0, by: null }, beacon: { t: 0, by: null }, guard: { t: 0, by: null } }; G.skId = 0; G.zones = []; giveFelixCam(); for (const a of G.actors) { a.amInit = 0; a.amT = 0; a.amulet = false; a.gdInv = false; a.gdFade = 0; a.mkT = 0; a.mkD = 0; a.skCd = 0; a.shieldT = 0; a.say = null; a.cloak = false; a.invis = false; a.dackE = -1; a.armed = false; a.stolen = null; a.passIdx = -1; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2; a.cleanW = 0; a.binAt = -99; a.chg = null; a.wkT = 0; a.wkPre = 0; a.frz = 0; a.imm = 0; a.chant = null; a.windowT = 0; a.fk = null; a.realNum = undefined; a.revert = null; a.wdT = 0; a.wd = false; a.drumT = 0; a.stillT = 0; a.gdSmall = false; a.amulet = false; a.amT = 0; a.freeEn = 0; a.slowM = 1; a.spdM = 1; a.icy = false; a.wdHit = false; a.clrRev = a.clrScr = a.clrInk = a.clrRel = -1; } }
 function cleanse(a, quiet) { a.blind = 0; a.ctrlT = 0; a.redT = 0; a.clrRev = G.sk.rev.id; a.clrScr = G.sk.scr.id; a.clrInk = G.sk.ink.id; a.clrRel = G.sk.rel.id; if (quiet) { if (a.isPlayer) { G.flashT = 0; G.freezeT = 0; G.lock = 0; } return; } a.cleanFx = .7; if (a.isPlayer) { G.flashT = 0; G.freezeT = 0; G.lock = 0; UI.cleanse(); } }
 function ericHit(p, code) { // 艾瑞克的偽裝號碼被輸入：立即冷卻；若輸入者輸的是自己頭上的號碼則淘汰（不計擊殺／積分）
   const e = G.actors.find(o => o.alive && o !== p && o.fake === code && o.fakeOf); if (!e) return false;
@@ -3493,13 +3556,18 @@ function endAllSkills() {
   K.beacon.t = 0; K.guard.t = 0; G.zones = [];
 }
 function killByCode(att, code, only) { // 輸入一組號碼，可同時擊殺所有顯示同號的敵方（連號甜心）
-  const ts = only || G.actors.filter(o => o !== att && o.alive && o.number && o.number === code && enemyOf(att, o) && o.protect <= 0), ks = G.killSeq || 0;
+  const ts = only || G.actors.filter(o => o !== att && o.alive && o.number && hitsCode(o, code) && enemyOf(att, o) && o.protect <= 0), ks = G.killSeq || 0;
   for (const o of ts) eliminate(att, o); const nk = (G.killSeq || 0) - ks; if (nk > 0) kenBonus(att, code); return nk + (only ? 0 : killClones(att, code));
 }
 /* ===== 肯尼系列：序列奇蹟／梅開二度／梅開三度 ===== */
 const WRONG_STUN = 1.5; // 輸入錯誤的定身秒數
 const kenKind = a => !a || !a.av ? null : isOut(a, 40) ? 'asc' : isOut(a, 41) ? 'desc' : isOut(a, 42) ? 'two' : isOut(a, 43) ? 'three' : null;
-const inLen = p => { const k = kenKind(p); return k === 'two' ? 2 : k === 'three' ? 3 : (G.codeLen || 0); }; // 該玩家的輸入欄位數（0＝大亂鬥不定長）
+const mathOn = () => !!(G.sk && G.sk.math && G.sk.math.t > 0); // 精算師是否生效
+const sum2 = n => String([...String(n || '')].reduce((t, c) => t + (+c || 0), 0)).padStart(2, '0'); // 號碼各位數加總，補成兩位數
+const shownNum = o => o.fake || o.enShow || o.number; // 對方頭上「看得到」的號碼
+const atkCode = o => mathOn() ? sum2(shownNum(o)) : shownNum(o); // 現在要打倒這個人該輸入什麼
+const hitsCode = (o, code) => !!o.number && (mathOn() ? sum2(o.number) === code : o.number === code); // 這組輸入能否命中他
+const inLen = p => { if (mathOn()) return 2; const k = kenKind(p); return k === 'two' ? 2 : k === 'three' ? 3 : (G.codeLen || 0); }; // 該玩家的輸入欄位數（0＝大亂鬥不定長）
 const digSort = (n, dir) => { const a = String(n).split('').sort(); if (dir === 'desc') a.reverse(); return a.join(''); };
 const subSeq = (c, n) => { let j = 0; for (const ch of n) if (j < c.length && ch === c[j]) j++; return j === c.length; };
 const subBag = (c, n) => { const m = {}; for (const ch of n) m[ch] = (m[ch] || 0) + 1; for (const ch of c) { if (!m[ch]) return false; m[ch]--; } return true; };
@@ -3535,7 +3603,7 @@ function pokerTrap(a, code) { // 輸入了「賭一把撲克」的假號碼：�
 }
 function pokerCast(a) {
   const en = G.actors.filter(o => o !== a && o.alive && o.number && enemyOf(a, o)); let num; a.pkFake = null;
-  if (en.length && Math.random() < .5) num = pick(en).number; // 取真實號碼（不受偽裝／變造影響）
+  if (en.length && Math.random() < .35) num = pick(en).number; // 取真實號碼（不受偽裝／變造影響）
   else { const L = G.codeLen || randi(3, 6); do { num = String(randi(Math.pow(10, L - 1), Math.pow(10, L) - 1)); } while (G.actors.some(o => o.number === num || o.fake === num)); a.pkFake = { num, t: G.time + 25 }; }
   if (a.isPlayer) { UI.poker(num); G.pkCode = num; } else if (a.remote) a.ntf = { id: (a.ntf ? a.ntf.id : 0) + 1, t: '#PK' + num, s: 0 };
 }
@@ -3564,7 +3632,7 @@ function kenSubmit(a, code) { // 肯尼系列的輸入判定（本機／主機�
   if (!hit.length) { const al = mine.filter(o => digSort(o.number, kd) === code); if (al.length) hit = [near(al)]; }
   if (!hit.length && cloneOf(a, code, true)) { killClones(a, code); return; }
   if (hit.length) { const ok = hit.filter(o => o.protect <= 0); if (!ok.length) { notify(a, '無法擊殺', '對方仍在重生保護中，這次輸入沒有生效。', 0); return; } killByCode(a, code, ok); return; }
-  if (G.actors.some(o => o !== a && o.alive && o.number === code && !enemyOf(a, o))) { notify(a, '友軍號碼', '這是隊友的號碼，沒有造成任何影響。', 0); return; }
+  if (G.actors.some(o => o !== a && o.alive && hitsCode(o, code) && !enemyOf(a, o))) { notify(a, '友軍號碼', '這是隊友的號碼，沒有造成任何影響。', 0); return; }
   const fh = G.actors.find(o => o !== a && o.alive && (o.fake === code || o.enShow === code));
   if (fh) { notify(a, '偽裝號碼 · 免受懲罰', '你輸入的是 ' + fh.name + ' 頭上「偽裝或變造後的號碼」，並非他真正的號碼，所以沒有擊殺成功。因【序列奇蹟】的規則，這次輸入不會受到任何懲罰。', 0); return; }
   if (isOut(a, 24)) { notify(a, '藐視罰則', '輸錯號碼，不受懲罰。', 0); return; }
@@ -3596,6 +3664,38 @@ function fxAnim(dt) {
   for (const a of G.actors) { const tg = (a.fdT > 0 || a.fd) ? 1 : 0, v = a.fdLie || 0; a.fdLie = v + clamp(tg - v, -dt * 3, dt * 3); }
   for (const c of G.clones) c.animT += dt * (5 + c.sp * 9) * (c.sp ? 1 : 0);
 }
+function simpleTick(a, dt) { // 概算師：記住 20 秒內出現在正面、且離自己最近的敵方英雄
+  if ((a.spCd || 0) > 0) a.spCd -= dt;
+  if (!a.isPlayer && !a.remote) { a.spT = 0; a.spTgt = null; return; } // 只有真人玩家需要鎖定目標（視線判定很花效能）
+  if ((a.spBuff || 0) > 0) a.spBuff -= dt;
+  const f = FWD(a.yaw); let best = null, bd = 1e9;
+  for (const o of G.actors) {
+    if (o === a || !o.alive || !o.number || !enemyOf(a, o) || o.invis || o.protect > 0) continue;
+    const dx = o.x - a.x, dz = o.z - a.z, d = Math.hypot(dx, dz); if (d > 28 || d < .3) continue;
+    if ((dx * f[0] + dz * f[1]) / d < .64) continue; // 必須在正面約 ±50° 內
+    if (!los(a.x, a.y + 1.5, a.z, o.x, o.y + 1.5, o.z)) continue;
+    if (d < bd) { bd = d; best = o; }
+  }
+  if (best) { a.spTgt = best; a.spT = 20; }
+  else if ((a.spT || 0) > 0) { a.spT -= dt; if (a.spT <= 0 || !a.spTgt || !a.spTgt.alive) { a.spT = 0; a.spTgt = null; } }
+}
+const simpleReady = a => !!(a && isOut(a, 56) && (a.spT || 0) > 0 && a.spTgt && a.spTgt.alive && !((a.spCd || 0) > 0) && !(a.frz > 0) && !frozenAll());
+function simpleGuess(a, odd) { // odd=true 按「奇數」
+  if (!simpleReady(a)) return false;
+  const t = a.spTgt, sum = [...String(t.number || '')].reduce((x, c) => x + (+c || 0), 0);
+  if ((sum % 2 === 1) === !!odd) { // 猜中：擊殺並取得 120 秒不耗能
+    eliminate(a, t); a.spBuff = 120; a.spT = 0; a.spTgt = null;
+    if (a.isPlayer) UI.msg('【二分法】命中！總和 ' + sum + '，120 秒內跑步與望遠鏡不耗能量', 'good');
+    Sfx.tone(880, .16, 'triangle', .12, 1320); return true;
+  }
+  // 猜錯：對方立刻換號碼、重新計時，兩顆鍵冷卻 5 秒，既有的不耗能提前結束
+  if (t.realNum !== undefined) t.realNum = undefined; assignNumber(t); for (const o of G.actors) { if (o.read) o.read[t.id] = 0; if (o.typing && o.typing.target === t) o.typing = null; }
+  a.spT = 20; a.spCd = 5; a.spBuff = 0;
+  if (a.isPlayer) UI.msg('【二分法】判斷錯誤：對方已更換號碼，冷卻 5 秒', 'bad');
+  if (t.isPlayer) UI.msg('有人對你使用了【二分法】，你的號碼已更換', 'item');
+  Sfx.tone(180, .2, 'square', .1, 110); return false;
+}
+const radarLit = a => G.actors.some(o => o !== a && o.alive && (o.rdT || 0) > 0 && enemyOf(o, a) && Math.hypot(o.x - a.x, o.z - a.z) <= 5); // 5 公尺內有敵方雷達
 const cloneOf = (att, code, enemy) => G.clones.some(c => c.alive && c.number === code && c.owner !== att && ((isDM() || c.owner.team !== att.team) === enemy));
 function killClone(att, c) { c.alive = false; puffFx(c); const m = att.name + ' 擊毀了 ' + c.owner.name + ' 的分身'; netMsg(m, 'item'); if (att.isPlayer) { Sfx.kill(); UI.msg(m, 'good'); } else UI.msg(m, 'item'); }
 function killClones(att, code) { let n = 0; for (const c of G.clones) if (c.alive && c.number === code && c.owner !== att && (isDM() || c.owner.team !== att.team)) { killClone(att, c); n++; } return n; }
@@ -3681,6 +3781,13 @@ function runSkill(a, k, useCd) {
   if (CHANT[k]) { a.chant = { k, t: CHANT[k] }; skMsg(a, '開始吟唱【' + SKILLS[k].name + '】…'); (a.kp || (a.kp = {})).R = G.time + .5; if (a.isPlayer || a === G.view) Sfx.skill(); return true; }
   if (k === 'rev') { G.sk.rev = { t: 7, by: a, id: ++G.skId }; skMsg(a, '發動【顛倒乾坤】！其他人的移動方向反轉 7 秒'); }
   else if (k === 'scr') { G.sk.scr = { t: 0, by: a, id: ++G.skId }; skMsg(a, '發動【紫電干擾】！其他人的數字鍵錯亂 5 秒'); }
+  else if (k === 'math') { // 精算師：全場改以「數字總和」擊殺，輸入欄縮成兩位數
+    G.sk.math = { t: SKILLS.math.t, by: a };
+    for (const o of G.actors) { o.typing = null; o.read = {}; }
+    if (G.player) { G.typed = ''; UI.dirty = true; }
+    skMsg(a, '發動【精算師】！20 秒內全場改成「輸入對方號碼的總和」（兩位數）');
+  }
+  else if (k === 'radar') { a.rdT = SKILLS.radar.t; a.blind = 0; a.inkT = 0; skMsg(a, '發動【紅野掃視】！5 公尺內的隱形敵人現形，8 秒內免疫視線干擾'); }
   else if (k === 'ink') { G.sk.ink = { t: 3, by: a, id: ++G.skId }; for (const o of G.actors) if (o !== a && o.alive && !o.isPlayer && !o.remote && !immune(o)) { o.blind = Math.max(o.blind, 3); o.typing = null; } skMsg(a, '發動【烏賊戲法】！其他人的視野被墨汁遮住'); }
   else if (k === 'eagle') { G.sk.eagle = { t: 7, by: a }; skMsg(a, '發動【靶靶命中】！所有號碼牌轉向放大'); }
   else if (k === 'lydia') { puffFx(a); a.cloak = true; a.cloakE = 0; if (a.isPlayer) UI.msg('隱身 5 秒（擊殺可延長，輸錯號碼會現形）', 'item'); }
@@ -3758,13 +3865,28 @@ function skTick(dt) {
     { const vy = a.remote ? (a.y - (a._py ?? a.y)) / Math.max(dt, .001) : a.vy; a._py = a.y; if (a._og && !og) { a.rayJ = vy > 2.2; a.airT = 0; } if (a.rayJ) { if (og && a.airT > .06) a.rayJ = false; else a.airT = (a.airT || 0) + dt; } a._og = og; }
     if (a.cloak) { a.cloakE += dt; if (a.cloakE >= 5 || !a.alive) a.cloak = false; }
     const ray = isOut(a, 8) && a.rayJ, ly = a.cloak && !(a.cloakE >= 1.5 && (a.cloakE % 1.5) < .1);
-    a.invis = a.alive && (ray || ly || a.wkT > 0 || a.gdInv || (a.mkT || 0) > 0);
+    if ((a.rdT || 0) > 0) { a.rdT -= dt; a.blind = 0; if (a.rdT < 0) a.rdT = 0; }
+    a.lizard = isOut(a, 58); a.noclip = isOut(a, 59);
+    if (a.lizard) { // 壁虎：貼牆 0.5 秒後淡出隱形（0.3 秒）；只有真人玩家能沿牆攀爬，電腦玩家維持一般移動
+      const touch = a.alive && G.time - (a.wallT || 0) < .15;
+      if (a.isPlayer || a.remote) { if (touch && !a.onWall) { a.onWall = true; } if (a.onWall && !touch) a.onWall = false; }
+      if (touch) { a.lzCling = (a.lzCling || 0) + dt; a.lzFade = clamp((a.lzCling - .5) / .3, 0, 1); }
+      else { a.lzCling = 0; a.lzFade = Math.max(0, (a.lzFade || 0) - dt / .3); }
+      a.lzInv = a.lzFade >= 1;
+    } else { a.onWall = false; a.lzFade = 0; a.lzInv = false; }
+    if (isOut(a, 56)) simpleTick(a, dt); else { a.spT = 0; a.spTgt = null; a.spBuff = 0; a.spCd = 0; }
+    a.runFree = isOut(a, 60) && G.actors.some(o => o !== a && o.alive && enemyOf(a, o) && Math.hypot(o.x - a.x, o.z - a.z) <= 10); // 作戰軍官：10 公尺內有敵人就不耗跑步能量
+    a.invis = a.alive && (ray || ly || a.wkT > 0 || a.gdInv || (a.mkT || 0) > 0 || a.lzInv) && !radarLit(a); // 被無人機照到就現形
   }
   for (const a of G.actors) { if (a.fake) { a.fakeT -= dt; if (a.fakeT <= 0 || !a.alive || (a.fakeOf && (!a.fakeOf.alive || a.fakeOf.number !== a.fake))) uncloak(a, a.alive && !!a.fakeOf); } if (!a.wdHit) a.skCd = Math.max(0, (a.skCd || 0) - dt); a.shieldT = Math.max(0, (a.shieldT || 0) - dt); if (a.say) { a.say.t -= dt; if (a.say.t <= 0) a.say = null; } }
   if (G.sk.rel.t >= 0) { G.sk.rel.t += dt; if (G.sk.rel.t >= REL_WARN + REL_DUR) G.sk.rel.t = -1; }
   for (const z of G.zones) if (z.k === 'peace' && z.by) { if (z.by.alive) { z.x = z.by.x; z.z = z.by.z; } else z.t = 0; }
   for (let i = G.zones.length - 1; i >= 0; i--) { G.zones[i].t -= dt; if (G.zones[i].t <= 0) G.zones.splice(i, 1); } if (G.sk.beacon.t > 0) G.sk.beacon.t -= dt; if (G.sk.guard.t > 0) G.sk.guard.t -= dt;
   if (G.sk.neg.t >= 0) { G.sk.neg.t -= dt; if (G.sk.neg.t <= 0) G.sk.neg.t = -1; } if (G.sk.ban.t > 0) G.sk.ban.t -= dt;
+  if (G.sk.math.t > 0) { // 精算師：倒數結束時把大家的輸入清掉，避免兩位數殘留
+    G.sk.math.t -= dt;
+    if (G.sk.math.t <= 0) { G.sk.math.t = 0; for (const o of G.actors) { o.typing = null; o.read = {}; } if (G.player) { G.typed = ''; UI.dirty = true; } UI.msg('【精算師】結束，擊殺方式恢復正常', 'item'); }
+  }
   if (G.sk.frz.t > 0) { // 暫時的休止符：全場停滯（含滯空）
     G.sk.frz.t -= dt;
     for (const o of G.actors) { o.frz = Math.max(o.frz || 0, .12); o.vx = 0; o.vz = 0; o.vy = 0; }
@@ -3788,6 +3910,7 @@ function enemyOf(a, o) { return o !== a && o.alive && (isDM() || o.team !== a.te
 
 /* ---------- 物理 ---------- */
 function collideH(a) {
+  if (a.noclip) { const bb = World.bounds; if (bb) { a.x = clamp(a.x, bb.x0 + .5, bb.x1 - .5); a.z = clamp(a.z, bb.z0 + .5, bb.z1 - .5); } return; } // 鬼影：穿過所有障礙物，只被場地外牆擋住
   const B = World.boxes, r = RAD;
   for (let i = 0; i < B.length; i++) {
     const b = B[i];
@@ -3797,12 +3920,13 @@ function collideH(a) {
     if (dx === 0 && dz === 0) {
       const l = a.x - b.x0, rr = b.x1 - a.x, t = a.z - b.z0, bt = b.z1 - a.z, m = Math.min(l, rr, t, bt);
       if (m === l) a.x = b.x0 - r; else if (m === rr) a.x = b.x1 + r; else if (m === t) a.z = b.z0 - r; else a.z = b.z1 + r;
-    } else if (d2 < r * r) { const d = Math.sqrt(d2), p = (r - d) / d; a.x += dx * p; a.z += dz * p; }
+      if (a.lizard) { a.wallN = [m === l ? -1 : m === rr ? 1 : 0, m === t ? -1 : m === bt ? 1 : 0]; a.wallT = G.time; }
+    } else if (d2 < r * r) { const d = Math.sqrt(d2) || 1e-4, p = (r - d) / d; a.x += dx * p; a.z += dz * p; if (a.lizard) { a.wallN = [dx / d, dz / d]; a.wallT = G.time; } } // 壁虎：記下貼到的牆面
   }
 }
-function groundAt(x, z, y, rr) {
+function groundAt(x, z, y, rr, noBox) {
   let g = 0; const B = World.boxes, r = rr === undefined ? RAD * .75 : rr;
-  for (let i = 0; i < B.length; i++) { const b = B[i]; if (b.nc || b.y1 > y + STEP + 1e-4 || b.y1 <= g) continue; if (x + r > b.x0 && x - r < b.x1 && z + r > b.z0 && z - r < b.z1) g = b.y1; }
+  if (!noBox) for (let i = 0; i < B.length; i++) { const b = B[i]; if (b.nc || b.y1 > y + STEP + 1e-4 || b.y1 <= g) continue; if (x + r > b.x0 && x - r < b.x1 && z + r > b.z0 && z - r < b.z1) g = b.y1; }
   const RP = World.ramps;
   for (let i = 0; i < RP.length; i++) { const q = RP[i]; if (x + r > q.x0 && x - r < q.x1 && z + r > q.z0 && z - r < q.z1) { const h = q.h(clamp(x, q.x0, q.x1), clamp(z, q.z0, q.z1)); if (h <= y + STEP + 1e-4 && h > g) g = h; } }
   return g;
@@ -3811,11 +3935,11 @@ function moveActor(a, dt) {
   const mm = a.spdM || 1, dx = a.vx * dt * mm, dz = a.vz * dt * mm, n = Math.max(1, Math.ceil(Math.max(Math.abs(dx), Math.abs(dz)) / .1));
   for (let i = 0; i < n; i++) {
     a.x += dx / n; collideH(a); a.z += dz / n; collideH(a);
-    const g0 = groundAt(a.x, a.z, a.y); if (g0 > a.y && g0 - a.y <= STEP + .001) a.y = g0;
+    const g0 = groundAt(a.x, a.z, a.y, undefined, a.noclip); if (g0 > a.y && g0 - a.y <= STEP + .001) a.y = g0;
   }
-  if (frozenAll()) { a.vy = 0; } else { a.vy -= GRAV * ((World.cur && World.cur.gravK) || 1) * dt; a.y += a.vy * dt; }
-  const g = groundAt(a.x, a.z, a.y); a.gy = g;
-  if (a.y <= g + .001) { a.y = g; a.vy = 0; a.onGround = true; } else a.onGround = false;
+  if (frozenAll() || a.onWall) { a.vy = 0; } else { a.vy -= GRAV * ((World.cur && World.cur.gravK) || 1) * dt; a.y += a.vy * dt; } // 壁虎貼牆時不受重力
+  const g = groundAt(a.x, a.z, a.y, undefined, a.noclip); a.gy = g;
+  if (a.y <= g + .001 && !a.onWall) { a.y = g; a.vy = 0; a.onGround = true; } else a.onGround = false;
   if (a.onGround && World.ramps.length) { const rp = World.rampAt(a.x, a.z, a.y, .12); if (rp && rp.belt) { a.x += rp.dir[0] * rp.belt * dt; a.z += rp.dir[1] * rp.belt * dt; collideH(a); } }
 }
 /* ---------- 視線 ---------- */
@@ -3886,14 +4010,17 @@ function updateGrenades(dt) {
 function randomItem() { const r = Math.random(); return r < .27 ? 'cam' : r < .45 ? 'quake' : r < .63 ? 'scope' : r < .77 ? 'fake' : r < .89 ? 'spring' : 'poker'; }
 function giveItem(i, type) { G.slots[i] = { type, n: type === 'cam' ? 4 : 1 }; }
 function grantItem(sl, force, noPoker) {
-  let ty = force || randomItem(); if (noPoker && ty === 'poker') ty = 'spring'; const i0 = sl.findIndex(x => x && x.type === ty);
-  if (i0 >= 0) { sl[i0].n = Math.min(ty === 'cam' ? 9 : ty === 'poker' ? 2 : 3, sl[i0].n + (ty === 'cam' ? 3 : 1)); return { i: i0, ty }; }
-  const free = !sl[0] ? 0 : (!sl[1] && !sl.noG) ? 1 : -1; if (free < 0) return null; // 道具欄已滿：不更換
-  sl[free] = { type: ty, n: ty === 'cam' ? 4 : 1 }; return { i: free, ty };
+  // 規則：一次只拿到一個、道具欄滿了就不再獲得（要先用掉）、而且不會跟上一個拿到的相同
+  const free = (!sl[0] && !sl.fix0) ? 0 : (!sl[1] && !sl.noG) ? 1 : -1; if (free < 0) return null;
+  const held = sl.filter(x => x).map(x => x.type), pick2 = () => { let t = randomItem(); if (noPoker && t === 'poker') t = 'spring'; return t; };
+  let ty = force || pick2();
+  if (!force) for (let g = 0; g < 24 && (ty === sl.last || held.includes(ty)); g++) ty = pick2();
+  sl[free] = { type: ty, n: 1 }; sl.last = ty; return { i: free, ty };
 }
 function tryPickup(a) {
   for (const p of G.pickups) {
     if (!p.on) continue; if (Math.abs(p.x - a.x) > 1.5 || Math.abs(p.z - a.z) > 1.5 || Math.abs(p.y - a.y) > 2.2) continue;
+    if (isOut(a, 56)) continue; // 概算師不會撿取任何道具
     if (a.isPlayer) { if (G.netClient) continue; const r = grantItem(G.slots, isOut(a, 12) && (a.remote ? a.sp > .85 : a.sprinting) ? 'scope' : null); if (!r) continue; Sfx.pick(); UI.msg('獲得 ' + ITEMS[r.ty].name + (G.slots[r.i].n > 1 ? ' ×' + G.slots[r.i].n : ''), 'item'); UI.dirty = true; }
     else if (a.slots) { if (!grantItem(a.slots, isOut(a, 12) && (a.remote ? a.sp > .85 : a.sprinting) ? 'scope' : null, !a.remote)) continue; }
     else continue;
@@ -3934,7 +4061,7 @@ function useItem(i) {
   else if (it.type === 'scope') { if (!G.scopeOn) { G.scopeOn = true; G.itemCd = .3; Sfx.tone(700, .1, 'sine', .1, 200); UI.dirty = true; return; } G.scopeOn = false; G.photoReq = true; G.fp.camT = .55; Sfx.shutter(); UI.flashWhite(.35); G.itemCd = 1.0; }
   else { Sfx.pick(); if (G.netClient) { if (it.type === 'spring') p.skCd = 0; } else applyItem(p, it.type); G.itemCd = .6; }
   if (G.netClient) netAct(['u', i]);
-  it.n--; if (it.n <= 0) G.slots[i] = null; UI.dirty = true;
+  if (!it.fixed) { it.n--; if (it.n <= 0) G.slots[i] = null; } UI.dirty = true;
 }
 function botItems(b, dt, threat) {
   if (!b.slots || b.cd > 0 || b.blind > 0) return; const has = t => b.slots.findIndex(x => x && x.type === t); let i;
@@ -4057,7 +4184,7 @@ function submitNumber() {
   const code = G.typed; if (G.netClient && kenKind(p)) { netAct(['kn', code]); G.typed = ''; UI.dirty = true; return; }
   if (!G.netClient && (pokerTrap(p, code) || ericHit(p, code))) { G.typed = ''; UI.dirty = true; return; }
   if (!G.netClient && kenKind(p)) { G.typed = ''; UI.dirty = true; kenSubmit(p, code); return; }
-  const ts = G.actors.filter(a => a.alive && a.number === code && a !== p && a.number !== ''), en = ts.filter(a => isDM() || a.team !== p.team), t = ts[0];
+  const ts = G.actors.filter(a => a.alive && a.number !== '' && hitsCode(a, code) && a !== p), en = ts.filter(a => isDM() || a.team !== p.team), t = ts[0];
   if (en.length) {
     if (en.every(a => a.protect > 0)) { UI.msg('對方有重生保護', 'bad'); G.typed = ''; UI.dirty = true; return; }
     if (G.netClient) { netAct(['k', G.actors.indexOf(en[0]), code, (p.voiceT !== undefined && G.time - p.voiceT < .6) ? 1 : 0]); G.typed = ''; UI.dirty = true; return; }
@@ -4086,7 +4213,7 @@ function updatePlayer(dt) {
     const moving = ml > .08;
     let spd = 5.85; const wantSprint = In.sprint && my > .2 && moving;
     G.stamDelay -= dt;
-    const bolt = isOut(p, 12) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn; if (wantSprint && (G.stam > .02 || bolt) && !G.bino) { spd = 8.4; if (!bolt) G.stam = Math.max(0, G.stam - dt * .13 / (PRO.on ? 3 : 1)); G.stamDelay = .9; } else if (G.stamDelay <= 0) G.stam = Math.min(1, G.stam + dt * .2);
+    const bolt = isOut(p, 12) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn || p.runFree || (isOut(p, 56) && (p.spBuff || 0) > 0); if (wantSprint && (G.stam > .02 || bolt) && !G.bino) { spd = 8.4; if (!bolt) G.stam = Math.max(0, G.stam - dt * .13 / (PRO.on ? 3 : 1)); G.stamDelay = .9; } else if (G.stamDelay <= 0) G.stam = Math.min(1, G.stam + dt * .2);
     const sprinting = spd > 7; p.sprinting = sprinting; spd *= speedMul(p) * (PRO.on ? 1.2 : 1); if (World.cur && World.cur.space && !p.onGround) spd *= 2; // 外太空：空中水平速度 ×2（滯空時間不變）⇒ 跳躍距離 ×2
     if (G.bino) spd *= .42; if (p.carry) spd *= .93;
     let wx = (f[0] * my + rx * mx) * spd, wz = (f[1] * my + rz * mx) * spd; if (p.ctrlT > 0 && p.ctrlBy && isStunBy(p.ctrlBy)) { wx = wz = 0; p.yaw = faceYaw(p, p.ctrlBy); } else if (p.ctrlT > 0 && p.ctrlBy) { const dx = p.x - p.ctrlBy.x, dz = p.z - p.ctrlBy.z, dd = Math.hypot(dx, dz) || 1; wx = dx / dd * spd * .3; wz = dz / dd * spd * .3; }
@@ -4098,7 +4225,16 @@ function updatePlayer(dt) {
     const jumpGround = () => { p.vy = 7.1 * jumpMul(p) * vk; p.onGround = false; p.jumps = 1; Sfx.tone(420, .08, 'triangle', .08, 260); };
     const jumpAir = () => { const n = p.jumps || 1; p.vy = (isOut(p, 52) ? 7.1 * Math.pow(1.3, n / 2) : 6.9 * jumpMul(p)) * vk; p.jumps = n + 1; p.dashReady = isSumi(p); Sfx.tone(620 + n * 120, .1, 'triangle', .09, 380); };
     if (SP && (p.jumpQ || 0) > 0) { p.jumpQ -= dt; UI.setEv('jl', Math.max(0, p.jumpQ), '🌑'); if (p.jumpQ <= 0) { p.jumpQ = 0; UI.clrEv('jl'); if (p.onGround) jumpGround(); else if ((p.jumps || 0) < maxJ) jumpAir(); } }
-    if (jp) {
+    if (isOut(p, 58) && p.onWall) { // 壁虎：貼牆時用前後鍵上下爬，按跳躍彈離牆面
+      p.vy = 0; const cl = (my > .15 ? 2.8 : my < -.15 ? -2.8 : 0) * dt; if (cl) { p.y = Math.max(p.gy, p.y + cl); }
+      if (p.wallN) { const dn = p.vx * p.wallN[0] + p.vz * p.wallN[1]; if (dn > 0) { p.vx -= p.wallN[0] * dn; p.vz -= p.wallN[1] * dn; } } // 黏在牆上：不會因為往前推而離開牆面
+      if (jp) { p.onWall = false; p.lzCling = 0; p.vy = 3.4; if (p.wallN) { p.vx = p.wallN[0] * 5; p.vz = p.wallN[1] * 5; } Sfx.tone(380, .1, 'triangle', .09, 240); }
+    }
+    else if (isOut(p, 59)) { // 鬼影：不能跳，跳躍鍵改成向前衝刺
+      if ((p.dashCd || 0) > 0) p.dashCd -= dt;
+      if (jp && !(p.dashCd > 0)) { p.dashCd = .85; p.dashT = .19; const fw = ml > .1 ? [f[0] * my + rx * mx, f[1] * my + rz * mx] : f, fl = Math.hypot(fw[0], fw[1]) || 1; p.dashV = [fw[0] / fl * 19, fw[1] / fl * 19]; Sfx.noise(.2, .14, 1800, 0, true); }
+    }
+    else if (jp) {
       if (p.onGround) { if (SP) { if (!(p.jumpQ > 0)) p.jumpQ = .3; } else jumpGround(); }
       else if (isSumi(p) && p.jumps >= 2 && p.dashReady) { p.dashReady = false; p.dashT = .2025; const fw = ml > .1 ? [f[0] * my + rx * mx, f[1] * my + rz * mx] : f, fl = Math.hypot(fw[0], fw[1]) || 1; p.dashV = [fw[0] / fl * 24, fw[1] / fl * 24]; Sfx.noise(.2, .18, 2500, 0, true); Sfx.tone(300, .2, 'sawtooth', .06, 500); }
       else if ((p.jumps || 0) < maxJ) { if (SP) { if (!(p.jumpQ > 0)) p.jumpQ = .3; } else jumpAir(); }
@@ -4112,7 +4248,7 @@ function updatePlayer(dt) {
     p.protect = Math.max(0, p.protect - dt);
     // 望遠鏡能量
     if (G.bino) { p.binAt = G.time; if (G.netClient && isOut(p, 13) && G.time - (p._bsent ?? -9) > 1) { p._bsent = G.time; netAct(['b']); } }
-    if (G.bino && (isOut(p, 13) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn)) G.energy = 1; else if (G.bino) { G.energy -= dt * .22 / (PRO.on ? 3 : 1); if (G.energy <= 0) { G.energy = 0; G.bino = false; } } else G.energy = Math.min(1, G.energy + dt * .12);
+    if (G.bino && (isOut(p, 13) || (isOut(p, 19) && p.wkT > 0) || p.freeEn > 0 || G.noEn || (isOut(p, 56) && (p.spBuff || 0) > 0))) G.energy = 1; else if (G.bino) { G.energy -= dt * .22 / (PRO.on ? 3 : 1); if (G.energy <= 0) { G.energy = 0; G.bino = false; } } else G.energy = Math.min(1, G.energy + dt * .12);
   } else { p.vx *= .9; p.vz *= .9; p.deadT += dt; p.respawnT -= dt; p.fall = Math.min(1, p.fall + dt * 2.5); if (p.jumpQ) { p.jumpQ = 0; UI.clrEv('jl'); } }
   { const want = 0; // 已取消探頭功能
      let tgt = 0; if (want) { let k = 0; for (let s = 1; s <= 11; s++) { if (!leanClear(p, want * s * .05)) break; k = s * .05; } tgt = want * k; } p.lo += (tgt - p.lo) * Math.min(1, dt * 11); p.lean = want; }
@@ -4142,6 +4278,15 @@ function updateCamera(dt) {
   { const q = G.sk && G.sk.quake; if (q && q.t > 0 && q.by !== p) { const ev = .2 + .8 * clamp(q.t / 2, 0, 1); sx += Math.sin(G.time * 38) * .17 * ev; } }
   c.yaw = p.yaw + sx; c.pitch = p.pitch + sy; c.roll = p.alive ? -p.lo * .4 : clamp(p.deadT * 2.2, 0, .35) * (p.id % 2 ? 1 : -1);
   if (!p.alive) c.pitch = lerp(c.pitch, -.45, clamp(p.deadT * 2, 0, 1));
+  // 被擊殺後：鏡頭飛到擊殺者身旁，以第三人稱看著他行動
+  const kb = p.killedBy;
+  if (!p.alive && kb && kb !== p && kb.alive && G.state === 'playing') {
+    const u = clamp(p.deadT / .5, 0, 1), e = u * u * (3 - 2 * u), d = 3.3, fw = FWD(kb.yaw);
+    const tx = kb.x - fw[0] * d, tz = kb.z - fw[1] * d, ty = kb.y + 2.3;
+    c.x = lerp(c.x, tx, e); c.z = lerp(c.z, tz, e); c.y = lerp(c.y, ty, e);
+    const dx = kb.x - c.x, dz = kb.z - c.z, hd = Math.hypot(dx, dz) || .01;
+    c.yaw = Math.atan2(-dx, -dz); c.pitch = Math.atan2(kb.y + 1.25 - c.y, hd); c.roll = 0;
+  }
 }
 
 /* ---------- 機器人 AI ---------- */
@@ -4160,7 +4305,7 @@ function scanBot(b, dt) {
     if (face > .34 && o.protect <= 0) {
       const need = df.base * o.number.length / 4 * (G.demo ? 1.25 : 1) * b.scaleBase * (.55 + d / 17) * (1 + o.sp * .45) * (o.miniT > 0 ? 1.8 : 1) * (G.mode === 'ctf' ? (o.carry ? 2.2 : 1.5) : 1);
       p += dt / need; b.read[o.id] = Math.min(1, p); if (p > .3) { o.threatT = 1.3; o.reader = b; }
-      if (p >= 1 && !b.typing) { b.typing = { target: o, num: o.fake || o.enShow || o.number, t: df.type * (.8 + Math.random() * .5) + (b.wdHit ? .8 : 0) }; b.read[o.id] = 0; }
+      if (p >= 1 && !b.typing) { b.typing = { target: o, num: atkCode(o), t: df.type * (.8 + Math.random() * .5) + (b.wdHit ? .8 : 0) }; b.read[o.id] = 0; }
     } else if (p > 0) b.read[o.id] = Math.max(0, p - dt * 1.0);
   }
   if (seen) { b.tgt = seen; b.tgtT = 2.8; }
@@ -4211,7 +4356,7 @@ function smartThink(b, dt) {
     const ci = b.slots.findIndex(x => x && x.type === 'cam');
     if (ci >= 0 && d > 9 && d < 40 && face > .34 && t.alive && (b.read[t.id] || 0) < .9) {
       botUse(b, ci); b.read[t.id] = Math.min(1, (b.read[t.id] || 0) + .6); b.cd = 3.5;
-      if (b.read[t.id] >= 1 && !b.typing) { b.typing = { target: t, num: t.number, t: DIFF[b.dix ?? S.diff].type * 1.1 + (b.wdHit ? .8 : 0) }; b.read[t.id] = 0; }
+      if (b.read[t.id] >= 1 && !b.typing) { b.typing = { target: t, num: atkCode(t), t: DIFF[b.dix ?? S.diff].type * 1.1 + (b.wdHit ? .8 : 0) }; b.read[t.id] = 0; }
     }
   }
 }
@@ -4259,7 +4404,7 @@ function updateBot(b, dt) {
   b.scanAcc += dt; if (b.scanAcc >= b.scanInt) { if (b.blind <= 0 && !b.lure && !G.actors.some(o => o !== b && o.alive && o.dackE >= 1 && Math.hypot(o.x - b.x, o.z - b.z) < 12)) scanBot(b, b.scanAcc); b.scanAcc = 0; b.scanInt = .11 + Math.random() * .06; }
   if (b.typing) {
     b.typing.t -= dt; if (b.blind > 0) b.typing = null;
-    else if (b.typing.t <= 0) { const t = G.actors.find(a => a.alive && a.number === b.typing.num); if (scrPhase2(b) && Math.random() < .6) { b.blind = 1.5; b.redT = 2; } else if (ericHit(b, b.typing.num)) { /* 中陷阱 */ } else if (t && t !== b && t.protect <= 0 && (isDM() || t.team !== b.team)) { if (b.typing.target.fake === b.typing.num) uncloak(b.typing.target, true); killByCode(b, b.typing.num); } b.typing = null; }
+    else if (b.typing.t <= 0) { const t = G.actors.find(a => a.alive && hitsCode(a, b.typing.num)); if (scrPhase2(b) && Math.random() < .6) { b.blind = 1.5; b.redT = 2; } else if (ericHit(b, b.typing.num)) { /* 中陷阱 */ } else if (t && t !== b && t.protect <= 0 && (isDM() || t.team !== b.team)) { if (b.typing.target.fake === b.typing.num) uncloak(b.typing.target, true); killByCode(b, b.typing.num); } b.typing = null; }
   }
   tryPickup(b);
   // 目標 / 路徑
@@ -4318,6 +4463,12 @@ function arenaTick(dt) {
   else if (A.ph === 3) { if (A.t <= 0) { A.stage++; A.ph = 1; A.t = 1.8; } }
 }
 /* ---------- KOF 大賽 ---------- */
+function giveFelixCam() { // 費列克斯：致命相機常駐第一格，不限次數、不被其他道具取代
+  const p = G.player; if (!G.slots) return;
+  if (p && isOut(p, 28)) { G.slots[0] = { type: 'cam', n: 1, fixed: true }; G.slots.fix0 = true; }
+  else if (G.slots.fix0) { G.slots.fix0 = false; if (G.slots[0] && G.slots[0].fixed) G.slots[0] = null; }
+  for (const a of G.actors) if (a.slots && !a.isPlayer && isOut(a, 28)) { a.slots[0] = { type: 'cam', n: 1, fixed: true }; a.slots.fix0 = true; }
+}
 function resetSkillState(a) { a.amInit = 0; a.amulet = false; a.amT = 0; a.skCd = 0; a.shieldT = 0; a.cloak = false; a.invis = false; a.fake = null; a.fakeT = 0; a.fakeOf = null; a.dackE = -1; a.armed = false; a.stolen = null; a.passIdx = -1; a.rayJ = false; a.ctrlT = 0; a.cleanT = 2; a.cleanW = 0; a.chg = null; a.wkT = 0; a.wkPre = 0; a.say = null; a.blind = 0; a.miniT = 0; a.chamT = 0; a.fdT = 0; a.vdT = 0; a.enT = 0; a.enShow = null; a.soomT = 0; a.vdKeep = null; a.vdHold = 0; a.vdKiller = null; a.vdShowAt = undefined; a.decForm = null; }
 const kofVisible = (o, x, z, y) => { if (!o || !o.alive) return false; const dx = x - o.x, dz = z - o.z, d = Math.hypot(dx, dz); if (d > 75) return false; const f = FWD(o.yaw); if ((dx * f[0] + dz * f[1]) / (d || 1) < Math.cos(.95)) return false; return los(o.x, o.y + 1.6, o.z, x, y + 1.6, z); };
 function kofSpawnPos(a, o) {
@@ -4506,7 +4657,7 @@ function horrorFx(list, c, t) {
   for (const m of W.mist || []) { const x = m.x + Math.sin(t * .1 + m.ph) * 3, z = m.z + Math.cos(t * .08 + m.ph) * 3, d = d2(x, z); if (d > 4900) continue; list.push({ x, y: .55, z, w: m.s * 1.3, h: m.s * .38, a: .15, k: 9, d }); }
 }
 function applyNightEnv(viewer) {
-  const b = World.baseEnv; if (!b) return; const nt = (G.sk && G.sk.night) || { by: null, e: 0 }; let k = 1, tint = [1, 1, 1], nv = false;
+  const b = World.baseEnv; if (!b) return; const nt = (visImmune(G.player) ? { by: null, e: 0 } : (G.sk && G.sk.night) || { by: null, e: 0 }); let k = 1, tint = [1, 1, 1], nv = false;
   if (nt.by && nt.e >= 1.5) {
     if (viewer !== nt.by) { k = lerp(1, World.id === 'night' ? .4 : .2, clamp((nt.e - 1.5) / .8, 0, 1)); } else if (nt.e >= 2.5) { nv = true; k = .3; tint = [.35, 1, .4]; }
     const rem = 31.5 - nt.e; if (rem < .5) k = lerp(1, k, clamp(rem / .5, 0, 1));
@@ -5092,6 +5243,36 @@ const UI = {
     this.els.photo.classList.remove('hidden', 'fade'); this.photoT = 2.2; this.dirty = true;
   },
   cleanse() { const c = $('cleanse'); c.classList.remove('on'); void c.offsetWidth; c.classList.add('on'); },
+  parSlots(p) { // 概算師：道具欄改成「奇數 / 偶數」兩顆判定鍵
+    const ok = simpleReady(p);
+    for (const [el, t] of [[this.els.slotF, '奇數'], [this.els.slotG, '偶數']]) {
+      el.classList.add('par'); el.classList.toggle('off', !ok); el.classList.remove('has', 'felix');
+      el.querySelector('.ico').textContent = t;
+      el.querySelector('small').textContent = (p.spCd || 0) > 0 ? Math.ceil(p.spCd) : ((p.spBuff || 0) > 0 ? '∞' : '');
+    }
+  },
+  mmap(p) { // 作戰軍官：左上角圓形衛星雷達
+    const cv = $('mmap'), on = isOut(p, 60) && p.alive && G.state === 'playing';
+    cv.classList.toggle('hidden', !on); if (!on || !World.cur) return;
+    const W = 200, R0 = W / 2, bb = World.bounds, sw = bb.x1 - bb.x0, sh = bb.z1 - bb.z0, sc = (W - 12) / Math.max(sw, sh);
+    if (this._mmId !== World.cur.id) { // 地形只畫一次，之後每幀只疊上光點
+      this._mmId = World.cur.id; const oc = this._mmBg = document.createElement('canvas'); oc.width = oc.height = W;
+      const g = oc.getContext('2d'); g.fillStyle = '#0d1a12'; g.fillRect(0, 0, W, W);
+      g.fillStyle = 'rgba(120,210,160,.30)'; g.strokeStyle = 'rgba(150,240,190,.22)'; g.lineWidth = 1;
+      g.fillRect(R0 - sw * sc / 2, R0 - sh * sc / 2, sw * sc, sh * sc);
+      g.fillStyle = 'rgba(190,255,215,.55)';
+      for (const b of World.boxes) { if (b.nc || b.aw || b.y1 - b.y0 < .8) continue; const x = R0 + (b.x0 - (bb.x0 + sw / 2)) * sc, y = R0 + (b.z0 - (bb.z0 + sh / 2)) * sc; g.fillRect(x, y, Math.max(1.2, (b.x1 - b.x0) * sc), Math.max(1.2, (b.z1 - b.z0) * sc)); }
+    }
+    const g = cv.getContext('2d'); g.clearRect(0, 0, W, W); g.drawImage(this._mmBg, 0, 0);
+    const px = v => R0 + (v - (bb.x0 + sw / 2)) * sc, pz = v => R0 + (v - (bb.z0 + sh / 2)) * sc;
+    for (const a of G.actors) {
+      if (!a.alive || a === p) continue; const en = enemyOf(p, a);
+      g.fillStyle = en ? '#ff4455' : '#49a6ff'; g.beginPath(); g.arc(px(a.x), pz(a.z), 3.4, 0, 6.2832); g.fill();
+    }
+    g.save(); g.translate(px(p.x), pz(p.z)); g.rotate(-p.yaw); // 自己：白色箭頭
+    g.fillStyle = '#fff'; g.beginPath(); g.moveTo(0, -6.5); g.lineTo(4.4, 5); g.lineTo(0, 2.6); g.lineTo(-4.4, 5); g.closePath(); g.fill(); g.restore();
+    g.strokeStyle = 'rgba(160,255,200,.5)'; g.lineWidth = 2; g.beginPath(); g.arc(R0, R0, R0 - 3, 0, 6.2832); g.stroke();
+  },
   slotHTML(el, s) {
     const ico = el.querySelector('.ico'), n = el.querySelector('small');
     if (!s) { ico.textContent = ''; n.textContent = ''; el.classList.remove('has', 'felix'); return; }
@@ -5197,9 +5378,10 @@ const UI = {
     // 輸入
     if (this.dirty || this.lastTyped !== G.typed) {
       const LN = inLen(G.player), t = LN ? G.typed + '_'.repeat(Math.max(0, LN - G.typed.length)) : (G.typed.length ? G.typed : '＿＿＿') + (G.typed.length && G.typed.length < 6 ? '_' : ''); e.typed.textContent = t; e.typed.className = G.typed.length ? '' : 'empty'; e.photoCap.textContent = t; this.lastTyped = G.typed;
-      this.slotHTML(e.slotF, G.slots[0]); this.slotHTML(e.slotG, G.slots[1]);
+      if (!isOut(p, 56)) { e.slotF.classList.remove('par', 'off'); e.slotG.classList.remove('par', 'off'); this.slotHTML(e.slotF, G.slots[0]); this.slotHTML(e.slotG, G.slots[1]) };
       this.dirty = false;
     }
+    if (isOut(p, 56)) this.parSlots(p); // 概算師：奇偶鍵的可按狀態每幀都要更新
     this.skillHUD(dt, p); this.modeHUD(dt, p);
     e.slotF.classList.toggle('cd', G.itemCd > 0); e.slotG.classList.toggle('cd', G.itemCd > 0);
     if (Math.abs(G.stam - (this._st ?? -1)) > .004) { this._st = G.stam; e.stamFill.style.transform = `scaleX(${G.stam.toFixed(3)})`; }
@@ -5241,7 +5423,8 @@ const UI = {
   stunFx(sec) { const e = this.els.deadv; e.style.opacity = .75; clearTimeout(this._st); this._st = setTimeout(() => { if (G.player && G.player.alive) e.style.opacity = 0; }, sec * 1000); },
   goText() { this.goT = 1; this._cd = 0; $('cdNum').textContent = '開始！'; $('cdTxt').textContent = '戰鬥開始'; this.els.countdown.classList.remove('hidden'); },
   cdUpdate(dt) {
-    { const neg = !!(G.sk && G.sk.neg && G.sk.neg.t > 0); if (neg !== this._neg) { this._neg = neg; $('gl').style.filter = neg ? 'invert(1)' : ''; } }
+    if (G.player) this.mmap(G.player);
+    { const neg = !!(G.sk && G.sk.neg && G.sk.neg.t > 0) && !visImmune(G.player); if (neg !== this._neg) { this._neg = neg; $('gl').style.filter = neg ? 'invert(1)' : ''; } }
     { // 暫時的休止符：畫面黑白閃爍、訊息橫幅震動
       const fz = !!(G.sk && G.sk.frz && G.sk.frz.t > 0);
       if (fz !== this._fz) {
@@ -5351,8 +5534,8 @@ const Input = {
         if (/^Numpad[0-9]$/.test(e.code)) { typeDigit(e.code.slice(6)); e.preventDefault(); return; }
         if (e.code === 'Backspace') { backspace(); e.preventDefault(); return; }
         if (e.code === 'Enter' || e.code === 'NumpadEnter') { submitNumber(); e.preventDefault(); return; }
-        if (e.code === 'KeyF') { useItem(0); return; }
-        if (e.code === 'KeyG') { if (G.player && GKEY_HEROES.includes(G.player.av.outfitIdx)) castSkillPlayer(); else useItem(1); return; }
+        if (e.code === 'KeyF') { const q = G.player; if (q && isOut(q, 56)) simpleGuess(q, true); else useItem(0); return; }
+        if (e.code === 'KeyG') { const q = G.player; if (q && GKEY_HEROES.includes(q.av.outfitIdx)) castSkillPlayer(); else if (q && isOut(q, 56)) simpleGuess(q, false); else useItem(1); return; }
         if (e.code === 'KeyR') { if (G.player && SKILL_OF[G.player.av.outfitIdx] === 'vocal') { if (!e.repeat) Voice.start(); } else castSkillPlayer(); return; }
         if (e.code === 'KeyQ') { toggleBino(); return; }
         if (e.code === 'Escape') { if (!this.pointerLocked()) togglePause(); return; }
@@ -5430,7 +5613,7 @@ const Input = {
     press($('bBack'), () => backspace());
     { const ss = $('slotS'), vocal = () => G.player && SKILL_OF[G.player.av.outfitIdx] === 'vocal'; press(ss, () => { if (vocal()) Voice.start(); else castSkillPlayer(); }, () => { if (vocal()) Voice.end(); }); ss.addEventListener('click', () => { if (!Device.mobile && !vocal()) castSkillPlayer(); }); ss.addEventListener('mousedown', () => { if (!Device.mobile && vocal()) Voice.start(); }); ss.addEventListener('mouseup', () => { if (!Device.mobile && vocal()) Voice.end(); }); ss.addEventListener('mouseleave', () => { if (!Device.mobile && vocal()) Voice.end(); }); }
     press($('bRun'), () => { In.sprintT = !In.sprintT; In.sprint = In.sprintT; $('bRun').classList.toggle('tog', In.sprintT); }, () => { });
-    for (const [id, i] of [['slotF', 0], ['slotG', 1]]) { const el = $(id); press(el, () => useItem(i)); el.addEventListener('click', () => { if (!Device.mobile) useItem(i); }); }
+    for (const [id, i] of [['slotF', 0], ['slotG', 1]]) { const el = $(id); const act = () => { const p = G.player; if (p && isOut(p, 56)) simpleGuess(p, i === 0); else useItem(i); }; press(el, act); el.addEventListener('click', () => { if (!Device.mobile) act(); }); }
     press($('pauseBtn'), () => setPause(true));
   },
   pointerLocked() { return document.pointerLockElement === $('gl'); },
@@ -5673,14 +5856,14 @@ function csBuildCards() {
   // 我的收藏庫（最上方）
   const fav = (S.fav || []).filter(i => pool.includes(i)); if ((S.fav || []).length > 6) S.fav = S.fav.slice(0, 6); sec('⭐ 我的收藏庫（' + fav.length + ' / 6）', '#ffd24a');
   if (fav.length) for (const i of fav) cards.appendChild(mk(i)); else { const h = document.createElement('div'); h.className = 'favhint'; h.textContent = o.browse ? '尚無收藏。在任一英雄上「長按滑鼠右鍵」（手機：長按卡片）即可加入，再長按一次可移除。' : '尚無收藏。請到主畫面的「英雄圖鑑」長按英雄卡片加入我的最愛。'; cards.appendChild(h); }
-  const placed = new Set(), groups = CS.view === 'tier' ? HERO_TIERS : HERO_CLASSES;
+  const placed = new Set(), groups = CS.view === 'tier' ? HERO_TIERS : CS.view === 'act' ? HERO_ACT() : HERO_CLASSES;
   for (const [nm, col, ids] of groups) { const list = ids.filter(i => pool.includes(i)); if (!list.length) continue; sec(nm + '（' + list.length + '）', col); for (const i of list) { placed.add(i); cards.appendChild(mk(i)); } }
   const rest = pool.filter(i => !placed.has(i)); if (rest.length) { sec('其他'); for (const i of rest) cards.appendChild(mk(i)); }
   if (!o.browse && !o.single) { sec('🎲 隨機', '#c9a8ff'); cards.appendChild(rc); } csRefresh();
   [...$('csView').children].forEach(b => b.classList.toggle('on', b.dataset.v === CS.view));
 }
 function openPick(o) {
-  CS.o = o; CS.rand = false; CS.flash = ''; CS.lastClick = null; CS.view = S.csView === 'tier' ? 'tier' : 'class'; $('csTitle').textContent = o.title || '選擇英雄'; $('csOk').textContent = o.okText || '確認'; $('csOk').style.display = o.browse ? 'none' : ''; $('csBack').style.display = o.back ? '' : 'none';
+  CS.o = o; CS.rand = false; CS.flash = ''; CS.lastClick = null; CS.view = ['tier', 'act'].includes(S.csView) ? S.csView : 'class'; $('csTitle').textContent = o.title || '選擇英雄'; $('csOk').textContent = o.okText || '確認'; $('csOk').style.display = o.browse ? 'none' : ''; $('csBack').style.display = o.back ? '' : 'none';
   const pool = o.allowed || VIS_OUTFITS; CS.counts = {}; CS.picks = [];
   if (isWM(o)) {
     CS.rand = S.pref === 'rand';
@@ -5964,7 +6147,7 @@ function boot() {
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
 setInterval(() => { try { UI.renderPills(); } catch (e) { } }, 120);
-window.__G = { PRO, csBuildCards, closePick, speedMul, OUTFITS, VIS_OUTFITS, HERO_CLASSES, HERO_TIERS, SKILL_OF, SKILLS, setPreview, kenKind, In, cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+window.__G = { PRO, R, eliminate, inLen, simpleReady, simpleGuess, grantItem, csSetView, csBuildCards, closePick, speedMul, OUTFITS, VIS_OUTFITS, HERO_CLASSES, HERO_TIERS, SKILL_OF, SKILLS, setPreview, kenKind, In, cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 
 // 檢查是否有新版（防止 PWA 快取舊版）
