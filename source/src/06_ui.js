@@ -88,7 +88,7 @@ const UI = {
     if (!s) { ico.textContent = ''; n.textContent = ''; el.classList.remove('has', 'felix'); return; }
     ico.textContent = ITEMS[s.type].ico; n.textContent = s.n > 1 ? s.n : ''; el.classList.add('has'); el.classList.toggle('felix', s.type === 'cam' && !!G.player && isOut(G.player, 28));
   },
-  /* 英雄技能鍵：圓形倒數環 + 秒數；艾伯特技能的預警閃光與按鍵錯亂 */
+  /* 英雄技能鍵：圓形倒數環 + 秒數；駭客技能的預警閃光與按鍵錯亂 */
   setEv(key, rem, ico) { const e = this.ev || (this.ev = {}); if (!e[key]) e[key] = { seq: (this.evSeq = (this.evSeq || 0) + 1) }; e[key].rem = rem; e[key].ico = ico || '⏱'; },
   clrEv(key) { if (this.ev) delete this.ev[key]; },
   renderPills() { // 右上角倒數時鐘：事件倒數在前、技能倒數在後；第一個白底，其餘依序換底色
@@ -162,7 +162,7 @@ const UI = {
     this._pf = on; $('numL').classList.toggle('purple', on); $('numR').classList.toggle('purple', on); $('pflash').classList.toggle('on', on);
     const ph2 = scrPhase2(p); if (ph2 && !this._ph2) { this._ph2 = true; this.startScramble(); } if (!ph2 && this._ph2) this.endScramble(); this._ph2 = ph2;
   },
-  numLayout() { // 手機數字鍵排列：正常／錯亂（艾伯特）／相反（愛因斯坦）
+  numLayout() { // 手機數字鍵排列：正常／錯亂（駭客）／相反（愛因斯坦）
     const all = [...document.querySelectorAll('.np')], norm = [...all].sort((a, b) => ((+a.dataset.k + 9) % 10) - ((+b.dataset.k + 9) % 10));
     const order = this._ph2 ? [...all].sort(() => Math.random() - .5) : this._rl2 ? norm.slice().reverse() : norm;
     if (Device.mobile) order.forEach((b, i) => (i < 5 ? $('numL') : $('numR')).appendChild(b));
