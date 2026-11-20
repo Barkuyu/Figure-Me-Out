@@ -105,7 +105,7 @@ function HERO_ACT() {
   for (let i = 0; i < OUTFITS.length; i++) { if (OUTFITS[i].hidden) continue; (SKILL_OF[i] && !PASSIVE_IDX.includes(i) ? act : pas).push(i); }
   return [['主動技能', '#ff9a3c', ord(act)], ['被動技能', '#4fd38a', ord(pas)]];
 }
-const HERO_TIERS = [['S 級', '#ff4d6d', [15, 39, 53]], ['A 級', '#ffb020', [18, 17, 4, 21, 0, 6, 10, 7, 23, 28, 42, 43, 51]], ['B 級', '#4fb0ff', [16, 29, 26, 27, 32, 35, 36, 25, 9, 19, 8, 2, 12, 13, 40, 41, 47, 48, 49, 54]], ['C 級', '#9aa3b2', [1, 11, 24, 30, 31, 34, 33, 37, 38, 22, 20, 5, 3, 44, 45, 46, 50, 52]]]; // 英雄等級
+const HERO_TIERS = [['S 級', '#ff4d6d', [15, 39, 53]], ['A 級', '#ffb020', [18, 17, 4, 21, 0, 6, 10, 7, 23, 28, 42, 43, 51, 55, 56, 59]], ['B 級', '#4fb0ff', [16, 29, 26, 27, 32, 35, 36, 25, 9, 19, 8, 2, 12, 13, 40, 41, 47, 48, 49, 54, 57, 58, 60]], ['C 級', '#9aa3b2', [1, 11, 24, 30, 31, 34, 33, 37, 38, 22, 20, 5, 3, 44, 45, 46, 50, 52]]]; // 英雄等級
 const CHANT = { soom: 1, cham: 1, revert: .5, gis: 1, neg: 1.5 }; // 吟唱秒數
 const isOut = (a, i) => skOn() && a.av && (a.av.outfitIdx === i || a.passIdx === i); // 對應 OUTFITS：蘇蘇／艾迪／艾伯特／蘇米(被動)／艾瑞克／麥克(被動)
 const skOn = () => G.skillsOn !== false && !(G.sk && G.sk.ban && G.sk.ban.t > 0) && !frozenAll(); // 停戰宣告／暫時的休止符期間：全場技能停用
