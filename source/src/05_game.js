@@ -555,6 +555,7 @@ const STREAK_PTS = [3, 5, 7, 10, 15], STREAK_TXT = ['', '二連殺', '三連殺'
 function enemyOf(a, o) { return o !== a && o.alive && (isDM() || o.team !== a.team); }
 
 /* ---------- 物理 ---------- */
+const edgeBox = b => { const bb = World.bounds; return !!bb && (b.x0 <= bb.x0 + .8 || b.x1 >= bb.x1 - .8 || b.z0 <= bb.z0 + .8 || b.z1 >= bb.z1 - .8); }; // 是不是場地最外圍的牆
 function collideH(a) {
   if (a.noclip) { const bb = World.bounds; if (bb) { a.x = clamp(a.x, bb.x0 + .5, bb.x1 - .5); a.z = clamp(a.z, bb.z0 + .5, bb.z1 - .5); } return; } // 鬼影：穿過所有障礙物，只被場地外牆擋住
   const B = World.boxes, r = RAD;
@@ -566,8 +567,8 @@ function collideH(a) {
     if (dx === 0 && dz === 0) {
       const l = a.x - b.x0, rr = b.x1 - a.x, t = a.z - b.z0, bt = b.z1 - a.z, m = Math.min(l, rr, t, bt);
       if (m === l) a.x = b.x0 - r; else if (m === rr) a.x = b.x1 + r; else if (m === t) a.z = b.z0 - r; else a.z = b.z1 + r;
-      if (a.lizard) { a.wallN = [m === l ? -1 : m === rr ? 1 : 0, m === t ? -1 : m === bt ? 1 : 0]; a.wallT = G.time; }
-    } else if (d2 < r * r) { const d = Math.sqrt(d2) || 1e-4, p = (r - d) / d; a.x += dx * p; a.z += dz * p; if (a.lizard) { a.wallN = [dx / d, dz / d]; a.wallT = G.time; } } // 壁虎：記下貼到的牆面
+      if (a.lizard) { a.wallN = [m === l ? -1 : m === rr ? 1 : 0, m === t ? -1 : m === bt ? 1 : 0]; a.wallT = G.time; a.wallTop = b.y1; a.wallEdge = edgeBox(b); }
+    } else if (d2 < r * r) { const d = Math.sqrt(d2) || 1e-4, p = (r - d) / d; a.x += dx * p; a.z += dz * p; if (a.lizard) { a.wallN = [dx / d, dz / d]; a.wallT = G.time; a.wallTop = b.y1; a.wallEdge = edgeBox(b); } } // 壁虎：記下貼到的牆面與它的高度
   }
 }
 function groundAt(x, z, y, rr, noBox) {
@@ -872,7 +873,14 @@ function updatePlayer(dt) {
     const jumpAir = () => { const n = p.jumps || 1; p.vy = (isOut(p, 52) ? 7.1 * Math.pow(1.3, n / 2) : 6.9 * jumpMul(p)) * vk; p.jumps = n + 1; p.dashReady = isSumi(p); Sfx.tone(620 + n * 120, .1, 'triangle', .09, 380); };
     if (SP && (p.jumpQ || 0) > 0) { p.jumpQ -= dt; UI.setEv('jl', Math.max(0, p.jumpQ), '🌑'); if (p.jumpQ <= 0) { p.jumpQ = 0; UI.clrEv('jl'); if (p.onGround) jumpGround(); else if ((p.jumps || 0) < maxJ) jumpAir(); } }
     if (isOut(p, 58) && p.onWall) { // 壁虎：貼牆時用前後鍵上下爬，按跳躍彈離牆面
-      p.vy = 0; const cl = (my > .15 ? 2.8 : my < -.15 ? -2.8 : 0) * dt; if (cl) { p.y = Math.max(p.gy, p.y + cl); }
+      p.vy = 0; const cl = (my > .15 ? 2.8 : my < -.15 ? -2.8 : 0) * dt;
+      if (cl) { // 爬牆上限：不超過所攀牆面的頂端，室內也不會穿過天花板
+        const env = World.cur && World.cur.env, it = env && env.interior;
+        let cap = p.wallTop === undefined ? 1e9 : p.wallTop;
+        if (env && env.intH && (!it || (p.x > it[0] && p.x < it[2] && p.z > it[1] && p.z < it[3]))) cap = Math.min(cap, env.intH - 1.85); // 室內：頭不穿過天花板
+        if (p.wallEdge) cap = Math.min(cap, p.wallTop - .8); // 場地最外圍的牆：只能貼著，不能翻上去跑到場外
+        p.y = clamp(p.y + cl, p.gy, Math.max(p.gy, cap));
+      }
       if (p.wallN) { const dn = p.vx * p.wallN[0] + p.vz * p.wallN[1]; if (dn > 0) { p.vx -= p.wallN[0] * dn; p.vz -= p.wallN[1] * dn; } } // 黏在牆上：不會因為往前推而離開牆面
       if (jp) { p.onWall = false; p.lzCling = 0; p.vy = 3.4; if (p.wallN) { p.vx = p.wallN[0] * 5; p.vz = p.wallN[1] * 5; } Sfx.tone(380, .1, 'triangle', .09, 240); }
     }
