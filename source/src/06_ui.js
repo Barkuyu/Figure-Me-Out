@@ -61,26 +61,31 @@ const UI = {
       el.querySelector('small').textContent = (p.spCd || 0) > 0 ? Math.ceil(p.spCd) : ((p.spBuff || 0) > 0 ? '∞' : '');
     }
   },
-  mmap(p) { // 作戰軍官：左上角圓形衛星雷達
+  mmap(p) { // 作戰軍官：左上角圓形衛星雷達（以自己為圓心，地圖跟著自己捲動）
     const cv = $('mmap'), on = isOut(p, 60) && p.alive && G.state === 'playing';
     cv.classList.toggle('hidden', !on); if (!on || !World.cur) return;
-    const W = 200, R0 = W / 2, bb = World.bounds, sw = bb.x1 - bb.x0, sh = bb.z1 - bb.z0, sc = (W - 12) / Math.max(sw, sh);
-    if (this._mmId !== World.cur.id) { // 地形只畫一次，之後每幀只疊上光點
-      this._mmId = World.cur.id; const oc = this._mmBg = document.createElement('canvas'); oc.width = oc.height = W;
-      const g = oc.getContext('2d'); g.fillStyle = '#0d1a12'; g.fillRect(0, 0, W, W);
-      g.fillStyle = 'rgba(120,210,160,.30)'; g.strokeStyle = 'rgba(150,240,190,.22)'; g.lineWidth = 1;
-      g.fillRect(R0 - sw * sc / 2, R0 - sh * sc / 2, sw * sc, sh * sc);
-      g.fillStyle = 'rgba(190,255,215,.55)';
-      for (const b of World.boxes) { if (b.nc || b.aw || b.y1 - b.y0 < .8) continue; const x = R0 + (b.x0 - (bb.x0 + sw / 2)) * sc, y = R0 + (b.z0 - (bb.z0 + sh / 2)) * sc; g.fillRect(x, y, Math.max(1.2, (b.x1 - b.x0) * sc), Math.max(1.2, (b.z1 - b.z0) * sc)); }
+    const W = 200, R0 = W / 2, SC = 3.2, bb = World.bounds, sw = bb.x1 - bb.x0, sh = bb.z1 - bb.z0; // SC：每公尺幾個像素，可視半徑約 30 公尺
+    if (this._mmId !== World.cur.id) { // 地形只畫一次，之後每幀只是平移貼上
+      this._mmId = World.cur.id; const oc = this._mmBg = document.createElement('canvas');
+      oc.width = Math.ceil(sw * SC); oc.height = Math.ceil(sh * SC);
+      const g = oc.getContext('2d'); g.fillStyle = 'rgba(120,210,160,.30)'; g.fillRect(0, 0, oc.width, oc.height);
+      g.fillStyle = 'rgba(190,255,215,.60)';
+      for (const b of World.boxes) { if (b.nc || b.aw || b.y1 - b.y0 < .8) continue; g.fillRect((b.x0 - bb.x0) * SC, (b.z0 - bb.z0) * SC, Math.max(1.4, (b.x1 - b.x0) * SC), Math.max(1.4, (b.z1 - b.z0) * SC)); }
     }
-    const g = cv.getContext('2d'); g.clearRect(0, 0, W, W); g.drawImage(this._mmBg, 0, 0);
-    const px = v => R0 + (v - (bb.x0 + sw / 2)) * sc, pz = v => R0 + (v - (bb.z0 + sh / 2)) * sc;
+    const g = cv.getContext('2d'); g.clearRect(0, 0, W, W);
+    g.save(); g.beginPath(); g.arc(R0, R0, R0 - 3, 0, 6.2832); g.clip(); // 只畫在圓裡
+    g.fillStyle = '#0d1a12'; g.fillRect(0, 0, W, W);
+    g.drawImage(this._mmBg, R0 - (p.x - bb.x0) * SC, R0 - (p.z - bb.z0) * SC); // 自己永遠在圓心
     for (const a of G.actors) {
-      if (!a.alive || a === p) continue; const en = enemyOf(p, a);
-      g.fillStyle = en ? '#ff4455' : '#49a6ff'; g.beginPath(); g.arc(px(a.x), pz(a.z), 3.4, 0, 6.2832); g.fill();
+      if (!a.alive || a === p) continue; const dx = (a.x - p.x) * SC, dz = (a.z - p.z) * SC;
+      if (Math.hypot(dx, dz) > R0 - 5) continue;
+      g.fillStyle = enemyOf(p, a) ? '#ff4455' : '#49a6ff'; g.beginPath(); g.arc(R0 + dx, R0 + dz, 3.6, 0, 6.2832); g.fill();
     }
-    g.save(); g.translate(px(p.x), pz(p.z)); g.rotate(-p.yaw); // 自己：白色箭頭
-    g.fillStyle = '#fff'; g.beginPath(); g.moveTo(0, -6.5); g.lineTo(4.4, 5); g.lineTo(0, 2.6); g.lineTo(-4.4, 5); g.closePath(); g.fill(); g.restore();
+    g.strokeStyle = 'rgba(160,255,200,.18)'; g.lineWidth = 1; // 距離環：10 / 20 公尺
+    for (const r of [10 * SC, 20 * SC]) { g.beginPath(); g.arc(R0, R0, r, 0, 6.2832); g.stroke(); }
+    g.save(); g.translate(R0, R0); g.rotate(-p.yaw); // 自己：白色箭頭，永遠在正中央
+    g.fillStyle = '#fff'; g.beginPath(); g.moveTo(0, -7); g.lineTo(4.8, 5.4); g.lineTo(0, 2.8); g.lineTo(-4.8, 5.4); g.closePath(); g.fill(); g.restore();
+    g.restore();
     g.strokeStyle = 'rgba(160,255,200,.5)'; g.lineWidth = 2; g.beginPath(); g.arc(R0, R0, R0 - 3, 0, 6.2832); g.stroke();
   },
   slotHTML(el, s) {
