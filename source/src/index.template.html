@@ -22,6 +22,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#0f1418;font-family:va
 button{font-family:inherit}
 /* ---------- HUD ---------- */
 #hud{position:absolute;inset:0;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.7)}
+body.mlock #hud *{pointer-events:none!important}
 #scorebar{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;align-items:center}
 .sc{min-width:46px;padding:1px 10px;border-radius:7px;font:400 24px/1.25 var(--disp);text-align:center;border:2px solid rgba(255,255,255,.85);box-shadow:0 2px 0 rgba(0,0,0,.35)}
 .sc.red{background:var(--red)}.sc.blue{background:var(--blue)}.sc.dm{background:#3a3a3a}

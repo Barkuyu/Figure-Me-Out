@@ -178,6 +178,11 @@ const UI = {
     else { let m; do { m = '0123456789'.split('').sort(() => Math.random() - .5); } while (m.some((v, i) => v === String(i))); G.keyMap = {}; for (let i = 0; i < 10; i++) G.keyMap[String(i)] = m[i]; }
   },
   endScramble() { G.keyMap = null; this._ph2 = false; this.numLayout(); },
+  /* 遊戲進行中：滑鼠只負責轉視角，HUD 點選功能關閉；非遊戲中或 ESC 暫停時才恢復 */
+  mouseMode() {
+    const lk = !Device.mobile && !G.demo && G.state === 'playing' && !UI.paused && !UI.menuOpen && !UI.tutOpen && !UI.pracOpen && !UI.decOpen && !CS.o && !document.body.classList.contains('editing');
+    if (lk !== this._mlk) { this._mlk = lk; document.body.classList.toggle('mlock', lk); }
+  },
   updateHUD(dt) {
     const e = this.els, p = G.player;
     if (!p && G.demo) { this.cdUpdate(dt); this.demoHUD(dt); return; }
@@ -321,6 +326,32 @@ const Perf = {
   hud(dt) { }
 };
 
+/* ---------- 全螢幕 ---------- */
+const FS = {
+  auto: true, armed: false,
+  on() { return !!(document.fullscreenElement || document.webkitFullscreenElement); },
+  enter(quiet) {
+    const el = document.documentElement, rq = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (!rq) { if (!quiet) UI.msg('此裝置不支援全螢幕', 'bad'); return; }
+    try { const r = rq.call(el, { navigationUI: 'hide' }); if (r && r.catch) r.catch(() => { if (!quiet) UI.msg('此環境不允許全螢幕（請按 P 或點「全螢幕」再試）', 'bad'); }); } catch (e) { }
+  },
+  exit() { try { if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); } catch (e) { } },
+  toggle() { if (this.on()) { this.auto = false; this.exit(); } else { this.auto = true; this.enter(); } },
+  want() { if (!Device.mobile && this.auto && !this.on()) this.enter(true); },
+  /* 開場自動全螢幕：瀏覽器規定一定要有使用者動作，所以掛在下一次點擊／按鍵上 */
+  gesture() {
+    if (this._g) return; this._g = true;
+    const t = () => { this._g = false; for (const ev of ['pointerdown', 'keydown']) window.removeEventListener(ev, t, true); this.want(); };
+    for (const ev of ['pointerdown', 'keydown']) window.addEventListener(ev, t, true);
+  },
+  arm() {
+    if (this.armed) return; this.armed = true;
+    /* 被瀏覽器（例如暫停時按 Esc）踢出全螢幕時，下一次操作自動補回來；按 P 自己關掉的則不補 */
+    for (const ev of ['fullscreenchange', 'webkitfullscreenchange']) document.addEventListener(ev, () => { UI.dirty = true; if (!this.on() && this.auto) this.gesture(); });
+    this.gesture();
+  }
+};
+
 /* ---------- 輸入 ---------- */
 const keys = {};
 const Input = {
@@ -338,11 +369,12 @@ const Input = {
     $('prophetOk').onclick = () => $('prophetBox').classList.add('hidden');
     window.addEventListener('keydown', e => {
       if (e.repeat && e.code !== 'Backspace') { if (e.code === 'Tab' || e.code === 'Space') e.preventDefault(); return; }
+      if (e.code === 'KeyP' && !/^(INPUT|TEXTAREA|SELECT)$/.test(((e.target || 0).tagName) || '')) { FS.toggle(); e.preventDefault(); return; } // P＝全螢幕／視窗切換（任何畫面都可用）
       if (Device.auto && S.input === 'auto' && performance.now() - Device.lastTouch > 3000 && /^(Key|Digit|Arrow|Space|Shift|Tab)/.test(e.code)) { Device.auto = false; Device.update(); }
       if (UI.decOpen && G.state === 'playing') { if (e.code === 'Escape' || e.code === 'KeyR') { UI.closeDecade(); e.preventDefault(); return; } const m = /^(Digit|Numpad)([1-6])$/.exec(e.code); if (m && UI.decOpen[+m[2] - 1] !== undefined) { UI.pickDecade(UI.decOpen[+m[2] - 1]); e.preventDefault(); return; } e.preventDefault(); return; }
       if (G.mode === 'prac' && G.state === 'playing' && !UI.paused && !UI.menuOpen && !CS.o && (e.code === 'KeyH' || (UI.pracOpen && e.code === 'Escape'))) { togglePrac(); e.preventDefault(); return; }
-      if ((UI.paused || UI.menuOpen) && G.state === 'playing') { if (e.code === 'Escape' || e.code === 'KeyP') togglePause(); return; }
-      if (G.demo && (G.state === 'playing' || G.state === 'ended')) { if (e.code === 'Escape' || e.code === 'KeyP') togglePause(); e.preventDefault(); return; }
+      if ((UI.paused || UI.menuOpen) && G.state === 'playing') { if (e.code === 'Escape') resumeGame(); return; }
+      if (G.demo && (G.state === 'playing' || G.state === 'ended')) { if (e.code === 'Escape') togglePause(); e.preventDefault(); return; }
       if (G.state === 'playing' || G.state === 'ended') {
         if (e.code === 'Tab') { e.preventDefault(); return; }
         if (/^Digit[0-9]$/.test(e.code)) { typeDigit(e.code.slice(5)); e.preventDefault(); return; }
@@ -354,7 +386,6 @@ const Input = {
         if (e.code === 'KeyR') { if (G.player && SKILL_OF[G.player.av.outfitIdx] === 'vocal') { if (!e.repeat) Voice.start(); } else castSkillPlayer(); return; }
         if (e.code === 'KeyQ') { toggleBino(); return; }
         if (e.code === 'Escape') { if (!this.pointerLocked()) togglePause(); return; }
-        if (e.code === 'KeyP') { togglePause(); return; }
         if (e.code === 'KeyM') { S.sound = !S.sound; saveS(); UI.msg(S.sound ? '音效開啟' : '音效關閉'); return; }
       }
       keys[e.code] = true; if (/^(Space|ArrowUp|ArrowDown|Tab)$/.test(e.code)) e.preventDefault();
@@ -452,7 +483,7 @@ function setPause(v) {
   if (v) { if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { } for (const k in keys) keys[k] = false; In.mx = In.my = 0; In.sprint = false; In.jump = false; }
 }
 function togglePause() { setPause(!(UI.paused || UI.menuOpen)); }
-function resumeGame() { UI.menuOpen = false; setPause(false); if (!Device.mobile) { Input.lock(); } }
+function resumeGame() { UI.menuOpen = false; setPause(false); if (!Device.mobile) { FS.want(); Input.lock(); } }
 
 /* ---------- 選單 ---------- */
 /* ---------- 遊戲說明（分頁＋圖示） ---------- */
@@ -464,7 +495,7 @@ function howPanel(id) {
   if (id === 'go') return `<div class="hhero"><svg viewBox="0 0 120 70" class="hplate"><circle cx="60" cy="22" r="14" fill="#e8c7a6" stroke="#5a3a22" stroke-width="2"/><rect x="26" y="34" width="68" height="26" rx="5" fill="#fff6d8" stroke="#c0392b" stroke-width="3"/><text x="60" y="53" text-anchor="middle" font-size="19" font-weight="800" fill="#c0392b" font-family="monospace">48 213</text></svg><p>每個人額頭都有一組<b>數字牌</b>。<br>先讀到、先輸入，對方就<b>淘汰</b>！</p></div>
 <div class="hsteps">${hStep(1, '👀', '看', '靠近、對準額頭')}${hStep(2, '🧠', '記', '記下整組數字')}${hStep(3, '⌨️', '輸入', '按數字鍵 → Enter')}${hStep(4, '💥', '淘汰', '對方出局、你得分')}</div>
 <div class="hgrid">${hCard('🔴', '被讀到了？', '畫面中央紅箭頭＝有人在讀你。快<b>背對、躲掩體、移動</b>。')}${hCard('❌', '輸錯號碼', '定身 1.5 秒，視角也鎖住，千萬別亂按。')}${hCard('♻️', '擊殺後', '你的號碼立刻換新，別人讀到的作廢。')}${hCard('🛡️', '重生保護', '剛重生短時間無法被淘汰。')}</div>`;
-  if (id === 'ctl') return `<h3>🖥️ 電腦</h3><div class="hkeys">${hKey('W A S D', '移動')}${hKey('Shift', '衝刺')}${hKey('Space', '跳（空中再按＝二段跳）')}${hKey('滑鼠', '轉視角（先點畫面）')}${hKey('0-9', '輸入號碼')}${hKey('Enter', '送出')}${hKey('⌫', '刪除一碼')}${hKey('R', '英雄技能')}${hKey('F / G', '使用道具（Derek 的 G＝衝鋒）')}${hKey('Q／右鍵', '望遠鏡')}${hKey('Esc', '暫停')}</div>
+  if (id === 'ctl') return `<h3>🖥️ 電腦</h3><div class="hkeys">${hKey('W A S D', '移動')}${hKey('Shift', '衝刺')}${hKey('Space', '跳（空中再按＝二段跳）')}${hKey('滑鼠', '只負責轉視角（遊戲中不能點選）')}${hKey('0-9', '輸入號碼')}${hKey('Enter', '送出')}${hKey('⌫', '刪除一碼')}${hKey('R', '英雄技能')}${hKey('F / G', '使用道具（Derek 的 G＝衝鋒）')}${hKey('Q／右鍵', '望遠鏡')}${hKey('Esc', '暫停（暫停時滑鼠才能點選）')}${hKey('P', '全螢幕／視窗切換')}</div>
 <h3>📱 手機（橫向）</h3><div class="hgrid">${hCard('🕹️', '左半邊拖曳', '搖桿移動')}${hCard('🏃', '右側「跑」鍵', '按住衝刺（耗體力）')}${hCard('👆', '右側空白拖曳', '轉視角')}${hCard('🔢', '左右數字鍵', '輸滿位數自動送出')}${hCard('⬆️', '跳躍鍵', '空中再按＝二段跳')}${hCard('🔭', '望遠鏡', '壓住使用、放開取消，壓住時滑動轉視角')}${hCard('🎒', '道具格', '點按使用')}</div>
 <div class="hnote">🔋 衝刺會消耗體力條；望遠鏡有能量條，用完需等待回復。</div>`;
   if (id === 'item') return `<div class="hnote">開局沒有道具，走過地圖上的 <b>？箱</b> 才會取得；兩格已滿時不會更換。</div><div class="hgrid">${Object.entries({ cam: '拍照後照片短暫停留，方便看清號碼', quake: '讓其他人畫面劇烈橫向晃動 2 秒', scope: '約 13° 超遠距放大，再按一次＝拍照', fake: '頭上號碼偽裝成別的數字 7 秒', spring: '立即刷新英雄技能冷卻', poker: '畫面中央閃現一組號碼（3 秒）：65% 是場上某位敵人的真號碼，35% 是假的——輸入假號碼會直接陣亡並延長重生冷卻到 5 秒；上限 2 張' }).map(([k, d]) => hCard(ITEMS[k].ico, ITEMS[k].name, d, 'big')).join('')}${hCard('🔭', '望遠鏡（內建）', '遠距離讀碼，有能量限制', 'big')}</div>`;
@@ -589,7 +620,7 @@ function beginGame(demo, roster) {
   startMatch(demo, roster); UI.els.modeName.textContent = (demo ? '示範 · ' : '') + MAPS[G.map].name + ' · ' + MODES[G.mode].name + ' · ' + (G.codeLen ? G.codeLen + ' 碼' : '大亂鬥') + (G.mode === 'prac' ? '' : ' · ' + DIFF[S.diff].name); $('pracBtn').classList.toggle('hidden', G.mode !== 'prac'); closePrac(); UI._cd = 0; UI.goT = 0; UI.lastFeed = -1; UI.dirty = true; UI.onRespawn(); Perf.profile(); Perf.apply(); updateRotate();
   UI.els.hints.style.display = Device.mobile ? 'none' : '';
   if (demo) { UI.msg('示範模式：全員為電腦，視角會自動切換', 'item'); }
-  else if (!Device.mobile) { Input.lock(); UI.noLock = false; setTimeout(() => { if (!Input.pointerLocked() && G.state === 'playing' && !G.demo) UI.msg('點一下畫面以鎖定滑鼠（無法鎖定時可按住左鍵拖曳）', 'item'); }, 900); }
+  else if (!Device.mobile) { FS.want(); Input.lock(); UI.noLock = false; setTimeout(() => { if (!Input.pointerLocked() && G.state === 'playing' && !G.demo) UI.msg('點一下畫面以鎖定滑鼠（無法鎖定時可按住左鍵拖曳）', 'item'); }, 900); }
   else UI.msg('左側拖曳移動・中間拖曳轉視角・上方數字鍵輸入', 'item');
   UI._wasLocked = false;
   if (!demo && G.mode !== 'prac') showTut(!NET.mode); else hideTut();
@@ -892,6 +923,7 @@ function frame(ts) {
   Perf.tick(ms, G.state === 'playing' && !UI.paused);
   netTick(dt);
   if (G.state === 'debug') return;
+  UI.mouseMode();
   if (G.state === 'menu') { G.time += dt; drawPreview(); return; }
   Input.poll();
   if (!UI.paused) updateGame(dt); else G.time += 0;
@@ -941,10 +973,10 @@ function boot() {
   try {
     World.initMats(); initAvatarShared(); initRenderAssets(); World.load(pick(Object.keys(MAPS))); G.orbitSeed = Math.random() * 6.28;
   } catch (e) { console.error(e); $('errBox').innerHTML = `<div class="err">⚠ 載入失敗：${e.message}</div>`; return; }
-  buildMenu(); setPreview(); Input.init(); Perf.apply(); sizeBinoculars();
+  buildMenu(); setPreview(); Input.init(); Perf.apply(); sizeBinoculars(); if (!Device.mobile) FS.arm();
   window.addEventListener('resize', () => { updateRotate(); Perf.apply(); sizeBinoculars(); });
   window.addEventListener('orientationchange', () => setTimeout(() => { updateRotate(); Perf.apply(); sizeBinoculars(); }, 250));
-  const fs = () => { try { const el = document.documentElement; if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) { const r = el.requestFullscreen(); if (r && r.catch) r.catch(() => UI.msg('此環境不允許全螢幕', 'bad')); } else UI.msg('此裝置不支援全螢幕', 'bad'); } catch (e) { } };
+  const fs = () => FS.toggle();
   $('btnFs').onclick = fs; $('btnFs2').onclick = fs;
   $('btnStart').onclick = () => go(() => openGset(false));
   $('gBack').onclick = () => go(() => { const was = UI.gDemo; closeGset(); UI.els.menu.classList.remove('hidden'); });
