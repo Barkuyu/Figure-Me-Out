@@ -327,7 +327,15 @@ function simpleTick(a, dt) { // 概算師：記住 20 秒內出現在正面、�
 }
 const simpleReady = a => !!(a && isOut(a, 56) && (a.spT || 0) > 0 && a.spTgt && a.spTgt.alive && !((a.spCd || 0) > 0) && !(a.frz > 0) && !frozenAll());
 function simpleGuess(a, odd) { // odd=true 按「奇數」
-  if (!simpleReady(a)) return false;
+  if (!simpleReady(a)) { // 按下去沒反應會讓人以為按鍵壞了，所以要講清楚為什麼
+    if (a && a.isPlayer && isOut(a, 56)) {
+      if ((a.spCd || 0) > 0) UI.msg('【二分法】冷卻中，還要 ' + Math.ceil(a.spCd) + ' 秒', 'bad');
+      else if (a.frz > 0 || frozenAll()) UI.msg('【二分法】現在無法使用', 'bad');
+      else UI.msg('【二分法】還沒鎖定目標：先讓敵人出現在你正前方（約 28 公尺內）', 'bad');
+      Sfx.tone(200, .09, 'square', .07, 150);
+    }
+    return false;
+  }
   const t = a.spTgt, sum = [...String(t.number || '')].reduce((x, c) => x + (+c || 0), 0);
   if ((sum % 2 === 1) === !!odd) { // 猜中：擊殺並取得 120 秒不耗能
     eliminate(a, t); a.spBuff = 120; a.spT = 0; a.spTgt = null;

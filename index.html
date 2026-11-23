@@ -227,6 +227,12 @@ body.mobile #photo canvas{width:300px;height:225px}
 body.mobile #slots{position:absolute;inset:0;transform:none;display:block;pointer-events:none}
 body.mobile .slot{position:absolute;width:clamp(44px,calc(var(--vw)*6.4),66px);height:clamp(44px,calc(var(--vw)*6.4),66px);transform:translate(-50%,-50%);pointer-events:auto}
 body.mobile #slotF{left:80.2%;top:74.3%}body.mobile #slotG{left:76.6%;top:92.6%}body.mobile #slotS{left:69.4%;top:92.6%}body.mobile.derek #slotS{left:76.6%;top:92.6%}
+/* 概算師：奇數／偶數鍵在手機版自成一組，避開畫面最底部的系統手勢區與「跑」鍵，並放大按壓範圍 */
+body.mobile #slotF.par,body.mobile #slotG.par{top:69.5%;width:clamp(54px,calc(var(--vw)*7.6),74px);height:clamp(54px,calc(var(--vw)*7.6),74px)}
+body.mobile #slotF.par{left:70.6%}body.mobile #slotG.par{left:80.4%}
+body.mobile .slot.par::before{content:'';position:absolute;inset:-7px;border-radius:50%}
+body.mobile .slot.par em{display:none}
+body.mobile .slot.par .ico{font-size:clamp(16px,calc(var(--vw)*2.2),21px)}
 body.mobile #pauseBtn{display:block;left:calc(50% + 92px);top:27px;transform:translate(-50%,-50%);width:clamp(34px,calc(var(--vw)*4.4),46px);height:clamp(34px,calc(var(--vw)*4.4),46px)}
 body.mobile #binwrap{left:calc(50% + 128px);top:14px;right:auto;bottom:auto;transform:none}
 body.mobile #binwrap .bar{width:clamp(50px,calc(var(--vw)*7),76px)}
@@ -385,6 +391,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 #frzOv{position:fixed;inset:0;z-index:60;pointer-events:none;background:rgba(255,255,255,.1);mix-blend-mode:overlay;animation:frzBlink .16s steps(1) infinite}#frzOv.hidden{display:none}@keyframes frzBlink{0%{opacity:.85}50%{opacity:.12}100%{opacity:.85}}
 #mmap{position:fixed;left:14px;top:96px;width:138px;height:138px;z-index:28;border-radius:50%;border:3px solid rgba(255,255,255,.5);box-shadow:0 4px 14px rgba(0,0,0,.5),inset 0 0 18px rgba(0,0,0,.6);background:rgba(8,14,10,.78);pointer-events:none}#mmap.hidden{display:none}
 .slot.par{font:900 17px var(--font)}.slot.par .ico{font-size:17px;letter-spacing:1px}.slot.par.off{opacity:.38;filter:grayscale(1)}
+.slot.par:not(.off){border-color:#ffd84a;box-shadow:0 0 11px rgba(255,216,74,.85)}body.mobile .slot.par.act{transform:translate(-50%,-50%) scale(.9);background:rgba(255,216,74,.5)}
 </style>
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Figure Me Out">
@@ -3780,7 +3787,15 @@ function simpleTick(a, dt) { // 概算師：記住 20 秒內出現在正面、�
 }
 const simpleReady = a => !!(a && isOut(a, 56) && (a.spT || 0) > 0 && a.spTgt && a.spTgt.alive && !((a.spCd || 0) > 0) && !(a.frz > 0) && !frozenAll());
 function simpleGuess(a, odd) { // odd=true 按「奇數」
-  if (!simpleReady(a)) return false;
+  if (!simpleReady(a)) { // 按下去沒反應會讓人以為按鍵壞了，所以要講清楚為什麼
+    if (a && a.isPlayer && isOut(a, 56)) {
+      if ((a.spCd || 0) > 0) UI.msg('【二分法】冷卻中，還要 ' + Math.ceil(a.spCd) + ' 秒', 'bad');
+      else if (a.frz > 0 || frozenAll()) UI.msg('【二分法】現在無法使用', 'bad');
+      else UI.msg('【二分法】還沒鎖定目標：先讓敵人出現在你正前方（約 28 公尺內）', 'bad');
+      Sfx.tone(200, .09, 'square', .07, 150);
+    }
+    return false;
+  }
   const t = a.spTgt, sum = [...String(t.number || '')].reduce((x, c) => x + (+c || 0), 0);
   if ((sum % 2 === 1) === !!odd) { // 猜中：擊殺並取得 120 秒不耗能
     eliminate(a, t); a.spBuff = 120; a.spT = 0; a.spTgt = null;

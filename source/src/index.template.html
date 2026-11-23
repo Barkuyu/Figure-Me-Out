@@ -218,6 +218,12 @@ body.mobile #photo canvas{width:300px;height:225px}
 body.mobile #slots{position:absolute;inset:0;transform:none;display:block;pointer-events:none}
 body.mobile .slot{position:absolute;width:clamp(44px,6.4vw,66px);height:clamp(44px,6.4vw,66px);transform:translate(-50%,-50%);pointer-events:auto}
 body.mobile #slotF{left:80.2%;top:74.3%}body.mobile #slotG{left:76.6%;top:92.6%}body.mobile #slotS{left:69.4%;top:92.6%}body.mobile.derek #slotS{left:76.6%;top:92.6%}
+/* 概算師：奇數／偶數鍵在手機版自成一組，避開畫面最底部的系統手勢區與「跑」鍵，並放大按壓範圍 */
+body.mobile #slotF.par,body.mobile #slotG.par{top:69.5%;width:clamp(54px,7.6vw,74px);height:clamp(54px,7.6vw,74px)}
+body.mobile #slotF.par{left:70.6%}body.mobile #slotG.par{left:80.4%}
+body.mobile .slot.par::before{content:'';position:absolute;inset:-7px;border-radius:50%}
+body.mobile .slot.par em{display:none}
+body.mobile .slot.par .ico{font-size:clamp(16px,2.2vw,21px)}
 body.mobile #pauseBtn{display:block;left:calc(50% + 92px);top:27px;transform:translate(-50%,-50%);width:clamp(34px,4.4vw,46px);height:clamp(34px,4.4vw,46px)}
 body.mobile #binwrap{left:calc(50% + 128px);top:14px;right:auto;bottom:auto;transform:none}
 body.mobile #binwrap .bar{width:clamp(50px,7vw,76px)}
@@ -376,6 +382,7 @@ body.rot #app{position:fixed;left:0;top:0;right:auto;bottom:auto;width:var(--sh)
 #frzOv{position:fixed;inset:0;z-index:60;pointer-events:none;background:rgba(255,255,255,.1);mix-blend-mode:overlay;animation:frzBlink .16s steps(1) infinite}#frzOv.hidden{display:none}@keyframes frzBlink{0%{opacity:.85}50%{opacity:.12}100%{opacity:.85}}
 #mmap{position:fixed;left:14px;top:96px;width:138px;height:138px;z-index:28;border-radius:50%;border:3px solid rgba(255,255,255,.5);box-shadow:0 4px 14px rgba(0,0,0,.5),inset 0 0 18px rgba(0,0,0,.6);background:rgba(8,14,10,.78);pointer-events:none}#mmap.hidden{display:none}
 .slot.par{font:900 17px var(--font)}.slot.par .ico{font-size:17px;letter-spacing:1px}.slot.par.off{opacity:.38;filter:grayscale(1)}
+.slot.par:not(.off){border-color:#ffd84a;box-shadow:0 0 11px rgba(255,216,74,.85)}body.mobile .slot.par.act{transform:translate(-50%,-50%) scale(.9);background:rgba(255,216,74,.5)}
 </style>
 </head>
 <body>
