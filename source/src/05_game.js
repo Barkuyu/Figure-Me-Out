@@ -113,7 +113,7 @@ const frozenAll = () => !!(G.sk && G.sk.frz && G.sk.frz.t > 0); // 暫時的休�
 const isSumi = a => isOut(a, 3);
 const jumpMul = a => isSumi(a) ? 1.285 : 1; // 高度 1.65 倍 → 初速 √1.65 倍
 const speedMul = a => isOut(a, 5) ? 2.5 : isOut(a, 13) ? .7 : isOut(a, 52) ? 1.5 : 1;
-const SKILLS = { decade: { name: '假面變身', cd: 30, ico: '🎭' }, math: { name: '精算師', cd: 15, t: 20, ico: '🧮' }, radar: { name: '紅野掃視', cd: 10, t: 8, ico: '📡' }, soom: { name: '無影瞬蹤', cd: 8, ico: '🌀' }, medi: { name: '暫時的休止符', cd: 15, ico: '🕊️' }, mirror: { name: '鏡像混亂', cd: 15, ico: '🪞' }, cham: { name: '半透明視線', cd: 15, ico: '🦎' }, lian: { name: '死胡同', cd: 20, ico: '⚰️' }, mini: { name: '超級縮小', cd: 20, ico: '🔬' }, voodoo: { name: '巫毒反殺', cd: 20, ico: '🪆' }, enigma: { name: '亂碼術', cd: 18, ico: '❓' }, decoy: { name: '影子突進', cd: 10, ico: '👥' }, vocal: { name: '聲波咒術', cd: 6, ico: '🎤' }, ward: { name: '警戒結界', cd: 20, ico: '☯️' }, frost: { name: '冰封領域', cd: 20, ico: '❄️' }, beacon: { name: '通天視野', cd: 15, ico: '🔴' }, drum: { name: '戰鼓鼓舞', cd: 15, ico: '🥁' }, guard: { name: '替身契約', cd: 15, ico: '🤝' }, revert: { name: '逆流術士', cd: 0, ico: '⏪' }, gis: { name: '連號甜心', cd: 15, ico: '💖' }, neg: { name: '負領域展開', cd: 10, ico: '🎞️' }, quick: { name: '瞬影瞬行', cd: .5, ico: '🏃🏻‍♂️‍➡️' }, ange: { name: '天使之息', cd: 3, ico: '🧚🏻‍♀️' }, peace: { name: '停戰宣告', cd: 10, ico: '🕊️' }, rel: { name: '相對論', cd: 30, ico: '🔀' }, charge: { name: '衝鋒陷陣', cd: 10, ico: '🏃🏻' }, steal: { name: '命運拷貝', cd: 1, ico: '🔮' }, dack: { name: '生化操作', cd: 15, ico: '🧪' }, nox: { name: '夜間戰術', cd: 30, ico: '🌑' }, ink: { name: '烏賊戲法', cd: 25, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 15, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 8, ico: '🐱' }, mind: { name: '心靈控制', cd: 12, ico: '🌀' }, cloak: { name: '幻影易容', cd: 25, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 20, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 15, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 25, ico: '⚡' } };
+const SKILLS = { decade: { name: '假面變身', cd: 30, ico: '🎭' }, math: { name: '精算師', cd: 15, t: 20, ico: '🧮' }, radar: { name: '紅野掃視', cd: 10, t: 8, ico: '📡' }, soom: { name: '無影瞬蹤', cd: 8, ico: '🌀' }, medi: { name: '暫時的休止符', cd: 15, ico: '🕊️' }, mirror: { name: '鏡像混亂', cd: 15, ico: '🪞' }, cham: { name: '半透明視線', cd: 15, ico: '🦎' }, lian: { name: '死胡同', cd: 20, ico: '⚰️' }, mini: { name: '超級縮小', cd: 20, ico: '🔬' }, voodoo: { name: '巫毒反殺', cd: 20, ico: '🪆' }, enigma: { name: '亂碼術', cd: 18, ico: '❓' }, decoy: { name: '影子突進', cd: 10, ico: '👥' }, vocal: { name: '聲波咒術', cd: 0, ico: '🎤' }, ward: { name: '警戒結界', cd: 20, ico: '☯️' }, frost: { name: '冰封領域', cd: 20, ico: '❄️' }, beacon: { name: '通天視野', cd: 15, ico: '🔴' }, drum: { name: '戰鼓鼓舞', cd: 15, ico: '🥁' }, guard: { name: '替身契約', cd: 15, ico: '🤝' }, revert: { name: '逆流術士', cd: 0, ico: '⏪' }, gis: { name: '連號甜心', cd: 15, ico: '💖' }, neg: { name: '負領域展開', cd: 10, ico: '🎞️' }, quick: { name: '瞬影瞬行', cd: .5, ico: '🏃🏻‍♂️‍➡️' }, ange: { name: '天使之息', cd: 3, ico: '🧚🏻‍♀️' }, peace: { name: '停戰宣告', cd: 10, ico: '🕊️' }, rel: { name: '相對論', cd: 30, ico: '🔀' }, charge: { name: '衝鋒陷陣', cd: 10, ico: '🏃🏻' }, steal: { name: '命運拷貝', cd: 1, ico: '🔮' }, dack: { name: '生化操作', cd: 15, ico: '🧪' }, nox: { name: '夜間戰術', cd: 30, ico: '🌑' }, ink: { name: '烏賊戲法', cd: 25, ico: '🦑' }, eagle: { name: '靶靶命中', cd: 15, ico: '🎯' }, lydia: { name: '幻影蹤跡', cd: 8, ico: '🐱' }, mind: { name: '心靈控制', cd: 12, ico: '🌀' }, cloak: { name: '幻影易容', cd: 25, ico: '🎭' }, rev: { name: '顛倒乾坤', cd: 20, ico: '🔄' }, shield: { name: '銅牆鐵壁', cd: 15, ico: '🛡️' }, scr: { name: '紫電干擾', cd: 25, ico: '⚡' } };
 const DACK_T = 21; // 濃霧：1 秒戴鏡 + 20 秒噴發
 const immune = a => a.alive && ((isOut(a, 11) && (a.cleanW || 0) > 0) || (a.imm || 0) > 0); // 潔淨 Jessie 的淨化窗口：無效化一切攻擊與技能
 const REL_WARN = 2, REL_DUR = 20; // 相對論：2 秒警笛 + 20 秒左右互換
@@ -207,6 +207,9 @@ function killByCode(att, code, only) { // 輸入一組號碼，可同時擊殺�
 }
 /* ===== 肯尼系列：序列奇蹟／梅開二度／梅開三度 ===== */
 const WRONG_STUN = 1.5; // 輸入錯誤的定身秒數
+const vocalHero = a => !!(a && a.av && SKILL_OF[a.av.outfitIdx] === 'vocal' && G.skillsOn !== false); // 伏克：只能用語音念號碼（技能整體關閉時才恢復成一般輸入）
+// 輸入是否被鎖住。伏克的語音不受其他英雄技能影響（心靈控制、全場停滯、停戰宣告…），但自己輸錯號碼的定身照算
+const inLocked = p => (G.lock > 0 && !(G.lockSk && vocalHero(p))) || ((p && p.ctrlT || 0) > 0 && !vocalHero(p));
 const kenKind = a => !a || !a.av ? null : isOut(a, 40) ? 'asc' : isOut(a, 41) ? 'desc' : isOut(a, 42) ? 'two' : isOut(a, 43) ? 'three' : null;
 const mathOn = () => !!(G.sk && G.sk.math && G.sk.math.t > 0); // 精算師是否生效
 const sum2 = n => String([...String(n || '')].reduce((t, c) => t + (+c || 0), 0)).padStart(2, '0'); // 號碼各位數加總，補成兩位數
@@ -217,7 +220,7 @@ const inLen = p => { if (mathOn()) return 2; const k = kenKind(p); return k === 
 const digSort = (n, dir) => { const a = String(n).split('').sort(); if (dir === 'desc') a.reverse(); return a.join(''); };
 const subSeq = (c, n) => { let j = 0; for (const ch of n) if (j < c.length && ch === c[j]) j++; return j === c.length; };
 const subBag = (c, n) => { const m = {}; for (const ch of n) m[ch] = (m[ch] || 0) + 1; for (const ch of c) { if (!m[ch]) return false; m[ch]--; } return true; };
-function stunSelf(sec) { const p = G.player; if (!p) return; p.streak = 0; p.cloak = false; Sfx.wrong(); G.lock = sec; G.freezeT = sec; p.redT = sec; UI.shake(); UI.stunFx(sec); setTimeout(() => { G.typed = ''; UI.dirty = true; }, 350); }
+function stunSelf(sec) { const p = G.player; if (!p) return; p.streak = 0; p.cloak = false; Sfx.wrong(); G.lock = sec; G.lockSk = true; /* 由其他英雄技能造成 */ G.freezeT = sec; p.redT = sec; UI.shake(); UI.stunFx(sec); setTimeout(() => { G.typed = ''; UI.dirty = true; }, 350); }
 function notify(a, title, text, stun) { // 對指定玩家跳出提示框（本機直接顯示，連線訪客經快照傳遞）
   if (a.isPlayer) { UI.popup(title, text); if (stun) stunSelf(stun); }
   else if (a.remote) { a.ntf = { id: (a.ntf ? a.ntf.id : 0) + 1, t: title + '|' + text, s: stun || 0 }; if (stun) { a.redT = stun; a.streak = 0; a.cloak = false; } }
@@ -544,7 +547,7 @@ function skTick(dt) {
   if (G.sk.frz.t > 0) { // 暫時的休止符：全場停滯（含滯空）
     G.sk.frz.t -= dt;
     for (const o of G.actors) { o.frz = Math.max(o.frz || 0, .12); o.vx = 0; o.vz = 0; o.vy = 0; }
-    if (G.player) { G.lock = Math.max(G.lock, .12); G.typed = ''; }
+    if (G.player) { G.lock = Math.max(G.lock, .12); G.lockSk = true; G.typed = ''; }
     if (G.sk.frz.t <= 0) { G.sk.frz.t = 0; for (const o of G.actors) o.frz = 0; if (G.player) G.lock = 0; }
   } if (G.sk.gis.t > 0) { G.sk.gis.t -= dt; if (G.sk.gis.t <= 0) gisEnd(); }
   if (G.sk.rev.t > 0) G.sk.rev.t -= dt; if (G.sk.scr.t >= 0) { G.sk.scr.t += dt; if (G.sk.scr.t >= SCR_TOTAL) G.sk.scr.t = -1; }
@@ -823,7 +826,8 @@ function leanClear(p, d) {
 }
 const headX = o => Math.cos(o.yaw) * (o.lo || 0), headZ = o => -Math.sin(o.yaw) * (o.lo || 0);
 function typeDigit(d) {
-  if (G.state !== 'playing' || G.countdown > 0 || !G.player || !G.player.alive || G.lock > 0 || G.player.ctrlT > 0) return;
+  if (G.state !== 'playing' || G.countdown > 0 || !G.player || !G.player.alive || inLocked(G.player)) return;
+  if (vocalHero(G.player)) { UI.msg('伏克只能用語音輸入：按住 R（手機：技能鍵）念出號碼', 'bad'); return; } // 伏克沒有數字鍵
   if (!Device.mobile && scrPhase2(G.player) && G.keyMap) d = G.keyMap[d] || d;
   if (!Device.mobile && relPhase2(G.player)) d = String(9 - (+d));
   const LN = inLen(G.player), mix = !LN, L = LN || 6; if (G.typed.length >= L) return;
@@ -834,7 +838,7 @@ function typeDigit(d) {
 }
 function backspace() { if (G.state !== 'playing' || G.lock > 0) return; if (G.typed.length) { G.typed = G.typed.slice(0, -1); Sfx.del(); UI.dirty = true; } }
 function submitNumber() {
-  const p = G.player; if (G.state !== 'playing' || G.countdown > 0 || !p || !p.alive || G.lock > 0 || p.ctrlT > 0) return;
+  const p = G.player; if (G.state !== 'playing' || G.countdown > 0 || !p || !p.alive || inLocked(p)) return;
   if (G.typed.length < (inLen(p) || 3)) { UI.msg('請輸入完整的 ' + (inLen(p) || 3) + ' 位以上數字', 'bad'); return; }
   const code = G.typed; if (G.netClient && kenKind(p)) { netAct(['kn', code]); G.typed = ''; UI.dirty = true; return; }
   if (!G.netClient && (pokerTrap(p, code) || ericHit(p, code))) { G.typed = ''; UI.dirty = true; return; }
@@ -848,7 +852,7 @@ function submitNumber() {
   else if (cloneOf(p, code, false)) { UI.msg('這是友軍的分身！', 'bad'); Sfx.wrong(); G.typed = ''; UI.dirty = true; UI.shake(); }
   else if (t) { UI.msg('這是隊友的號碼！', 'bad'); Sfx.wrong(); G.typed = ''; UI.dirty = true; UI.shake(); }
   else if (isOut(p, 24)) { UI.msg('藐視罰則：輸錯號碼，不受懲罰', 'item'); G.typed = ''; UI.dirty = true; }
-  else { if (G.netClient && (code === p.number || code === G.pkCode)) netAct(['k', -1, code]); p.streak = 0; p.cloak = false; Sfx.wrong(); UI.msg('號碼錯誤！定身 1.5 秒', 'bad'); G.lock = WRONG_STUN; G.freezeT = WRONG_STUN; p.redT = WRONG_STUN; if (G.netClient) netAct(['w']); UI.shake(); UI.stunFx(WRONG_STUN); setTimeout(() => { G.typed = ''; UI.dirty = true; }, 350); }
+  else { if (G.netClient && (code === p.number || code === G.pkCode)) netAct(['k', -1, code]); p.streak = 0; p.cloak = false; Sfx.wrong(); UI.msg('號碼錯誤！定身 1.5 秒', 'bad'); G.lock = WRONG_STUN; G.lockSk = false; /* 自己輸錯的罰則 */ G.freezeT = WRONG_STUN; p.redT = WRONG_STUN; if (G.netClient) netAct(['w']); UI.shake(); UI.stunFx(WRONG_STUN); setTimeout(() => { G.typed = ''; UI.dirty = true; }, 350); }
 }
 function updatePlayer(dt) {
   const p = G.player;

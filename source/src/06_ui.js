@@ -182,6 +182,8 @@ const UI = {
   mouseMode() {
     const lk = !Device.mobile && !G.demo && G.state === 'playing' && !UI.paused && !UI.menuOpen && !UI.tutOpen && !UI.pracOpen && !UI.decOpen && !CS.o && !document.body.classList.contains('editing');
     if (lk !== this._mlk) { this._mlk = lk; document.body.classList.toggle('mlock', lk); }
+    const vo = G.state === 'playing' && vocalHero(G.player); // 伏克：數字鍵反灰
+    if (vo !== this._vo) { this._vo = vo; document.body.classList.toggle('vonly', vo); }
   },
   updateHUD(dt) {
     const e = this.els, p = G.player;
@@ -499,7 +501,7 @@ function howPanel(id) {
 <h3>📱 手機（橫向）</h3><div class="hgrid">${hCard('🕹️', '左半邊拖曳', '搖桿移動')}${hCard('🏃', '右側「跑」鍵', '按住衝刺（耗體力）')}${hCard('👆', '右側空白拖曳', '轉視角')}${hCard('🔢', '左右數字鍵', '輸滿位數自動送出')}${hCard('⬆️', '跳躍鍵', '空中再按＝二段跳')}${hCard('🔭', '望遠鏡', '壓住使用、放開取消，壓住時滑動轉視角')}${hCard('🎒', '道具格', '點按使用')}</div>
 <div class="hnote">🔋 衝刺會消耗體力條；望遠鏡有能量條，用完需等待回復。</div>`;
   if (id === 'item') return `<div class="hnote">開局沒有道具，走過地圖上的 <b>？箱</b> 才會取得；兩格已滿時不會更換。</div><div class="hgrid">${Object.entries({ cam: '拍照後照片短暫停留，方便看清號碼', quake: '讓其他人畫面劇烈橫向晃動 2 秒', scope: '約 13° 超遠距放大，再按一次＝拍照', fake: '頭上號碼偽裝成別的數字 7 秒', spring: '立即刷新英雄技能冷卻', poker: '畫面中央閃現一組號碼（3 秒）：65% 是場上某位敵人的真號碼，35% 是假的——輸入假號碼會直接陣亡並延長重生冷卻到 5 秒；上限 2 張' }).map(([k, d]) => hCard(ITEMS[k].ico, ITEMS[k].name, d, 'big')).join('')}${hCard('🔭', '望遠鏡（內建）', '遠距離讀碼，有能量限制', 'big')}</div>`;
-  if (id === 'chr') { return `<div class="hnote">按 <span class="kc">R</span>（手機：技能鍵）施放，圓環顯示冷卻。可在「遊戲設定」整體關閉技能。 Derek、快克沒有 G 道具格，其技能改由 <span class="kc">G</span> 鍵施放。 伏克需要裝置支援語音辨識並允許麥克風，不支援時該英雄會反灰；按住 <span class="kc">R</span> 念號碼、放開即送出。</div>${HERO_CLASSES.map(([nm, col, all]) => { const ids = all.filter(i => VIS_OUTFITS.includes(i)); return !ids.length ? '' : `<div class="chd" style="--hc:${col}">${nm}（${ids.length}）</div><div class="hchars">${ids.map(i => { const o = OUTFITS[i]; return `<div class="hch"><img src="${outfitIcon(i)}"><div><b>${o.label}</b><u>${o.skill.name}</u><span>${o.skill.desc}</span></div></div>`; }).join('')}</div>`; }).join('')}`; }
+  if (id === 'chr') { return `<div class="hnote">按 <span class="kc">R</span>（手機：技能鍵）施放，圓環顯示冷卻。可在「遊戲設定」整體關閉技能。 Derek、快克沒有 G 道具格，其技能改由 <span class="kc">G</span> 鍵施放。 伏克需要裝置支援語音辨識並允許麥克風，不支援時該英雄會反灰；按住 <span class="kc">R</span> 念號碼、放開即送出，無冷卻，且沒有數字鍵可用。</div>${HERO_CLASSES.map(([nm, col, all]) => { const ids = all.filter(i => VIS_OUTFITS.includes(i)); return !ids.length ? '' : `<div class="chd" style="--hc:${col}">${nm}（${ids.length}）</div><div class="hchars">${ids.map(i => { const o = OUTFITS[i]; return `<div class="hch"><img src="${outfitIcon(i)}"><div><b>${o.label}</b><u>${o.skill.name}</u><span>${o.skill.desc}</span></div></div>`; }).join('')}</div>`; }).join('')}`; }
   if (id === 'spec') return `<h3>🏟️ 擂台逃殺（單人／多人合作）</h3>
 <div class="hrule">玩家方對抗一波強過一波的電腦軍團；電腦同屬一國，彼此不會互相攻擊。多人遊玩時，電腦人數會依真人人數成倍增加（場上總人數上限 20 人）。</div>
 <div class="hsteps h4">${hStep(1, '⏱️', '3 秒倒數', '進入畫面後先倒數 3 秒')}${hStep(2, '📢', '10 秒準備', '藍底通知＋右上角倒數，剩 3 秒響提示音')}${hStep(3, '🔔', 'Stage 1', '鳴響開賽聲，電腦登場')}${hStep(4, '🏆', 'Clear！！', '全數擊倒後進入下一關')}</div>
@@ -874,7 +876,7 @@ const Voice = (() => {
     }
     return acc.slice(-L);
   };
-  V.setTyped = d => { const p = G.player; if (!p || !p.alive || G.lock > 0 || p.ctrlT > 0) return; const apply = () => { if (G.player && (V.on || V.fin)) { G.typed = d; UI.dirty = true; } }; if (p.wdHit) setTimeout(apply, 800); else apply(); };
+  V.setTyped = d => { const p = G.player; if (!p || !p.alive || inLocked(p)) return; const apply = () => { if (G.player && (V.on || V.fin)) { G.typed = d; UI.dirty = true; } }; if (p.wdHit) setTimeout(apply, 800); else apply(); };
   V.bar = t => { const b = $('voiceBar'); if (!b) return; if (t === null) { b.classList.add('hidden'); return; } b.classList.remove('hidden'); b.innerHTML = '🎤 聆聽中　<b>' + (t || '…') + '</b>'; };
   V.make = () => {
     const r = new SR(); r.lang = 'zh-TW'; r.continuous = true; r.interimResults = true; r.maxAlternatives = 5;
@@ -890,7 +892,7 @@ const Voice = (() => {
   };
   V.start = () => {
     const p = G.player; if (V.on || !p || !p.alive || G.state !== 'playing' || G.countdown > 0 || G.demo) return;
-    if (!skOn() || (p.skCd || 0) > 0 || p.ctrlT > 0 || G.lock > 0 || p.chant) return;
+    if (G.skillsOn === false || inLocked(p) || p.chant) return; // 無冷卻，且不受其他英雄技能（停戰宣告、全場停滯、心靈控制）影響
     if (!V.ok()) { UI.msg('此裝置不支援語音', 'bad'); return; }
     V.started = false; V.digits = ''; V.prefix = ''; V.base = 0; V.nRes = 0; V.text = ''; V.fin = false; V.t0 = V.last = performance.now(); G.typed = ''; UI.dirty = true;
     try { V.rec = V.make(); V.rec.start(); } catch (e) { V.rec = null; UI.msg('語音啟動失敗，請再試一次', 'bad'); return; }
@@ -905,7 +907,7 @@ const Voice = (() => {
     const finish = () => {
       V.fin = false; V.bar(null); V.stopRec(); const d = V.digits;
       if (G.player && G.player.alive && G.state === 'playing') { if (d.length >= V.minLen()) { G.typed = d; UI.dirty = true; G.player.voiceT = G.time; submitNumber(); } else { G.typed = ''; UI.dirty = true; if (d.length) UI.msg('號碼沒念完整，請再說一次', 'bad'); } }
-      if (G.player) { G.player.skCd = G.player.vkill ? 0 : SKILLS.vocal.cd; G.player.vkill = false; if (G.netClient) netAct(['vs']); }
+      if (G.player) { G.player.skCd = 0; G.player.vkill = false; /* 聲波咒術無冷卻 */ if (G.netClient) netAct(['vs']); }
     };
     if (V.digits.length >= V.minLen()) { const wd = p && p.wdHit; if (wd) setTimeout(finish, 800); else finish(); }
     else { try { if (V.rec) { V.rec.onend = null; V.rec.stop(); } } catch (e) { } setTimeout(finish, 550); } // 還沒湊滿就稍等最終辨識結果
