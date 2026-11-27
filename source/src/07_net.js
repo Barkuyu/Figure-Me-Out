@@ -201,6 +201,7 @@ function hostAct(a, ac) {
   } else if (ac[1] === 'w') { if (isOut(a, 24)) return; a.redT = WRONG_STUN; a.streak = 0; a.cloak = false; }
   else if (ac[1] === 's') { castSkill(a); }
   else if (ac[1] === 'b') { a.binAt = G.time; }
+  else if (ac[1] === 'wb') { const v = [+ac[2] || 0, +ac[3] || 0, +ac[4] || 0], l = Math.hypot(v[0], v[1], v[2]) || 1; webFire(a, [v[0] / l, v[1] / l, v[2] / l], ac[5] === 1); }
   else if (ac[1] === 'kp') { kofPick(a, ac[2] | 0); }
   else if (ac[1] === 'vs') { if (isOut(a, 39)) { a.skCd = a.vkill ? 0 : 20; a.vkill = false; } }
   else if (ac[1] === 'fk') { const t = G.actors[ac[2] | 0]; if (t && t.alive && isOut(a, 28) && t.number === String(ac[3]) && Math.hypot(t.x - a.x, t.z - a.z) < 12) a.fk = { t: 1.5, target: t, num: t.number }; }

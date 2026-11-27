@@ -151,7 +151,7 @@ const UI = {
     { const dl = isOut(p, 20); if (dl !== this._dl) { this._dl = dl; document.body.classList.toggle('doll', dl); } }
     this.skTimers(p);
     { const dr = GKEY_HEROES.includes(p.av.outfitIdx); if (dr !== this._dr) { this._dr = dr; document.body.classList.toggle('derek', dr); $('slotG').style.display = dr ? 'none' : ''; $('slotS').querySelector('em').textContent = dr ? 'G' : 'R'; } }
-    const s = $('slotS'), sk = skillOf(p), cd = p.skCd || 0, show = !!sk && G.skillsOn !== false; s.style.display = show ? '' : 'none'; s.classList.toggle('boost', !!p.boost && cd > 0);
+    const wb = isWeb(p), s = $('slotS'), sk = skillOf(p) || (wb ? WEB_SK : null), cd = wb ? 0 : (p.skCd || 0), show = !!sk && G.skillsOn !== false; s.style.display = show ? '' : 'none'; s.classList.toggle('boost', !!p.boost && cd > 0);
     { let f = 0; for (const o of G.actors) if (o !== p && o.alive && o.dackE >= 1) { const d = Math.hypot(o.x - p.x, o.z - p.z); if (d < 12) f = Math.max(f, .8 + .2 * (1 - d / 12)); } const df = $('dfog'); $('dself').style.opacity = (p.dackE >= 1) ? .2 : 0; if (Math.abs((this._df || 0) - f) > .02) { this._df = f; df.style.opacity = f; } }
     $('stamwrap').style.visibility = isOut(p, 12) ? 'hidden' : ''; $('binwrap').style.visibility = isOut(p, 13) ? 'hidden' : '';
     { const ik = $('ink'), on = inkActive(p); if (on !== this._ink) { this._ink = on; ik.classList.toggle('on', on); } if (on && G.sk.ink.t < .5) ik.style.opacity = G.sk.ink.t * 2; else if (on) ik.style.opacity = 1; }
@@ -405,6 +405,7 @@ const Input = {
       if (G.state !== 'playing' || UI.paused || UI.menuOpen || Device.mobile || G.demo) return;
       if (e.button === 2) { this.binHold = true; if (!G.bino) toggleBino(); e.preventDefault(); return; }
       if (!this.pointerLocked()) { this.lock(); UI.dragLookActive = e.button === 0; }
+      else if (e.button === 0 && G.player && isWeb(G.player)) { webClick(); e.preventDefault(); } /* 牽絲：左鍵射蛛絲 */
     });
     window.addEventListener('mouseup', e => { UI.dragLookActive = false; if (e.button === 2 && this.binHold) { this.binHold = false; if (G.bino) toggleBino(); } });
     cvs.addEventListener('contextmenu', e => e.preventDefault());
@@ -459,7 +460,7 @@ const Input = {
       for (const ev of ['touchend', 'touchcancel']) bb.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); off(); }, { passive: false });
     }
     press($('bBack'), () => backspace());
-    { const ss = $('slotS'), vocal = () => G.player && SKILL_OF[G.player.av.outfitIdx] === 'vocal'; press(ss, () => { if (vocal()) Voice.start(); else castSkillPlayer(); }, () => { if (vocal()) Voice.end(); }); ss.addEventListener('click', () => { if (!Device.mobile && !vocal()) castSkillPlayer(); }); ss.addEventListener('mousedown', () => { if (!Device.mobile && vocal()) Voice.start(); }); ss.addEventListener('mouseup', () => { if (!Device.mobile && vocal()) Voice.end(); }); ss.addEventListener('mouseleave', () => { if (!Device.mobile && vocal()) Voice.end(); }); }
+    { const ss = $('slotS'), vocal = () => G.player && SKILL_OF[G.player.av.outfitIdx] === 'vocal'; press(ss, () => { if (G.player && isWeb(G.player)) webClick(); else if (vocal()) Voice.start(); else castSkillPlayer(); }, () => { if (vocal()) Voice.end(); }); ss.addEventListener('click', () => { if (!Device.mobile && !vocal()) castSkillPlayer(); }); ss.addEventListener('mousedown', () => { if (!Device.mobile && vocal()) Voice.start(); }); ss.addEventListener('mouseup', () => { if (!Device.mobile && vocal()) Voice.end(); }); ss.addEventListener('mouseleave', () => { if (!Device.mobile && vocal()) Voice.end(); }); }
     press($('bRun'), () => { In.sprintT = !In.sprintT; In.sprint = In.sprintT; $('bRun').classList.toggle('tog', In.sprintT); }, () => { });
     for (const [id, i] of [['slotF', 0], ['slotG', 1]]) { const el = $(id); const act = () => { const p = G.player; if (p && isOut(p, 56)) simpleGuess(p, i === 0); else useItem(i); }; press(el, act); el.addEventListener('click', () => { if (!Device.mobile) act(); }); }
     press($('pauseBtn'), () => setPause(true));
@@ -485,6 +486,16 @@ function setPause(v) {
   if (v) { if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { } for (const k in keys) keys[k] = false; In.mx = In.my = 0; In.sprint = false; In.jump = false; }
 }
 function togglePause() { setPause(!(UI.paused || UI.menuOpen)); }
+/* 牽絲：單擊＝射蛛絲，240 毫秒內再按一下＝改噴兩發絲彈 */
+let WEB_CT = 0;
+function webClick() {
+  const p = G.player;
+  if (!p || !p.alive || !isWeb(p) || G.state !== 'playing' || UI.paused || UI.menuOpen || G.countdown > 0 || G.demo) return;
+  const go = twin => { const q = G.player; if (!q || !q.alive || !isWeb(q)) return; const d = webAim(q); webFire(q, d, twin); if (G.netClient) netAct(['wb', +d[0].toFixed(3), +d[1].toFixed(3), +d[2].toFixed(3), twin ? 1 : 0]); };
+  if (WEB_CT) { clearTimeout(WEB_CT); WEB_CT = 0; go(true); return; }
+  WEB_CT = setTimeout(() => { WEB_CT = 0; go(false); }, 240);
+}
+
 function resumeGame() { UI.menuOpen = false; setPause(false); if (!Device.mobile) { FS.want(); Input.lock(); } }
 
 /* ---------- 選單 ---------- */
@@ -501,7 +512,7 @@ function howPanel(id) {
 <h3>📱 手機（橫向）</h3><div class="hgrid">${hCard('🕹️', '左半邊拖曳', '搖桿移動')}${hCard('🏃', '右側「跑」鍵', '按住衝刺（耗體力）')}${hCard('👆', '右側空白拖曳', '轉視角')}${hCard('🔢', '左右數字鍵', '輸滿位數自動送出')}${hCard('⬆️', '跳躍鍵', '空中再按＝二段跳')}${hCard('🔭', '望遠鏡', '壓住使用、放開取消，壓住時滑動轉視角')}${hCard('🎒', '道具格', '點按使用')}</div>
 <div class="hnote">🔋 衝刺會消耗體力條；望遠鏡有能量條，用完需等待回復。</div>`;
   if (id === 'item') return `<div class="hnote">開局沒有道具，走過地圖上的 <b>？箱</b> 才會取得；兩格已滿時不會更換。</div><div class="hgrid">${Object.entries({ cam: '拍照後照片短暫停留，方便看清號碼', quake: '讓其他人畫面劇烈橫向晃動 2 秒', scope: '約 13° 超遠距放大，再按一次＝拍照', fake: '頭上號碼偽裝成別的數字 7 秒', spring: '立即刷新英雄技能冷卻', poker: '畫面中央閃現一組號碼（3 秒）：65% 是場上某位敵人的真號碼，35% 是假的——輸入假號碼會直接陣亡並延長重生冷卻到 5 秒；上限 2 張' }).map(([k, d]) => hCard(ITEMS[k].ico, ITEMS[k].name, d, 'big')).join('')}${hCard('🔭', '望遠鏡（內建）', '遠距離讀碼，有能量限制', 'big')}</div>`;
-  if (id === 'chr') { return `<div class="hnote">按 <span class="kc">R</span>（手機：技能鍵）施放，圓環顯示冷卻。可在「遊戲設定」整體關閉技能。 Derek、快克沒有 G 道具格，其技能改由 <span class="kc">G</span> 鍵施放。 伏克需要裝置支援語音辨識並允許麥克風，不支援時該英雄會反灰；按住 <span class="kc">R</span> 念號碼、放開即送出，無冷卻，且沒有數字鍵可用。</div>${HERO_CLASSES.map(([nm, col, all]) => { const ids = all.filter(i => VIS_OUTFITS.includes(i)); return !ids.length ? '' : `<div class="chd" style="--hc:${col}">${nm}（${ids.length}）</div><div class="hchars">${ids.map(i => { const o = OUTFITS[i]; return `<div class="hch"><img src="${outfitIcon(i)}"><div><b>${o.label}</b><u>${o.skill.name}</u><span>${o.skill.desc}</span></div></div>`; }).join('')}</div>`; }).join('')}`; }
+  if (id === 'chr') { return `<div class="hnote">按 <span class="kc">R</span>（手機：技能鍵）施放，圓環顯示冷卻。可在「遊戲設定」整體關閉技能。 Derek、快克沒有 G 道具格，其技能改由 <span class="kc">G</span> 鍵施放。 伏克需要裝置支援語音辨識並允許麥克風，不支援時該英雄會反灰；按住 <span class="kc">R</span> 念號碼、放開即送出，無冷卻，且沒有數字鍵可用。牽絲用<span class="kc">滑鼠左鍵</span>（手機：技能鍵）朝準心射出蛛絲，快速連按兩下改為噴出兩發絲彈。</div>${HERO_CLASSES.map(([nm, col, all]) => { const ids = all.filter(i => VIS_OUTFITS.includes(i)); return !ids.length ? '' : `<div class="chd" style="--hc:${col}">${nm}（${ids.length}）</div><div class="hchars">${ids.map(i => { const o = OUTFITS[i]; return `<div class="hch"><img src="${outfitIcon(i)}"><div><b>${o.label}</b><u>${o.skill.name}</u><span>${o.skill.desc}</span></div></div>`; }).join('')}</div>`; }).join('')}`; }
   if (id === 'spec') return `<h3>🏟️ 擂台逃殺（單人／多人合作）</h3>
 <div class="hrule">玩家方對抗一波強過一波的電腦軍團；電腦同屬一國，彼此不會互相攻擊。多人遊玩時，電腦人數會依真人人數成倍增加（場上總人數上限 20 人）。</div>
 <div class="hsteps h4">${hStep(1, '⏱️', '3 秒倒數', '進入畫面後先倒數 3 秒')}${hStep(2, '📢', '10 秒準備', '藍底通知＋右上角倒數，剩 3 秒響提示音')}${hStep(3, '🔔', 'Stage 1', '鳴響開賽聲，電腦登場')}${hStep(4, '🏆', 'Clear！！', '全數擊倒後進入下一關')}</div>
@@ -638,7 +649,7 @@ function resetToMenuUI() {
   G.state = 'menu'; G.demo = false; G.view = null; document.body.classList.remove('playing', 'demo'); UI.els.hud.classList.add('hidden'); UI.els.menu.classList.remove('hidden'); UI.els.pause.classList.add('hidden'); UI.paused = false; UI.hideEnd(); UI.els.bino.style.display = 'none'; UI.els.flash.style.opacity = 0;
   $('settings').classList.add('hidden'); updateRotate(); if (document.exitPointerLock) try { document.exitPointerLock(); } catch (e) { }
   { const ids = Object.keys(MAPS).filter(k => k !== World.id); World.load(pick(ids)); G.orbitSeed = Math.random() * 6.28; }
-  G.player = null; freeActors(G.actors); G.actors = []; G.bino = false; G.binK = 0; G.flashT = 0; G.smokes = []; G.grenades = []; G.lures = []; G.fx = [];
+  G.player = null; freeActors(G.actors); G.actors = []; G.bino = false; G.binK = 0; G.flashT = 0; G.smokes = []; G.grenades = []; G.webs = []; G.lures = []; G.fx = [];
 }
 function beginNetClientUI() {
   UI.els.menu.classList.add('hidden'); $('mp').classList.add('hidden'); UI.els.hud.classList.remove('hidden'); document.body.classList.add('playing'); document.body.classList.remove('demo');
@@ -996,7 +1007,7 @@ function boot() {
 }
 window.__shot = function (x, y, z, yaw, pitch, fov) { G.state = 'debug'; const c = R.cam; c.x = x; c.y = y; c.z = z; c.yaw = yaw; c.pitch = pitch; c.fov = fov || 1.2; c.roll = 0; drawWorldFrame(); };
 setInterval(() => { try { UI.renderPills(); } catch (e) { } }, 120);
-window.__G = { PRO, createAvatar, R, eliminate, inLen, simpleReady, simpleGuess, grantItem, csSetView, csBuildCards, closePick, speedMul, OUTFITS, VIS_OUTFITS, HERO_CLASSES, HERO_TIERS, SKILL_OF, SKILLS, setPreview, kenKind, In, cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
+window.__G = { PRO, webAim, webFire, webRay, webClick, isWeb, PASSIVE_IDX, faceYaw, groundAt, createAvatar, R, eliminate, inLen, simpleReady, simpleGuess, grantItem, csSetView, csBuildCards, closePick, speedMul, OUTFITS, VIS_OUTFITS, HERO_CLASSES, HERO_TIERS, SKILL_OF, SKILLS, setPreview, kenKind, In, cloneSpawn, killClones, fxAnim, cloneTick, hostAct, buildSnap, inLen, kenSubmit, pokerCast, useItem, Voice, applyLayout, killByCode, kofPick, CS, openPick, csFinish, relPhase2, ericHit, immune, cleanse, MAPS, castSkillPlayer, castSkill, __spawnAll: spawnAll, __newActor: newActor, __los: los, __move: moveActor, NET, netCreate, netJoin, hostStart, openLayoutEditor, openSettings, applyLayout, mkav: createAvatar, drawAvatar, G, S, R, World, Device, Perf, UI, In, startMatch, beginGame, eliminate, submitNumber, typeDigit, useItem, drawWorldFrame, updateGame };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 
 // 檢查是否有新版（防止 PWA 快取舊版）

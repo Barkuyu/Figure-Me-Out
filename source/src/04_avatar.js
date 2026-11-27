@@ -127,7 +127,9 @@ OUTFITS.push(
   { key: 'ghost', label: '鬼影Ghost', sub: '', skill: { name: '鬼影穿梭', desc: '【被動】無法跳躍，「跳躍」鍵改為向前衝刺一小段。可以直接穿過任何牆壁與障礙物（最外圍的場地外牆除外），也能停在障礙物內部藏身。' }, H: 1.84, noLegs: true, skin: '#c6ccd2', hipX: .1, shX: .232, tz: .52, hair: '#7f8aa0', hair2: '#aab6c8', female: false, gen: { top: '#b9bfc6', top2: '#8c939c', pants: '#aeb5bd', shoe: '#9aa1a9', hair: '#c3c9cf', style: 'bald', acc: ['wraithhood', 'mistTail', 'clawhands'], accC: '#b4bac2' },
     torso: [[.001, -.1], [.198, -.1], [.204, -.02], [.19, .1], [.196, .22], [.228, .36], [.248, .46], [.244, .53], [.18, .57], [.07, .595], [.056, .63], [.001, .63]] },
   { key: 'officer', label: '作戰軍官Officer', sub: '', skill: { name: '全圖搜索', desc: '【被動】配備衛星偵測系統：畫面左上角常駐圓形雷達，以俯視方式顯示全場地形與障礙物，並即時標出敵方（紅點）與我方（藍點）位置。10 公尺內有敵方玩家時，跑步不消耗能量。' }, H: 1.77, skin: '#d9b48e', hipX: .108, shX: .246, tz: .56, hair: '#2b3038', hair2: '#464d58', female: false, gen: { top: '#243049', top2: '#c8ad5e', pants: '#1b2336', shoe: '#14181f', hair: '#2b3038', style: 'short', acc: ['peakcap', 'epaulet', 'satdish'], accC: '#243049' },
-    torso: [[.001, -.1], [.208, -.1], [.214, -.02], [.2, .1], [.206, .22], [.24, .36], [.26, .46], [.254, .53], [.188, .57], [.074, .595], [.06, .63], [.001, .63]] }
+    torso: [[.001, -.1], [.208, -.1], [.214, -.02], [.2, .1], [.206, .22], [.24, .36], [.26, .46], [.254, .53], [.188, .57], [.074, .595], [.06, .63], [.001, .63]] },
+  { key: 'arachne', label: '牽絲Arachne', sub: '', skill: { name: '蛛絲軌跡', desc: '【被動】蛛絲腺與壁面吸附構造。貼住牆面或障礙物即可沿牆面上下攀爬，不會因為時間過久而脫落，在牆上按「跳躍」即可彈離牆面回到地面。按一下滑鼠左鍵（手機：技能鍵）朝畫面中心準心射出 25 公尺蛛絲：黏到牆面、天花板或障礙物時，立刻把自己高速拉向黏著點；黏到敵方英雄時，將對方拉到身前並朝前踢出，自己後退 1 公尺、對方往反方向飛出 1 公尺後暈眩 1 秒，且被迫轉身面向你。快速連按兩下左鍵改為噴出兩發絲彈（射程 25 公尺），命中的敵方英雄原地定身 1.5 秒。' }, H: 1.74, skin: '#3b4252', hipX: .098, shX: .232, tz: .5, hair: '#20242e', hair2: '#2d323e', female: false, gen: { top: '#2b3140', top2: '#1f9f8c', pants: '#232a36', shoe: '#161a22', hair: '#20242e', style: 'bald', acc: ['arachMask', 'spinneret', 'silkSpool'], accC: '#2ec9b0' },
+    torso: [[.001, -.1], [.19, -.1], [.196, -.02], [.182, .1], [.188, .22], [.22, .36], [.238, .46], [.234, .53], [.17, .57], [.066, .595], [.054, .63], [.001, .63]] }
 );
 const SKINPATCH = [.975, .975];
 
@@ -389,6 +391,18 @@ function buildOutfit(i) {
       hairP.push({ g: gBox(.028, .09, hw * 2.1), t: [0, hc + hh * .54, -.01], c: shade(accC, 1.1) }); // 頭頂稜脊
       for (const sg of [-1, 1]) hairP.push({ g: gBox(.03, .05, .09), t: [sg * hw * 1.16, hc - hh * .04, .0], c: [.55, .57, .62] }); // 耳側裝置
     }
+    if (ac.includes('arachMask')) { // 牽絲：無五官的甲殼面罩，四枚琥珀複眼與一對螯肢護片（原創造型）
+      hairP.push({ g: gSphere(1, 24, 18), t: [0, hc + .012, -.01], s: [hw * 1.19, hh * .68, hw * 1.3], c: shade(accC, .42) });
+      hairP.push({ g: gSphere(1, 24, 18, 0, TAU, 0, 1.92), t: [0, hc - hh * .18, -.01], s: [hw * 1.17, hh * .6, hw * 1.27], c: shade(accC, .3) });
+      hairP.push({ g: gBox(.034, hh * .5, hw * 2.05), t: [0, hc + hh * .52, -.02], c: shade(accC, 1.15) }); // 頭頂稜脊
+      for (const sg of [-1, 1]) { // 複眼：下排大、上排小
+        hairP.push({ g: gSphere(1, 14, 10), t: [sg * hw * .45, hc + hh * .0, hw * 1.0], s: [.07, .052, .035], r: [0, 0, sg * -.3], c: [1, .7, .18] });
+        hairP.push({ g: gSphere(1, 12, 9), t: [sg * hw * .2, hc + hh * .28, hw * .97], s: [.042, .034, .028], r: [0, 0, sg * -.34], c: [1, .84, .42] });
+        hairP.push({ g: gCyl(.012, .019, .11, 6, 1), t: [sg * hw * .34, hc - hh * .5, hw * .78], r: [.55, 0, sg * .34], c: shade(accC, .55) }); // 螯肢
+      }
+      hairP.push({ g: gBox(hw * .92, .05, .045), t: [0, hc - hh * .4, hw * .9], r: [.2, 0, 0], c: shade(accC, .55) });
+      for (const sg of [-1, 1]) hairP.push({ g: gBox(.026, .055, .075), t: [sg * hw * 1.14, hc - hh * .02, .01], c: shade(accC, .85) }); // 耳側聽震器
+    }
     if (ac.includes('clawhands')) for (const sg of [-1, 1]) for (let k = 0; k < 3; k++) hairP.push({ g: gCyl(0, .012, .1, 5, 1), t: [sg * (O.shX + .055 + k * .022), hipY + .1, .03 + k * .01], r: [-.35, 0, sg * (.12 + k * .1)], c: shade(accC, .88) }); // 細長的爪
     if (ac.includes('nvhelm')) { // 夜督軍官：夜視鏡頭盔
       hairP.push({ g: gSphere(1, 20, 14, 0, TAU, 0, 1.15), t: [0, hc + .035, -.01], s: [hw * 1.16, hh * .72, hw * 1.3], c: shade(accC, .75) });
@@ -635,6 +649,18 @@ function buildOutfit(i) {
       }
       for (let k = 0; k < 3; k++) ex.push({ g: gBox(.055, .3 - k * .06, .02), t: [(k - 1) * .09, hipY - .5 - k * .07, -.1 - k * .05], r: [0, 0, (k - 1) * .35], c: shade(accC, .78) });
       ex.push({ g: gSphere(1, 14, 10), t: [0, hipY + .03, -.01], s: [.155, .12, .17], c: shade(accC, 1.06) });
+    }
+    if (ac.includes('spinneret')) for (const sg of [-1, 1]) { // 牽絲：前臂吐絲護腕，三個吐絲口
+      ex.push({ g: gCyl(.062, .056, .18, 12, 1), t: [sg * (O.shX + .042), hipY + .3, .035], r: [.12, 0, sg * .05], c: shade(accC, .45) });
+      ex.push({ g: gCyl(.066, .066, .022, 12, 1), t: [sg * (O.shX + .042), hipY + .39, .035], r: [.12, 0, sg * .05], c: shade(accC, 1.1) });
+      for (let k = 0; k < 3; k++) ex.push({ g: gCyl(.011, .014, .05, 7, 1), t: [sg * (O.shX + .042) + (k - 1) * .024, hipY + .22, .075], r: [1.25, 0, 0], c: [.88, .92, .96] });
+    }
+    if (ac.includes('silkSpool')) { // 牽絲：背後的絲線捲筒，垂下一段絲
+      ex.push({ g: gCyl(.082, .082, .12, 16, 1), t: [0, shY - .22, -.2], r: [0, 0, PI / 2], c: shade(accC, .4) });
+      for (const sg of [-1, 1]) ex.push({ g: gCyl(.094, .094, .018, 16, 1), t: [sg * .06, shY - .22, -.2], r: [0, 0, PI / 2], c: [.9, .93, .97] });
+      ex.push({ g: gBox(.2, .055, .07), t: [0, shY - .06, -.19], c: shade(accC, .6) });
+      for (let k = 0; k < 7; k++) ex.push({ g: gSphere(.015, 7, 6), t: [Math.sin(k * 1.15) * .035, shY - .32 - k * .085, -.205 - k * .012], c: [.92, .94, .98] });
+      for (const sg of [-1, 1]) ex.push({ g: gBox(.035, .4, .018), t: [sg * .12, shY - .2, -.14], r: [0, 0, sg * .12], c: shade(accC, 1.05) }); // 背部絲紋
     }
     if (ac.includes('riotpad')) { for (const sg of [-1, 1]) { ex.push({ g: gSphere(1, 14, 10, 0, TAU, 0, 1.1), t: [sg * (O.shX + .015), shY - .02, 0], s: [.085, .075, .105], c: shade(accC, .85) }); ex.push({ g: gBox(.14, .022, .13), t: [sg * (O.shX + .01), shY + .045, 0], c: [.9, .52, .18] }); } ex.push({ g: gBox(.3, .14, .05), t: [0, shY - .3, .14], c: shade(accC, .6) }); } // 衝鋒軍官：防暴肩甲與胸板
     if (ac.includes('canister')) { for (const sg of [-1, 1]) ex.push({ g: gCyl(.055, .055, .34, 14, 1), t: [sg * .09, shY - .3, -.18], c: [.42, .5, .4] }); ex.push({ g: gBox(.22, .05, .07), t: [0, shY - .1, -.18], c: [.3, .34, .3] }); ex.push({ g: gCyl(.016, .016, .22, 8, 1), t: [.14, shY - .18, -.1], r: [.4, 0, .5], c: accC }); } // 生化軍官：背後氣罐
